@@ -199,7 +199,7 @@ I think TensorBoard will develop itself to handle these.
 And the main reason behind these tooling I've written 
 is for custom charts, and because it's not that hard to do it.
 
-#### [@vpj on Twitter](https://twitter.com/vpj)
+#### [github repo](https://github.com/vpj/lab)
 
-Please find me on twitter if you have any criticism or suggestions.
+#### [@vpj on Twitter](https://twitter.com/vpj)
 """
