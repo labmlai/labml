@@ -1,64 +1,70 @@
 """
 Console colors
 """
+from enum import Enum
 
 
-class Style:
-    bold = "[00;5;001m"
-    light = "[00;5;002m"
-
-    italic = "[00;5;003m"
-    underline = "[00;5;004m"
-
-    strike = "[00;5;009m"
+class ANSICode(Enum):
+    def __str__(self):
+        return f"\33[{self.value}m"
 
 
-class Color:
-    black = "[38;5;000m"
-    red = "[38;5;001m"
-    green = "[38;5;002m"
-    orange = "[38;5;003m"
-    blue = "[38;5;004m"
-    purple = "[38;5;005m"
-    cyan = "[38;5;006m"
-    white = "[38;5;007m"
+class Style(ANSICode):
+    normal = 0
+    bold = 1
+    light = 2
+
+    italic = 3  # Not supported in PyCharm
+    underline = 4
+
+    highlight = 7
 
 
-class BrightColor:
-    black = "[38;5;008m"
-    red = "[38;5;009m"
-    green = "[38;5;010m"
-    orange = "[38;5;011m"
-    blue = "[38;5;012m"
-    purple = "[38;5;013m"
-    cyan = "[38;5;014m"
-    white = "[38;5;015m"
+class Color(ANSICode):
+    black = 30
+    red = 31
+    green = 32
+    orange = 33
+    blue = 34
+    purple = 35
+    cyan = 36
+    white = 37
 
 
-class Background:
-    black = "[48;5;000m"
-    red = "[48;5;001m"
-    green = "[48;5;002m"
-    orange = "[48;5;003m"
-    blue = "[48;5;004m"
-    purple = "[48;5;005m"
-    cyan = "[48;5;006m"
-    white = "[48;5;007m"
+class BrightColor(ANSICode):
+    black = 90
+    red = 91
+    green = 92
+    orange = 93
+    blue = 94
+    purple = 95
+    cyan = 96
+    white = 97
 
 
-class BrightBackground:
-    black = "[48;5;008m"
-    red = "[48;5;009m"
-    green = "[48;5;010m"
-    orange = "[48;5;011m"
-    blue = "[48;5;012m"
-    purple = "[48;5;013m"
-    cyan = "[48;5;014m"
-    white = "[48;5;015m"
+class Background(ANSICode):
+    black = 40
+    red = 41
+    green = 42
+    orange = 43
+    blue = 44
+    purple = 45
+    cyan = 46
+    white = 47
 
 
-CodeStart = "\33"
-Reset = "[0m"
+class BrightBackground(ANSICode):
+    black = 100
+    red = 101
+    green = 102
+    orange = 103
+    blue = 104
+    purple = 105
+    cyan = 106
+    white = 107
+
+
+Reset = "\33[0m"
 
 if __name__ == "__main__":
     for i in [0, 38, 48]:
@@ -69,3 +75,18 @@ if __name__ == "__main__":
                 if (k + 1) % 6 == 0:
                     print("")
             print("")
+
+    for i in range(0, 128):
+        print(f"\33[{i}m{i :03d}\33[0m ", end='')
+        if (i + 1) % 10 == 0:
+            print("")
+
+    print("")
+
+    for s in Style:
+        for c in Color:
+            for b in Background:
+                print(
+                    f"{s}{c}{b}{s.name}, {c.name}, {b.name}{Reset}")
+
+    print(Style.bold.name)

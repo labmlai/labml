@@ -7,15 +7,6 @@
           rel="stylesheet"
           type="text/css"/>
     <link rel="stylesheet" href="./pylit.css">
-     <script>
-   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-44255805-1', 'auto');
-ga('send', 'pageview');
-    </script>
 </head>
 <body>
 <div id='container'>
@@ -29,22 +20,29 @@ ga('send', 'pageview');
                     <a class='octothorpe' href='#section-0'>#</a>
                 </div>
                 <h1>Lab 🧪</h1>
-<p>This library lets you organize TensorFlow machine learning projects.</p>
+<p>This library lets you organize TensorFlow machine learning
+ experiments.</p>
 <p>It is based on a bunch of utility functions and classes
 I wrote while trying some machine learning algorithms.
 I recently made it to a separate repo because I&rsquo;ve been
 reusing them on different projects, and it was easier
-to keep track of them as a single project.
-Most of this is only about two weeks old
-so it&rsquo;ll have to go through a lot of improvements.</p>
+to keep track of them as a single project.</p>
+<p>⚠️ This project is a personal project and only a few weeks old.
+It still doesn&rsquo;t have a proper documentation and I&rsquo;m making
+improvements frequently.
+<em>So, if you wish to use it make sure you understand the code.</em>
+I have tried to keep it documented and simple.</p>
 <h3>What does it do?</h3>
 <ul>
-<li>It keeps checkpoints and TensorBoard summaries and logs organized</li>
-<li>It helps keep track of experiments were with reference to git commits</li>
+<li>Keeps checkpoints and TensorBoard summaries and logs organized</li>
+<li>Helps keep track of experiments with reference to git commits</li>
 <li>Produce pretty console outputs</li>
-<li>Maintains and writes histograms and moving averages</li>
+<li>Maintains and logs histograms and moving averages</li>
 <li>Monitor time taken for different sections of code</li>
 <li>Estimate time remaining for experiments to run</li>
+<li>Add headers to python source files with experiment results for easy reference</li>
+<li>A simple TensorBoard invoker</li>
+<li>Tools for custom graphs from TensorBoard summaries</li>
 <li>Help make code more readable</li>
 </ul>
 <h3>Why I made it?</h3>
@@ -52,7 +50,7 @@ so it&rsquo;ll have to go through a lot of improvements.</p>
  to play Atari games for fun.
 It was not easy to keep track of things when I started
  trying variations, fixing bugs etc.
-This library help organize your experiments.
+This library helps organize experiments.
 It organizes the folders of the checkpoints, logs
  and TensorBoard summaries by each experiment.
 It also keeps track of the git commits when each experiment
@@ -62,8 +60,40 @@ It also keeps track of the git commits when each experiment
  to make it easy to write TensorBoard summaries.
 It also keeps track of training times which makes it easy to spot
  what&rsquo;s taking up most resources.
-Here&rsquo;s the output of this sample program (sample.py):</p>
+Here&rsquo;s the output of this sample program (<code>lab_getting_started.py</code>):</p>
 <p><img style="max-width:100%" src="images/log.png" /></p>
+<h2>Updates</h2>
+<ul>
+<li>
+<p><strong>November 16, 2018</strong></p>
+<ul>
+<li>Initial public release</li>
+</ul>
+</li>
+<li>
+<p><strong>December 21, 2018</strong></p>
+<ul>
+<li>TensorBoard invoker</li>
+<li>Tool set for custom visualizations of TensorBoard summaries</li>
+<li>Automatically adds headers to python files with experiment results</li>
+</ul>
+</li>
+</ul>
+<p>This 👇 is the header that was added automatically when the experiment ran.</p>
+<pre><code class="trial">2018-12-21 09:46:41
+Sample lab experiment
+ [dirty](dirty.html): 📚 tb
+start_step: 0
+
+-------------------------------------
+| global_step |   reward |     loss |
+-------------------------------------
+|           9 |     1.50 |    13.50 |
+|          19 |     4.83 |    23.50 |
+|          29 |     8.17 |    33.50 |
+|          39 |    11.50 |    43.50 |
+-------------------------------------
+</code></pre>
             </div>
             <div class='code'>
                 <div class="highlight"><pre><span></span></pre></div>
@@ -89,7 +119,8 @@ Here&rsquo;s the output of this sample program (sample.py):</p>
 this sample works when you run it.</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
+                <div class="highlight"><pre><span class="kn">import</span> <span class="nn">lab.clear_warnings</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 
@@ -120,7 +151,7 @@ used for this sample.</p>
             <div class='code'>
                 <div class="highlight"><pre><span class="n">EXPERIMENT</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span><span class="n">lab</span><span class="o">=</span><span class="n">lab</span><span class="p">,</span>
                         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Sample&quot;</span><span class="p">,</span>
-                        <span class="n">run_file</span><span class="o">=</span><span class="vm">__file__</span><span class="p">,</span>
+                        <span class="n">python_file</span><span class="o">=</span><span class="vm">__file__</span><span class="p">,</span>
                         <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Sample lab experiment&quot;</span><span class="p">,</span>
                         <span class="n">check_repo_dirty</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></pre></div>
             </div>
@@ -203,11 +234,11 @@ when separating them into functions is difficult</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-11'>#</a>
                 </div>
-                <p>Episode is a queue; this is useful when you want to track the moving
+                <p>Reward is a queue; this is useful when you want to track the moving
 average of something.</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre><span class="n">logger</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="s2">&quot;episode&quot;</span><span class="p">,</span> <span class="n">queue_limit</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></pre></div>
+                <div class="highlight"><pre><span class="n">logger</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="s2">&quot;reward&quot;</span><span class="p">,</span> <span class="n">queue_limit</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-12'>
@@ -220,7 +251,7 @@ We specify that <code>fps</code> is a scalar.
 If you store multiple values for this it will output the mean.</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre><span class="n">logger</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="s2">&quot;fps&quot;</span><span class="p">,</span> <span class="n">is_histogram</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></pre></div>
+                <div class="highlight"><pre><span class="n">logger</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="s2">&quot;fps&quot;</span><span class="p">,</span> <span class="n">is_histogram</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">is_progress</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-13'>
@@ -288,10 +319,11 @@ the experiment will load from the last saved checkpoint.</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-18'>#</a>
                 </div>
-                <p>Print the step</p>
+                <p>Handle Keyboard Interrupts</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>        <span class="n">logger</span><span class="o">.</span><span class="n">print_global_step</span><span class="p">(</span><span class="n">global_step</span><span class="p">)</span></pre></div>
+                <div class="highlight"><pre>        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">logger</span><span class="o">.</span><span class="n">delayed_keyboard_interrupt</span><span class="p">():</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-19'>
@@ -299,11 +331,10 @@ the experiment will load from the last saved checkpoint.</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-19'>#</a>
                 </div>
-                <p>A sample monitored section inside iterator</p>
+                <p>Print the step</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>        <span class="k">with</span> <span class="n">monitor</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;sample&quot;</span><span class="p">):</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span></pre></div>
+                <div class="highlight"><pre>                <span class="n">logger</span><span class="o">.</span><span class="n">print_global_step</span><span class="p">(</span><span class="n">global_step</span><span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-20'>
@@ -311,11 +342,11 @@ the experiment will load from the last saved checkpoint.</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-20'>#</a>
                 </div>
-                <p>An unmonitored section is used only to organize code.
-It produces no output</p>
+                <p>A sample monitored section inside iterator</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>        <span class="k">with</span> <span class="n">monitor</span><span class="o">.</span><span class="n">unmonitored</span><span class="p">(</span><span class="s2">&quot;logging&quot;</span><span class="p">):</span></pre></div>
+                <div class="highlight"><pre>                <span class="k">with</span> <span class="n">monitor</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;sample&quot;</span><span class="p">):</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-21'>
@@ -323,13 +354,11 @@ It produces no output</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-21'>#</a>
                 </div>
-                <p>Store a dictionary</p>
+                <p>An unmonitored section is used only to organize code.
+It produces no output</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>            <span class="n">logger</span><span class="o">.</span><span class="n">store</span><span class="p">(</span>
-                <span class="n">episode</span><span class="o">=</span><span class="n">global_step</span><span class="p">,</span>
-                <span class="n">fps</span><span class="o">=</span><span class="mi">12</span>
-            <span class="p">)</span></pre></div>
+                <div class="highlight"><pre>                <span class="k">with</span> <span class="n">monitor</span><span class="o">.</span><span class="n">unmonitored</span><span class="p">(</span><span class="s2">&quot;logging&quot;</span><span class="p">):</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-22'>
@@ -337,11 +366,13 @@ It produces no output</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-22'>#</a>
                 </div>
-                <p>Store a collection of values</p>
+                <p>Store a dictionary</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">global_step</span><span class="p">,</span> <span class="n">global_step</span> <span class="o">+</span> <span class="mi">10</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">i</span><span class="p">)</span></pre></div>
+                <div class="highlight"><pre>                    <span class="n">logger</span><span class="o">.</span><span class="n">store</span><span class="p">(</span>
+                        <span class="n">reward</span><span class="o">=</span><span class="n">global_step</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">,</span>
+                        <span class="n">fps</span><span class="o">=</span><span class="mi">12</span>
+                    <span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-23'>
@@ -349,11 +380,11 @@ It produces no output</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-23'>#</a>
                 </div>
-                <p>Another monitored section</p>
+                <p>Store a collection of values</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>        <span class="k">with</span> <span class="n">monitor</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;process_samples&quot;</span><span class="p">):</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span></pre></div>
+                <div class="highlight"><pre>                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">global_step</span><span class="p">,</span> <span class="n">global_step</span> <span class="o">+</span> <span class="mi">10</span><span class="p">):</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">i</span><span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-24'>
@@ -361,10 +392,11 @@ It produces no output</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-24'>#</a>
                 </div>
-                <p>A third monitored section to make it real</p>
+                <p>Another monitored section</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>        <span class="k">with</span> <span class="n">monitor</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">):</span></pre></div>
+                <div class="highlight"><pre>                <span class="k">with</span> <span class="n">monitor</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;process_samples&quot;</span><span class="p">):</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-25'>
@@ -372,14 +404,10 @@ It produces no output</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-25'>#</a>
                 </div>
-                <p>Let it run for multiple iterations.
-We&rsquo;ll track the progress of that too</p>
+                <p>A third monitored section to make it real</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>            <span class="n">iterations</span> <span class="o">=</span> <span class="mi">100</span>
-            <span class="n">progress</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span></pre></div>
+                <div class="highlight"><pre>                <span class="k">with</span> <span class="n">monitor</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">):</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-26'>
@@ -387,11 +415,14 @@ We&rsquo;ll track the progress of that too</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-26'>#</a>
                 </div>
-                <p>Progress is tracked manually unlike in the top level iterator
-The progress updates do not have to be sequential.</p>
+                <p>Let it run for multiple iterations.
+We&rsquo;ll track the progress of that too</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>                <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span><span class="p">)</span></pre></div>
+                <div class="highlight"><pre>                    <span class="n">iterations</span> <span class="o">=</span> <span class="mi">100</span>
+                    <span class="n">progress</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-27'>
@@ -399,10 +430,11 @@ The progress updates do not have to be sequential.</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-27'>#</a>
                 </div>
-                <p>Clears the progress when complete</p>
+                <p>Progress is tracked manually unlike in the top level iterator
+The progress updates do not have to be sequential.</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>            <span class="n">progress</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></pre></div>
+                <div class="highlight"><pre>                        <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span><span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-28'>
@@ -410,11 +442,10 @@ The progress updates do not have to be sequential.</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-28'>#</a>
                 </div>
-                <p>Log stored values.
-This will output to the console and write TensorBoard summaries.</p>
+                <p>Clears the progress when complete</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>        <span class="n">logger</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">global_step</span><span class="o">=</span><span class="n">global_step</span><span class="p">,</span> <span class="n">new_line</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></pre></div>
+                <div class="highlight"><pre>                    <span class="n">progress</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-29'>
@@ -422,11 +453,11 @@ This will output to the console and write TensorBoard summaries.</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-29'>#</a>
                 </div>
-                <p>Show iterator progress.
-This will display how much time is remaining.</p>
+                <p>Store progress in the trials file and in the python code as a comment</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>        <span class="n">monitor</span><span class="o">.</span><span class="n">progress</span><span class="p">()</span></pre></div>
+                <div class="highlight"><pre>                <span class="k">if</span> <span class="p">(</span><span class="n">global_step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">progress_dict</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">get_progress_dict</span><span class="p">(</span><span class="n">global_step</span><span class="o">=</span><span class="n">global_step</span><span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-30'>
@@ -434,30 +465,70 @@ This will display how much time is remaining.</p>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-30'>#</a>
                 </div>
+                <p>Set <code>is_add</code> to <code>False</code> if you want to update the last progress
+record instead of making a new entry</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>                    <span class="n">EXPERIMENT</span><span class="o">.</span><span class="n">save_progress</span><span class="p">(</span><span class="n">progress_dict</span><span class="p">,</span> <span class="n">is_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-31'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-31'>#</a>
+                </div>
+                <p>Log stored values.
+This will output to the console and write TensorBoard summaries.</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>                <span class="n">logger</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">global_step</span><span class="o">=</span><span class="n">global_step</span><span class="p">,</span> <span class="n">new_line</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-32'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-32'>#</a>
+                </div>
+                <p>Show iterator progress.
+This will display how much time is remaining.</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>                <span class="n">monitor</span><span class="o">.</span><span class="n">progress</span><span class="p">()</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-33'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-33'>#</a>
+                </div>
                 <p>We will overwrite the same console line, and produce
 a new line after ten such overwrites.
 This helps keep the console output concise.</p>
             </div>
             <div class='code'>
-                <div class="highlight"><pre>        <span class="n">logger</span><span class="o">.</span><span class="n">clear_line</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="p">(</span><span class="n">global_step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span></pre></div>
+                <div class="highlight"><pre>                <span class="n">logger</span><span class="o">.</span><span class="n">clear_line</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="p">(</span><span class="n">global_step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Stopping the training at {global_step} and saving checkpoints&quot;</span><span class="p">)</span>
+            <span class="k">break</span></pre></div>
             </div>
         </div>
-    <div class='section' id='section-31'>
+    <div class='section' id='section-34'>
         <div class='docs doc-strings'>
                 <div class='octowrap'>
-                    <a class='octothorpe' href='#section-31'>#</a>
+                    <a class='octothorpe' href='#section-34'>#</a>
                 </div>
-                <h3>What&rsquo;s next? 🤔</h3>
-<p>There are some other tools built around this that I need to cleanup
-and include.</p>
-<h4>TensorBoard invoker</h4>
+                <h4>TensorBoard invoker</h4>
 <p>This lets you start TensorBoard without having to type in all the log paths.
 For instance, so that you can start it with</p>
-<pre><code class="bash">tb ppo ppo_transformed_bellman
+<pre><code class="bash">python tools/tb.py -e ppo ppo_transformed_bellman
 </code></pre>
 
 <p>instead of</p>
 <pre><code class="bash">tensorboard --log_dir=ppo:project_path/logs/ppo,ppo_transformed_bellman:project_path/logs/ppo_transformed_bellman
+</code></pre>
+
+<p>To get a list of all available experiments</p>
+<pre><code class="bash">python tools/tb.py -e ppo ppo_transformed_bellman
 </code></pre>
 
 <h4>Custom analysis of TensorBoard summaries</h4>
@@ -473,8 +544,9 @@ the graph is scaled to 1000.</p>
 <p>I think TensorBoard will develop itself to handle these.
 And the main reason behind these tooling I&rsquo;ve written 
 is for custom charts, and because it&rsquo;s not that hard to do it.</p>
+<p>Here&rsquo;s a link to a sample [Jupyter Notebook with custom charts].</p>
+<h4><a href="https://github.com/vpj/lab">github repo</a></h4>
 <h4><a href="https://twitter.com/vpj">@vpj on Twitter</a></h4>
-<p>Please find me on twitter if you have any criticism or suggestions.</p>
             </div>
             <div class='code'>
                 <div class="highlight"><pre></pre></div>

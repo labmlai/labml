@@ -41,3 +41,18 @@ def set_random_seeds(seed: int = 7):
 def use_gpu(gpu: str):
     # I was using a computer with two GPUs and I wanted TensorFlow to use only one of them.
     os.environ["CUDA_VISIBLE_DEVICES"] = gpu
+
+
+def strip_variable_name(name: str):
+    if len(name) < 2:
+        return name
+    elif name[-2:] == ":0":
+        return name[:-2]
+    else:
+        return name
+
+
+def variable_name_to_file_name(name: str):
+    assert name.find(":") == -1
+
+    return name.replace("/", "__")

@@ -3,6 +3,14 @@ class Schedule:
         raise NotImplementedError()
 
 
+class Flat(Schedule):
+    def __init__(self, value):
+        self._outside_value = value
+
+    def __call__(self, x):
+        return self._outside_value
+
+
 class Piecewise(Schedule):
     """
     ## Piecewise schedule

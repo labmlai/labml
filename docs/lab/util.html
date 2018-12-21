@@ -7,15 +7,6 @@
           rel="stylesheet"
           type="text/css"/>
     <link rel="stylesheet" href="../pylit.css">
-     <script>
-   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-44255805-1', 'auto');
-ga('send', 'pageview');
-    </script>
 </head>
 <body>
 <div id='container'>
@@ -32,23 +23,27 @@ ga('send', 'pageview');
             </div>
             <div class='code'>
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span></pre></div>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">warnings</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-1'>
-        <div class='docs doc-strings'>
+            <div class='docs'>
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-1'>#</a>
                 </div>
-                <h4>Overlays a map on an image</h4>
+                
             </div>
             <div class='code'>
-                <div class="highlight"><pre><span class="k">def</span> <span class="nf">overlay_image_green</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                        <span class="n">base</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                        <span class="n">overlay</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                        <span class="n">base_factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span></pre></div>
+                <div class="highlight"><pre><span class="k">def</span> <span class="nf">yaml_load</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-2'>
@@ -59,10 +54,8 @@ ga('send', 'pageview');
                 
             </div>
             <div class='code'>
-                <div class="highlight"><pre>    <span class="n">result</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span> <span class="o">*</span> <span class="n">base_factor</span>
-    <span class="n">result</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span> <span class="o">*</span> <span class="n">base_factor</span>
-    <span class="n">result</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span> <span class="o">*</span> <span class="n">base_factor</span>
-    <span class="n">result</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">base_factor</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span> <span class="o">*</span> <span class="n">overlay</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">overlay</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">overlay</span><span class="p">))</span></pre></div>
+                <div class="highlight"><pre><span class="k">def</span> <span class="nf">yaml_dump</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-3'>
@@ -70,10 +63,13 @@ ga('send', 'pageview');
                 <div class='octowrap'>
                     <a class='octothorpe' href='#section-3'>#</a>
                 </div>
-                <h4>Create a PNG from a numpy array.</h4>
+                <h4>Overlays a map on an image</h4>
             </div>
             <div class='code'>
-                <div class="highlight"><pre><span class="k">def</span> <span class="nf">create_png</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span></pre></div>
+                <div class="highlight"><pre><span class="k">def</span> <span class="nf">overlay_image_green</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">base</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">overlay</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">base_factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span></pre></div>
             </div>
         </div>
     <div class='section' id='section-4'>
@@ -84,9 +80,120 @@ ga('send', 'pageview');
                 
             </div>
             <div class='code'>
+                <div class="highlight"><pre>    <span class="n">result</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span> <span class="o">*</span> <span class="n">base_factor</span>
+    <span class="n">result</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span> <span class="o">*</span> <span class="n">base_factor</span>
+    <span class="n">result</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span> <span class="o">*</span> <span class="n">base_factor</span>
+    <span class="n">result</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">base_factor</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span> <span class="o">*</span> <span class="n">overlay</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">overlay</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">overlay</span><span class="p">))</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-5'>
+        <div class='docs doc-strings'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-5'>#</a>
+                </div>
+                <h4>Create a PNG from a numpy array.</h4>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">def</span> <span class="nf">create_png</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-6'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-6'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
                 <div class="highlight"><pre>    <span class="n">png</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
     <span class="n">pyplot</span><span class="o">.</span><span class="n">imsave</span><span class="p">(</span><span class="n">png</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">png</span>
+    <span class="k">return</span> <span class="n">png</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-7'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-7'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">def</span> <span class="nf">rm_tree</span><span class="p">(</span><span class="n">path_to_remove</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">path_to_remove</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">path_to_remove</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                <span class="n">rm_tree</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+        <span class="n">path_to_remove</span><span class="o">.</span><span class="n">rmdir</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">path_to_remove</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-8'>
+        <div class='docs doc-strings'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-8'>#</a>
+                </div>
+                <p>Mark a class, a function or a class method as deprecated.</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">def</span> <span class="nf">deprecated</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-9'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-9'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-10'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-10'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">deprecated_obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">deprecated_obj</span><span class="p">):</span>
+            <span class="n">warning_msg</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;Deprecated class [{deprecated_obj.__name__}]: {message}&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warning_msg</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;Deprecated function [{deprecated_obj.__name__}]: {message}&quot;</span>
+
+        <span class="n">warned</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-11'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-11'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>        <span class="nd">@functools.wraps</span><span class="p">(</span><span class="n">deprecated_obj</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">new_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">warned</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;always&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="n">warning_msg</span><span class="p">,</span>
+                    <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span>
+                <span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+                <span class="n">warned</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="k">return</span> <span class="n">deprecated_obj</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_func</span>
+
+    <span class="k">return</span> <span class="n">decorator</span>
 
 </pre></div>
             </div>

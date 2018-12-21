@@ -7,26 +7,16 @@ This module contains logging and monotring helpers.
 
 Logger prints to the screen and writes TensorBoard summaries.
 """
-
+import signal
 import time
-from collections import deque
-from typing import Dict, List, Tuple
+from collections import deque, ItemsView
+from typing import Dict, List, Tuple, Iterator, Optional
 
 import numpy as np
 import tensorflow as tf
 
 from lab import colors
-
-
-def _print_color(text: str, color: str or None, *args, **kwargs):
-    """
-    Helper function for colored console output
-    """
-    if color is not None:
-        print(colors.CodeStart + color + text + colors.CodeStart + colors.Reset,
-              *args, **kwargs)
-    else:
-        print(text, *args, **kwargs)
+from lab.colors import ANSICode
 
 
 def _get_histogram(values):
@@ -53,6 +43,40 @@ def _get_histogram(values):
     return hist
 
 
+class _DelayedKeyboardInterrupt:
+    """
+    ### Capture `KeyboardInterrupt` and fire it later
+    """
+
+    def __init__(self, logger: 'Logger'):
+        self.signal_received = None
+        self.logger = logger
+
+    def __enter__(self):
+        self.signal_received = None
+        # Start capturing
+        self.old_handler = signal.signal(signal.SIGINT, self.handler)
+
+    def handler(self, sig, frame):
+        # Pass second interrupt without delaying
+        if self.signal_received is not None:
+            self.old_handler(*self.signal_received)
+            return
+
+        # Store the interrupt signal for later
+        self.signal_received = (sig, frame)
+        self.logger.log('\nSIGINT received. Delaying KeyboardInterrupt.',
+                        color=colors.Color.red)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # Reset handler
+        signal.signal(signal.SIGINT, self.old_handler)
+
+        # Pass on any captured interrupt signals
+        if self.signal_received is not None:
+            self.old_handler(*self.signal_received)
+
+
 class _Monitor:
     """
     ### Monitors a section of code
@@ -65,7 +89,9 @@ class _Monitor:
     You can set `is_successful` to `False` if the execution failed.
     """
 
-    def __init__(self, name: str, *, silent: bool = False, timed: bool = True):
+    def __init__(self, name: str, *,
+                 logger: 'Logger',
+                 silent: bool = False, timed: bool = True):
         """
 
         :param name: name of the section of code
@@ -77,12 +103,13 @@ class _Monitor:
         self.timed = timed
         self._start_time = 0
         self.is_successful = True
+        self.logger = logger
 
     def __enter__(self):
         if self.silent:
             return self
 
-        print("{}...".format(self.name), end="", flush=True)
+        self.logger.log(f"{self.name}...", new_line=False)
 
         if self.timed:
             self._start_time = time.time()
@@ -93,19 +120,19 @@ class _Monitor:
         if self.silent:
             return
 
+        parts = []
+        if self.is_successful:
+            parts.append(("[DONE]", colors.BrightColor.green))
+        else:
+            parts.append(("[FAIL]", colors.BrightColor.red))
+
         if self.timed:
             time_end = time.time()
-            if self.is_successful:
-                _print_color("[DONE]", colors.BrightColor.green, end="", flush=False)
-            else:
-                _print_color("[FAIL]", colors.BrightColor.red, end="", flush=False)
-            _print_color("\t{:,.2f}ms".format(1000 * (time_end - self._start_time)),
-                         colors.BrightColor.cyan)
-        else:
-            if self.is_successful:
-                _print_color("[DONE]", colors.BrightColor.green)
-            else:
-                _print_color("[FAIL]", colors.BrightColor.red)
+            duration_ms = 1000 * (time_end - self._start_time)
+            parts.append((f"\t{duration_ms :,.2f}ms",
+                          colors.BrightColor.cyan))
+
+        self.logger.log_color(parts)
 
 
 class _MonitorIteratorSection:
@@ -117,7 +144,9 @@ class _MonitorIteratorSection:
     It keeps track of moving exponentiol average of
      time spent on the section through out all iterations.
     """
-    def __init__(self, parent, name: str):
+
+    def __init__(self, parent, name: str, *,
+                 logger: 'Logger'):
         self.parent = parent
         self.name = name
         self._start_time = 0
@@ -126,6 +155,8 @@ class _MonitorIteratorSection:
         self.beta_pow = 1
 
         self.estimated_time = 0
+
+        self.logger = logger
 
     def get_time(self):
         """
@@ -144,18 +175,21 @@ class _MonitorIteratorSection:
         self.estimated_time = self.beta * self.estimated_time + (1 - self.beta) * elapsed
 
     def __enter__(self):
-        print("{}: ...".format(self.name) + " " * 8 + "\b" * 8, end="",
-              flush=True)
+        self.logger.log(f"{self.name}:", new_line=False)
+        self.logger.log(" ...", color=colors.Color.orange, new_line=False)
+        self.logger.log(" " * 8, new_line=False)
+        self.logger.pop_current_line()
         self._start_time = time.time()
 
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.add_time(time.time() - self._start_time)
-        print("\b" * 4, end="", flush=True)
-        _print_color("{:10,.2f}ms  ".format(1000 * self.get_time()),
-                     colors.BrightColor.cyan,
-                     end="", flush=False)
+        self.logger.pop_current_line()
+        time_ms = 1000 * self.get_time()
+        self.logger.log(f"{time_ms:10,.2f}ms  ",
+                        color=colors.BrightColor.cyan,
+                        new_line=False)
 
 
 class _UnmonitoredIteratorSection:
@@ -164,9 +198,12 @@ class _UnmonitoredIteratorSection:
 
     Used for structuring code.
     """
-    def __init__(self, parent, name: str):
+
+    def __init__(self, parent, name: str, *,
+                 logger: 'Logger'):
         self.parent = parent
         self.name = name
+        self.logger = logger
 
     def __enter__(self):
         return self
@@ -175,13 +212,15 @@ class _UnmonitoredIteratorSection:
         pass
 
 
-class _MonitorIterator:
+class MonitorIterator:
     """
     ### Monitor an iterator
 
     *Should be initialized only via `Logger`.*
     """
-    def __init__(self, iterator: range):
+
+    def __init__(self, iterator: range, *,
+                 logger: 'Logger'):
         """
         Creates an iterator with a range `iterator`.
 
@@ -192,13 +231,21 @@ class _MonitorIterator:
         self._start_time = 0
         self.steps = len(iterator)
         self.counter = 0
+        self.logger = logger
 
-    def section(self, name: str):
+    def section(self, name: str, is_monitored=True):
         """
         Creates a monitored section with given name.
         """
-        if name not in self.sections:
-            self.sections[name] = _MonitorIteratorSection(self, name)
+
+        if is_monitored:
+            if name not in self.sections:
+                self.sections[name] = _MonitorIteratorSection(self, name,
+                                                              logger=self.logger)
+        else:
+            if name not in self.sections:
+                self.sections[name] = _UnmonitoredIteratorSection(self, name,
+                                                                  logger=self.logger)
 
         return self.sections[name]
 
@@ -206,10 +253,8 @@ class _MonitorIterator:
         """
         Creates an unmonitored section with given name.
         """
-        if name not in self.sections:
-            self.sections[name] = _UnmonitoredIteratorSection(self, name)
 
-        return self.sections[name]
+        return self.section(name, is_monitored=False)
 
     def __iter__(self):
         self.iterator_iter = iter(self.iterator)
@@ -234,12 +279,14 @@ class _MonitorIterator:
         spent = (time.time() - self._start_time) / 60
         remain = self.steps * spent / self.counter - spent
 
-        _print_color("  {:3d}:{:02d}m/{:3d}:{:02d}m  ".format(int(spent // 60),
-                                                              int(spent % 60),
-                                                              int(remain // 60),
-                                                              int(remain % 60)),
-                     colors.BrightColor.purple,
-                     end="", flush=True)
+        spent_h = int(spent // 60)
+        spent_m = int(spent % 60)
+        remain_h = int(remain // 60)
+        remain_m = int(remain % 60)
+
+        self.logger.log(f"  {spent_h:3d}:{spent_m:02d}m/{remain_h:3d}:{remain_m:02d}m  ",
+                        color=colors.BrightColor.purple,
+                        new_line=False)
 
 
 class _Progress:
@@ -247,28 +294,33 @@ class _Progress:
     ### Manually monitor percentage progress.
     """
 
-    def __init__(self, total: float):
+    def __init__(self, total: float, *,
+                 logger: 'Logger'):
         self.total = total
-        print(" {:4.0f}%".format(0.0), end="", flush=True)
+        self.logger = logger
+        self.logger.log(f" {0.0 :4.0f}%", new_line=False)
 
     def update(self, value):
         """
         Update progress
         """
-        percentage = min(1, max(0, value / self.total))
-        print("\b" * 5 + "{:4.0f}%".format(percentage * 100), end="", flush=True)
+        percentage = min(1, max(0, value / self.total)) * 100
+        self.logger.pop_current_line()
+        self.logger.log(f" {percentage :4.0f}%",
+                        new_line=False)
 
     def clear(self):
         """
         Clear line
         """
-        print("\b" * 6 + " " * 6 + "\b" * 6, end="", flush=True)
+        self.logger.pop_current_line()
 
 
 class Logger:
     """
-    ## Logger class
+    ## 🖨 Logger class
     """
+
     def __init__(self, *, is_color=True):
         """
         ### Initializer
@@ -279,37 +331,99 @@ class Logger:
         self.scalars = {}
         self.writer: tf.summary.FileWriter = None
         self.print_order = []
+        self.progress_indicators = []
         self.tf_summaries = []
 
         self.is_color = is_color
 
-    def log(self, message, *, color: str = None, new_line=True):
-        """
-        Print a message to screen in color
-        """
-        end_char = '\n' if new_line else ''
+        self.current_line = []
+        self.over_write_line = ""
 
-        if color is not None:
-            _print_color(message, color, end=end_char, flush=True)
+    def ansi_code(self, text: str, color: List[ANSICode] or ANSICode or None):
+        """
+        ### Add ansi color codes
+        """
+        if color is None:
+            return text
+        elif type(color) is list:
+            return "".join(color) + f"{text}{colors.Reset}"
         else:
-            print(message,
-                  end=end_char, flush=True)
+            return f"{color}{text}{colors.Reset}"
 
-    def log_color(self, parts: List[Tuple[str, str or None]]):
+    def log(self, message, *,
+            color: List[ANSICode] or ANSICode or None = None,
+            new_line=True):
         """
-        Print a message with different colors.
+        ### Print a message to screen in color
         """
-        for text, color in parts:
-            _print_color(text, color, end="", flush=False)
-        _print_color("", None)
+
+        message = self.ansi_code(message, color)
+
+        self.current_line.append(message)
+
+        if new_line:
+            end_char = '\n'
+        else:
+            end_char = ''
+
+        text = "".join(self.current_line)
+        lim = self.count_text(self.over_write_line,
+                              self.count_text(text))
+
+        if lim < len(self.over_write_line):
+            text += self.over_write_line[lim:]
+            self.over_write_line = text
+
+        print("\r" + text, end=end_char, flush=True)
+        if new_line:
+            self.current_line = []
+            self.over_write_line = ""
+
+    def count_text(self, text, limit=None):
+        """
+        ### Count text length without color codes
+        """
+
+        count = 0
+        is_text = True
+        for i, c in enumerate(text):
+            if is_text and c == '\33':
+                is_text = False
+
+            if is_text:
+                count += 1
+            if limit is not None and count == limit:
+                return i + 1
+
+            if not is_text and c == 'm':
+                is_text = True
+
+        return count
+
+    def pop_current_line(self):
+        """
+        ### Pop last segment from current line
+        """
+        self.current_line.pop()
+
+    def log_color(self, parts: List[Tuple[str, ANSICode or None]], *,
+                  new_line=True):
+        """
+        ### Print a message with different colors.
+        """
+
+        coded = [self.ansi_code(text, color) for text, color in parts]
+        self.log("".join(coded), new_line=new_line)
 
     def add_indicator(self, name: str, *,
                       queue_limit: int = None,
                       is_histogram: bool = True,
-                      is_print: bool = True):
+                      is_print: bool = True,
+                      is_progress: Optional[bool] = None):
         """
-        Sets an indicator
+        ### Add an indicator
         """
+
         if queue_limit is not None:
             self.queues[name] = deque(maxlen=queue_limit)
         elif is_histogram:
@@ -319,6 +433,11 @@ class Logger:
 
         if is_print:
             self.print_order.append(name)
+
+        if is_progress is None:
+            is_progress = is_print
+        if is_progress:
+            self.progress_indicators.append(name)
 
     def _store_list(self, items: List[Dict[str, float]]):
         for item in items:
@@ -338,7 +457,8 @@ class Logger:
 
     def store(self, *args, **kwargs):
         """
-        Stores a value in the logger.
+        ### Stores a value in the logger.
+
         This may be added to a queue, a list or stored as
         a TensorBoard histogram depending on the
         type of the indicator.
@@ -391,7 +511,7 @@ class Logger:
             self.writer.add_summary(v, global_step=global_step)
 
     def _write_to_screen(self, *, new_line: bool):
-        print_log = ""
+        parts = []
 
         for k in self.print_order:
             if k in self.queues:
@@ -407,17 +527,39 @@ class Logger:
                     continue
                 v = np.mean(self.scalars[k])
 
+            parts.append((f" {k}: ", None))
             if self.is_color:
-                print_log += " {}: {}{:8,.2f}{}".format(k,
-                                                        colors.CodeStart + colors.Style.bold,
-                                                        v,
-                                                        colors.CodeStart + colors.Reset)
+                parts.append((f"{v :8,.2f}", colors.Style.bold))
             else:
-                print_log += " {}: {:8,.2f}".format(k, v)
+                parts.append((f"{v :8,.2f}", None))
 
-        end_char = "\n" if new_line else ""
+        self.log_color(parts, new_line=new_line)
 
-        print(print_log, end=end_char, flush=True)
+    def get_progress_dict(self, *, global_step: int):
+        """
+        ### Get progress dictionary
+
+        This is used for adding progress to trial information
+        """
+        res = dict(global_step=f"{global_step :8,}")
+
+        for k in self.progress_indicators:
+            if k in self.queues:
+                if len(self.queues[k]) == 0:
+                    continue
+                v = np.mean(self.queues[k])
+            elif k in self.histograms:
+                if len(self.histograms[k]) == 0:
+                    continue
+                v = np.mean(self.histograms[k])
+            else:
+                if len(self.scalars[k]) == 0:
+                    continue
+                v = np.mean(self.scalars[k])
+
+            res[k] = f"{v :8,.2f}"
+
+        return res
 
     def _clear_stores(self):
         for k in self.histograms:
@@ -428,7 +570,7 @@ class Logger:
 
     def write(self, *, global_step: int, new_line: bool = True):
         """
-        Output the stored log values to screen and TensorBoard summaries.
+        ### Output the stored log values to screen and TensorBoard summaries.
         """
         self._write_to_writer(global_step=global_step)
         self._write_to_screen(new_line=new_line)
@@ -436,50 +578,83 @@ class Logger:
 
     def print_global_step(self, global_step):
         """
-        Outputs the global step
+        ### Print the global step
         """
-        _print_color("{:8,}".format(global_step),
-                     colors.BrightColor.orange,
-                     end="")
-        print(":  ", end="", flush=True)
+        self.log(f"{global_step :8,}:  ",
+                 color=colors.BrightColor.orange,
+                 new_line=False)
 
     def clear_line(self, reset: bool):
         """
-        Clears the current line
+        ### Clears the current line
         """
         if reset:
-            # We don't clear the previous line so that it stays visible for viewing
             print("\r", end="", flush=True)
-            # print("\r" + " " * 200 + "\r", end="", flush=True)
+            self.over_write_line = "".join(self.current_line)
         else:
+            self.over_write_line = ""
             print()
+
+        self.current_line = []
 
     def iterator(self, *args, **kwargs):
         """
-        Creates a monitored iterator
+        ### Create a monitored iterator
         """
-        return _MonitorIterator(*args, **kwargs)
+        kwargs['logger'] = self
+        return MonitorIterator(*args, **kwargs)
 
     def monitor(self, *args, **kwargs):
         """
-        Creates a code section monitor
+        ### Create a code section monitor
         """
+        kwargs['logger'] = self
         return _Monitor(*args, **kwargs)
 
     def progress(self, *args, **kwargs):
         """
-        Creates a progress monitor
+        ### Create a progress monitor
         """
+        kwargs['logger'] = self
         return _Progress(*args, **kwargs)
+
+    def delayed_keyboard_interrupt(self):
+        """
+        ### Create a section with a delayed keyboard interrupt
+        """
+        return _DelayedKeyboardInterrupt(self)
+
+    def _log_key_value(self, items: List[Tuple[any, any]]):
+        max_key_len = 0
+        for k, v in items:
+            max_key_len = max(max_key_len, len(str(k)))
+
+        count = 0
+        for k, v in items:
+            count += 1
+            spaces = " " * (max_key_len - len(str(k)))
+            self.log_color([(f"{spaces}{k}: ", None),
+                            (str(v), colors.Style.bold)])
+
+        self.log_color([
+            ("Total ", None),
+            (str(count), colors.Style.bold),
+            (" item(s)", None)])
 
     def info(self, *args, **kwargs):
         """
-        Pretty prints a set of values.
+        ### 🎨 Pretty prints a set of values.
         """
-        assert len(args) == 0
 
-        for key, value in kwargs.items():
-            print("{}: {}{}{}".format(key,
-                                      colors.CodeStart + colors.BrightColor.cyan,
-                                      value,
-                                      colors.CodeStart + colors.Reset))
+        if len(args) == 0:
+            self._log_key_value([(k, v) for k, v in kwargs.items()])
+        elif len(args) == 1:
+            assert len(kwargs.keys()) == 0
+            arg = args[0]
+            if type(arg) == list:
+                self._log_key_value([(i, v) for i, v in enumerate(arg)])
+            elif type(arg) == dict:
+                self._log_key_value([(k, v) for k, v in arg.items()])
+        else:
+            assert len(kwargs.keys()) == 0
+            self._log_key_value([(i, v) for i, v in enumerate(args)])
