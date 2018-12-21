@@ -251,7 +251,8 @@ I think TensorBoard will develop itself to handle these.
 And the main reason behind these tooling I've written 
 is for custom charts, and because it's not that hard to do it.
 
-Here's a link to a sample [Jupyter Notebook with custom charts].
+Here's a link to a
+ [sample Jupyter Notebook with custom charts](https://github.com/vpj/lab/blob/master/sample_analytics.ipynb).
 
 #### [github repo](https://github.com/vpj/lab)
 
