@@ -1,5 +1,5 @@
 """
-# Lab 🧪
+# [🧪 Lab](http::/blog.varunajayasiri.com/ml/lab/readme.html) Getting Started
 
 This library lets you organize TensorFlow machine learning
  experiments.
@@ -9,12 +9,6 @@ I wrote while trying some machine learning algorithms.
 I recently made it to a separate repo because I've been
 reusing them on different projects, and it was easier
 to keep track of them as a single project.
-
-⚠️ This project is a personal project and only a few weeks old.
-It still doesn't have a proper documentation and I'm making
-improvements frequently.
-*So, if you wish to use it make sure you understand the code.*
-I have tried to keep it documented and simple.
 
 ### What does it do?
 * Keeps checkpoints and TensorBoard summaries and logs organized
@@ -48,22 +42,12 @@ Here's the output of this sample program (`lab_getting_started.py`):
 
 <img style="max-width:100%" src="images/log.png" />
 
-## Updates
-
-* **November 16, 2018**
-    * Initial public release
-
-* **December 21, 2018**
-    * TensorBoard invoker
-    * Tool set for custom visualizations of TensorBoard summaries
-    * Automatically adds headers to python files with experiment results
-
 This 👇 is the header that was added automatically when the experiment ran.
 
 ```trial
-2018-12-21 09:46:41
+2019-06-16 13:22:24
 Sample lab experiment
-[[dirty]]: 📚 tb
+[[dirty]]: 📚 readme
 start_step: 0
 
 -------------------------------------
@@ -71,8 +55,6 @@ start_step: 0
 -------------------------------------
 |           9 |     1.50 |    13.50 |
 |          19 |     4.83 |    23.50 |
-|          29 |     8.17 |    33.50 |
-|          39 |    11.50 |    43.50 |
 -------------------------------------
 ```
 """
@@ -87,7 +69,7 @@ import time
 
 import tensorflow as tf
 
-from lab.experiment import Experiment
+from lab.experiment.tensorflow import Experiment
 
 # You should keep the project level lab details
 # defined in a python file at the top of the project.
@@ -137,6 +119,9 @@ logger.add_indicator("fps", is_histogram=False, is_progress=False)
 # This will produce a histogram
 logger.add_indicator("loss")
 
+# A heat map
+logger.add_indicator("advantage_reward", is_histogram=False, is_print=False, is_pair=True)
+
 # Create a TensorFlow session
 with tf.Session() as session:
     # Start the experiment from scratch, without loading from a
@@ -145,10 +130,10 @@ with tf.Session() as session:
     # experiment.
     # If you start with the continued non-zero `global_step`
     # the experiment will load from the last saved checkpoint.
-    EXPERIMENT.start(0, session)
+    EXPERIMENT.start_train(0, session)
 
     # Create monitored iterator
-    monitor = logger.iterator(range(1000))
+    monitor = logger.iterator(range(50))
 
     # This is the main training loop of this project.
     for global_step in monitor:
@@ -174,6 +159,7 @@ with tf.Session() as session:
                     # Store a collection of values
                     for i in range(global_step, global_step + 10):
                         logger.store(loss=i)
+                        logger.store(advantage_reward=(i, i * 2))
 
                 # Another monitored section
                 with monitor.section("process_samples"):
@@ -196,9 +182,7 @@ with tf.Session() as session:
                 # Store progress in the trials file and in the python code as a comment
                 if (global_step + 1) % 10 == 0:
                     progress_dict = logger.get_progress_dict(global_step=global_step)
-                    # Set `is_add` to `False` if you want to update the last progress
-                    # record instead of making a new entry
-                    EXPERIMENT.save_progress(progress_dict, is_add=True)
+                    EXPERIMENT.save_progress(progress_dict)
 
                 # Log stored values.
                 # This will output to the console and write TensorBoard summaries.

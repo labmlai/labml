@@ -5,10 +5,21 @@ class Schedule:
 
 class Flat(Schedule):
     def __init__(self, value):
-        self._outside_value = value
+        self.__value = value
 
     def __call__(self, x):
-        return self._outside_value
+        return self.__value
+
+
+class Dynamic(Schedule):
+    def __init__(self, value):
+        self.__value = value
+
+    def __call__(self, x):
+        return self.__value
+
+    def update(self, value):
+        self.__value = value
 
 
 class Piecewise(Schedule):
@@ -16,7 +27,7 @@ class Piecewise(Schedule):
     ## Piecewise schedule
     """
 
-    def __init__(self, endpoints, outside_value):
+    def __init__(self, endpoints, outside_value=None):
         """
         ### Initialize
 

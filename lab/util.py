@@ -11,7 +11,7 @@ import warnings
 
 
 def yaml_load(s: str):
-    return yaml.load(s)
+    return yaml.load(s, Loader=yaml.BaseLoader)
 
 
 def yaml_dump(obj: any):

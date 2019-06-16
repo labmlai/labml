@@ -19,15 +19,9 @@ class Lab:
         """
         return self.path / "logs"
 
-    @property
-    def experiments_path(self):
-        """
-        ### Experiments path
-        """
-        return Path(self.experiments)
-
     def get_experiments(self) -> List[Path]:
         """
         Get list of experiments
         """
-        return [child for child in self.experiments_path.iterdir()]
+        experiments_path = Path(self.experiments)
+        return [child for child in experiments_path.iterdir()]

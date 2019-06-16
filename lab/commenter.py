@@ -16,7 +16,8 @@ class Commenter:
         self.add_start = add_start
         self.add_end = add_end
 
-    def _trim(self, lines: List[str]):
+    @staticmethod
+    def _trim(lines: List[str]):
         """
         ### Remove empty lines
         """
@@ -41,7 +42,8 @@ class Commenter:
 
         return []
 
-    def _extract_from(self, lines, start: str, end: str, idx: int):
+    @staticmethod
+    def _extract_from(lines, start: str, end: str, idx: int):
         """
         ### Extract lines of code between `start` and `end` tokens
 
