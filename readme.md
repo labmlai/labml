@@ -103,10 +103,10 @@ with logger.monitor("Create model"):
 ```
 
 will produce an output like
-<img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/monitored_sections.png" />
+<img style="display: block; max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/monitored_sections.png" />
 
 Library also has utility functions to monitor loops.
-<img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/loop.mov" />
+<img style="display: block; max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/loop.gif" />
 
 ### Custom analysis of TensorBoard summaries
 
@@ -114,7 +114,7 @@ TensorBoard is nice, but sometimes you need
 custom charts to debug algorithms. Following
 is an example of a custom chart:
 
-<img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/distribution.png" />
+<img style="display: block; max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/distribution.png" />
 
 And sometime TensorBoard is not even doing a good job;
 for instance lets say you have a histogram, with 90% of
@@ -158,7 +158,7 @@ python tools/tb.py -e ppo ppo_transformed_bellman
 ### Colored console outputs
 The logger creates beautiful colorized console outputs that's easy on the eye.
 
-<img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/log.png" />
+<img style="display: block; max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/log.png" />
 
 ### Histograms and moving averages
 The logger can buffer data and produce moving averages and
@@ -367,36 +367,20 @@ within a `with logger.delayed_keyboard_interrupt()`.
 Two consecutive interruptions will halt the code segment.
 
 ## Background
-It is based on a bunch of utility functions and classes
-I wrote while trying some machine learning algorithms.
-I recently made it to a separate repo because I've been
-reusing them on different projects, and it was easier
-to keep track of them as a single project.
-
-⚠️ This project is a personal project and only a few weeks old.
-It still doesn't have a proper documentation and I'm making
-improvements frequently.
-*So, if you wish to use it make sure you understand the code.*
-I have tried to keep it documented and simple.
-
-### Why I made it?
-I started coding existing reinforcement learning algorithms
+I was coding existing reinforcement learning algorithms
  to play Atari games for fun.
 It was not easy to keep track of things when I started
  trying variations, fixing bugs etc.
-This library helps organize experiments.
-It organizes the folders of the checkpoints, logs
- and TensorBoard summaries by each experiment.
-It also keeps track of the git commits when each experiment
- was run, so if some other change in code, affected the results
- of a experiment you can easily track what caused it.
+Then I wrote some tools to organize my experiment runs.
+I found it important to keep track of git commits
+to make sure I can reproduce results.
 
 I also wrote a logger to display pretty results on screen and
  to make it easy to write TensorBoard summaries.
 It also keeps track of training times which makes it easy to spot
  what's taking up most resources.
-Here's the output of this sample program (`lab_getting_started.py`):
 
+This library is was made by combining these bunch of tools.
 
 ## Updates
 
@@ -415,5 +399,5 @@ Here's the output of this sample program (`lab_getting_started.py`):
 	* PyTorch support
 	* Improved Documentation
 	* MNIST examples
-	
+
 ## 🖋 [@vpj on Twitter](https://twitter.com/vpj)
