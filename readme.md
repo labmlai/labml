@@ -103,18 +103,18 @@ with logger.monitor("Create model"):
 ```
 
 will produce an output like
-<img style="display: block; max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/monitored_sections.png" />
+<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/monitored_sections.png" /></p>
 
 Library also has utility functions to monitor loops.
-<img style="display: block; max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/loop.gif" />
+<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/loop.gif" /></p>
 
-### Custom analysis of TensorBoard summaries
+### Customized Visualizations of TensorBoard summaries
 
 TensorBoard is nice, but sometimes you need
 custom charts to debug algorithms. Following
 is an example of a custom chart:
 
-<img style="display: block; max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/distribution.png" />
+<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/distribution.png" /></p>
 
 And sometime TensorBoard is not even doing a good job;
 for instance lets say you have a histogram, with 90% of
@@ -158,7 +158,7 @@ python tools/tb.py -e ppo ppo_transformed_bellman
 ### Colored console outputs
 The logger creates beautiful colorized console outputs that's easy on the eye.
 
-<img style="display: block; max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/log.png" />
+<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/log.png" /></p>
 
 ### Histograms and moving averages
 The logger can buffer data and produce moving averages and
