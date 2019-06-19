@@ -1,4 +1,4 @@
-# 🧪 Lab
+# 🧪 Lab 2.0
 
 [Github Repository](https://github.com/vpj/lab)
 
@@ -195,9 +195,9 @@ for examples.
 ### Monitored Sections
 
 ```python
-with logger.monitor("Load data"):
+with logger.section("Load data"):
     # code to load data
-with logger.monitor("Create model"):
+with logger.section("Create model"):
     # code to create model
 ```
 
@@ -208,48 +208,23 @@ by separating different sections.
 ### Monitored Iterator
 
 ```python
-# Create a monitored iterator
-monitor = logger.iterator(range(0, total_steps))
-
-for step in monitor:
-	logger.print_global_step(step)
-
+for step in logger.loop(range(0, total_steps)):
 	# training code ...
-
-	monitor.progress()
 ```
 
 The monitored iterator keeps track of the time taken and time remaining for the loop.
 `print_global_step` prints the global step to the console.
 `monitor.progress()` prints the time taken and time remaining.
 
-#### Monitored Sections within Loop
-
-```python
-with monitor.section("process_samples"):
-    # code to process samples
-```
-
-This will monitor sections of code within a monitored iterator.
-
-```python
-with monitor.unominotored("logging"):
-    # code to process samples
-```
-
-Unmonitored sections within the loop can used to separate out code for readability.
-
 #### Progress Monitoring within Loop
 
 ```python
-with monitor.section("train"):
-    iterations = 100
-    progress = logger.progress(iterations)
-    for i in range(100):
-    	# Multiple training steps in the inner loop
-        progress.update(i)
-    # Clears the progress when complete
-    progress.clear()
+for step in logger.loop(range(0, total_steps)):
+	with logger.section("train", total_steps=100):
+	    for i in range(100):
+		# Multiple training steps in the inner loop
+		logger.progress(i)
+	    # Clears the progress when complete
 ```
 
 This shows the progress for training in the inner loop.
@@ -285,27 +260,20 @@ logger.store(advantage_reward=(i, i * 2))
 
 ### Write Logs
 ```python
-logger.write(global_step=global_step, new_line=False)
+logger.write()
 ```
 
 This will write the stored and values in the logger and clear the buffers.
 It will write to console as well as TensorBoard summaries.
 
-The parameter `new_line` indicates whether to move to a new line in the console.
 In standard usage of this library we do not move to new_lines after each console output.
 Instead we update the stats on the same line and move to a new line after a few iterations.
-Also if we are inside a monitored loop we will show the progress with `monitored.progress()`
-at the end of the line.
 
 ```python
-logger.clear_line(reset=True)
-logger.clear_line(reset=False)
+logger.new_line()
 ```
 
-This clears the current console line buffer.
-If reset is set to `False` it moves to the next line,
-and if reset is `True` it resets the cursor to the beginning
-of current line.
+This will start a new line in the console.
 
 ### Create Experiment
 ```python
@@ -313,8 +281,8 @@ EXPERIMENT = Experiment(lab=lab,
                         name="mnist_pytorch",
                         python_file=__file__,
                         comment="Test",
-                        check_repo_dirty=False
-                        )
+                        check_repo_dirty=False,
+			is_log_python_file=True)
 ```
 
 * `lab`: This is the project level lab definition. See [lab_global.py](http://blog.varunajayasiri.com/ml/lab/lab_global.html) for example.
@@ -322,6 +290,7 @@ EXPERIMENT = Experiment(lab=lab,
 * `python_file`: The python file with the experiment definition.
 * `comment`: Comment about the current experiment trial
 * `check_repo_dirty`: If `True` the experiment is halted if there are uncommitted changes to the git repository.
+* `is_log_python_file`: Whether to update the python source file with experiemnt results on the top.
 
 ```python
 EXPERIMENT.start_train(0)
@@ -335,8 +304,7 @@ It will load from a saved state if the `global_step` is not `0`.
 
 ### Save Progress
 ```python
-progress_dict = logger.get_progress_dict(global_step=global_step)
-EXPERIMENT.save_progress(progress_dict)
+EXPERIMENT.save_progress(logger.progress_dict)
 ```
 
 This saves the progress stats in `trials.yaml` and python file header
@@ -399,5 +367,8 @@ This library is was made by combining these bunch of tools.
 	* PyTorch support
 	* Improved Documentation
 	* MNIST examples
+
+* **June 19, 2019**
+	* New API for logger
 
 ## 🖋 [@vpj on Twitter](https://twitter.com/vpj)
