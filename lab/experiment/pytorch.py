@@ -18,7 +18,8 @@ class Experiment(experiment.Experiment):
                  name: str,
                  python_file: str,
                  comment: str,
-                 check_repo_dirty: bool = True):
+                 check_repo_dirty: bool = True,
+                 is_log_python_file: bool = True):
         """
         ### Create the experiment
 
@@ -40,7 +41,8 @@ class Experiment(experiment.Experiment):
                          name=name,
                          python_file=python_file,
                          comment=comment,
-                         check_repo_dirty=check_repo_dirty)
+                         check_repo_dirty=check_repo_dirty,
+                         is_log_python_file=is_log_python_file)
 
     def load_checkpoint(self):
         raise NotImplementedError()
@@ -68,13 +70,13 @@ class Experiment(experiment.Experiment):
 
         if global_step > 0:
             # load checkpoint if we are starting from middle
-            with self.logger.monitor("Loading checkpoint") as m:
+            with self.logger.section("Loading checkpoint") as m:
                 m.is_successful = self.load_checkpoint()
         else:
             # initialize variables and clear summaries if we are starting from scratch
-            with self.logger.monitor("Clearing summaries"):
+            with self.logger.section("Clearing summaries"):
                 self.clear_summaries()
-            with self.logger.monitor("Clearing checkpoints"):
+            with self.logger.section("Clearing checkpoints"):
                 self.clear_checkpoints()
 
         self.create_writer()
@@ -86,5 +88,5 @@ class Experiment(experiment.Experiment):
         Load a checkpoint or reset based on `global_step`.
         """
 
-        with self.logger.monitor("Loading checkpoint") as m:
+        with self.logger.section("Loading checkpoint") as m:
             m.is_successful = self.load_checkpoint()

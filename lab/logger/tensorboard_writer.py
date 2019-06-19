@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
+import lab.logger.writers
 from lab import logger
 
 
@@ -86,7 +87,7 @@ def _get_pair_histogram(values):
     return tf.make_tensor_proto(a)
 
 
-class Writer(logger.Writer):
+class Writer(lab.logger.writers.Writer):
     def __init__(self, file_writer: tf.summary.FileWriter):
         super().__init__()
 

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <title>pytorch.py</title>
+    <link href="http://fonts.googleapis.com/css?family=Raleway:400,100,200,300,500,600,700,800,900"
+          rel="stylesheet"
+          type="text/css"/>
+    <link rel="stylesheet" href="../../pylit.css">
+</head>
+<body>
+<div id='container'>
+    <div id="background"></div>
+    <div class='section'>
+        <div class='docs'><h1>pytorch.py</h1></div>
+    </div>
+    <div class='section' id='section-0'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-0'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+
+<span class="kn">from</span> <span class="nn">lab</span> <span class="kn">import</span> <span class="n">experiment</span>
+<span class="kn">from</span> <span class="nn">lab.lab</span> <span class="kn">import</span> <span class="n">Lab</span>
+<span class="kn">from</span> <span class="nn">lab.logger</span> <span class="kn">import</span> <span class="n">tensorboard_writer</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-1'>
+        <div class='docs doc-strings'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-1'>#</a>
+                </div>
+                <h2>Experiment</h2>
+<p>Each experiment has different configurations or algorithms.
+An experiment can have multiple trials.</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">class</span> <span class="nc">Experiment</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">Experiment</span><span class="p">):</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-2'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-2'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-3'>
+        <div class='docs doc-strings'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-3'>#</a>
+                </div>
+                <h3>Create the experiment</h3>
+<p>:param lab: reference to current lab
+:param name: name of the experiment
+:param python_file: <code>__file__</code> that invokes this. This is stored in
+ the experiments list.
+:param comment: a short description of the experiment
+:param check_repo_dirty: whether not to start the experiment if
+ there are uncommitted changes.</p>
+<p>The experiments log keeps track of <code>python_file</code>, <code>name</code>, <code>comment</code> as
+ well as the git commit.</p>
+<p>Experiment maintains the locations of checkpoints, logs, etc.</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                 <span class="n">lab</span><span class="p">:</span> <span class="n">Lab</span><span class="p">,</span>
+                 <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">python_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">check_repo_dirty</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span><span class="p">):</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-4'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-4'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">lab</span><span class="o">=</span><span class="n">lab</span><span class="p">,</span>
+                         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                         <span class="n">python_file</span><span class="o">=</span><span class="n">python_file</span><span class="p">,</span>
+                         <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span>
+                         <span class="n">check_repo_dirty</span><span class="o">=</span><span class="n">check_repo_dirty</span><span class="p">)</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-5'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-5'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">load_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-6'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-6'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-7'>
+        <div class='docs doc-strings'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-7'>#</a>
+                </div>
+                <h2>Create TensorFlow summary writer</h2>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">create_writer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-8'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-8'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">add_writer</span><span class="p">(</span><span class="n">tensorboard_writer</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">FileWriter</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">summary_path</span><span class="p">))))</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-9'>
+        <div class='docs doc-strings'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-9'>#</a>
+                </div>
+                <h2>Start experiment</h2>
+<p>Load a checkpoint or reset based on <code>global_step</code>.</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">start_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-10'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-10'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">start_step</span> <span class="o">=</span> <span class="n">global_step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_trial</span><span class="p">(</span><span class="n">is_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_python_file</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">global_step</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-11'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-11'>#</a>
+                </div>
+                <p>load checkpoint if we are starting from middle</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;Loading checkpoint&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">m</span><span class="p">:</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">is_successful</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-12'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-12'>#</a>
+                </div>
+                <p>initialize variables and clear summaries if we are starting from scratch</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;Clearing summaries&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clear_summaries</span><span class="p">()</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;Clearing checkpoints&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clear_checkpoints</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_writer</span><span class="p">()</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-13'>
+        <div class='docs doc-strings'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-13'>#</a>
+                </div>
+                <h2>Start replaying experiment</h2>
+<p>Load a checkpoint or reset based on <code>global_step</code>.</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">start_replay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-14'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-14'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;Loading checkpoint&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">m</span><span class="p">:</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">is_successful</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">()</span>
+
+</pre></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML">
+    </script>
+    <!-- MathJax configuration -->
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            displayMath: [ ['$$','$$'] ],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        // Center justify equations in code and markdown cells. Elsewhere
+        // we use CSS to left justify single line equations in code cells.
+        displayAlign: 'center',
+        "HTML-CSS": { fonts: ["TeX"] }
+    });
+
+    </script>
+
+</body>

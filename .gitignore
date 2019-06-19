@@ -5,5 +5,4 @@ __pycache__/
 logs/
 .DS_Store
 temp.ipynb
-test/
-docs/test
+.*.swp

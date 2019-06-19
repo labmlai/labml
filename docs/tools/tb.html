@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <title>tb.py</title>
+    <link href="http://fonts.googleapis.com/css?family=Raleway:400,100,200,300,500,600,700,800,900"
+          rel="stylesheet"
+          type="text/css"/>
+    <link rel="stylesheet" href="../pylit.css">
+</head>
+<body>
+<div id='container'>
+    <div id="background"></div>
+    <div class='section'>
+        <div class='docs'><h1>tb.py</h1></div>
+    </div>
+    <div class='section' id='section-0'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-0'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">lab.clear_warnings</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">lab.lab_utils</span> <span class="kn">as</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">lab</span> <span class="kn">import</span> <span class="n">colors</span>
+<span class="kn">from</span> <span class="nn">lab.logger</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">lab_globals</span> <span class="kn">import</span> <span class="n">lab</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-1'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-1'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Run TensorBoard&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-l&quot;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;list&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;List all available experiments&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-e&#39;</span><span class="p">,</span>
+                        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;experiments&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;List of experiments&#39;</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">list</span><span class="p">:</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">list_experiments</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">experiments</span><span class="p">:</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-2'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-2'>#</a>
+                </div>
+                <p>List out the experiments.
+This will fail if experiments are missing.</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>        <span class="n">runs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_last_trials</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">experiments</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">list_trials</span><span class="p">(</span><span class="n">runs</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-3'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-3'>#</a>
+                </div>
+                <p>Invoke Tensorboard</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>        <span class="n">cmd</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_tensorboard_cmd</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">experiments</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Starting TensorBoard&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">Style</span><span class="o">.</span><span class="n">bold</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_usage</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+
+</pre></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML">
+    </script>
+    <!-- MathJax configuration -->
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            displayMath: [ ['$$','$$'] ],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        // Center justify equations in code and markdown cells. Elsewhere
+        // we use CSS to left justify single line equations in code cells.
+        displayAlign: 'center',
+        "HTML-CSS": { fonts: ["TeX"] }
+    });
+
+    </script>
+
+</body>

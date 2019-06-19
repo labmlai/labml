@@ -231,7 +231,8 @@ class Experiment:
                  name: str,
                  python_file: str,
                  comment: str,
-                 check_repo_dirty: bool = True):
+                 check_repo_dirty: bool = True,
+                 is_log_python_file: bool = True):
         """
         ### Create the experiment
 
@@ -271,6 +272,7 @@ class Experiment:
         self.trial.commit = repo.active_branch.commit.hexsha
         self.trial.commit_message = repo.active_branch.commit.message.strip()
         self.trial.is_dirty = repo.is_dirty()
+        self._is_log_python_file = is_log_python_file
 
     def print_info_and_check_repo(self):
         """
@@ -384,6 +386,9 @@ class Experiment:
         This will add or update trial information in python source file
         """
 
+        if not self._is_log_python_file:
+            return
+
         try:
             with open(self.trial.python_file, "r") as file:
                 lines = file.read().splitlines()
@@ -398,11 +403,11 @@ class Experiment:
         except FileNotFoundError:
             pass
 
-    def save_progress(self, progress: Dict[str, str]):
+    def save_progress(self):
         """
         ## Save experiment progress
         """
-        self.trial.set_progress(progress)
+        self.trial.set_progress(self.logger.progress_dict)
 
         self._log_trial(is_add=False)
         self._log_python_file()

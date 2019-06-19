@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <title>tensorboard_writer.py</title>
+    <link href="http://fonts.googleapis.com/css?family=Raleway:400,100,200,300,500,600,700,800,900"
+          rel="stylesheet"
+          type="text/css"/>
+    <link rel="stylesheet" href="../../pylit.css">
+</head>
+<body>
+<div id='container'>
+    <div id="background"></div>
+    <div class='section'>
+        <div class='docs'><h1>tensorboard_writer.py</h1></div>
+    </div>
+    <div class='section' id='section-0'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-0'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+
+<span class="kn">import</span> <span class="nn">lab.logger.writers</span>
+<span class="kn">from</span> <span class="nn">lab</span> <span class="kn">import</span> <span class="n">logger</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-1'>
+        <div class='docs doc-strings'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-1'>#</a>
+                </div>
+                <p>Get TensorBoard histogram from a numpy array.</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">def</span> <span class="nf">_get_histogram</span><span class="p">(</span><span class="n">values</span><span class="p">):</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-2'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-2'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">hist</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">HistogramProto</span><span class="p">()</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">sum</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">sum_squares</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">values</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">counts</span><span class="p">,</span> <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">bin_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">bin_edges</span><span class="p">:</span>
+        <span class="n">hist</span><span class="o">.</span><span class="n">bucket_limit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">counts</span><span class="p">:</span>
+        <span class="n">hist</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hist</span>
+
+
+<span class="n">_HISTOGRAM_QUANTILES_10</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">/</span> <span class="mf">10.</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">)]</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-3'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-3'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">def</span> <span class="nf">__get_zerod_histogram</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">x_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">x_min</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">x_max</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">x_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x_e</span>
+
+    <span class="n">width</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span>
+    <span class="n">left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="mf">1e-6</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">width</span><span class="p">)</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="mf">1e-6</span> <span class="o">+</span> <span class="n">x_max</span><span class="p">)</span> <span class="o">/</span> <span class="n">width</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">left</span> <span class="o">&gt;</span> <span class="n">right</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="o">-</span><span class="n">x_min</span> <span class="o">/</span> <span class="n">left</span>
+        <span class="n">x_e</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_min</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">width</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">x_max</span> <span class="o">/</span> <span class="n">right</span>
+        <span class="n">x_e</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">i</span> <span class="o">*</span> <span class="n">width</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">))]</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_e</span><span class="p">)</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-4'>
+        <div class='docs doc-strings'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-4'>#</a>
+                </div>
+                <p>Get TensorBoard tensor heat map</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">def</span> <span class="nf">_get_pair_histogram</span><span class="p">(</span><span class="n">values</span><span class="p">):</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-5'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-5'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">])</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">])</span>
+    <span class="n">x_e</span> <span class="o">=</span> <span class="n">__get_zerod_histogram</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y_e</span> <span class="o">=</span> <span class="n">__get_zerod_histogram</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-6'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-6'>#</a>
+                </div>
+                <p>x_e = np.quantile(x, q=_HISTOGRAM_QUANTILES_10)
+y_e = np.quantile(y, q=_HISTOGRAM_QUANTILES_10)</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_e</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y_e</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+        <span class="n">x_i</span> <span class="o">=</span> <span class="mi">11</span>
+        <span class="n">y_i</span> <span class="o">=</span> <span class="mi">11</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_e</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">x_i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">break</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y_e</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">y_i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">break</span>
+
+        <span class="n">a</span><span class="p">[</span><span class="n">y_i</span><span class="p">,</span> <span class="n">x_i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">make_tensor_proto</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-7'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-7'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">class</span> <span class="nc">Writer</span><span class="p">(</span><span class="n">lab</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">writers</span><span class="o">.</span><span class="n">Writer</span><span class="p">):</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-8'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-8'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_writer</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">FileWriter</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__writer</span> <span class="o">=</span> <span class="n">file_writer</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-9'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-9'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">global_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+              <span class="n">queues</span><span class="p">,</span>
+              <span class="n">histograms</span><span class="p">,</span>
+              <span class="n">pairs</span><span class="p">,</span>
+              <span class="n">scalars</span><span class="p">,</span>
+              <span class="n">tf_summaries</span><span class="p">):</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Summary</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">queues</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">summary</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">histo</span><span class="o">=</span><span class="n">_get_histogram</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+            <span class="n">summary</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">f</span><span class="s2">&quot;{k}_mean&quot;</span><span class="p">,</span> <span class="n">simple_value</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">histograms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">summary</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">histo</span><span class="o">=</span><span class="n">_get_histogram</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+            <span class="n">summary</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">f</span><span class="s2">&quot;{k}_mean&quot;</span><span class="p">,</span> <span class="n">simple_value</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pairs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">summary</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">tensor</span><span class="o">=</span><span class="n">_get_pair_histogram</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">scalars</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">summary</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">simple_value</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__writer</span><span class="o">.</span><span class="n">add_summary</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">global_step</span><span class="o">=</span><span class="n">global_step</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">tf_summaries</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__writer</span><span class="o">.</span><span class="n">add_summary</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">global_step</span><span class="o">=</span><span class="n">global_step</span><span class="p">)</span>
+
+</pre></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML">
+    </script>
+    <!-- MathJax configuration -->
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            displayMath: [ ['$$','$$'] ],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        // Center justify equations in code and markdown cells. Elsewhere
+        // we use CSS to left justify single line equations in code cells.
+        displayAlign: 'center',
+        "HTML-CSS": { fonts: ["TeX"] }
+    });
+
+    </script>
+
+</body>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <title>readme.md</title>
+    <link href="http://fonts.googleapis.com/css?family=Raleway:400,100,200,300,500,600,700,800,900"
+          rel="stylesheet"
+          type="text/css"/>
+    <link rel="stylesheet" href="./pylit.css">
+</head>
+<body>
+<div id='container'>
+    <div id="background"></div>
+    <div class='section'>
+        <div class='docs'><h1>readme.md</h1></div>
+    </div>
+    <div class='section' id='section-0'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-0'>#</a>
+                </div>
+                <h1>🧪 Lab</h1>
+<p><a href="https://github.com/vpj/lab">Github Repository</a></p>
+<p>This library lets you organize machine learning
+ experiments.</p>
+<h2>Features</h2>
+<h3>Organize checkpoints, TensorBoard summaries and logs</h3>
+<p>Maintains logs, summaries and checkpoints of all the experiments in a folder
+structure without you explicitly having to worry about them.</p>
+<pre><code>logs
+├── mnist_convolution
+│   ├── log
+│   │   └── 📄 TensorBoard summaries
+│   └── trials.yaml
+└── mnist_attention
+    ├── checkpoints
+    │   └── 📄 Saved checkpoints
+    ├── log
+    │   └── 📄 TensorBoard summaries
+    └── trials.yaml
+</code></pre>
+
+<h3>Keep track of experiments</h3>
+<p>The <code>trials.yaml</code> file keeps the summaries of each run for that experiment in
+a human readable form.</p>
+<pre><code class="yaml">- comment: 📊  with gradients
+  commit: f763d41b7f5d2ca4dd4431d5a5354d937ed3d32d
+  commit_message: &quot;📊 logging gradient summaries&quot;
+  is_dirty: 'true'
+  progress:
+  - accuracy: '    0.30'
+    global_step: '   3,752'
+    test_loss: '    2.22'
+    train_loss: '    2.22'
+  - accuracy: '    0.71'
+    global_step: '  11,256'
+    test_loss: '    1.03'
+    train_loss: '    1.06'
+  - accuracy: '    0.78'
+    global_step: '  18,760'
+    test_loss: '    0.63'
+    train_loss: '    0.69'
+  - accuracy: '    0.83'
+    global_step: '  26,264'
+    test_loss: '    0.49'
+    train_loss: '    0.53'
+  - accuracy: '    0.87'
+    global_step: '  34,706'
+    test_loss: '    0.38'
+    train_loss: '    0.39'
+  python_file: /progrect/experiments/mnist_simple_convolution.py
+  start_step: '0'
+  trial_date: '2019-06-14'
+  trial_time: '16:13:18'
+- comment: 🐛 stride fix
+...
+</code></pre>
+
+<p>It keeps references to <strong>git commit</strong> when the experiement was run,
+along with other information like date, the python file executed and
+experiment description.</p>
+<p>Optionally, the library can update the python file by
+ inserting experiment results as a comment 👇 automatically.</p>
+<pre><code class="python">&quot;&quot;&quot;
+```trial
+2019-02-12 16:03:16
+Sample lab experiment
+ [dirty](dirty.html): 🤪 jupyter saved
+start_step: 0
+
+-------------------------------------
+| global_step |   reward |     loss |
+-------------------------------------
+|           9 |     1.50 |    13.50 |
+|          19 |     4.83 |    23.50 |
+|          29 |     8.17 |    33.50 |
+|          39 |    11.50 |    43.50 |
+|          49 |    14.83 |    53.50 |
+-------------------------------------
+&quot;&quot;&quot;
+</code></pre>
+
+<h3>Timing and progress</h3>
+<p>You can use monitored code segments to measure time 
+and to get status updates on the console.
+This also helps organize the code.</p>
+<pre><code class="python">with logger.monitor(&quot;Load data&quot;):
+    # code to load data
+with logger.monitor(&quot;Create model&quot;):
+    # code to create model
+</code></pre>
+
+<p>will produce an output like
+<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/monitored_sections.png" /></p></p>
+<p>Library also has utility functions to monitor loops.
+<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/loop.gif" /></p></p>
+<h3>Customized Visualizations of TensorBoard summaries</h3>
+<p>TensorBoard is nice, but sometimes you need
+custom charts to debug algorithms. Following
+is an example of a custom chart:</p>
+<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/distribution.png" /></p>
+
+<p>And sometime TensorBoard is not even doing a good job;
+for instance lets say you have a histogram, with 90% of
+data points between 1 and 2 whilst there are a few outliers at 1000 -
+you won&rsquo;t be able to see the distribution between 1 and 2 because
+the graph is scaled to 1000.</p>
+<p>I think TensorBoard will develop itself to handle these.
+And the main reason behind these tooling I&rsquo;ve written
+is for custom charts, and because it&rsquo;s not that hard to do it.</p>
+<p>Here&rsquo;s a link to a
+ <a href="https://github.com/vpj/lab/blob/master/sample_analytics.ipynb">sample Jupyter Notebook with custom charts</a>.</p>
+<h3>Handle Keyboard Interrupts</h3>
+<p>You can use this to delay the Keyboard interrupts and make sure
+a given segment of code runs without interruptions.</p>
+<h3>Start TensorBoard</h3>
+<p>This lets you start TensorBoard without having to type in all the log paths.
+For instance, so that you can start it with</p>
+<pre><code class="bash">python tools/tb.py -e ppo ppo_transformed_bellman
+</code></pre>
+
+<p>instead of</p>
+<pre><code class="bash">tensorboard --log_dir=ppo:project_path/logs/ppo,ppo_transformed_bellman:project_path/logs/ppo_transformed_bellman
+</code></pre>
+
+<p>To get a list of all available experiments</p>
+<pre><code class="bash">python tools/tb.py -e ppo ppo_transformed_bellman
+</code></pre>
+
+<ul>
+<li>A simple TensorBoard invoker</li>
+<li>Tools for custom graphs from TensorBoard summaries</li>
+</ul>
+<h3>Colored console outputs</h3>
+<p>The logger creates beautiful colorized console outputs that&rsquo;s easy on the eye.</p>
+<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/log.png" /></p>
+
+<h3>Histograms and moving averages</h3>
+<p>The logger can buffer data and produce moving averages and
+TensorBoard histograms.
+This saves you the extra code to buffering.</p>
+<h2>Getting Started</h2>
+<p>Clone this repository and add a symbolic link to lab.</p>
+<pre><code class="bash">ln -s ~/repo/lab your_project/lab
+ln -s ~/repo/tools your_project/tools
+</code></pre>
+
+<p>The create a <code>lab_globals.py</code> file and set project level configurations.
+See <a href="http://blog.varunajayasiri.com/ml/lab/lab_globals.html">lab_globals.py</a> for example.</p>
+<h3>A python file for each experiment</h3>
+<p>The idea is to have a separate python file for each major expirment,
+ like different architectures.
+Minor changes can go as trials, like bug fixes and improvements.
+The TensorBoard summaries are replaced for each trial.</p>
+<h3>Samples</h3>
+<p>See <a href="http://blog.varunajayasiri.com/ml/lab/mnist_pytorch.html">mnist_pytorch.py</a> 
+or <a href="http://blog.varunajayasiri.com/ml/lab/mnist_tensorflow.html">mnist_tensorflow.py</a>
+for examples.</p>
+<h2>Usage</h2>
+<h3>Monitored Sections</h3>
+<pre><code class="python">with logger.monitor(&quot;Load data&quot;):
+    # code to load data
+with logger.monitor(&quot;Create model&quot;):
+    # code to create model
+</code></pre>
+
+<p>Monitored sections let you monitor time takes for
+different tasks and also helps keep the code clean 
+by separating different sections.</p>
+<h3>Monitored Iterator</h3>
+<pre><code class="python"># Create a monitored iterator
+monitor = logger.iterator(range(0, total_steps))
+
+for step in monitor:
+    logger.print_global_step(step)
+
+    # training code ...
+
+    monitor.progress()
+</code></pre>
+
+<p>The monitored iterator keeps track of the time taken and time remaining for the loop.
+<code>print_global_step</code> prints the global step to the console.
+<code>monitor.progress()</code> prints the time taken and time remaining.</p>
+<h4>Monitored Sections within Loop</h4>
+<pre><code class="python">with monitor.section(&quot;process_samples&quot;):
+    # code to process samples
+</code></pre>
+
+<p>This will monitor sections of code within a monitored iterator.</p>
+<pre><code class="python">with monitor.unominotored(&quot;logging&quot;):
+    # code to process samples
+</code></pre>
+
+<p>Unmonitored sections within the loop can used to separate out code for readability.</p>
+<h4>Progress Monitoring within Loop</h4>
+<pre><code class="python">with monitor.section(&quot;train&quot;):
+    iterations = 100
+    progress = logger.progress(iterations)
+    for i in range(100):
+        # Multiple training steps in the inner loop
+        progress.update(i)
+    # Clears the progress when complete
+    progress.clear()
+</code></pre>
+
+<p>This shows the progress for training in the inner loop.
+This behaviour was necessary in Reinforcement Learning where the
+ main loop gathers samples and trains;
+ whilst the inner sampling and training loops also run for a few steps.</p>
+<h3>Log indicators</h3>
+<pre><code class="python">logger.add_indicator(&quot;reward&quot;, queue_limit=10)
+logger.add_indicator(&quot;fps&quot;, is_histogram=False, is_progress=False)
+logger.add_indicator(&quot;loss&quot;, is_histogram=True)
+logger.add_indicator(&quot;advantage_reward&quot;, is_histogram=False, is_print=False, is_pair=True)
+</code></pre>
+
+<ul>
+<li><code>queue_limit: int = None</code>: If the queue size is specified the values are added to a fixed sized queue and the mean and histogram can be used.</li>
+<li><code>is_histogram: bool = True</code>: If true a TensorBoard histogram summaries is produced along with the mean scalar.</li>
+<li><code>is_print: bool = True</code>: If true the mean value is printed to the console</li>
+<li><code>is_progress: Optional[bool] = None</code>: If true the mean value is recorded in experiment summary in <code>trials.yaml</code> and in the python file header. If a value is not provided it is set to be equal to <code>is_print</code>.</li>
+<li><code>is_pair: bool = False</code>: Whether the values are pairs of values. <em>This is still experimental</em>. This can be used to produce multi dimensional visualizations.</li>
+</ul>
+<p>The values are stored using <code>logger.store</code> function.</p>
+<pre><code class="python">logger.store(
+    reward=global_step / 3.0,
+    fps=12
+)
+logger.store('loss', i)
+logger.store(advantage_reward=(i, i * 2))
+</code></pre>
+
+<h3>Write Logs</h3>
+<pre><code class="python">logger.write(global_step=global_step, new_line=False)
+</code></pre>
+
+<p>This will write the stored and values in the logger and clear the buffers.
+It will write to console as well as TensorBoard summaries.</p>
+<p>The parameter <code>new_line</code> indicates whether to move to a new line in the console.
+In standard usage of this library we do not move to new_lines after each console output.
+Instead we update the stats on the same line and move to a new line after a few iterations.
+Also if we are inside a monitored loop we will show the progress with <code>monitored.progress()</code>
+at the end of the line.</p>
+<pre><code class="python">logger.clear_line(reset=True)
+logger.clear_line(reset=False)
+</code></pre>
+
+<p>This clears the current console line buffer.
+If reset is set to <code>False</code> it moves to the next line,
+and if reset is <code>True</code> it resets the cursor to the beginning
+of current line.</p>
+<h3>Create Experiment</h3>
+<pre><code class="python">EXPERIMENT = Experiment(lab=lab,
+                        name=&quot;mnist_pytorch&quot;,
+                        python_file=__file__,
+                        comment=&quot;Test&quot;,
+                        check_repo_dirty=False
+                        )
+</code></pre>
+
+<ul>
+<li><code>lab</code>: This is the project level lab definition. See <a href="http://blog.varunajayasiri.com/ml/lab/lab_global.html">lab_global.py</a> for example.</li>
+<li><code>name</code>: Name of the experiment</li>
+<li><code>python_file</code>: The python file with the experiment definition.</li>
+<li><code>comment</code>: Comment about the current experiment trial</li>
+<li><code>check_repo_dirty</code>: If <code>True</code> the experiment is halted if there are uncommitted changes to the git repository.</li>
+</ul>
+<pre><code class="python">EXPERIMENT.start_train(0)
+</code></pre>
+
+<p>You need to call <code>start_train</code> before starting the experiment to clear old logs and
+do other initialization work.</p>
+<p>It will load from a saved state if the <code>global_step</code> is not <code>0</code>.
+<em>(🚧 Not implemented for PyTorch yet)</em></p>
+<h3>Save Progress</h3>
+<pre><code class="python">progress_dict = logger.get_progress_dict(global_step=global_step)
+EXPERIMENT.save_progress(progress_dict)
+</code></pre>
+
+<p>This saves the progress stats in <code>trials.yaml</code> and python file header</p>
+<h3>Save Checkpoint</h3>
+<pre><code class="python">EXPERIMENT.save_checkpoint(global_step)
+</code></pre>
+
+<p>This saves a checkpoint and you can start from the saved checkpoint with
+<code>EXPERIMENT.start_train(global_step)</code>, or with <code>EXPERIMENT.start_replay(global_step)</code>
+if you just want inference. When started with <code>start_replay</code> it won&rsquo;t update any of the logs.
+<em>(🚧 Not implemented for PyTorch yet)</em></p>
+<h3>Keyboard Interrupts</h3>
+<pre><code class="python">try:
+    with logger.delayed_keyboard_interrupt():
+        # segment of code that needs to run without breaking in the middle
+except KeyboardInterrupt:
+    # handle the interruption after the code segment is executed
+</code></pre>
+
+<p>You can wrap a segment of code that needs to run without interruptions
+within a <code>with logger.delayed_keyboard_interrupt()</code>.</p>
+<p>Two consecutive interruptions will halt the code segment.</p>
+<h2>Background</h2>
+<p>I was coding existing reinforcement learning algorithms
+ to play Atari games for fun.
+It was not easy to keep track of things when I started
+ trying variations, fixing bugs etc.
+Then I wrote some tools to organize my experiment runs.
+I found it important to keep track of git commits
+to make sure I can reproduce results.</p>
+<p>I also wrote a logger to display pretty results on screen and
+ to make it easy to write TensorBoard summaries.
+It also keeps track of training times which makes it easy to spot
+ what&rsquo;s taking up most resources.</p>
+<p>This library is was made by combining these bunch of tools.</p>
+<h2>Updates</h2>
+<ul>
+<li>
+<p><strong>November 16, 2018</strong></p>
+<ul>
+<li>Initial public release</li>
+</ul>
+</li>
+<li>
+<p><strong>December 21, 2018</strong></p>
+<ul>
+<li>TensorBoard invoker</li>
+<li>Tool set for custom visualizations of TensorBoard summaries</li>
+<li>Automatically adds headers to python files with experiment results</li>
+</ul>
+</li>
+<li>
+<p><strong>February 10, 2019</strong></p>
+<ul>
+<li>Two dimensional summaries</li>
+</ul>
+</li>
+<li>
+<p><strong>June 16, 2019</strong></p>
+<ul>
+<li>PyTorch support</li>
+<li>Improved Documentation</li>
+<li>MNIST examples</li>
+</ul>
+</li>
+</ul>
+<h2>🖋 <a href="https://twitter.com/vpj">@vpj on Twitter</a></h2>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span></span>
+
+</pre></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML">
+    </script>
+    <!-- MathJax configuration -->
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            displayMath: [ ['$$','$$'] ],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        // Center justify equations in code and markdown cells. Elsewhere
+        // we use CSS to left justify single line equations in code cells.
+        displayAlign: 'center',
+        "HTML-CSS": { fonts: ["TeX"] }
+    });
+
+    </script>
+
+</body>

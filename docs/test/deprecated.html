@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <title>deprecated.py</title>
+    <link href="http://fonts.googleapis.com/css?family=Raleway:400,100,200,300,500,600,700,800,900"
+          rel="stylesheet"
+          type="text/css"/>
+    <link rel="stylesheet" href="../pylit.css">
+</head>
+<body>
+<div id='container'>
+    <div id="background"></div>
+    <div class='section'>
+        <div class='docs'><h1>deprecated.py</h1></div>
+    </div>
+    <div class='section' id='section-0'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-0'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lab</span> <span class="kn">import</span> <span class="n">util</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-1'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-1'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="nd">@util.deprecated</span><span class="p">(</span><span class="s2">&quot;Function&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@util.deprecated</span><span class="p">(</span><span class="s2">&quot;Class&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TestClass</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">TestClass2</span><span class="p">:</span>
+    <span class="nd">@util.deprecated</span><span class="p">(</span><span class="s2">&quot;Class method&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;class method&quot;</span><span class="p">)</span>
+
+
+<span class="n">test</span><span class="p">()</span>
+<span class="n">test</span><span class="p">()</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">TestClass</span><span class="p">()</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">TestClass</span><span class="p">()</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">TestClass2</span><span class="p">()</span>
+<span class="n">x</span><span class="o">.</span><span class="n">test</span><span class="p">()</span>
+<span class="n">x</span><span class="o">.</span><span class="n">test</span><span class="p">()</span>
+
+</pre></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML">
+    </script>
+    <!-- MathJax configuration -->
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            displayMath: [ ['$$','$$'] ],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        // Center justify equations in code and markdown cells. Elsewhere
+        // we use CSS to left justify single line equations in code cells.
+        displayAlign: 'center',
+        "HTML-CSS": { fonts: ["TeX"] }
+    });
+
+    </script>
+
+</body>

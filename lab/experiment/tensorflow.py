@@ -144,15 +144,15 @@ class Experiment(experiment.Experiment):
 
         if global_step > 0:
             # load checkpoint if we are starting from middle
-            with self.logger.monitor("Loading checkpoint") as m:
+            with self.logger.section("Loading checkpoint") as m:
                 m.is_successful = self.load_checkpoint_numpy(session)
         else:
             # initialize variables and clear summaries if we are starting from scratch
-            with self.logger.monitor("Clearing summaries"):
+            with self.logger.section("Clearing summaries"):
                 self.clear_summaries()
-            with self.logger.monitor("Clearing checkpoints"):
+            with self.logger.section("Clearing checkpoints"):
                 self.clear_checkpoints()
-            with self.logger.monitor("Initializing variables"):
+            with self.logger.section("Initializing variables"):
                 tf_util.init_variables(session)
 
         self.create_writer(session)
@@ -164,5 +164,5 @@ class Experiment(experiment.Experiment):
         Load a checkpoint or reset based on `global_step`.
         """
 
-        with self.logger.monitor("Loading checkpoint") as m:
+        with self.logger.section("Loading checkpoint") as m:
             m.is_successful = self.load_checkpoint_numpy(session)

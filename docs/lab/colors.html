@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <title>colors.py</title>
+    <link href="http://fonts.googleapis.com/css?family=Raleway:400,100,200,300,500,600,700,800,900"
+          rel="stylesheet"
+          type="text/css"/>
+    <link rel="stylesheet" href="../pylit.css">
+</head>
+<body>
+<div id='container'>
+    <div id="background"></div>
+    <div class='section'>
+        <div class='docs'><h1>colors.py</h1></div>
+    </div>
+    <div class='section' id='section-0'>
+        <div class='docs doc-strings'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-0'>#</a>
+                </div>
+                <p>Console colors</p>
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-1'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-1'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">class</span> <span class="nc">ANSICode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-2'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-2'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="se">\33</span><span class="s2">[{self.value}m&quot;</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-3'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-3'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">class</span> <span class="nc">Style</span><span class="p">(</span><span class="n">ANSICode</span><span class="p">):</span>
+    <span class="n">normal</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">bold</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">light</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="n">italic</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Not supported in PyCharm</span>
+    <span class="n">underline</span> <span class="o">=</span> <span class="mi">4</span>
+
+    <span class="n">highlight</span> <span class="o">=</span> <span class="mi">7</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-4'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-4'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">ANSICode</span><span class="p">):</span>
+    <span class="n">black</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">red</span> <span class="o">=</span> <span class="mi">31</span>
+    <span class="n">green</span> <span class="o">=</span> <span class="mi">32</span>
+    <span class="n">orange</span> <span class="o">=</span> <span class="mi">33</span>
+    <span class="n">blue</span> <span class="o">=</span> <span class="mi">34</span>
+    <span class="n">purple</span> <span class="o">=</span> <span class="mi">35</span>
+    <span class="n">cyan</span> <span class="o">=</span> <span class="mi">36</span>
+    <span class="n">white</span> <span class="o">=</span> <span class="mi">37</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-5'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-5'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">class</span> <span class="nc">BrightColor</span><span class="p">(</span><span class="n">ANSICode</span><span class="p">):</span>
+    <span class="n">black</span> <span class="o">=</span> <span class="mi">90</span>
+    <span class="n">red</span> <span class="o">=</span> <span class="mi">91</span>
+    <span class="n">green</span> <span class="o">=</span> <span class="mi">92</span>
+    <span class="n">orange</span> <span class="o">=</span> <span class="mi">93</span>
+    <span class="n">blue</span> <span class="o">=</span> <span class="mi">94</span>
+    <span class="n">purple</span> <span class="o">=</span> <span class="mi">95</span>
+    <span class="n">cyan</span> <span class="o">=</span> <span class="mi">96</span>
+    <span class="n">white</span> <span class="o">=</span> <span class="mi">97</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-6'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-6'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">class</span> <span class="nc">Background</span><span class="p">(</span><span class="n">ANSICode</span><span class="p">):</span>
+    <span class="n">black</span> <span class="o">=</span> <span class="mi">40</span>
+    <span class="n">red</span> <span class="o">=</span> <span class="mi">41</span>
+    <span class="n">green</span> <span class="o">=</span> <span class="mi">42</span>
+    <span class="n">orange</span> <span class="o">=</span> <span class="mi">43</span>
+    <span class="n">blue</span> <span class="o">=</span> <span class="mi">44</span>
+    <span class="n">purple</span> <span class="o">=</span> <span class="mi">45</span>
+    <span class="n">cyan</span> <span class="o">=</span> <span class="mi">46</span>
+    <span class="n">white</span> <span class="o">=</span> <span class="mi">47</span></pre></div>
+            </div>
+        </div>
+    <div class='section' id='section-7'>
+            <div class='docs'>
+                <div class='octowrap'>
+                    <a class='octothorpe' href='#section-7'>#</a>
+                </div>
+                
+            </div>
+            <div class='code'>
+                <div class="highlight"><pre><span class="k">class</span> <span class="nc">BrightBackground</span><span class="p">(</span><span class="n">ANSICode</span><span class="p">):</span>
+    <span class="n">black</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">red</span> <span class="o">=</span> <span class="mi">101</span>
+    <span class="n">green</span> <span class="o">=</span> <span class="mi">102</span>
+    <span class="n">orange</span> <span class="o">=</span> <span class="mi">103</span>
+    <span class="n">blue</span> <span class="o">=</span> <span class="mi">104</span>
+    <span class="n">purple</span> <span class="o">=</span> <span class="mi">105</span>
+    <span class="n">cyan</span> <span class="o">=</span> <span class="mi">106</span>
+    <span class="n">white</span> <span class="o">=</span> <span class="mi">107</span>
+
+
+<span class="n">Reset</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\33</span><span class="s2">[0m&quot;</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">48</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
+                <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\33</span><span class="s2">[{};{};{}m{:02d},{},{:03d}</span><span class="se">\33</span><span class="s2">[0m</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span>
+                      <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">6</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="se">\33</span><span class="s2">[{i}m{i :03d}</span><span class="se">\33</span><span class="s2">[0m &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">Style</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">Color</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">Background</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s2">&quot;{s}{c}{b}{s.name}, {c.name}, {b.name}{Reset}&quot;</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">Style</span><span class="o">.</span><span class="n">bold</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+</pre></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML">
+    </script>
+    <!-- MathJax configuration -->
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            displayMath: [ ['$$','$$'] ],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        // Center justify equations in code and markdown cells. Elsewhere
+        // we use CSS to left justify single line equations in code cells.
+        displayAlign: 'center',
+        "HTML-CSS": { fonts: ["TeX"] }
+    });
+
+    </script>
+
+</body>

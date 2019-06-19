@@ -1,9 +1,18 @@
 """
 ```trial
-2019-06-16 13:15:04
+2019-06-17 13:51:03
 Test
-[[dirty]]: 📚 readme
+[[dirty]]: 🧹  logger 2
 start_step: 0
+
+----------------------------
+| global_step | train_loss |
+----------------------------
+|         930 |       0.11 |
+|       1,868 |       0.08 |
+|       2,806 |       0.05 |
+|       3,744 |       0.04 |
+----------------------------
 ```
 """
 
@@ -48,45 +57,45 @@ class Net(nn.Module):
 
 
 def train(args, model, device, train_loader, optimizer, epoch):
-    model.train()
-    for batch_idx, (data, target) in enumerate(train_loader):
-        data, target = data.to(device), target.to(device)
-        optimizer.zero_grad()
-        output = model(data)
-        loss = F.nll_loss(output, target)
-        loss.backward()
-        optimizer.step()
+    with logger.section("Train", total_steps=len(train_loader)):
+        model.train()
+        for batch_idx, (data, target) in enumerate(train_loader):
+            data, target = data.to(device), target.to(device)
+            optimizer.zero_grad()
+            output = model(data)
+            loss = F.nll_loss(output, target)
+            loss.backward()
+            optimizer.step()
 
-        # Add training loss to the logger.
-        # The logger will queue the values and output the mean
-        logger.store(train_loss=loss.item())
+            # Add training loss to the logger.
+            # The logger will queue the values and output the mean
+            logger.store(train_loss=loss.item())
+            logger.progress(batch_idx + 1)
+            logger.set_global_step(epoch * len(train_loader) + batch_idx)
 
-        # Print output to the console
-        if batch_idx % args.log_interval == 0:
-            # Reset the current line
-            logger.clear_line(reset=True)
-            # Print step
-            logger.print_global_step(epoch * len(train_loader) + batch_idx)
-            # Output the indicators without a newline
-            # because we'll be replacing the same line
-            logger.write(global_step=epoch * len(train_loader) + batch_idx, new_line=False)
+            # Print output to the console
+            if batch_idx % args.log_interval == 0:
+                # Output the indicators
+                logger.write()
 
 
 def test(model, device, test_loader):
-    model.eval()
-    test_loss = 0
-    correct = 0
-    with torch.no_grad():
-        for data, target in test_loader:
-            data, target = data.to(device), target.to(device)
-            output = model(data)
-            test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
-            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-            correct += pred.eq(target.view_as(pred)).sum().item()
+    with logger.section("Test", total_steps=len(test_loader)):
+        model.eval()
+        test_loss = 0
+        correct = 0
+        with torch.no_grad():
+            for batch_idx, (data, target) in enumerate(test_loader):
+                data, target = data.to(device), target.to(device)
+                output = model(data)
+                test_loss += F.nll_loss(output, target, reduction='sum').item()
+                pred = output.argmax(dim=1, keepdim=True)
+                correct += pred.eq(target.view_as(pred)).sum().item()
+                logger.progress(batch_idx + 1)
 
-    # Add test loss and accuracy to logger
-    logger.store(test_loss=test_loss / len(test_loader.dataset))
-    logger.store(accuracy=correct / len(test_loader.dataset))
+        # Add test loss and accuracy to logger
+        logger.store(test_loss=test_loss / len(test_loader.dataset))
+        logger.store(accuracy=correct / len(test_loader.dataset))
 
 
 def parse_args():
@@ -124,7 +133,7 @@ def main():
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
 
     # Loading data
-    with logger.monitor("Loading data"):
+    with logger.section("Loading data"):
         train_loader = torch.utils.data.DataLoader(
             datasets.MNIST('./data', train=True, download=True,
                            transform=transforms.Compose([
@@ -140,7 +149,7 @@ def main():
             batch_size=args.test_batch_size, shuffle=True, **kwargs)
 
     # Model creation
-    with logger.monitor("Create model"):
+    with logger.section("Create model"):
         model = Net().to(device)
         optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 
@@ -156,13 +165,8 @@ def main():
     # Start the experiment
     EXPERIMENT.start_train(0)
 
-    # Create a monitored iterator
-    monitor = logger.iterator(range(0, args.epochs))
-
     # Loop through the monitored iterator
-    for epoch in monitor:
-        global_step = (epoch + 1) * len(train_loader)
-
+    for epoch in logger.loop(range(0, args.epochs)):
         # Delayed keyboard interrupt handling to use
         # keyboard interrupts to end the loop.
         # This will capture interrupts and finish
@@ -181,33 +185,24 @@ def main():
                         logger.store(name, param.data.cpu().numpy())
                         logger.store(f"{name}_grad", param.grad.cpu().numpy())
 
+                # Clear line and output to console
+                logger.write()
+
                 # Output the progress summaries to `trial.yaml` and
                 # to the python file header
-                progress_dict = logger.get_progress_dict(
-                    global_step=global_step)
-                EXPERIMENT.save_progress(progress_dict)
-
-                # Clear line and output to console
-                logger.clear_line(reset=True)
-                logger.print_global_step(global_step)
-                logger.write(global_step=global_step, new_line=False)
-
-                # Output the progress of the loop,
-                # time taken and time remaining
-                monitor.progress()
+                EXPERIMENT.save_progress()
 
                 # Clear line and go to the next line;
                 # that is, we add a new line to the output
                 # at the end of each epoch
-                logger.clear_line(reset=False)
+                logger.new_line()
 
         # Handled delayed interrupt
         except KeyboardInterrupt:
-            logger.clear_line(reset=False)
+            logger.finish_loop()
+            logger.new_line()
             logger.log("\nKilling loop...")
             break
-
-    logger.clear_line(reset=False)
 
 
 if __name__ == '__main__':
