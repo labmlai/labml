@@ -153,7 +153,7 @@ class Experiment(experiment.Experiment):
         """
 
         self.trial.start_step = global_step
-        self._init_trial_log()
+        self._start()
 
         if global_step > 0:
             # load checkpoint if we are starting from middle

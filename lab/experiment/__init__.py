@@ -36,6 +36,8 @@ class ExperimentInfo:
         self.npy_path = self.experiment_path / "npy"
         self.model_file = self.checkpoint_path / 'model'
 
+        self.diff_path = self.experiment_path / "diffs"
+
         self.summary_path = self.experiment_path / "log"
         self.screenshots_path = self.experiment_path / 'screenshots'
         self.trials_log_file = self.experiment_path / "trials.yaml"
@@ -93,6 +95,8 @@ class _ExperimentProgressSaver(ProgressSaver):
             trials.append(self.trial.to_dict())
         else:
             trials[-1] = self.trial.to_dict()
+
+        self.trial.index = len(trials) - 1
 
         with open(str(self.trials_log_file), "w") as file:
             file.write(util.yaml_dump(trials))
@@ -160,6 +164,7 @@ class Experiment:
         self.trial.commit = repo.active_branch.commit.hexsha
         self.trial.commit_message = repo.active_branch.commit.message.strip()
         self.trial.is_dirty = repo.is_dirty()
+        self.trial.diff = repo.git.diff()
         self.__progress_saver = _ExperimentProgressSaver(trial=self.trial,
                                                          trials_log_file=self.info.trials_log_file,
                                                          is_log_python_file=is_log_python_file)
@@ -248,5 +253,12 @@ class Experiment:
         """
         img.save(str(self.info.screenshots_path / file_name))
 
-    def _init_trial_log(self):
+    def _start(self):
         self.__progress_saver.save()
+
+        path = pathlib.Path(self.info.diff_path)
+        if not path.exists():
+            path.mkdir(parents=True)
+
+        with open(str(path / f"{self.trial.index}.diff"), "w") as f:
+            f.write(self.trial.diff)

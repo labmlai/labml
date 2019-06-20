@@ -40,11 +40,14 @@ class Trial:
                  commit: str or None = None,
                  commit_message: str or None = None,
                  is_dirty: bool = True,
+                 diff: str or None = None,
                  start_step: int = 0,
                  progress=None,
                  progress_limit: int = 16):
+        self.index = -1
         self.commit = commit
         self.is_dirty = is_dirty
+        self.diff = diff
         self.python_file = python_file
         self.trial_date = trial_date
         self.trial_time = trial_time
