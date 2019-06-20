@@ -30,7 +30,8 @@ class Lab:
         config = dict(
             path=None,
             check_repo_dirty=True,
-            is_log_python_file=True
+            is_log_python_file=True,
+            config_file_path=None
         )
 
         for c in reversed(configs):
@@ -39,7 +40,7 @@ class Lab:
             elif config['path'] is None:
                 c['path'] = c['config_file_path']
 
-            for k, v in c:
+            for k, v in c.items():
                 if k not in config:
                     raise RuntimeError(f"Unknown config parameter #{k} in file "
                                        f"{c['config_file_path'] / _CONFIG_FILE_NAME}")
@@ -59,6 +60,8 @@ class Lab:
                 if config_file.is_file():
                     with open(str(config_file)) as f:
                         config = util.yaml_load(f.read())
+                        if config is None:
+                            config = {}
                         config['config_file_path'] = path
                         configs.append(config)
 
