@@ -13,16 +13,17 @@ structure without you explicitly having to worry about them.
 
 ```
 logs
-├── mnist_convolution
+├── experiment1
+│   ├── checkpoints
+│   │   └── 📄 Saved checkpoints
 │   ├── log
 │   │   └── 📄 TensorBoard summaries
+│   ├── diffs
+│   │   └── 📄 diffs when experiment was run
 │   └── trials.yaml
-└── mnist_attention
-    ├── checkpoints
-    │   └── 📄 Saved checkpoints
-    ├── log
-    │   └── 📄 TensorBoard summaries
-    └── trials.yaml
+└── experimnent2...
+    ├──
+    ...
 ```
 
 ### Keep track of experiments
