@@ -1,15 +1,14 @@
-import lab.clear_warnings
-
 import argparse
 import os
 
 import lab.lab_utils as utils
 from lab import colors
+from lab.lab import Lab
 from lab.logger import Logger
-from lab_globals import lab
 
 
 def main():
+    lab = Lab(os.getcwd())
     parser = argparse.ArgumentParser(description='Run TensorBoard')
     parser.add_argument("-l",
                         action='store_true',

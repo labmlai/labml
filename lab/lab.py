@@ -62,6 +62,9 @@ class Lab:
                         config['config_file_path'] = path
                         configs.append(config)
 
+            if str(path) == path.root:
+                break
+
             path = path.parent
 
         return configs
