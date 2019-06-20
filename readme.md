@@ -310,7 +310,7 @@ This saves the progress stats in `trials.yaml` and python file header
 
 ### Save Checkpoint
 ```python
-EXPERIMENT.save_checkpoint(global_step)
+logger.save_checkpoint()
 ```
 
 This saves a checkpoint and you can start from the saved checkpoint with
