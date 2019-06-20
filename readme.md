@@ -176,8 +176,9 @@ ln -s ~/repo/lab your_project/lab
 ln -s ~/repo/tools your_project/tools
 ```
 
-The create a `lab_globals.py` file and set project level configurations.
-See [lab_globals.py](http://blog.varunajayasiri.com/ml/lab/lab_globals.html) for example.
+The create a `.lab.yaml` file. An empty file at the root of the project should
+be enough. You can set project level configs for 'check_repo_dirty' and 'is_log_python_file'
+in the config file.
 
 ### A python file for each experiment
 The idea is to have a separate python file for each major expirment,
@@ -277,15 +278,13 @@ This will start a new line in the console.
 
 ### Create Experiment
 ```python
-EXPERIMENT = Experiment(lab=lab,
-                        name="mnist_pytorch",
+EXPERIMENT = Experiment(name="mnist_pytorch",
                         python_file=__file__,
                         comment="Test",
                         check_repo_dirty=False,
 			is_log_python_file=True)
 ```
 
-* `lab`: This is the project level lab definition. See [lab_global.py](http://blog.varunajayasiri.com/ml/lab/lab_global.html) for example.
 * `name`: Name of the experiment
 * `python_file`: The python file with the experiment definition.
 * `comment`: Comment about the current experiment trial
