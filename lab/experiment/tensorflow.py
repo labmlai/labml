@@ -6,7 +6,6 @@ import numpy as np
 import tensorflow as tf
 
 from lab import tf_util, util, experiment
-from lab.lab import Lab
 from lab.logger import tensorboard_writer, CheckpointSaver
 
 
@@ -102,15 +101,14 @@ class Experiment(experiment.Experiment):
     """
 
     def __init__(self, *,
-                 lab: Lab,
                  name: str,
                  python_file: str,
                  comment: str,
-                 check_repo_dirty: bool = True):
+                 check_repo_dirty: Optional[bool] = None,
+                 is_log_python_file: Optional[bool] = None):
         """
         ### Create the experiment
 
-        :param lab: reference to current lab
         :param name: name of the experiment
         :param python_file: `__file__` that invokes this. This is stored in
          the experiments list.
@@ -124,12 +122,12 @@ class Experiment(experiment.Experiment):
         Experiment maintains the locations of checkpoints, logs, etc.
         """
 
-        super().__init__(lab=lab,
-                         name=name,
+        super().__init__(name=name,
                          python_file=python_file,
                          comment=comment,
-                         check_repo_dirty=check_repo_dirty)
-
+                         check_repo_dirty=check_repo_dirty,
+                         is_log_python_file=is_log_python_file)
+        self.__variables = None
         self._checkpoint = Checkpoint(self.info.checkpoint_path)
 
     def create_writer(self, session: tf.Session):

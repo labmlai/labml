@@ -120,16 +120,14 @@ class Experiment:
     """
 
     def __init__(self, *,
-                 lab: Lab,
                  name: str,
                  python_file: str,
                  comment: str,
-                 check_repo_dirty: bool = True,
-                 is_log_python_file: bool = True):
+                 check_repo_dirty: Optional[bool],
+                 is_log_python_file: Optional[bool]):
         """
         ### Create the experiment
 
-        :param lab: reference to current lab
         :param name: name of the experiment
         :param python_file: `__file__` that invokes this. This is stored in
          the experiments list.
@@ -143,12 +141,16 @@ class Experiment:
         Experiment maintains the locations of checkpoints, logs, etc.
         """
 
-        self.__variables = None
-        self.info = ExperimentInfo(lab, name)
+        self.lab = Lab(python_file)
+
+        if check_repo_dirty is None:
+            check_repo_dirty = self.lab.check_repo_dirty
+        if is_log_python_file is None:
+            is_log_python_file = self.lab.is_log_python_file
+
+        self.info = ExperimentInfo(self.lab, name)
 
         self.check_repo_dirty = check_repo_dirty
-
-        self.lab = lab
 
         experiment_path = pathlib.Path(self.info.experiment_path)
         if not experiment_path.exists():
