@@ -65,11 +65,6 @@ import tensorflow as tf
 
 from lab.experiment.tensorflow import Experiment
 
-# You should keep the project level lab details
-# defined in a python file at the top of the project.
-# Here's the example [lab_globals.py](lab_globals.html)
-# used for this sample.
-
 # Create the sample experiment
 EXPERIMENT = Experiment(name="Sample",
                         python_file=__file__,
