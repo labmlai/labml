@@ -24,6 +24,11 @@ class ProgressSaver:
         raise NotImplementedError()
 
 
+class CheckpointSaver:
+    def save(self, global_step, args):
+        raise NotImplementedError()
+
+
 class Logger:
     """
     ## 🖨 Logger class
@@ -31,7 +36,8 @@ class Logger:
 
     def __init__(self, *,
                  is_color=True,
-                 progress_saver):
+                 progress_saver: Optional[ProgressSaver]=None,
+                 checkpoint_saver: Optional[CheckpointSaver]=None):
         """
         ### Initializer
         :param is_color: whether to use colours in console output
@@ -51,6 +57,7 @@ class Logger:
         self.__progress_dict_writer = ProgressDictWriter()
 
         self.__progress_saver: Optional[ProgressSaver] = progress_saver
+        self.__checkpoint_saver: Optional[CheckpointSaver] = checkpoint_saver
 
     @staticmethod
     def ansi_code(text: str, color: List[ANSICode] or ANSICode or None):
@@ -167,6 +174,12 @@ class Logger:
             return
 
         self.__progress_saver.save(self.__progress_dict)
+
+    def save_checkpoint(self, *args):
+        if self.__checkpoint_saver is None:
+            return
+
+        self.__checkpoint_saver.save(self.__loop.global_step, args)
 
     def section(self, name, *,
                 is_silent: bool = False,

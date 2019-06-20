@@ -1,10 +1,9 @@
 import pathlib
 import time
-from abc import ABC
 from typing import Dict, Optional
 
-import numpy as np
 import git
+import numpy as np
 
 from lab import colors, util
 from lab.commenter import Commenter
@@ -47,17 +46,6 @@ class ExperimentInfo:
         """
         p = pathlib.Path(self.summary_path)
         return p.exists()
-
-
-def _struct_time_to_time(t: time.struct_time):
-    return f"{t.tm_hour :02}:{t.tm_min :02}:{t.tm_sec :02}"
-
-
-def _struct_time_to_date(t: time.struct_time):
-    return f"{t.tm_year :04}-{t.tm_mon :02}-{t.tm_mday :02}"
-
-
-_GLOBAL_STEP = 'global_step'
 
 
 class _ExperimentProgressSaver(ProgressSaver):
@@ -106,10 +94,10 @@ class _ExperimentProgressSaver(ProgressSaver):
         else:
             trials[-1] = self.trial.to_dict()
 
-        with open(str(self.info.trials_log_file), "w") as file:
+        with open(str(self.trials_log_file), "w") as file:
             file.write(util.yaml_dump(trials))
 
-    def save(self, progress: Optional[Dict[str, str]]=None):
+    def save(self, progress: Optional[Dict[str, str]] = None):
         if progress is not None:
             self.trial.set_progress(progress)
             self.__log_trial(is_add=False)

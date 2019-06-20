@@ -1,7 +1,16 @@
 import time
 from typing import List, Dict
 
-from lab.experiment import _struct_time_to_date, _struct_time_to_time, _GLOBAL_STEP
+
+def _struct_time_to_time(t: time.struct_time):
+    return f"{t.tm_hour :02}:{t.tm_min :02}:{t.tm_sec :02}"
+
+
+def _struct_time_to_date(t: time.struct_time):
+    return f"{t.tm_year :04}-{t.tm_mon :02}-{t.tm_mday :02}"
+
+
+_GLOBAL_STEP = 'global_step'
 
 
 class Trial:
