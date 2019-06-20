@@ -96,9 +96,9 @@ and to get status updates on the console.
 This also helps organize the code.
 
 ```python
-with logger.monitor("Load data"):
+with logger.section("Load data"):
     # code to load data
-with logger.monitor("Create model"):
+with logger.section("Create model"):
     # code to create model
 ```
 
@@ -192,6 +192,15 @@ for examples.
 
 ## Usage
 
+### Monitored Iterator
+
+```python
+for step in logger.loop(range(0, total_steps)):
+	# training code ...
+```
+
+The monitored iterator keeps track of the time taken and time remaining for the loop.
+
 ### Monitored Sections
 
 ```python
@@ -205,18 +214,9 @@ Monitored sections let you monitor time takes for
 different tasks and also helps keep the code clean 
 by separating different sections.
 
-### Monitored Iterator
+Monitored sections can be within loops as well.
 
-```python
-for step in logger.loop(range(0, total_steps)):
-	# training code ...
-```
-
-The monitored iterator keeps track of the time taken and time remaining for the loop.
-`print_global_step` prints the global step to the console.
-`monitor.progress()` prints the time taken and time remaining.
-
-#### Progress Monitoring within Loop
+### Progress Monitoring
 
 ```python
 for step in logger.loop(range(0, total_steps)):
@@ -228,9 +228,8 @@ for step in logger.loop(range(0, total_steps)):
 ```
 
 This shows the progress for training in the inner loop.
-This behaviour was necessary in Reinforcement Learning where the
- main loop gathers samples and trains;
- whilst the inner sampling and training loops also run for a few steps.
+You can do progress monitoring within sections outside the
+ `logger.loop` as well.
 
 ### Log indicators
 
