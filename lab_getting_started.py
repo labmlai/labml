@@ -45,9 +45,9 @@ Here's the output of this sample program (`lab_getting_started.py`):
 This 👇 is the header that was added automatically when the experiment ran.
 
 ```trial
-2019-06-17 14:59:10
+2019-06-20 16:36:29
 Sample lab experiment
-[[dirty]]: ♻️  logger separate files
+[[dirty]]: 🐛  typos
 start_step: 0
 ```
 """
@@ -58,6 +58,7 @@ start_step: 0
 # this sample works when you run it.
 
 import lab.clear_warnings
+
 import time
 
 import tensorflow as tf
@@ -68,11 +69,9 @@ from lab.experiment.tensorflow import Experiment
 # defined in a python file at the top of the project.
 # Here's the example [lab_globals.py](lab_globals.html)
 # used for this sample.
-from lab_globals import lab
 
 # Create the sample experiment
-EXPERIMENT = Experiment(lab=lab,
-                        name="Sample",
+EXPERIMENT = Experiment(name="Sample",
                         python_file=__file__,
                         comment="Sample lab experiment",
                         check_repo_dirty=False)
@@ -107,10 +106,10 @@ logger.add_indicator("reward", queue_limit=10)
 # By default everything is a set of values and will create a TensorBoard histogram
 # We specify that `fps` is a scalar.
 # If you store multiple values for this it will output the mean.
-logger.add_indicator("fps", is_histogram=False, is_progress=False)
+logger.add_indicator("fps", is_histogram=False, is_print=False)
 
 # This will produce a histogram
-logger.add_indicator("loss")
+logger.add_indicator("loss", is_print=False)
 
 # A heat map
 logger.add_indicator("advantage_reward", is_histogram=False, is_print=False, is_pair=True)
@@ -148,11 +147,11 @@ with tf.Session() as session:
                     )
                     # Store a collection of values
                     for i in range(global_step, global_step + 10):
-                        logger.store(loss=i)
+                        logger.store('loss', i)
                         logger.store(advantage_reward=(i, i * 2))
 
                 # Another monitored section
-                with logger.section("process_samples"):
+                with logger.section("process_samples", is_silent=True):
                     time.sleep(0.5)
 
                 # A third monitored section to make it real

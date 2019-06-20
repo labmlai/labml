@@ -17,6 +17,7 @@ start_step: 0
 """
 
 import argparse
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -24,11 +25,9 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 
 from lab.experiment.pytorch import Experiment
-from lab_globals import lab
 
 # Declare the experiment
-EXPERIMENT = Experiment(lab=lab,
-                        name="mnist_pytorch",
+EXPERIMENT = Experiment(name="mnist_pytorch",
                         python_file=__file__,
                         comment="Test",
                         check_repo_dirty=False

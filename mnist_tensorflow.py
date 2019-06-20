@@ -20,11 +20,9 @@ import argparse
 import tensorflow as tf
 
 from lab.experiment.tensorflow import Experiment
-from lab_globals import lab
 
 # Declare the experiment
-EXPERIMENT = Experiment(lab=lab,
-                        name="mnist_tensorflow",
+EXPERIMENT = Experiment(name="mnist_tensorflow",
                         python_file=__file__,
                         comment="Test",
                         check_repo_dirty=False
