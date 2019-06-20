@@ -65,8 +65,7 @@ class Experiment(experiment.Experiment):
         """
 
         self.trial.start_step = global_step
-        self._log_trial(is_add=True)
-        self._log_python_file()
+        self._init_trial_log()
 
         if global_step > 0:
             # load checkpoint if we are starting from middle

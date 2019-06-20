@@ -303,7 +303,7 @@ It will load from a saved state if the `global_step` is not `0`.
 
 ### Save Progress
 ```python
-EXPERIMENT.save_progress(logger.progress_dict)
+logger.savere_progress()
 ```
 
 This saves the progress stats in `trials.yaml` and python file header

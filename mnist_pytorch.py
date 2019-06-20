@@ -190,7 +190,7 @@ def main():
 
                 # Output the progress summaries to `trial.yaml` and
                 # to the python file header
-                EXPERIMENT.save_progress()
+                logger.save_progress()
 
                 # Clear line and go to the next line;
                 # that is, we add a new line to the output

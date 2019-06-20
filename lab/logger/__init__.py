@@ -8,7 +8,7 @@ This module contains logging and monotring helpers.
 Logger prints to the screen and writes TensorBoard summaries.
 """
 
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict
 
 from lab import colors
 from lab.colors import ANSICode
@@ -19,12 +19,19 @@ from lab.logger.store import Store
 from lab.logger.writers import Writer, ProgressDictWriter, ScreenWriter
 
 
+class ProgressSaver:
+    def save(self, progress: Dict[str, str]):
+        raise NotImplementedError()
+
+
 class Logger:
     """
     ## 🖨 Logger class
     """
 
-    def __init__(self, *, is_color=True):
+    def __init__(self, *,
+                 is_color=True,
+                 progress_saver):
         """
         ### Initializer
         :param is_color: whether to use colours in console output
@@ -42,6 +49,8 @@ class Logger:
 
         self.__screen_writer = ScreenWriter(is_color)
         self.__progress_dict_writer = ProgressDictWriter()
+
+        self.__progress_saver: Optional[ProgressSaver] = progress_saver
 
     @staticmethod
     def ansi_code(text: str, color: List[ANSICode] or ANSICode or None):
@@ -152,6 +161,12 @@ class Logger:
         self.__progress_dict = self.__store.write(self.__progress_dict_writer, global_step)
         self.__store.clear()
         self.__log_line()
+
+    def save_progress(self):
+        if self.__progress_saver is None:
+            return
+
+        self.__progress_saver.save(self.__progress_dict)
 
     def section(self, name, *,
                 is_silent: bool = False,

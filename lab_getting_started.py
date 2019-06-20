@@ -171,7 +171,7 @@ with tf.Session() as session:
 
                 # Store progress in the trials file and in the python code as a comment
                 if (global_step + 1) % 10 == 0:
-                    EXPERIMENT.save_progress()
+                    logger.save_progress()
 
                 # We will overwrite the same console line, and produce
                 # a new line after ten such overwrites.
