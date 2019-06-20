@@ -130,43 +130,6 @@ is for custom charts, and because it's not that hard to do it.
 Here's a link to a
  [sample Jupyter Notebook with custom charts](https://github.com/vpj/lab/blob/master/sample_analytics.ipynb).
 
-### Handle Keyboard Interrupts
-
-You can use this to delay the Keyboard interrupts and make sure
-a given segment of code runs without interruptions.
-
-### Start TensorBoard
-This lets you start TensorBoard without having to type in all the log paths.
-For instance, so that you can start it with
-```bash
-python tools/tb.py -e ppo ppo_transformed_bellman
-```
-
-instead of
-```bash
-tensorboard --log_dir=ppo:project_path/logs/ppo,ppo_transformed_bellman:project_path/logs/ppo_transformed_bellman
-```
-
-To get a list of all available experiments
-```bash
-python tools/tb.py -e ppo ppo_transformed_bellman
-```
-
-* A simple TensorBoard invoker
-* Tools for custom graphs from TensorBoard summaries
-
-
-### Colored console outputs
-The logger creates beautiful colorized console outputs that's easy on the eye.
-
-<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/log.png" /></p>
-
-### Histograms and moving averages
-The logger can buffer data and produce moving averages and
-TensorBoard histograms.
-This saves you the extra code to buffering.
-
-
 ## Getting Started
 
 Clone this repository and add a symbolic link to lab.
@@ -332,6 +295,23 @@ You can wrap a segment of code that needs to run without interruptions
 within a `with logger.delayed_keyboard_interrupt()`.
 
 Two consecutive interruptions will halt the code segment.
+
+### Start TensorBoard
+This lets you start TensorBoard without having to type in all the log paths.
+For instance, so that you can start it with
+```bash
+python tools/tb.py -e ppo ppo_transformed_bellman
+```
+
+instead of
+```bash
+tensorboard --log_dir=ppo:project_path/logs/ppo,ppo_transformed_bellman:project_path/logs/ppo_transformed_bellman
+```
+
+To get a list of all available experiments
+```bash
+python tools/tb.py -e ppo ppo_transformed_bellman
+```
 
 ## Background
 I was coding existing reinforcement learning algorithms
