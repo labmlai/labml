@@ -332,5 +332,3 @@ This library is was made by combining these bunch of tools.
 
 * **June 19, 2019**
 	* New API for logger
-
-## 🖋 [@vpj on Twitter](https://twitter.com/vpj)
