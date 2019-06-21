@@ -1,4 +1,4 @@
-# 🧪 Lab
+# 🧪 Lab 2.0
 
 [Github Repository](https://github.com/vpj/lab)
 
@@ -13,16 +13,17 @@ structure without you explicitly having to worry about them.
 
 ```
 logs
-├── mnist_convolution
+├── experiment1
+│   ├── checkpoints
+│   │   └── 📄 Saved checkpoints
 │   ├── log
 │   │   └── 📄 TensorBoard summaries
+│   ├── diffs
+│   │   └── 📄 diffs when experiment was run
 │   └── trials.yaml
-└── mnist_attention
-    ├── checkpoints
-    │   └── 📄 Saved checkpoints
-    ├── log
-    │   └── 📄 TensorBoard summaries
-    └── trials.yaml
+└── experimnent2...
+    ├──
+    ...
 ```
 
 ### Keep track of experiments
@@ -96,9 +97,9 @@ and to get status updates on the console.
 This also helps organize the code.
 
 ```python
-with logger.monitor("Load data"):
+with logger.section("Load data"):
     # code to load data
-with logger.monitor("Create model"):
+with logger.section("Create model"):
     # code to create model
 ```
 
@@ -129,43 +130,6 @@ is for custom charts, and because it's not that hard to do it.
 Here's a link to a
  [sample Jupyter Notebook with custom charts](https://github.com/vpj/lab/blob/master/sample_analytics.ipynb).
 
-### Handle Keyboard Interrupts
-
-You can use this to delay the Keyboard interrupts and make sure
-a given segment of code runs without interruptions.
-
-### Start TensorBoard
-This lets you start TensorBoard without having to type in all the log paths.
-For instance, so that you can start it with
-```bash
-python tools/tb.py -e ppo ppo_transformed_bellman
-```
-
-instead of
-```bash
-tensorboard --log_dir=ppo:project_path/logs/ppo,ppo_transformed_bellman:project_path/logs/ppo_transformed_bellman
-```
-
-To get a list of all available experiments
-```bash
-python tools/tb.py -e ppo ppo_transformed_bellman
-```
-
-* A simple TensorBoard invoker
-* Tools for custom graphs from TensorBoard summaries
-
-
-### Colored console outputs
-The logger creates beautiful colorized console outputs that's easy on the eye.
-
-<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/log.png" /></p>
-
-### Histograms and moving averages
-The logger can buffer data and produce moving averages and
-TensorBoard histograms.
-This saves you the extra code to buffering.
-
-
 ## Getting Started
 
 Clone this repository and add a symbolic link to lab.
@@ -175,8 +139,9 @@ ln -s ~/repo/lab your_project/lab
 ln -s ~/repo/tools your_project/tools
 ```
 
-The create a `lab_globals.py` file and set project level configurations.
-See [lab_globals.py](http://blog.varunajayasiri.com/ml/lab/lab_globals.html) for example.
+The create a `.lab.yaml` file. An empty file at the root of the project should
+be enough. You can set project level configs for 'check_repo_dirty' and 'is_log_python_file'
+in the config file.
 
 ### A python file for each experiment
 The idea is to have a separate python file for each major expirment,
@@ -192,12 +157,21 @@ for examples.
 
 ## Usage
 
+### Monitored Iterator
+
+```python
+for step in logger.loop(range(0, total_steps)):
+	# training code ...
+```
+
+The monitored iterator keeps track of the time taken and time remaining for the loop.
+
 ### Monitored Sections
 
 ```python
-with logger.monitor("Load data"):
+with logger.section("Load data"):
     # code to load data
-with logger.monitor("Create model"):
+with logger.section("Create model"):
     # code to create model
 ```
 
@@ -205,57 +179,22 @@ Monitored sections let you monitor time takes for
 different tasks and also helps keep the code clean 
 by separating different sections.
 
-### Monitored Iterator
+Monitored sections can be within loops as well.
+
+### Progress Monitoring
 
 ```python
-# Create a monitored iterator
-monitor = logger.iterator(range(0, total_steps))
-
-for step in monitor:
-	logger.print_global_step(step)
-
-	# training code ...
-
-	monitor.progress()
-```
-
-The monitored iterator keeps track of the time taken and time remaining for the loop.
-`print_global_step` prints the global step to the console.
-`monitor.progress()` prints the time taken and time remaining.
-
-#### Monitored Sections within Loop
-
-```python
-with monitor.section("process_samples"):
-    # code to process samples
-```
-
-This will monitor sections of code within a monitored iterator.
-
-```python
-with monitor.unominotored("logging"):
-    # code to process samples
-```
-
-Unmonitored sections within the loop can used to separate out code for readability.
-
-#### Progress Monitoring within Loop
-
-```python
-with monitor.section("train"):
-    iterations = 100
-    progress = logger.progress(iterations)
-    for i in range(100):
-    	# Multiple training steps in the inner loop
-        progress.update(i)
-    # Clears the progress when complete
-    progress.clear()
+for step in logger.loop(range(0, total_steps)):
+	with logger.section("train", total_steps=100):
+	    for i in range(100):
+		# Multiple training steps in the inner loop
+		logger.progress(i)
+	    # Clears the progress when complete
 ```
 
 This shows the progress for training in the inner loop.
-This behaviour was necessary in Reinforcement Learning where the
- main loop gathers samples and trains;
- whilst the inner sampling and training loops also run for a few steps.
+You can do progress monitoring within sections outside the
+ `logger.loop` as well.
 
 ### Log indicators
 
@@ -285,43 +224,35 @@ logger.store(advantage_reward=(i, i * 2))
 
 ### Write Logs
 ```python
-logger.write(global_step=global_step, new_line=False)
+logger.write()
 ```
 
 This will write the stored and values in the logger and clear the buffers.
 It will write to console as well as TensorBoard summaries.
 
-The parameter `new_line` indicates whether to move to a new line in the console.
 In standard usage of this library we do not move to new_lines after each console output.
 Instead we update the stats on the same line and move to a new line after a few iterations.
-Also if we are inside a monitored loop we will show the progress with `monitored.progress()`
-at the end of the line.
 
 ```python
-logger.clear_line(reset=True)
-logger.clear_line(reset=False)
+logger.new_line()
 ```
 
-This clears the current console line buffer.
-If reset is set to `False` it moves to the next line,
-and if reset is `True` it resets the cursor to the beginning
-of current line.
+This will start a new line in the console.
 
 ### Create Experiment
 ```python
-EXPERIMENT = Experiment(lab=lab,
-                        name="mnist_pytorch",
+EXPERIMENT = Experiment(name="mnist_pytorch",
                         python_file=__file__,
                         comment="Test",
-                        check_repo_dirty=False
-                        )
+                        check_repo_dirty=False,
+			is_log_python_file=True)
 ```
 
-* `lab`: This is the project level lab definition. See [lab_global.py](http://blog.varunajayasiri.com/ml/lab/lab_global.html) for example.
 * `name`: Name of the experiment
 * `python_file`: The python file with the experiment definition.
 * `comment`: Comment about the current experiment trial
 * `check_repo_dirty`: If `True` the experiment is halted if there are uncommitted changes to the git repository.
+* `is_log_python_file`: Whether to update the python source file with experiemnt results on the top.
 
 ```python
 EXPERIMENT.start_train(0)
@@ -335,15 +266,14 @@ It will load from a saved state if the `global_step` is not `0`.
 
 ### Save Progress
 ```python
-progress_dict = logger.get_progress_dict(global_step=global_step)
-EXPERIMENT.save_progress(progress_dict)
+logger.savere_progress()
 ```
 
 This saves the progress stats in `trials.yaml` and python file header
 
 ### Save Checkpoint
 ```python
-EXPERIMENT.save_checkpoint(global_step)
+logger.save_checkpoint()
 ```
 
 This saves a checkpoint and you can start from the saved checkpoint with
@@ -365,6 +295,23 @@ You can wrap a segment of code that needs to run without interruptions
 within a `with logger.delayed_keyboard_interrupt()`.
 
 Two consecutive interruptions will halt the code segment.
+
+### Start TensorBoard
+This lets you start TensorBoard without having to type in all the log paths.
+For instance, so that you can start it with
+```bash
+python tools/tb.py -e ppo ppo_transformed_bellman
+```
+
+instead of
+```bash
+tensorboard --log_dir=ppo:project_path/logs/ppo,ppo_transformed_bellman:project_path/logs/ppo_transformed_bellman
+```
+
+To get a list of all available experiments
+```bash
+python tools/tb.py -e ppo ppo_transformed_bellman
+```
 
 ## Background
 I was coding existing reinforcement learning algorithms
@@ -399,5 +346,8 @@ This library is was made by combining these bunch of tools.
 	* PyTorch support
 	* Improved Documentation
 	* MNIST examples
+
+* **June 19, 2019**
+	* New API for logger
 
 ## 🖋 [@vpj on Twitter](https://twitter.com/vpj)

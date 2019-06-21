@@ -1,14 +1,15 @@
 import pathlib
 import time
-from typing import List, Dict
+from typing import Dict, Optional
 
-import numpy as np
 import git
+import numpy as np
 
 from lab import colors, util
 from lab.commenter import Commenter
+from lab.experiment.experiment_trial import Trial
 from lab.lab import Lab
-from lab.logger import Logger
+from lab.logger import Logger, ProgressSaver
 
 commenter = Commenter(
     comment_start='"""',
@@ -35,6 +36,8 @@ class ExperimentInfo:
         self.npy_path = self.experiment_path / "npy"
         self.model_file = self.checkpoint_path / 'model'
 
+        self.diff_path = self.experiment_path / "diffs"
+
         self.summary_path = self.experiment_path / "log"
         self.screenshots_path = self.experiment_path / 'screenshots'
         self.trials_log_file = self.experiment_path / "trials.yaml"
@@ -47,175 +50,65 @@ class ExperimentInfo:
         return p.exists()
 
 
-def _struct_time_to_time(t: time.struct_time):
-    return f"{t.tm_hour :02}:{t.tm_min :02}:{t.tm_sec :02}"
-
-
-def _struct_time_to_date(t: time.struct_time):
-    return f"{t.tm_year :04}-{t.tm_mon :02}-{t.tm_mday :02}"
-
-
-_GLOBAL_STEP = 'global_step'
-
-
-class Trial:
-    """
-    # Trial 🏃‍
-
-    Every trial in an experiment has same configs.
-    It's just multiple runs.
-
-    A new trial will replace checkpoints and TensorBoard summaries
-    or previous trials, you should make a copy if needed.
-    The performance log in `trials.yaml` is not replaced.
-
-    You should run new trials after bug fixes or to see performance is
-     consistent.
-
-    If you want to try different configs, create multiple experiments.
-    """
-
-    progress: List[Dict[str, str]]
-
+class _ExperimentProgressSaver(ProgressSaver):
     def __init__(self, *,
-                 python_file: str,
-                 trial_date: str,
-                 trial_time: str,
-                 comment: str,
-                 commit: str or None = None,
-                 commit_message: str or None = None,
-                 is_dirty: bool = True,
-                 start_step: int = 0,
-                 progress=None,
-                 progress_limit: int = 16):
-        self.commit = commit
-        self.is_dirty = is_dirty
-        self.python_file = python_file
-        self.trial_date = trial_date
-        self.trial_time = trial_time
-        self.comment = comment
-        self.commit_message = commit_message
-        self.start_step = start_step
-        if progress is None:
-            self.progress = []
+                 trial: Trial,
+                 trials_log_file: pathlib.PurePath,
+                 is_log_python_file: bool):
+        self.trial = trial
+        self.trials_log_file = trials_log_file
+        self.is_log_python_file = is_log_python_file
+
+    def __log_python_file(self):
+        if not self.is_log_python_file:
+            return
+
+        try:
+            with open(self.trial.python_file, "r") as file:
+                lines = file.read().splitlines()
+
+            trial_print = self.trial.pretty_print()
+
+            lines = commenter.update(lines, trial_print)
+            code = '\n'.join(lines)
+
+            with open(self.trial.python_file, "w") as file:
+                file.write(code)
+        except FileNotFoundError:
+            pass
+
+    def __log_trial(self, is_add: bool):
+        """
+        ### Log trial
+
+        This will add or update a trial in the `trials.yaml` file
+        """
+        try:
+            with open(str(self.trials_log_file), "r") as file:
+                trials = util.yaml_load(file.read())
+                if trials is None:
+                    trials = []
+        except FileNotFoundError:
+            trials = []
+
+        if is_add or len(trials) == 0:
+            trials.append(self.trial.to_dict())
         else:
-            self.progress = progress
+            trials[-1] = self.trial.to_dict()
 
-        assert progress_limit % 2 == 0
-        assert progress_limit >= 8
-        self.progress_limit = progress_limit
+        self.trial.index = len(trials) - 1
 
-    @classmethod
-    def new_trial(cls, *,
-                  python_file: str,
-                  trial_time: time.struct_time,
-                  comment: str):
-        """
-        ## Create a new trial
-        """
-        return cls(python_file=python_file,
-                   trial_date=_struct_time_to_date(trial_time),
-                   trial_time=_struct_time_to_time(trial_time),
-                   comment=comment)
+        with open(str(self.trials_log_file), "w") as file:
+            file.write(util.yaml_dump(trials))
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, any]):
-        """
-        ## Create a new trial from a dictionary
-        """
-        return cls(**data)
-
-    def to_dict(self):
-        """
-        ## Convert trial to a dictionary for saving
-        """
-        return dict(
-            python_file=self.python_file,
-            trial_date=self.trial_date,
-            trial_time=self.trial_time,
-            comment=self.comment,
-            commit=self.commit,
-            commit_message=self.commit_message,
-            is_dirty=self.is_dirty,
-            start_step=self.start_step,
-            progress=self.progress
-        )
-
-    def pretty_print(self) -> List[str]:
-        """
-        ## 🎨 Pretty print trial for the python file header
-        """
-
-        # Trial information
-        commit_status = "[dirty]" if self.is_dirty else "[clean]"
-        res = [
-            f"{self.trial_date} {self.trial_time}",
-            self.comment,
-            f"[{commit_status}]: {self.commit_message}",
-            f"start_step: {self.start_step}"
-        ]
-
-        # Stop if no progress is available
-        if len(self.progress) == 0:
-            return res
-
-        res.append('')
-
-        # Print progress table
-        lens = {}
-        for k, v in self.progress[0].items():
-            lens[k] = max(len(k), len(v))
-
-        line = []
-        for k, v in self.progress[0].items():
-            line.append(' ' * (lens[k] - len(k)) + k)
-        line = '| ' + ' | '.join(line) + ' |'
-        res.append('-' * len(line))
-        res.append(line)
-        res.append('-' * len(line))
-
-        for p in self.progress:
-            line = [' ' * (lens[k] - len(str(v))) + str(v) for k, v in p.items()]
-            line = '| ' + ' | '.join(line) + ' |'
-            res.append(line)
-
-        res.append('-' * len(line))
-
-        return res
-
-    def __str__(self):
-        return f"Trial(comment=\"{self.comment}\"," \
-            f" commit=\"{self.commit_message}\"," \
-            f" date={self.trial_date}, time={self.trial_time}"
-
-    def __repr__(self):
-        return self.__str__()
-
-    def set_progress(self, progress: Dict[str, str]):
-        """
-        ## Add or update progress
-        """
-
-        assert _GLOBAL_STEP in progress
-
-        if len(self.progress) < 2:
-            self.progress.append(progress)
+    def save(self, progress: Optional[Dict[str, str]] = None):
+        if progress is not None:
+            self.trial.set_progress(progress)
+            self.__log_trial(is_add=False)
         else:
-            g0 = int(self.progress[0][_GLOBAL_STEP].replace(',', ''))
-            g1 = int(self.progress[1][_GLOBAL_STEP].replace(',', ''))
-            gp = int(self.progress[-2][_GLOBAL_STEP].replace(',', ''))
-            gf = int(self.progress[-1][_GLOBAL_STEP].replace(',', ''))
+            self.__log_trial(is_add=True)
 
-            if g1 - g0 <= gf - gp:
-                # add
-                if len(self.progress) == self.progress_limit:
-                    shrunk = []
-                    for i in range(self.progress_limit // 2):
-                        shrunk.append(self.progress[2 * i + 1])
-                    self.progress = shrunk
-                self.progress.append(progress)
-            else:
-                self.progress[-1] = progress
+        self.__log_python_file()
 
 
 class Experiment:
@@ -227,15 +120,14 @@ class Experiment:
     """
 
     def __init__(self, *,
-                 lab: Lab,
                  name: str,
                  python_file: str,
                  comment: str,
-                 check_repo_dirty: bool = True):
+                 check_repo_dirty: Optional[bool],
+                 is_log_python_file: Optional[bool]):
         """
         ### Create the experiment
 
-        :param lab: reference to current lab
         :param name: name of the experiment
         :param python_file: `__file__` that invokes this. This is stored in
          the experiments list.
@@ -249,13 +141,16 @@ class Experiment:
         Experiment maintains the locations of checkpoints, logs, etc.
         """
 
-        self.__variables = None
-        self.info = ExperimentInfo(lab, name)
+        self.lab = Lab(python_file)
 
-        self.logger = Logger()
+        if check_repo_dirty is None:
+            check_repo_dirty = self.lab.check_repo_dirty
+        if is_log_python_file is None:
+            is_log_python_file = self.lab.is_log_python_file
+
+        self.info = ExperimentInfo(self.lab, name)
+
         self.check_repo_dirty = check_repo_dirty
-
-        self.lab = lab
 
         experiment_path = pathlib.Path(self.info.experiment_path)
         if not experiment_path.exists():
@@ -271,6 +166,11 @@ class Experiment:
         self.trial.commit = repo.active_branch.commit.hexsha
         self.trial.commit_message = repo.active_branch.commit.message.strip()
         self.trial.is_dirty = repo.is_dirty()
+        self.trial.diff = repo.git.diff()
+        self.__progress_saver = _ExperimentProgressSaver(trial=self.trial,
+                                                         trials_log_file=self.info.trials_log_file,
+                                                         is_log_python_file=is_log_python_file)
+        self.logger = Logger(progress_saver=self.__progress_saver)
 
     def print_info_and_check_repo(self):
         """
@@ -355,54 +255,12 @@ class Experiment:
         """
         img.save(str(self.info.screenshots_path / file_name))
 
-    def _log_trial(self, is_add: bool):
-        """
-        ### Log trial
+    def _start(self):
+        self.__progress_saver.save()
 
-        This will add or update a trial in the `trials.yaml` file
-        """
-        try:
-            with open(str(self.info.trials_log_file), "r") as file:
-                trials = util.yaml_load(file.read())
-                if trials is None:
-                    trials = []
-        except FileNotFoundError:
-            trials = []
+        path = pathlib.Path(self.info.diff_path)
+        if not path.exists():
+            path.mkdir(parents=True)
 
-        if is_add or len(trials) == 0:
-            trials.append(self.trial.to_dict())
-        else:
-            trials[-1] = self.trial.to_dict()
-
-        with open(str(self.info.trials_log_file), "w") as file:
-            file.write(util.yaml_dump(trials))
-
-    def _log_python_file(self):
-        """
-        ### Add header to python source
-
-        This will add or update trial information in python source file
-        """
-
-        try:
-            with open(self.trial.python_file, "r") as file:
-                lines = file.read().splitlines()
-
-            trial_print = self.trial.pretty_print()
-
-            lines = commenter.update(lines, trial_print)
-            code = '\n'.join(lines)
-
-            with open(self.trial.python_file, "w") as file:
-                file.write(code)
-        except FileNotFoundError:
-            pass
-
-    def save_progress(self, progress: Dict[str, str]):
-        """
-        ## Save experiment progress
-        """
-        self.trial.set_progress(progress)
-
-        self._log_trial(is_add=False)
-        self._log_python_file()
+        with open(str(path / f"{self.trial.index}.diff"), "w") as f:
+            f.write(self.trial.diff)

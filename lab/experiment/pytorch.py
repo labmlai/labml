@@ -1,7 +1,8 @@
+from typing import Optional
+
 import tensorflow as tf
 
 from lab import experiment
-from lab.lab import Lab
 from lab.logger import tensorboard_writer
 
 
@@ -14,15 +15,14 @@ class Experiment(experiment.Experiment):
     """
 
     def __init__(self, *,
-                 lab: Lab,
                  name: str,
                  python_file: str,
                  comment: str,
-                 check_repo_dirty: bool = True):
+                 check_repo_dirty: Optional[bool] = None,
+                 is_log_python_file: Optional[bool] = None):
         """
         ### Create the experiment
 
-        :param lab: reference to current lab
         :param name: name of the experiment
         :param python_file: `__file__` that invokes this. This is stored in
          the experiments list.
@@ -36,11 +36,11 @@ class Experiment(experiment.Experiment):
         Experiment maintains the locations of checkpoints, logs, etc.
         """
 
-        super().__init__(lab=lab,
-                         name=name,
+        super().__init__(name=name,
                          python_file=python_file,
                          comment=comment,
-                         check_repo_dirty=check_repo_dirty)
+                         check_repo_dirty=check_repo_dirty,
+                         is_log_python_file=is_log_python_file)
 
     def load_checkpoint(self):
         raise NotImplementedError()
@@ -63,18 +63,17 @@ class Experiment(experiment.Experiment):
         """
 
         self.trial.start_step = global_step
-        self._log_trial(is_add=True)
-        self._log_python_file()
+        self._start()
 
         if global_step > 0:
             # load checkpoint if we are starting from middle
-            with self.logger.monitor("Loading checkpoint") as m:
+            with self.logger.section("Loading checkpoint") as m:
                 m.is_successful = self.load_checkpoint()
         else:
             # initialize variables and clear summaries if we are starting from scratch
-            with self.logger.monitor("Clearing summaries"):
+            with self.logger.section("Clearing summaries"):
                 self.clear_summaries()
-            with self.logger.monitor("Clearing checkpoints"):
+            with self.logger.section("Clearing checkpoints"):
                 self.clear_checkpoints()
 
         self.create_writer()
@@ -86,5 +85,5 @@ class Experiment(experiment.Experiment):
         Load a checkpoint or reset based on `global_step`.
         """
 
-        with self.logger.monitor("Loading checkpoint") as m:
+        with self.logger.section("Loading checkpoint") as m:
             m.is_successful = self.load_checkpoint()

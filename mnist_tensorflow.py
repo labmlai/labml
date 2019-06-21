@@ -1,15 +1,16 @@
 """
 ```trial
-2019-06-16 10:53:38
+2019-06-17 13:57:07
 Test
-[[dirty]]: 📚 documentation for examples
+[[dirty]]: 🧹  logger 2
 start_step: 0
 
 ---------------------------------------------------
 | global_step | train_loss | test_loss | accuracy |
 ---------------------------------------------------
-|         937 |       1.61 |      1.66 |     0.82 |
-|       1,874 |       1.62 |      1.66 |     0.82 |
+|         937 |       1.65 |      1.67 |     0.81 |
+|       1,874 |       1.61 |      1.64 |     0.84 |
+|       2,811 |       1.61 |      1.63 |     0.84 |
 ---------------------------------------------------
 ```
 """
@@ -19,11 +20,9 @@ import argparse
 import tensorflow as tf
 
 from lab.experiment.tensorflow import Experiment
-from lab_globals import lab
 
 # Declare the experiment
-EXPERIMENT = Experiment(lab=lab,
-                        name="mnist_tensorflow",
+EXPERIMENT = Experiment(name="mnist_tensorflow",
                         python_file=__file__,
                         comment="Test",
                         check_repo_dirty=False
@@ -54,42 +53,44 @@ def accuracy(model, x, y):
 
 
 def train(args, session: tf.Session, loss_value, train_op, batches, epoch):
-    batch_idx = -1
-    while True:
-        batch_idx += 1
-        try:
-            l, _ = session.run([loss_value, train_op])
-        except tf.errors.OutOfRangeError:
-            break
+    with logger.section("Train", total_steps=batches):
+        batch_idx = -1
+        while True:
+            batch_idx += 1
+            try:
+                l, _ = session.run([loss_value, train_op])
+            except tf.errors.OutOfRangeError:
+                break
 
-        # Add training loss to the logger.
-        # The logger will queue the values and output the mean
-        logger.store(train_loss=l)
+            # Add training loss to the logger.
+            # The logger will queue the values and output the mean
+            logger.store(train_loss=l)
+            logger.progress(batch_idx + 1)
+            logger.set_global_step(epoch * batches + batch_idx)
 
-        # Print output to the console
-        if batch_idx % args.log_interval == 0:
-            # Reset the current line
-            logger.clear_line(reset=True)
-            # Print step
-            logger.print_global_step(epoch * batches + batch_idx)
-            # Output the indicators without a newline
-            # because we'll be replacing the same line
-            logger.write(global_step=epoch * batches + batch_idx, new_line=False)
+            # Print output to the console
+            if batch_idx % args.log_interval == 0:
+                # Output the indicators
+                logger.write()
 
 
 def test(session: tf.Session, loss_value, accuracy_value, batches):
-    test_loss = 0
-    correct = 0
-    while True:
-        try:
-            l, a = session.run([loss_value, accuracy_value])
-            test_loss += l
-            correct += a
-        except tf.errors.OutOfRangeError:
-            break
+    with logger.section("Test", total_steps=batches):
+        test_loss = 0
+        correct = 0
+        batch_idx = -1
+        while True:
+            batch_idx += 1
+            try:
+                l, a = session.run([loss_value, accuracy_value])
+                test_loss += l
+                correct += a
+            except tf.errors.OutOfRangeError:
+                break
+            logger.progress(batch_idx + 1)
 
-    logger.store(test_loss=test_loss / batches)
-    logger.store(accuracy=correct / batches)
+        logger.store(test_loss=test_loss / batches)
+        logger.store(accuracy=correct / batches)
 
 
 def parse_args():
@@ -120,7 +121,7 @@ def main():
     args = parse_args()
 
     # Loading data
-    with logger.monitor("Load data"):
+    with logger.section("Load data"):
         mnist = tf.keras.datasets.mnist
 
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -130,7 +131,7 @@ def main():
         test_dataset = create_mnist_dataset(x_test, y_test, args.batch_size)
 
     # Model creation
-    with logger.monitor("Create model"):
+    with logger.section("Create model"):
         model = tf.keras.models.Sequential([
             tf.keras.layers.Flatten(input_shape=(28, 28)),
             tf.keras.layers.Dense(512, activation=tf.nn.relu),
@@ -139,7 +140,7 @@ def main():
         ])
 
     # Creation of the trainer
-    with logger.monitor("Create trainer"):
+    with logger.section("Create trainer"):
         optimizer = tf.train.AdamOptimizer(learning_rate=args.lr)
         train_iterator = train_dataset.make_initializable_iterator()
         data, target = train_iterator.get_next()
@@ -155,9 +156,6 @@ def main():
     logger.add_indicator("test_loss", is_histogram=False, is_print=True)
     logger.add_indicator("accuracy", is_histogram=False, is_print=True)
 
-    # Create a monitored iterator
-    monitor = logger.iterator(range(0, args.epochs))
-
     #
     batches = len(x_train) // args.batch_size
 
@@ -165,9 +163,7 @@ def main():
         EXPERIMENT.start_train(0, session)
 
         # Loop through the monitored iterator
-        for epoch in monitor:
-            global_step = (epoch + 1) * batches
-
+        for epoch in logger.loop(range(0, args.epochs)):
             # Delayed keyboard interrupt handling to use
             # keyboard interrupts to end the loop.
             # This will capture interrupts and finish
@@ -182,33 +178,24 @@ def main():
                     session.run(test_iterator.initializer)
                     test(session, test_loss, test_accuracy, len(x_test) // args.batch_size)
 
+                    # Clear line and output to console
+                    logger.write()
+
                     # Output the progress summaries to `trial.yaml` and
                     # to the python file header
-                    progress_dict = logger.get_progress_dict(
-                        global_step=global_step)
-                    EXPERIMENT.save_progress(progress_dict)
-
-                    # Clear line and output to console
-                    logger.clear_line(reset=True)
-                    logger.print_global_step(global_step)
-                    logger.write(global_step=global_step, new_line=False)
-
-                    # Output the progress of the loop,
-                    # time taken and time remaining
-                    monitor.progress()
+                    logger.save_progress()
 
                     # Clear line and go to the next line;
                     # that is, we add a new line to the output
                     # at the end of each epoch
-                    logger.clear_line(reset=False)
+                    logger.new_line()
 
             # Handled delayed interrupt
             except KeyboardInterrupt:
-                logger.clear_line(reset=False)
+                logger.finish_loop()
+                logger.new_line()
                 logger.log("\nKilling loop...")
                 break
-
-    logger.clear_line(reset=False)
 
 
 if __name__ == '__main__':

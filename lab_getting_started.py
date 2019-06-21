@@ -45,17 +45,10 @@ Here's the output of this sample program (`lab_getting_started.py`):
 This 👇 is the header that was added automatically when the experiment ran.
 
 ```trial
-2019-06-16 13:22:24
+2019-06-20 16:36:29
 Sample lab experiment
-[[dirty]]: 📚 readme
+[[dirty]]: 🐛  typos
 start_step: 0
-
--------------------------------------
-| global_step |   reward |     loss |
--------------------------------------
-|           9 |     1.50 |    13.50 |
-|          19 |     4.83 |    23.50 |
--------------------------------------
 ```
 """
 
@@ -65,21 +58,15 @@ start_step: 0
 # this sample works when you run it.
 
 import lab.clear_warnings
+
 import time
 
 import tensorflow as tf
 
 from lab.experiment.tensorflow import Experiment
 
-# You should keep the project level lab details
-# defined in a python file at the top of the project.
-# Here's the example [lab_globals.py](lab_globals.html)
-# used for this sample.
-from lab_globals import lab
-
 # Create the sample experiment
-EXPERIMENT = Experiment(lab=lab,
-                        name="Sample",
+EXPERIMENT = Experiment(name="Sample",
                         python_file=__file__,
                         comment="Sample lab experiment",
                         check_repo_dirty=False)
@@ -92,10 +79,10 @@ logger = EXPERIMENT.logger
 # what's going on from the console output.
 # It is also useful to organize the code into sections,
 # when separating them into functions is difficult
-with logger.monitor("Create model") as m:
+with logger.section("Create model"):
     # Indicate that this section failed. You don't have to set
     #  this if it is successful.
-    m.is_successful = False
+    logger.set_successful(False)
 
     # Sleep for a minute.
     time.sleep(1)
@@ -114,10 +101,10 @@ logger.add_indicator("reward", queue_limit=10)
 # By default everything is a set of values and will create a TensorBoard histogram
 # We specify that `fps` is a scalar.
 # If you store multiple values for this it will output the mean.
-logger.add_indicator("fps", is_histogram=False, is_progress=False)
+logger.add_indicator("fps", is_histogram=False, is_print=False)
 
 # This will produce a histogram
-logger.add_indicator("loss")
+logger.add_indicator("loss", is_print=False)
 
 # A heat map
 logger.add_indicator("advantage_reward", is_histogram=False, is_print=False, is_pair=True)
@@ -133,24 +120,21 @@ with tf.Session() as session:
     EXPERIMENT.start_train(0, session)
 
     # Create monitored iterator
-    monitor = logger.iterator(range(50))
-
     # This is the main training loop of this project.
-    for global_step in monitor:
-        # Handle Keyboard Interrupts
+    for global_step in logger.loop(range(50)):
+        # You can set the global step explicitly with
+        # 'logger.set_global_step(global_step)'
 
+        # Handle Keyboard Interrupts
         try:
             with logger.delayed_keyboard_interrupt():
-                # Print the step
-                logger.print_global_step(global_step)
-
                 # A sample monitored section inside iterator
-                with monitor.section("sample"):
+                with logger.section("sample"):
                     time.sleep(0.5)
 
                 # An unmonitored section is used only to organize code.
                 # It produces no output
-                with monitor.unmonitored("logging"):
+                with logger.section("logging", is_silent=True):
                     # Store a dictionary
                     logger.store(
                         reward=global_step / 3.0,
@@ -158,47 +142,44 @@ with tf.Session() as session:
                     )
                     # Store a collection of values
                     for i in range(global_step, global_step + 10):
-                        logger.store(loss=i)
+                        logger.store('loss', i)
                         logger.store(advantage_reward=(i, i * 2))
 
                 # Another monitored section
-                with monitor.section("process_samples"):
+                with logger.section("process_samples", is_silent=True):
                     time.sleep(0.5)
 
                 # A third monitored section to make it real
-                with monitor.section("train"):
+                with logger.section("train", total_steps=100):
                     # Let it run for multiple iterations.
                     # We'll track the progress of that too
-                    iterations = 100
-                    progress = logger.progress(iterations)
                     for i in range(100):
                         time.sleep(0.01)
                         # Progress is tracked manually unlike in the top level iterator
                         # The progress updates do not have to be sequential.
-                        progress.update(i)
-                    # Clears the progress when complete
-                    progress.clear()
-
-                # Store progress in the trials file and in the python code as a comment
-                if (global_step + 1) % 10 == 0:
-                    progress_dict = logger.get_progress_dict(global_step=global_step)
-                    EXPERIMENT.save_progress(progress_dict)
+                        logger.progress(i + 1)
 
                 # Log stored values.
                 # This will output to the console and write TensorBoard summaries.
-                logger.write(global_step=global_step, new_line=False)
+                logger.write()
 
-                # Show iterator progress.
-                # This will display how much time is remaining.
-                monitor.progress()
+                # Store progress in the trials file and in the python code as a comment
+                if (global_step + 1) % 10 == 0:
+                    logger.save_progress()
 
                 # We will overwrite the same console line, and produce
                 # a new line after ten such overwrites.
                 # This helps keep the console output concise.
-                logger.clear_line(reset=(global_step + 1) % 10 != 0)
+                if (global_step + 1) % 10 == 0:
+                    logger.new_line()
         except KeyboardInterrupt:
+            logger.finish_loop()
+            logger.new_line()
             logger.log(f"Stopping the training at {global_step} and saving checkpoints")
             break
+
+with logger.section("Cleaning up"):
+    time.sleep(0.5)
 
 """
 #### TensorBoard invoker

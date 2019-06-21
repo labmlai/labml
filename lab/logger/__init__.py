@@ -8,26 +8,24 @@ This module contains logging and monotring helpers.
 Logger prints to the screen and writes TensorBoard summaries.
 """
 
-from collections import deque
-from typing import Dict, List, Tuple, Optional
-
-import numpy as np
+from typing import List, Tuple, Optional, Dict
 
 from lab import colors
 from lab.colors import ANSICode
 from lab.logger.delayed_keyboard_interrupt import DelayedKeyboardInterrupt
-from lab.logger.monitor import Monitor
-from lab.logger.monitor_iterator import MonitorIterator
-from lab.logger.progress import Progress
+from lab.logger.loop import Loop
+from lab.logger.sections import Section, OuterSection, LoopingSection, section_factory
+from lab.logger.store import Store
+from lab.logger.writers import Writer, ProgressDictWriter, ScreenWriter
 
 
-class Writer:
-    def write(self, *, global_step: int,
-              queues,
-              histograms,
-              pairs,
-              scalars,
-              tf_summaries):
+class ProgressSaver:
+    def save(self, progress: Dict[str, str]):
+        raise NotImplementedError()
+
+
+class CheckpointSaver:
+    def save(self, global_step, args):
         raise NotImplementedError()
 
 
@@ -36,24 +34,30 @@ class Logger:
     ## 🖨 Logger class
     """
 
-    def __init__(self, *, is_color=True):
+    def __init__(self, *,
+                 is_color=True,
+                 progress_saver: Optional[ProgressSaver]=None,
+                 checkpoint_saver: Optional[CheckpointSaver]=None):
         """
         ### Initializer
         :param is_color: whether to use colours in console output
         """
-        self.queues = {}
-        self.histograms = {}
-        self.pairs: Dict[str, List[Tuple[int, int]]] = {}
-        self.scalars = {}
+        self.__store = Store()
         self.__writers: List[Writer] = []
-        self.print_order = []
-        self.progress_indicators = []
-        self.tf_summaries = []
 
         self.is_color = is_color
 
-        self.current_line = []
-        self.over_write_line = ""
+        self.__loop: Optional[Loop] = None
+        self.__sections: List[Section] = []
+
+        self.__indicators_print = []
+        self.__progress_dict = {}
+
+        self.__screen_writer = ScreenWriter(is_color)
+        self.__progress_dict_writer = ProgressDictWriter()
+
+        self.__progress_saver: Optional[ProgressSaver] = progress_saver
+        self.__checkpoint_saver: Optional[CheckpointSaver] = checkpoint_saver
 
     @staticmethod
     def ansi_code(text: str, color: List[ANSICode] or ANSICode or None):
@@ -79,56 +83,14 @@ class Logger:
 
         message = self.ansi_code(message, color)
 
-        self.current_line.append(message)
-
         if new_line:
             end_char = '\n'
         else:
             end_char = ''
 
-        text = "".join(self.current_line)
-        lim = self.__count_text(self.over_write_line,
-                                self.__count_text(text))
-
-        if lim < len(self.over_write_line):
-            text += self.over_write_line[lim:]
-            self.over_write_line = text
+        text = "".join(message)
 
         print("\r" + text, end=end_char, flush=True)
-        if new_line:
-            self.current_line = []
-            self.over_write_line = ""
-
-    @staticmethod
-    def __count_text(text, limit=None):
-        """
-        ### Count text length without color codes
-        """
-
-        count = 0
-        is_text = True
-        for i, c in enumerate(text):
-            if is_text and c == '\33':
-                is_text = False
-
-            if is_text:
-                count += 1
-            if limit is not None and count == limit:
-                return i + 1
-
-            if not is_text and c == 'm':
-                is_text = True
-
-        if limit is not None:
-            return len(text)
-        else:
-            return count
-
-    def pop_current_line(self):
-        """
-        ### Pop last segment from current line
-        """
-        self.current_line.pop()
 
     def log_color(self, parts: List[Tuple[str, ANSICode or None]], *,
                   new_line=True):
@@ -149,57 +111,22 @@ class Logger:
         ### Add an indicator
         """
 
-        if queue_limit is not None:
-            self.queues[name] = deque(maxlen=queue_limit)
-        elif is_histogram:
-            self.histograms[name] = []
-        else:
-            self.scalars[name] = []
-
         if is_print:
-            self.print_order.append(name)
+            self.__screen_writer.add_indicator(name)
 
         if is_progress is None:
             is_progress = is_print
+
         if is_progress:
-            self.progress_indicators.append(name)
+            self.__progress_dict_writer.add_indicator(name)
 
         if is_pair:
             assert not is_print and not is_progress and not is_histogram and queue_limit is None
-            self.pairs[name] = []
 
-    def _store_list(self, items: List[Dict[str, float]]):
-        for item in items:
-            self.store(**item)
-
-    def _store_kv(self, k, v):
-        if k in self.queues:
-            self.queues[k].append(v)
-        elif k in self.histograms:
-            self.histograms[k].append(v)
-        elif k in self.pairs:
-            if type(v) == tuple:
-                assert len(v) == 2
-                self.pairs[k].append((v[0], v[1]))
-            else:
-                assert type(v) == list
-                self.pairs[k] += v
-        else:
-            self.scalars[k].append(v)
-
-    def _store_kvs(self, **kwargs):
-        for k, v in kwargs.items():
-            self._store_kv(k, v)
-
-    def has_key(self, k):
-        if k in self.queues:
-            return len(self.queues[k]) > 0
-        elif k in self.histograms:
-            return len(self.histograms[k]) > 0
-        elif k in self.pairs:
-            return len(self.pairs[k]) > 0
-        else:
-            return len(self.scalars[k]) > 0
+        self.__store.add_indicator(name,
+                                   queue_limit=queue_limit,
+                                   is_histogram=is_histogram,
+                                   is_pair=is_pair)
 
     def store(self, *args, **kwargs):
         """
@@ -209,140 +136,142 @@ class Logger:
         a TensorBoard histogram depending on the
         type of the indicator.
         """
-        assert len(args) <= 2
 
-        if len(args) == 0:
-            self._store_kvs(**kwargs)
-        elif len(args) == 1:
-            assert not kwargs
-            if isinstance(args[0], list):
-                self._store_list(args[0])
-            else:
-                assert isinstance(args[0], bytes)
-                self.tf_summaries.append(args[0])
-        elif len(args) == 2:
-            assert isinstance(args[0], str)
-            if isinstance(args[1], list):
-                for v in args[1]:
-                    self._store_kv(args[0], v)
-            else:
-                self._store_kv(args[0], args[1])
+        self.__store.store(*args, **kwargs)
 
-    def _write_to_screen(self, *, new_line: bool):
-        parts = []
+    def set_global_step(self, global_step):
+        if self.__loop is None:
+            raise RuntimeError("Cannot set global step from outside the loop")
+        self.__loop.global_step = global_step
 
-        for k in self.print_order:
-            if k in self.queues:
-                if len(self.queues[k]) == 0:
-                    continue
-                v = np.mean(self.queues[k])
-            elif k in self.histograms:
-                if len(self.histograms[k]) == 0:
-                    continue
-                v = np.mean(self.histograms[k])
-            else:
-                if len(self.scalars[k]) == 0:
-                    continue
-                v = np.mean(self.scalars[k])
+    @property
+    def progress_dict(self):
+        return self.__progress_dict
 
-            parts.append((f" {k}: ", None))
-            if self.is_color:
-                parts.append((f"{v :8,.2f}", colors.Style.bold))
-            else:
-                parts.append((f"{v :8,.2f}", None))
+    @staticmethod
+    def new_line():
+        print()
 
-        self.log_color(parts, new_line=new_line)
-
-    def get_progress_dict(self, *, global_step: int):
-        """
-        ### Get progress dictionary
-
-        This is used for adding progress to trial information
-        """
-        res = dict(global_step=f"{global_step :8,}")
-
-        for k in self.progress_indicators:
-            if k in self.queues:
-                if len(self.queues[k]) == 0:
-                    continue
-                v = np.mean(self.queues[k])
-            elif k in self.histograms:
-                if len(self.histograms[k]) == 0:
-                    continue
-                v = np.mean(self.histograms[k])
-            else:
-                if len(self.scalars[k]) == 0:
-                    continue
-                v = np.mean(self.scalars[k])
-
-            res[k] = f"{v :8,.2f}"
-
-        return res
-
-    def _clear_stores(self):
-        for k in self.histograms:
-            self.histograms[k] = []
-        for k in self.scalars:
-            self.scalars[k] = []
-        for k in self.pairs:
-            self.pairs[k] = []
-        self.tf_summaries = []
-
-    def write(self, *, global_step: int, new_line: bool = True):
+    def write(self):
         """
         ### Output the stored log values to screen and TensorBoard summaries.
         """
+
+        if self.__loop is None:
+            raise RuntimeError("Cannot write stats without loop")
+
+        global_step = self.__loop.global_step
+
         for w in self.__writers:
-            w.write(global_step=global_step,
-                    queues=self.queues,
-                    histograms=self.histograms,
-                    pairs=self.pairs,
-                    scalars=self.scalars,
-                    tf_summaries=self.tf_summaries)
-        self._write_to_screen(new_line=new_line)
-        self._clear_stores()
+            self.__store.write(w, global_step)
+        self.__indicators_print = self.__store.write(self.__screen_writer, global_step)
+        self.__progress_dict = self.__store.write(self.__progress_dict_writer, global_step)
+        self.__store.clear()
+        self.__log_line()
 
-    def print_global_step(self, global_step):
-        """
-        ### Print the global step
-        """
-        self.log(f"{global_step :8,}:  ",
-                 color=colors.BrightColor.orange,
-                 new_line=False)
+    def save_progress(self):
+        if self.__progress_saver is None:
+            return
 
-    def clear_line(self, reset: bool):
-        """
-        ### Clears the current line
-        """
-        if reset:
-            print("\r", end="", flush=True)
-            self.over_write_line = "".join(self.current_line)
+        self.__progress_saver.save(self.__progress_dict)
+
+    def save_checkpoint(self, *args):
+        if self.__checkpoint_saver is None:
+            return
+
+        self.__checkpoint_saver.save(self.__loop.global_step, args)
+
+    def section(self, name, *,
+                is_silent: bool = False,
+                is_timed: bool = True,
+                is_partial: bool = False,
+                total_steps: float = 1.0):
+
+        if len(self.__sections) != 0:
+            raise RuntimeError("There can only be one section running at a time.")
+
+        if self.__loop is not None:
+            section = self.__loop.get_section(name=name,
+                                              is_silent=is_silent,
+                                              is_timed=is_timed,
+                                              is_partial=is_partial,
+                                              total_steps=total_steps)
+            self.__sections.append(section)
         else:
-            self.over_write_line = ""
-            print()
+            self.__sections.append(section_factory(logger=self,
+                                                   name=name,
+                                                   is_silent=is_silent,
+                                                   is_timed=is_timed,
+                                                   is_partial=is_partial,
+                                                   total_steps=total_steps,
+                                                   is_looping=False))
 
-        self.current_line = []
+        return self.__sections[-1]
 
-    def iterator(self, *args, **kwargs):
-        """
-        ### Create a monitored iterator
-        """
-        kwargs['logger'] = self
-        return MonitorIterator(*args, **kwargs)
+    def progress(self, steps: float):
+        if len(self.__sections) == 0:
+            raise RuntimeError("You must be within a section to report progress")
 
-    def monitor(self, *args, **kwargs):
-        """
-        ### Create a code section monitor
-        """
-        kwargs['logger'] = self
-        return Monitor(*args, **kwargs)
+        if self.__sections[-1].progress(steps):
+            self.__log_line()
 
-    def progress(self, *args, **kwargs):
-        """
-        ### Create a progress monitor
-        """
-        kwargs['logger'] = self
-        return Progress(*args, **kwargs)
+    def set_successful(self, is_successful=True):
+        if len(self.__sections) == 0:
+            raise RuntimeError("You must be within a section to report success")
+
+        self.__sections[-1].is_successful = is_successful
+        self.__log_line()
+
+    def loop(self, iterator: range):
+        if len(self.__sections) != 0:
+            raise RuntimeError("Cannot start a loop within a section")
+
+        self.__loop = Loop(iterator=iterator, logger=self)
+        return self.__loop
+
+    def finish_loop(self):
+        if len(self.__sections) != 0:
+            raise RuntimeError("Cannot be within a section when finishing the loop")
+        self.__loop = None
+
+    def section_enter(self, section):
+        if len(self.__sections) == 0:
+            raise RuntimeError("Entering a section without creating a section.\n"
+                               "Always use logger.section to create a section")
+
+        if section is not self.__sections[-1]:
+            raise RuntimeError("Entering a section other than the one last_created\n"
+                               "Always user with logger.section(...):")
+
+        self.__log_line()
+
+    def __log_line(self):
+        if self.__loop is not None:
+            self.__log_looping_line()
+            return
+
+        if len(self.__sections) == 0:
+            return
+
+        self.log_color(self.__sections[-1].log(), new_line=False)
+
+    def __log_looping_line(self):
+        parts = self.__loop.log_global_step()
+        parts += self.__loop.log_sections()
+        parts += self.__indicators_print
+        parts += self.__loop.log_progress()
+
+        self.log_color(parts, new_line=False)
+
+    def section_exit(self, section):
+        if len(self.__sections) == 0:
+            raise RuntimeError("Impossible")
+
+        if section is not self.__sections[-1]:
+            raise RuntimeError("Impossible")
+
+        self.__log_line()
+        self.__sections.pop(-1)
 
     def delayed_keyboard_interrupt(self):
         """
