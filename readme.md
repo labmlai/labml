@@ -40,28 +40,12 @@ a human readable form.
     global_step: '   3,752'
     test_loss: '    2.22'
     train_loss: '    2.22'
-  - accuracy: '    0.71'
-    global_step: '  11,256'
-    test_loss: '    1.03'
-    train_loss: '    1.06'
-  - accuracy: '    0.78'
-    global_step: '  18,760'
-    test_loss: '    0.63'
-    train_loss: '    0.69'
-  - accuracy: '    0.83'
-    global_step: '  26,264'
-    test_loss: '    0.49'
-    train_loss: '    0.53'
-  - accuracy: '    0.87'
-    global_step: '  34,706'
-    test_loss: '    0.38'
-    train_loss: '    0.39'
+  - ...
   python_file: /progrect/experiments/mnist_simple_convolution.py
   start_step: '0'
   trial_date: '2019-06-14'
   trial_time: '16:13:18'
-- comment: 🐛 stride fix
-...
+- ...
 ```
 
 It keeps references to **git commit** when the experiement was run,
@@ -86,7 +70,7 @@ start_step: 0
 |          19 |     4.83 |    23.50 |
 |          29 |     8.17 |    33.50 |
 |          39 |    11.50 |    43.50 |
-|          49 |    14.83 |    53.50 |
+|             ...                   |
 -------------------------------------
 """
 ```
@@ -136,7 +120,6 @@ Clone this repository and add a symbolic link to lab.
 
 ```bash
 ln -s ~/repo/lab your_project/lab
-ln -s ~/repo/tools your_project/tools
 ```
 
 The create a `.lab.yaml` file. An empty file at the root of the project should
@@ -300,7 +283,7 @@ Two consecutive interruptions will halt the code segment.
 This lets you start TensorBoard without having to type in all the log paths.
 For instance, so that you can start it with
 ```bash
-python tools/tb.py -e ppo ppo_transformed_bellman
+python lab/tb.py -e ppo ppo_transformed_bellman
 ```
 
 instead of
@@ -310,7 +293,7 @@ tensorboard --log_dir=ppo:project_path/logs/ppo,ppo_transformed_bellman:project_
 
 To get a list of all available experiments
 ```bash
-python tools/tb.py -e ppo ppo_transformed_bellman
+python lab/tb.py -l
 ```
 
 ## Background
