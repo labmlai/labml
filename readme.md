@@ -6,8 +6,9 @@
 
 [Github Repository](https://github.com/vpj/lab)
 
-This library lets you organize machine learning
- experiments.
+This library helps you organize machine learning
+ experiments. It is a quite small library,
+ and most of the modules can be used independently of each other.
 
 ## Features
 
@@ -83,7 +84,7 @@ start_step: 0
 
 <p align="center"><img style="max-width:100%" src="/images/distribution.png" /></p>
 
-With the visualization API you can plot distributions easily on a Jupyter Notebook.
+With the visualization helper functions you can plot distributions easily on a Jupyter Notebook.
 
 Here's a link to a
  [sample Jupyter Notebook with custom charts](https://github.com/vpj/lab/blob/master/sample_analytics.ipynb).
