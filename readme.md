@@ -312,6 +312,13 @@ It also keeps track of training times which makes it easy to spot
 
 This library is was made by combining these bunch of tools.
 
+### Alternatives
+
+* [Comet](https://www.comet.ml/)
+* [Beaker](https://beaker.org/)
+* [Sacred](https://github.com/IDSIA/sacred)
+* [Neptune](https://neptune.ml/)
+
 ## Updates
 
 * **November 16, 2018**
