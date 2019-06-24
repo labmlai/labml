@@ -1,4 +1,8 @@
-# 🧪 Lab 2.0
+<p align="center">
+  <img src="/images/logo.png?raw=true" width="100" title="Logo">
+</p>
+
+# Lab 2.0
 
 [Github Repository](https://github.com/vpj/lab)
 
@@ -7,7 +11,8 @@ This library lets you organize machine learning
 
 ## Features
 
-### Organize checkpoints, TensorBoard summaries and logs
+### Organize Experiments
+
 Maintains logs, summaries and checkpoints of all the experiments in a folder
 structure without you explicitly having to worry about them.
 
@@ -26,7 +31,6 @@ logs
     ...
 ```
 
-### Keep track of experiments
 The `trials.yaml` file keeps the summaries of each run for that experiment in
 a human readable form.
 
@@ -75,44 +79,21 @@ start_step: 0
 """
 ```
 
-### Timing and progress
-You can use monitored code segments to measure time 
-and to get status updates on the console.
-This also helps organize the code.
+### Custom Visualizations of TensorBoard summaries
 
-```python
-with logger.section("Load data"):
-    # code to load data
-with logger.section("Create model"):
-    # code to create model
-```
+<p align="center"><img style="max-width:100%" src="/images/distribution.png" /></p>
 
-will produce an output like
-<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/monitored_sections.png" /></p>
-
-Library also has utility functions to monitor loops.
-<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/loop.gif" /></p>
-
-### Customized Visualizations of TensorBoard summaries
-
-TensorBoard is nice, but sometimes you need
-custom charts to debug algorithms. Following
-is an example of a custom chart:
-
-<p align="center"><img style="max-width:100%" src="http://blog.varunajayasiri.com/ml/lab/images/distribution.png" /></p>
-
-And sometime TensorBoard is not even doing a good job;
-for instance lets say you have a histogram, with 90% of
-data points between 1 and 2 whilst there are a few outliers at 1000 -
-you won't be able to see the distribution between 1 and 2 because
-the graph is scaled to 1000.
-
-I think TensorBoard will develop itself to handle these.
-And the main reason behind these tooling I've written
-is for custom charts, and because it's not that hard to do it.
+With the visualization API you can plot distributions easily on a Jupyter Notebook.
 
 Here's a link to a
  [sample Jupyter Notebook with custom charts](https://github.com/vpj/lab/blob/master/sample_analytics.ipynb).
+
+### Logger
+
+Logger has a simple API to produce pretty console outputs.
+
+<p align="center"><img style="max-width:100%" src="/images/loop.gif" /></p>
+
 
 ## Getting Started
 
@@ -126,11 +107,12 @@ The create a `.lab.yaml` file. An empty file at the root of the project should
 be enough. You can set project level configs for 'check_repo_dirty' and 'is_log_python_file'
 in the config file.
 
-### A python file for each experiment
 The idea is to have a separate python file for each major expirment,
  like different architectures.
 Minor changes can go as trials, like bug fixes and improvements.
 The TensorBoard summaries are replaced for each trial.
+
+You don't need the `.lab.yaml` file if you only plan on using the logger.
 
 ### Samples
 
@@ -140,16 +122,48 @@ for examples.
 
 ## Usage
 
-### Monitored Iterator
+### Create Experiment
+```python
+EXPERIMENT = Experiment(name="mnist_pytorch",
+                        python_file=__file__,
+                        comment="Test",
+                        check_repo_dirty=False,
+			is_log_python_file=True)
+```
+
+* `name`: Name of the experiment
+* `python_file`: The python file with the experiment definition.
+* `comment`: Comment about the current experiment trial
+* `check_repo_dirty`: If `True` the experiment is halted if there are uncommitted changes to the git repository.
+* `is_log_python_file`: Whether to update the python source file with experiemnt results on the top.
+
+```python
+EXPERIMENT.start_train(0)
+```
+
+You need to call `start_train` before starting the experiment to clear old logs and
+do other initialization work.
+
+It will load from a saved state if the `global_step` is not `0`.
+*(🚧 Not implemented for PyTorch yet)*
+
+### Logger
+
+`EXPERIMENT.logger` gives logger instance for the experiment.
+
+You can also directly initialize a logger with `Logger()`,
+in which case it will only output to the screen.
+
+### Loop
 
 ```python
 for step in logger.loop(range(0, total_steps)):
 	# training code ...
 ```
 
-The monitored iterator keeps track of the time taken and time remaining for the loop.
+The `Loop` keeps track of the time taken and time remaining for the loop.
 
-### Monitored Sections
+### Sections
 
 ```python
 with logger.section("Load data"):
@@ -158,13 +172,13 @@ with logger.section("Create model"):
     # code to create model
 ```
 
-Monitored sections let you monitor time takes for
+Sections let you monitor time takes for
 different tasks and also helps keep the code clean 
-by separating different sections.
+by separating different blocks of code.
 
-Monitored sections can be within loops as well.
+These can be within loops as well.
 
-### Progress Monitoring
+### Progress
 
 ```python
 for step in logger.loop(range(0, total_steps)):
@@ -222,34 +236,10 @@ logger.new_line()
 
 This will start a new line in the console.
 
-### Create Experiment
-```python
-EXPERIMENT = Experiment(name="mnist_pytorch",
-                        python_file=__file__,
-                        comment="Test",
-                        check_repo_dirty=False,
-			is_log_python_file=True)
-```
-
-* `name`: Name of the experiment
-* `python_file`: The python file with the experiment definition.
-* `comment`: Comment about the current experiment trial
-* `check_repo_dirty`: If `True` the experiment is halted if there are uncommitted changes to the git repository.
-* `is_log_python_file`: Whether to update the python source file with experiemnt results on the top.
-
-```python
-EXPERIMENT.start_train(0)
-```
-
-You need to call `start_train` before starting the experiment to clear old logs and
-do other initialization work.
-
-It will load from a saved state if the `global_step` is not `0`.
-*(🚧 Not implemented for PyTorch yet)*
 
 ### Save Progress
 ```python
-logger.savere_progress()
+logger.save_progress()
 ```
 
 This saves the progress stats in `trials.yaml` and python file header
