@@ -9,7 +9,7 @@ from lab import colors, util
 from lab.commenter import Commenter
 from lab.experiment.experiment_trial import Trial
 from lab.lab import Lab
-from lab.logger import Logger, ProgressSaver
+from lab.logger import Logger, ProgressSaver, CheckpointSaver
 
 commenter = Commenter(
     comment_start='"""',
@@ -170,7 +170,13 @@ class Experiment:
         self.__progress_saver = _ExperimentProgressSaver(trial=self.trial,
                                                          trials_log_file=self.info.trials_log_file,
                                                          is_log_python_file=is_log_python_file)
-        self.logger = Logger(progress_saver=self.__progress_saver)
+
+        checkpoint_saver = self._create_checkpoint_saver()
+        self.logger = Logger(progress_saver=self.__progress_saver,
+                             checkpoint_saver=checkpoint_saver)
+
+    def _create_checkpoint_saver(self):
+        return None
 
     def print_info_and_check_repo(self):
         """

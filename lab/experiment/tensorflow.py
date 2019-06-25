@@ -100,6 +100,8 @@ class Experiment(experiment.Experiment):
     An experiment can have multiple trials.
     """
 
+    __checkpoint_saver: Checkpoint
+
     def __init__(self, *,
                  name: str,
                  python_file: str,
@@ -127,8 +129,10 @@ class Experiment(experiment.Experiment):
                          comment=comment,
                          check_repo_dirty=check_repo_dirty,
                          is_log_python_file=is_log_python_file)
-        self.__variables = None
-        self._checkpoint = Checkpoint(self.info.checkpoint_path)
+
+    def _create_checkpoint_saver(self):
+        self.__checkpoint_saver = Checkpoint(self.info.checkpoint_path)
+        return self.__checkpoint_saver
 
     def create_writer(self, session: tf.Session):
         """
@@ -141,7 +145,7 @@ class Experiment(experiment.Experiment):
         """
         ## Set variable for saving and loading
         """
-        self.__variables = variables
+        self.__checkpoint_saver.set_variables(variables)
 
     def start_train(self, global_step: int, session: tf.Session):
         """
@@ -156,7 +160,7 @@ class Experiment(experiment.Experiment):
         if global_step > 0:
             # load checkpoint if we are starting from middle
             with self.logger.section("Loading checkpoint") as m:
-                m.is_successful = self._checkpoint.load(session)
+                m.is_successful = self.__checkpoint_saver.load(session)
         else:
             # initialize variables and clear summaries if we are starting from scratch
             with self.logger.section("Clearing summaries"):
@@ -176,4 +180,4 @@ class Experiment(experiment.Experiment):
         """
 
         with self.logger.section("Loading checkpoint") as m:
-            m.is_successful = self._checkpoint.load(session)
+            m.is_successful = self.__checkpoint_saver.load(session)

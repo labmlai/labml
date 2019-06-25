@@ -1,9 +1,97 @@
-from typing import Optional
+import pathlib
+from typing import Optional, List, Dict
 
+import json
+import numpy as np
 import tensorflow as tf
+import torch.nn
 
-from lab import experiment
-from lab.logger import tensorboard_writer
+from lab import experiment, util
+from lab.logger import tensorboard_writer, CheckpointSaver
+
+
+class Checkpoint(CheckpointSaver):
+    __models: Dict[str, torch.nn.Module]
+
+    def __init__(self, path: pathlib.PurePath):
+        self.path = path
+        self.__models = {}
+
+    def add_models(self, models: Dict[str, torch.nn.Module]):
+        """
+        ## Set variable for saving and loading
+        """
+        self.__models.update(models)
+
+    def save(self, global_step, args):
+        self._save(global_step)
+
+    def _save(self, global_step):
+        """
+        ## Save model as a set of numpy arrays
+        """
+
+        checkpoints_path = pathlib.Path(self.path)
+        if not checkpoints_path.exists():
+            checkpoints_path.mkdir()
+
+        checkpoint_path = checkpoints_path / str(global_step)
+        assert not checkpoint_path.exists()
+
+        checkpoint_path.mkdir()
+
+        files = {}
+        for name, model in self.__models.items():
+            state: Dict[str, torch.Tensor] = model.state_dict()
+            files[name] = {}
+            for key, tensor in state.items():
+                if key == "_metadata":
+                    continue
+
+                file_name = f"{name}_{key}.npy"
+                files[name][key] = file_name
+
+                np.save(str(checkpoint_path / file_name), tensor.cpu().numpy())
+
+        # Save header
+        with open(str(checkpoint_path / "info.json"), "w") as f:
+            f.write(json.dumps(files))
+
+        # Delete old checkpoints
+        for c in checkpoints_path.iterdir():
+            if c.name != checkpoint_path.name:
+                util.rm_tree(c)
+
+    def load(self):
+        """
+        ## Load model as a set of numpy arrays
+        """
+
+        # checkpoints_path = pathlib.Path(self.path)
+        # max_step = -1
+        # for c in checkpoints_path.iterdir():
+        #     max_step = max(max_step, int(c.name))
+        #
+        # if max_step < 0:
+        #     return False
+        #
+        # checkpoint_path = checkpoints_path / str(max_step)
+        #
+        # with open(str(checkpoint_path / "info.json"), "r") as f:
+        #     files = json.loads(f.readline())
+        #
+        # # Load each variable
+        # for variable in self.__variables:
+        #     file_name = files[variable.name]
+        #     value = np.load(str(checkpoint_path / file_name))
+        #     ph = tf.placeholder(value.dtype,
+        #                         shape=value.shape,
+        #                         name=f"{tf_util.strip_variable_name(variable.name)}_ph")
+        #
+        #     assign_op = tf.assign(variable, ph)
+        #     session.run(assign_op, feed_dict={ph: value})
+
+        return True
 
 
 class Experiment(experiment.Experiment):
@@ -42,11 +130,9 @@ class Experiment(experiment.Experiment):
                          check_repo_dirty=check_repo_dirty,
                          is_log_python_file=is_log_python_file)
 
-    def load_checkpoint(self):
-        raise NotImplementedError()
-
-    def save_checkpoint(self):
-        raise NotImplementedError()
+    def _create_checkpoint_saver(self):
+        self.__checkpoint_saver = Checkpoint(self.info.checkpoint_path)
+        return self.__checkpoint_saver
 
     def create_writer(self):
         """
@@ -54,6 +140,12 @@ class Experiment(experiment.Experiment):
         """
         self.logger.add_writer(tensorboard_writer.Writer(
             tf.summary.FileWriter(str(self.info.summary_path))))
+
+    def add_models(self, models: Dict[str, torch.nn.Module]):
+        """
+        ## Set variable for saving and loading
+        """
+        self.__checkpoint_saver.add_models(models)
 
     def start_train(self, global_step: int):
         """
@@ -68,7 +160,7 @@ class Experiment(experiment.Experiment):
         if global_step > 0:
             # load checkpoint if we are starting from middle
             with self.logger.section("Loading checkpoint") as m:
-                m.is_successful = self.load_checkpoint()
+                m.is_successful = self.__checkpoint_saver.load()
         else:
             # initialize variables and clear summaries if we are starting from scratch
             with self.logger.section("Clearing summaries"):
@@ -86,4 +178,4 @@ class Experiment(experiment.Experiment):
         """
 
         with self.logger.section("Loading checkpoint") as m:
-            m.is_successful = self.load_checkpoint()
+            m.is_successful = self.__checkpoint_saver.load()
