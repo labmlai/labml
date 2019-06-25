@@ -1,49 +1,4 @@
 """
-# [🧪 Lab](http::/blog.varunajayasiri.com/ml/lab/readme.html) Getting Started
-
-This library lets you organize TensorFlow machine learning
- experiments.
-
-It is based on a bunch of utility functions and classes
-I wrote while trying some machine learning algorithms.
-I recently made it to a separate repo because I've been
-reusing them on different projects, and it was easier
-to keep track of them as a single project.
-
-### What does it do?
-* Keeps checkpoints and TensorBoard summaries and logs organized
-* Helps keep track of experiments with reference to git commits
-* Produce pretty console outputs
-* Maintains and logs histograms and moving averages
-* Monitor time taken for different sections of code
-* Estimate time remaining for experiments to run
-* Add headers to python source files with experiment results for easy reference
-* A simple TensorBoard invoker
-* Tools for custom graphs from TensorBoard summaries
-* Help make code more readable
-
-### Why I made it?
-I started coding existing reinforcement learning algorithms
- to play Atari games for fun.
-It was not easy to keep track of things when I started
- trying variations, fixing bugs etc.
-This library helps organize experiments.
-It organizes the folders of the checkpoints, logs
- and TensorBoard summaries by each experiment.
-It also keeps track of the git commits when each experiment
- was run, so if some other change in code, affected the results
- of a experiment you can easily track what caused it.
-
-I also wrote a logger to display pretty results on screen and
- to make it easy to write TensorBoard summaries.
-It also keeps track of training times which makes it easy to spot
- what's taking up most resources.
-Here's the output of this sample program (`lab_getting_started.py`):
-
-<img style="max-width:100%" src="images/log.png" />
-
-This 👇 is the header that was added automatically when the experiment ran.
-
 ```trial
 2019-06-20 16:36:29
 Sample lab experiment
@@ -51,11 +6,6 @@ Sample lab experiment
 start_step: 0
 ```
 """
-
-# ### Here's how to use it
-
-# Time module is used to sleep so that you can see how
-# this sample works when you run it.
 
 import lab.clear_warnings
 
@@ -74,8 +24,7 @@ EXPERIMENT = Experiment(name="Sample",
 # Get a reference to logger
 logger = EXPERIMENT.logger
 
-# This is sample monitored section.
-# I use monitored sections to keep track of
+# Sections are use to keep track of
 # what's going on from the console output.
 # It is also useful to organize the code into sections,
 # when separating them into functions is difficult
@@ -94,7 +43,7 @@ logger.info(one=1,
 
 # ### Set logger indicators
 
-# Reward is a queue; this is useful when you want to track the moving
+# Reward is queued; this is useful when you want to track the moving
 # average of something.
 logger.add_indicator("reward", queue_limit=10)
 
@@ -119,7 +68,6 @@ with tf.Session() as session:
     # the experiment will load from the last saved checkpoint.
     EXPERIMENT.start_train(0, session)
 
-    # Create monitored iterator
     # This is the main training loop of this project.
     for global_step in logger.loop(range(50)):
         # You can set the global step explicitly with
@@ -132,30 +80,30 @@ with tf.Session() as session:
                 with logger.section("sample"):
                     time.sleep(0.5)
 
-                # An unmonitored section is used only to organize code.
+                # A silent section is used only to organize code.
                 # It produces no output
                 with logger.section("logging", is_silent=True):
-                    # Store a dictionary
+                    # Store values
                     logger.store(
                         reward=global_step / 3.0,
                         fps=12
                     )
-                    # Store a collection of values
+                    # Store more values
                     for i in range(global_step, global_step + 10):
                         logger.store('loss', i)
                         logger.store(advantage_reward=(i, i * 2))
 
-                # Another monitored section
+                # Another silent section
                 with logger.section("process_samples", is_silent=True):
                     time.sleep(0.5)
 
-                # A third monitored section to make it real
+                # A third section with an inner loop
                 with logger.section("train", total_steps=100):
                     # Let it run for multiple iterations.
                     # We'll track the progress of that too
                     for i in range(100):
                         time.sleep(0.01)
-                        # Progress is tracked manually unlike in the top level iterator
+                        # Progress is tracked manually unlike in the top level iterator.
                         # The progress updates do not have to be sequential.
                         logger.progress(i + 1)
 
@@ -167,8 +115,8 @@ with tf.Session() as session:
                 if (global_step + 1) % 10 == 0:
                     logger.save_progress()
 
-                # We will overwrite the same console line, and produce
-                # a new line after ten such overwrites.
+                # By default we will overwrite the same console line.
+                # `new_line` makes it go to the next line.
                 # This helps keep the console output concise.
                 if (global_step + 1) % 10 == 0:
                     logger.new_line()
@@ -180,46 +128,3 @@ with tf.Session() as session:
 
 with logger.section("Cleaning up"):
     time.sleep(0.5)
-
-"""
-#### TensorBoard invoker
-This lets you start TensorBoard without having to type in all the log paths.
-For instance, so that you can start it with
-```bash
-python tools/tb.py -e ppo ppo_transformed_bellman
-```
-instead of
-```bash
-tensorboard --log_dir=ppo:project_path/logs/ppo,ppo_transformed_bellman:project_path/logs/ppo_transformed_bellman
-```
-
-To get a list of all available experiments
-```bash
-python tools/tb.py -e ppo ppo_transformed_bellman
-```
-
-#### Custom analysis of TensorBoard summaries
-
-TensorBoard is nice, but sometimes you need
-custom charts to debug algorithms. Following 
-is an example of a custom chart:
-
-<img style="max-width:100%" src="images/distribution.png" />
-
-And sometime TensorBoard is not even doing a good job;
-for instance lets say you have a histogram, with 90% of
-data points between 1 and 2 whilst there are a few outliers at 1000 -
-you won't be able to see the distribution between 1 and 2 because
-the graph is scaled to 1000.
-
-I think TensorBoard will develop itself to handle these.
-And the main reason behind these tooling I've written 
-is for custom charts, and because it's not that hard to do it.
-
-Here's a link to a
- [sample Jupyter Notebook with custom charts](https://github.com/vpj/lab/blob/master/sample_analytics.ipynb).
-
-#### [github repo](https://github.com/vpj/lab)
-
-#### [@vpj on Twitter](https://twitter.com/vpj)
-"""
