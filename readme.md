@@ -6,9 +6,12 @@
 
 [Github Repository](https://github.com/vpj/lab)
 
-This library helps you organize machine learning
- experiments. It is a quite small library,
+This library helps you organize machine learning experiments.
+It is a quite small library, 
  and most of the modules can be used independently of each other.
+This doesn't have any user interface.
+Experiment results are maintained in a folder structure,
+and there is a Python API to access them.
 
 ## Features
 
@@ -305,12 +308,13 @@ It also keeps track of training times which makes it easy to spot
 
 This library is was made by combining these bunch of tools.
 
-### Alternatives
+## Alternatives
 
 * [Comet](https://www.comet.ml/)
 * [Beaker](https://beaker.org/)
 * [Sacred](https://github.com/IDSIA/sacred)
 * [Neptune](https://neptune.ml/)
+* [Model Chimp](https://www.modelchimp.com/)
 
 ## Updates
 
