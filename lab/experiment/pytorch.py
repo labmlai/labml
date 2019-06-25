@@ -67,29 +67,29 @@ class Checkpoint(CheckpointSaver):
         ## Load model as a set of numpy arrays
         """
 
-        # checkpoints_path = pathlib.Path(self.path)
-        # max_step = -1
-        # for c in checkpoints_path.iterdir():
-        #     max_step = max(max_step, int(c.name))
-        #
-        # if max_step < 0:
-        #     return False
-        #
-        # checkpoint_path = checkpoints_path / str(max_step)
-        #
-        # with open(str(checkpoint_path / "info.json"), "r") as f:
-        #     files = json.loads(f.readline())
-        #
-        # # Load each variable
-        # for variable in self.__variables:
-        #     file_name = files[variable.name]
-        #     value = np.load(str(checkpoint_path / file_name))
-        #     ph = tf.placeholder(value.dtype,
-        #                         shape=value.shape,
-        #                         name=f"{tf_util.strip_variable_name(variable.name)}_ph")
-        #
-        #     assign_op = tf.assign(variable, ph)
-        #     session.run(assign_op, feed_dict={ph: value})
+        checkpoints_path = pathlib.Path(self.path)
+        max_step = -1
+        for c in checkpoints_path.iterdir():
+            max_step = max(max_step, int(c.name))
+
+        if max_step < 0:
+            return False
+
+        checkpoint_path = checkpoints_path / str(max_step)
+
+        with open(str(checkpoint_path / "info.json"), "r") as f:
+            files = json.loads(f.readline())
+
+        # Load each variable
+        for name, model in self.__models.items():
+            state: Dict[str, torch.Tensor] = model.state_dict()
+            for key, tensor in state.items():
+                file_name = files[name][key]
+                saved = np.load(str(checkpoint_path / file_name))
+                saved = torch.from_numpy(saved).to(tensor.device)
+                state[key] = saved
+
+            model.load_state_dict(state)
 
         return True
 
