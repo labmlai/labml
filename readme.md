@@ -146,7 +146,12 @@ You need to call `start_train` before starting the experiment to clear old logs 
 do other initialization work.
 
 It will load from a saved state if the `global_step` is not `0`.
-*(🚧 Not implemented for PyTorch yet)*
+
+Call `start_replay`, when you want to just evaluate a model by loading from saved checkpoint.
+
+```python
+EXPERIMENT.start_replay()
+```
 
 ### Logger
 
