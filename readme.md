@@ -276,20 +276,17 @@ within a `with logger.delayed_keyboard_interrupt()`.
 Two consecutive interruptions will halt the code segment.
 
 ### Start TensorBoard
-This lets you start TensorBoard without having to type in all the log paths.
-For instance, so that you can start it with
-```bash
-python lab/tb.py -e ppo ppo_transformed_bellman
-```
-
-instead of
-```bash
-tensorboard --log_dir=ppo:project_path/logs/ppo,ppo_transformed_bellman:project_path/logs/ppo_transformed_bellman
-```
+This small tool lets you start TensorBoard without having to type in all the log paths.
 
 To get a list of all available experiments
 ```bash
-python lab/tb.py -l
+LAB/tb.py -l
+```
+
+To analyse experiments `exp1` and `exp2`:
+
+```bash
+LAB/tb.py -e exp1 exp2
 ```
 
 ## Background
