@@ -90,7 +90,7 @@ start_step: 0
 With the visualization helper functions you can plot distributions easily on a Jupyter Notebook.
 
 Here's a link to a
- [sample Jupyter Notebook with custom charts](https://github.com/vpj/lab/blob/master/sample_analytics.ipynb).
+ [sample Jupyter Notebook with custom charts](https://github.com/vpj/lab/blob/master/analytics/sample_analytics.ipynb).
 
 ### Logger
 
