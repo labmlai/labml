@@ -36,8 +36,8 @@ class Logger:
 
     def __init__(self, *,
                  is_color=True,
-                 progress_saver: Optional[ProgressSaver]=None,
-                 checkpoint_saver: Optional[CheckpointSaver]=None):
+                 progress_saver: Optional[ProgressSaver] = None,
+                 checkpoint_saver: Optional[CheckpointSaver] = None):
         """
         ### Initializer
         :param is_color: whether to use colours in console output
