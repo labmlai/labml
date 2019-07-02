@@ -163,8 +163,8 @@ class Experiment:
 
         repo = git.Repo(self.lab.path)
 
-        self.trial.commit = repo.active_branch.commit.hexsha
-        self.trial.commit_message = repo.active_branch.commit.message.strip()
+        self.trial.commit = repo.head.commit.hexsha
+        self.trial.commit_message = repo.head.commit.message.strip()
         self.trial.is_dirty = repo.is_dirty()
         self.trial.diff = repo.git.diff()
         self.__progress_saver = _ExperimentProgressSaver(trial=self.trial,
