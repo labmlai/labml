@@ -8,7 +8,8 @@ from lab import logger as logger_base
 
 class Loop:
     def __init__(self, iterator: range, *,
-                 logger: 'logger_base.Logger'):
+                 logger: 'logger_base.Logger',
+                 is_print_iteration_time: bool):
         """
         Creates an iterator with a range `iterator`.
 
@@ -27,6 +28,7 @@ class Loop:
         self.logger = logger
         self.__global_step: Optional[int] = None
         self.__looping_sections: Dict[str, Section] = {}
+        self._is_print_iteration_time = is_print_iteration_time
 
     @property
     def global_step(self):
@@ -81,19 +83,25 @@ class Loop:
         else:
             estimate = current_iter
 
-        total_time = estimate * self.steps
+        total_time = estimate * self.steps + self._init_time
         remain = total_time - spent
 
         remain /= 60
         spent /= 60
+        estimate *= 1000
 
         spent_h = int(spent // 60)
         spent_m = int(spent % 60)
         remain_h = int(remain // 60)
         remain_m = int(remain % 60)
 
-        return [(f"  {spent_h:3d}:{spent_m:02d}m/{remain_h:3d}:{remain_m:02d}m  ",
-                 colors.BrightColor.purple)]
+        to_print = [("  ", None)]
+        if self._is_print_iteration_time:
+            to_print.append((f"{estimate:,.0f}ms", colors.BrightColor.cyan))
+        to_print.append((f"{spent_h:3d}:{spent_m:02d}m/{remain_h:3d}:{remain_m:02d}m  ",
+                         colors.BrightColor.purple))
+
+        return to_print
 
     def log_global_step(self):
         return [(f"{self.global_step :8,}:  ",

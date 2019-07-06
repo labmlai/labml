@@ -222,11 +222,13 @@ class Logger:
         self.__sections[-1].is_successful = is_successful
         self.__log_line()
 
-    def loop(self, iterator: range):
+    def loop(self, iterator: range, *,
+             is_print_iteration_time=True):
         if len(self.__sections) != 0:
             raise RuntimeError("Cannot start a loop within a section")
 
-        self.__loop = Loop(iterator=iterator, logger=self)
+        self.__loop = Loop(iterator=iterator, logger=self,
+                           is_print_iteration_time=is_print_iteration_time)
         return self.__loop
 
     def finish_loop(self):

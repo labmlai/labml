@@ -142,11 +142,18 @@ class LoopingSection(Section):
         self._estimated_time = 0.
         self._time_length = 7
         self._last_end_time = -1.
+        self._last_start_time = -1.
+        self._last_step_time = -1.
 
     def _get_estimated_time(self):
+        et = self._estimated_time * self._beta
+        et += (1 - self._beta) * self._last_step_time
+        return et / (1 - self._beta_pow * self._beta)
+
+    def _calc_estimated_time(self):
         if self._state != 'entered':
             if self._last_end_time == self._end_time:
-                return self._estimated_time / (1 - self._beta_pow)
+                return self._get_estimated_time()
             end_time = self._end_time
             end_progress = self._end_progress
             self._last_end_time = self._end_time
@@ -154,14 +161,25 @@ class LoopingSection(Section):
             end_time = time.time()
             end_progress = self._progress
 
-        current_estimate = (end_time - self._start_time) / (
-                end_progress - self._start_progress + 1e-6)
+        if end_progress - self._start_progress < 0.001:
+            return self._get_estimated_time()
 
-        self._beta_pow *= self._beta
-        self._estimated_time *= self._beta
-        self._estimated_time += (1 - self._beta) * current_estimate
+        current_estimate = ((end_time - self._start_time) /
+                            (end_progress - self._start_progress))
+        
+        if self._last_start_time == self._start_time:
+            # print(current_estimate)
+            self._last_step_time = current_estimate
+        else:
+            if self._last_step_time >= 0.:
+                self._beta_pow *= self._beta
+                self._estimated_time *= self._beta
+                self._estimated_time += (1 - self._beta) * self._last_step_time
+            # print(self._last_step_time, current_estimate)
+            self._last_step_time = current_estimate
+            self._last_start_time = self._start_time
 
-        return self._estimated_time / (1 - self._beta_pow)
+        return self._get_estimated_time()
 
     def log(self):
         if self._is_silent:
@@ -183,7 +201,7 @@ class LoopingSection(Section):
                           color or colors.Color.orange))
 
         if self._is_timed:
-            duration_ms = 1000 * self._get_estimated_time()
+            duration_ms = 1000 * self._calc_estimated_time()
             s = f" {duration_ms:,.0f}ms  "
             tl = len(s)
             if tl > self._time_length:
