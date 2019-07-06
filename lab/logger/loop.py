@@ -16,7 +16,12 @@ class Loop:
         """
         self.iterator = iterator
         self.sections = {}
-        self._start_time = 0
+        self._start_time = 0.
+        self._iter_start_time = 0.
+        self._init_time = 0.
+        self._iter_time = 0.
+        self._beta_pow = 1.
+        self._beta = 0.9
         self.steps = len(iterator)
         self.counter = 0
         self.logger = logger
@@ -37,6 +42,8 @@ class Loop:
     def __iter__(self):
         self.iterator_iter = iter(self.iterator)
         self._start_time = time.time()
+        self._init_time = 0.
+        self._iter_time = 0.
         self.counter = 0
         return self
 
@@ -47,6 +54,16 @@ class Loop:
             self.logger.finish_loop()
             raise e
 
+        now = time.time()
+        if self.counter == 0:
+            self.__init_time = now - self._start_time
+        else:
+            self._beta_pow *= self._beta
+            self._iter_time *= self._beta
+            self._iter_time += (1 - self._beta) * (now - self._iter_start_time)
+
+        self._iter_start_time = now
+
         self.counter += 1
 
         return next_value
@@ -55,8 +72,20 @@ class Loop:
         """
         Show progress
         """
-        spent = (time.time() - self._start_time) / 60
-        remain = self.steps * spent / self.counter - spent
+        now = time.time()
+        spent = now - self._start_time
+        current_iter = now - self._iter_start_time
+
+        if self._iter_time != 0:
+            estimate = self._iter_time / (1 - self._beta_pow)
+        else:
+            estimate = current_iter
+
+        total_time = estimate * self.steps
+        remain = total_time - spent
+
+        remain /= 60
+        spent /= 60
 
         spent_h = int(spent // 60)
         spent_m = int(spent % 60)
