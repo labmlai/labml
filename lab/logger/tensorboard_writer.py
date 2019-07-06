@@ -2,7 +2,6 @@ import numpy as np
 import tensorflow as tf
 
 import lab.logger.writers
-from lab import logger
 
 
 def _get_histogram(values):
