@@ -51,7 +51,7 @@ class Lab:
 
     @staticmethod
     def __get_config_files(path: str):
-        path = Path(path)
+        path = Path(path).resolve()
         configs = []
 
         while path.exists():
