@@ -2,9 +2,7 @@
   <img src="/images/logo.png?raw=true" width="100" title="Logo">
 </p>
 
-# Lab 2.0
-
-[Github Repository](https://github.com/vpj/lab)
+# [Lab 2.0](https://github.com/vpj/lab)
 
 This library helps you organize machine learning experiments.
 It is a quite small library, 
