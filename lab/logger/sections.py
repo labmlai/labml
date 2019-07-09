@@ -161,7 +161,7 @@ class LoopingSection(Section):
             end_time = time.time()
             end_progress = self._progress
 
-        if end_progress - self._start_progress < 0.001:
+        if end_progress - self._start_progress < 1e-6:
             return self._get_estimated_time()
 
         current_estimate = ((end_time - self._start_time) /
