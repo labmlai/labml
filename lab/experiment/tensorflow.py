@@ -139,7 +139,7 @@ class Experiment(experiment.Experiment):
         ## Create TensorFlow summary writer
         """
         self.logger.add_writer(tensorboard_writer.Writer(
-            tf.summary.FileWriter(str(self.info.summary_path), session.graph)))
+            tf.compat.v1.summary.FileWriter(str(self.info.summary_path), session.graph)))
 
     def set_variables(self, variables: List[tf.Variable]):
         """

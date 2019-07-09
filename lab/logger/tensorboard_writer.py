@@ -10,7 +10,7 @@ def _get_histogram(values):
     """
 
     values = np.array(values)
-    hist = tf.HistogramProto()
+    hist = tf.compat.v1.HistogramProto()
     hist.min = float(np.min(values))
     hist.max = float(np.max(values))
     hist.num = int(np.prod(values.shape))
@@ -87,7 +87,7 @@ def _get_pair_histogram(values):
 
 
 class Writer(lab.logger.writers.Writer):
-    def __init__(self, file_writer: tf.summary.FileWriter):
+    def __init__(self, file_writer: tf.compat.v1.summary.FileWriter):
         super().__init__()
 
         self.__writer = file_writer
@@ -98,7 +98,7 @@ class Writer(lab.logger.writers.Writer):
               pairs,
               scalars,
               tf_summaries):
-        summary = tf.Summary()
+        summary = tf.compat.v1.Summary()
 
         for k, v in queues.items():
             if len(v) == 0:
