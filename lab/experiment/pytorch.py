@@ -153,7 +153,7 @@ class Experiment(experiment.Experiment):
         """
         self.__checkpoint_saver.add_models(models)
 
-    def start_train(self, is_init: bool):
+    def start_train(self, is_init: bool = True):
         """
         ## Start experiment
 

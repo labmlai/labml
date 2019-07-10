@@ -154,7 +154,7 @@ class Experiment(experiment.Experiment):
         """
         self.__checkpoint_saver.set_variables(variables)
 
-    def start_train(self, is_init: bool, session: tf.Session):
+    def start_train(self, session: tf.Session, is_init: bool = True):
         """
         ## Start experiment
 
