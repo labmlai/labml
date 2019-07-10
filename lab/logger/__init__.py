@@ -281,7 +281,7 @@ class Logger:
         """
         return DelayedKeyboardInterrupt(self)
 
-    def _log_key_value(self, items: List[Tuple[any, any]]):
+    def _log_key_value(self, items: List[Tuple[any, any]], is_show_count=True):
         max_key_len = 0
         for k, v in items:
             max_key_len = max(max_key_len, len(str(k)))
@@ -293,10 +293,11 @@ class Logger:
             self.log_color([(f"{spaces}{k}: ", None),
                             (str(v), colors.Style.bold)])
 
-        self.log_color([
-            ("Total ", None),
-            (str(count), colors.Style.bold),
-            (" item(s)", None)])
+        if is_show_count:
+            self.log_color([
+                ("Total ", None),
+                (str(count), colors.Style.bold),
+                (" item(s)", None)])
 
     def info(self, *args, **kwargs):
         """
@@ -304,7 +305,7 @@ class Logger:
         """
 
         if len(args) == 0:
-            self._log_key_value([(k, v) for k, v in kwargs.items()])
+            self._log_key_value([(k, v) for k, v in kwargs.items()], False)
         elif len(args) == 1:
             assert len(kwargs.keys()) == 0
             arg = args[0]
@@ -314,4 +315,4 @@ class Logger:
                 self._log_key_value([(k, v) for k, v in arg.items()])
         else:
             assert len(kwargs.keys()) == 0
-            self._log_key_value([(i, v) for i, v in enumerate(args)])
+            self._log_key_value([(i, v) for i, v in enumerate(args)], False)
