@@ -11,10 +11,12 @@ from lab.logger import tensorboard_writer, CheckpointSaver
 
 
 class Checkpoint(CheckpointSaver):
+    max_step: Optional[int]
     __models: Dict[str, torch.nn.Module]
 
     def __init__(self, path: pathlib.PurePath):
         self.path = path
+        self.max_step = None
         self.__models = {}
 
     def add_models(self, models: Dict[str, torch.nn.Module]):
@@ -68,6 +70,9 @@ class Checkpoint(CheckpointSaver):
         """
 
         checkpoints_path = pathlib.Path(self.path)
+        if not checkpoints_path.exists():
+            return False
+
         max_step = -1
         for c in checkpoints_path.iterdir():
             max_step = max(max_step, int(c.name))
@@ -91,6 +96,7 @@ class Checkpoint(CheckpointSaver):
 
             model.load_state_dict(state)
 
+        self.max_step = max_step
         return True
 
 
@@ -147,21 +153,27 @@ class Experiment(experiment.Experiment):
         """
         self.__checkpoint_saver.add_models(models)
 
-    def start_train(self, global_step: int):
+    def start_train(self, is_init: bool):
         """
         ## Start experiment
 
         Load a checkpoint or reset based on `global_step`.
         """
 
+        global_step = 0
+
+        if not is_init:
+            # load checkpoint if we are starting from middle
+            with self.logger.section("Loading checkpoint"):
+                is_successful = self.__checkpoint_saver.load()
+                self.logger.set_successful(is_successful)
+                if is_successful:
+                    global_step = self.__checkpoint_saver.max_step
+
         self.trial.start_step = global_step
         self._start()
 
-        if global_step > 0:
-            # load checkpoint if we are starting from middle
-            with self.logger.section("Loading checkpoint") as m:
-                m.is_successful = self.__checkpoint_saver.load()
-        else:
+        if global_step == 0:
             # initialize variables and clear summaries if we are starting from scratch
             with self.logger.section("Clearing summaries"):
                 self.clear_summaries()
