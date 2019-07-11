@@ -259,7 +259,6 @@ logger.save_checkpoint()
 This saves a checkpoint and you can start from the saved checkpoint with
 `EXPERIMENT.start_train(global_step)`, or with `EXPERIMENT.start_replay(global_step)`
 if you just want inference. When started with `start_replay` it won't update any of the logs.
-*(🚧 Not implemented for PyTorch yet)*
 
 ### Keyboard Interrupts
 
