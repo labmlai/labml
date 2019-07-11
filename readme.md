@@ -140,13 +140,13 @@ EXPERIMENT = Experiment(name="mnist_pytorch",
 * `is_log_python_file`: Whether to update the python source file with experiemnt results on the top.
 
 ```python
-EXPERIMENT.start_train(0)
+EXPERIMENT.start_train()
 ```
 
 You need to call `start_train` before starting the experiment to clear old logs and
 do other initialization work.
 
-It will load from a saved state if the `global_step` is not `0`.
+It will load from a saved state if you call `EXPERIMENT.start_train(False)`.
 
 Call `start_replay`, when you want to just evaluate a model by loading from saved checkpoint.
 
