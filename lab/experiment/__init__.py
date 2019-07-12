@@ -5,10 +5,9 @@ from typing import Dict, Optional
 import git
 import numpy as np
 
-from lab import colors, util
+from lab import colors, util, Lab
 from lab.commenter import Commenter
 from lab.experiment.experiment_trial import Trial
-from lab.lab import Lab
 from lab.logger import Logger, ProgressSaver, CheckpointSaver
 
 commenter = Commenter(

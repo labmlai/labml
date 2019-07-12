@@ -6,7 +6,7 @@ from matplotlib.axes import Axes
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
 from lab.experiment import ExperimentInfo
-from lab.lab import Lab
+from lab import Lab
 
 
 class Analyzer:

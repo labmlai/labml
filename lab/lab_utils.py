@@ -1,8 +1,7 @@
 from typing import List
 
-from lab import colors, util
+from lab import colors, util, Lab
 from lab.experiment import ExperimentInfo, Trial
-from lab.lab import Lab
 from lab.logger import Logger
 
 
