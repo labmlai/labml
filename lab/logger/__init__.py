@@ -218,10 +218,10 @@ class Logger:
                 is_partial: bool = False,
                 total_steps: float = 1.0):
 
-        if len(self.__sections) != 0:
-            raise RuntimeError("There can only be one section running at a time.")
-
         if self.__loop is not None:
+            if len(self.__sections) != 0:
+                raise RuntimeError("No nested sections within loop")
+
             section = self.__loop.get_section(name=name,
                                               is_silent=is_silent,
                                               is_timed=is_timed,
@@ -235,7 +235,8 @@ class Logger:
                                                    is_timed=is_timed,
                                                    is_partial=is_partial,
                                                    total_steps=total_steps,
-                                                   is_looping=False))
+                                                   is_looping=False,
+                                                   level=len(self.__sections)))
 
         return self.__sections[-1]
 
@@ -277,6 +278,10 @@ class Logger:
             raise RuntimeError("Entering a section other than the one last_created\n"
                                "Always user with logger.section(...):")
 
+        if len(self.__sections) > 1 and not self.__sections[-2].is_parented:
+            self.__sections[-2].make_parent()
+            self.new_line()
+            
         self.__log_line()
 
     def __log_line(self):

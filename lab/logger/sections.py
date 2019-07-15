@@ -19,6 +19,7 @@ class Section:
         self._is_timed = is_timed
         self._is_partial = is_partial
         self._total_steps = total_steps
+
         self._state = 'none'
         self._has_entered_ever = False
 
@@ -27,6 +28,7 @@ class Section:
         self._progress = 0.
         self._start_progress = 0
         self._end_progress = 0
+        self._is_parented = False
 
         self.is_successful = True
 
@@ -74,6 +76,13 @@ class Section:
         else:
             return False
 
+    @property
+    def is_parented(self):
+        return self._is_parented
+
+    def make_parent(self):
+        self._is_parented = True
+
 
 class OuterSection(Section):
     def __init__(self, *,
@@ -82,9 +91,12 @@ class OuterSection(Section):
                  is_silent: bool,
                  is_timed: bool,
                  is_partial: bool,
-                 total_steps: float):
+                 total_steps: float,
+                 level: int):
         if is_partial:
             raise RuntimeError("Only sections within the loop can be partial.")
+
+        self._level = level
 
         super().__init__(logger=logger,
                          name=name,
@@ -100,7 +112,7 @@ class OuterSection(Section):
         if self._state is 'none':
             return
 
-        parts = [(f"{self._name}", None)]
+        parts = [("  " * self._level + f"{self._name}", None)]
 
         if self._state is 'entered':
             if self._progress == 0.:
@@ -220,7 +232,8 @@ def section_factory(logger: 'logger_base.Logger',
                     is_silent: bool,
                     is_timed: bool,
                     is_partial: bool,
-                    total_steps: float):
+                    total_steps: float,
+                    level: int = 0):
     if is_looping:
         return LoopingSection(logger=logger,
                               name=name,
@@ -234,4 +247,5 @@ def section_factory(logger: 'logger_base.Logger',
                             is_silent=is_silent,
                             is_timed=is_timed,
                             is_partial=is_partial,
-                            total_steps=total_steps)
+                            total_steps=total_steps,
+                            level=level)
