@@ -321,7 +321,7 @@ This library is was made by combining these bunch of tools.
 ### Logging
 
 * [TQDM](https://tqdm.github.io/)
-* [Logguru](https://github.com/Delgan/loguru)
+* [Loguru](https://github.com/Delgan/loguru)
 
 ## Updates
 
