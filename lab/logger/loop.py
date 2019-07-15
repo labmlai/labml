@@ -30,17 +30,6 @@ class Loop:
         self.__looping_sections: Dict[str, Section] = {}
         self._is_print_iteration_time = is_print_iteration_time
 
-    @property
-    def global_step(self):
-        if self.__global_step is not None:
-            return self.__global_step
-
-        return self.counter
-
-    @global_step.setter
-    def global_step(self, value):
-        self.__global_step = value
-
     def __iter__(self):
         self.iterator_iter = iter(self.iterator)
         self._start_time = time.time()
@@ -102,10 +91,6 @@ class Loop:
                          colors.BrightColor.purple))
 
         return to_print
-
-    def log_global_step(self):
-        return [(f"{self.global_step :8,}:  ",
-                 colors.BrightColor.orange)]
 
     def get_section(self, *, name: str,
                     is_silent: bool,

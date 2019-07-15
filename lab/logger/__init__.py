@@ -59,6 +59,27 @@ class Logger:
         self.__progress_saver: Optional[ProgressSaver] = progress_saver
         self.__checkpoint_saver: Optional[CheckpointSaver] = checkpoint_saver
 
+        self.__start_global_step: Optional[int] = None
+        self.__global_step: Optional[int] = None
+        self.__last_global_step: Optional[int] = None
+
+    @property
+    def global_step(self) -> int:
+        if self.__global_step is not None:
+            return self.__global_step
+
+        global_step = 0
+        if self.__start_global_step is not None:
+            global_step = self.__start_global_step
+
+        if self.__loop is not None:
+            return global_step + self.__loop.counter
+
+        if self.__last_global_step is not None:
+            return self.__last_global_step
+
+        return global_step
+
     @staticmethod
     def ansi_code(text: str, color: List[ANSICode] or ANSICode or None):
         """
@@ -140,9 +161,19 @@ class Logger:
         self.__store.store(*args, **kwargs)
 
     def set_global_step(self, global_step):
-        if self.__loop is None:
-            raise RuntimeError("Cannot set global step from outside the loop")
-        self.__loop.global_step = global_step
+        self.__global_step = global_step
+
+    def set_start_global_step(self, global_step):
+        self.__start_global_step = global_step
+
+    def add_global_step(self, global_step: int = 1):
+        if self.__global_step is None:
+            if self.__start_global_step is not None:
+                self.__global_step = self.__start_global_step
+            else:
+                self.__global_step = 0
+
+        self.__global_step += global_step
 
     @property
     def progress_dict(self):
@@ -160,7 +191,7 @@ class Logger:
         if self.__loop is None:
             raise RuntimeError("Cannot write stats without loop")
 
-        global_step = self.__loop.global_step
+        global_step = self.global_step
 
         for w in self.__writers:
             self.__store.write(w, global_step)
@@ -179,7 +210,7 @@ class Logger:
         if self.__checkpoint_saver is None:
             return
 
-        self.__checkpoint_saver.save(self.__loop.global_step, args)
+        self.__checkpoint_saver.save(self.global_step, args)
 
     def section(self, name, *,
                 is_silent: bool = False,
@@ -234,6 +265,7 @@ class Logger:
     def finish_loop(self):
         if len(self.__sections) != 0:
             raise RuntimeError("Cannot be within a section when finishing the loop")
+        self.__last_global_step = self.global_step
         self.__loop = None
 
     def section_enter(self, section):
@@ -258,7 +290,7 @@ class Logger:
         self.log_color(self.__sections[-1].log(), new_line=False)
 
     def __log_looping_line(self):
-        parts = self.__loop.log_global_step()
+        parts = [(f"{self.global_step :8,}:  ", colors.BrightColor.orange)]
         parts += self.__loop.log_sections()
         parts += self.__indicators_print
         parts += self.__loop.log_progress()

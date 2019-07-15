@@ -260,7 +260,10 @@ class Experiment:
         """
         img.save(str(self.info.screenshots_path / file_name))
 
-    def _start(self):
+    def _start(self, global_step: int):
+        self.trial.start_step = global_step
+        self.logger.set_start_global_step(global_step)
+
         self.__progress_saver.save()
 
         path = pathlib.Path(self.info.diff_path)

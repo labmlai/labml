@@ -170,8 +170,7 @@ class Experiment(experiment.Experiment):
                 if is_successful:
                     global_step = self.__checkpoint_saver.max_step
 
-        self.trial.start_step = global_step
-        self._start()
+        self._start(global_step)
 
         if global_step == 0:
             # initialize variables and clear summaries if we are starting from scratch
