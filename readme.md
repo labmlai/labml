@@ -96,6 +96,7 @@ Logger has a simple API to produce pretty console outputs.
 
 <p align="center"><img style="max-width:100%" src="/images/loop.gif" /></p>
 
+---
 
 ## Getting Started
 
@@ -289,6 +290,8 @@ To analyse experiments `exp1` and `exp2`:
 LAB/tb.py -e exp1 exp2
 ```
 
+---
+
 ## Background
 I was coding existing reinforcement learning algorithms
  to play Atari games for fun.
@@ -333,3 +336,11 @@ This library is was made by combining these bunch of tools.
 
 * **June 19, 2019**
 	* New API for logger
+
+* **July 12, 2019**
+	* TensborBoard embedding helper
+	
+* **July 15, 2019**
+	* Nested sections
+	* Helpers for iterators
+	
