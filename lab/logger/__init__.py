@@ -7,11 +7,12 @@ This module contains logging and monotring helpers.
 
 Logger prints to the screen and writes TensorBoard summaries.
 """
-
+import typing
 from typing import List, Tuple, Optional, Dict
 
 from lab import colors
 from lab.colors import ANSICode
+from lab.logger import iterator
 from lab.logger.delayed_keyboard_interrupt import DelayedKeyboardInterrupt
 from lab.logger.loop import Loop
 from lab.logger.sections import Section, OuterSection, LoopingSection, section_factory
@@ -212,6 +213,29 @@ class Logger:
 
         self.__checkpoint_saver.save(self.global_step, args)
 
+    def iterator(self, name, iterable: typing.Iterable,
+                 total_steps: Optional[int] = None, *,
+                 is_silent: bool = False,
+                 is_timed: bool = True):
+        return iterator.Iterator(logger=self,
+                                 name=name,
+                                 iterable=iterable,
+                                 is_silent=is_silent,
+                                 is_timed=is_timed,
+                                 total_steps=total_steps,
+                                 is_enumarate=False)
+
+    def enumerator(self, name, iterable: typing.Sized, *,
+                   is_silent: bool = False,
+                   is_timed: bool = True):
+        return iterator.Iterator(logger=self,
+                                 name=name,
+                                 iterable=iterable,
+                                 is_silent=is_silent,
+                                 is_timed=is_timed,
+                                 total_steps=None,
+                                 is_enumarate=True)
+
     def section(self, name, *,
                 is_silent: bool = False,
                 is_timed: bool = True,
@@ -281,7 +305,7 @@ class Logger:
         if len(self.__sections) > 1 and not self.__sections[-2].is_parented:
             self.__sections[-2].make_parent()
             self.new_line()
-            
+
         self.__log_line()
 
     def __log_line(self):
