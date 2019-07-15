@@ -310,11 +310,18 @@ This library is was made by combining these bunch of tools.
 
 ## Alternatives
 
+### Managing Experiments
+
 * [Comet](https://www.comet.ml/)
 * [Beaker](https://beaker.org/)
 * [Sacred](https://github.com/IDSIA/sacred)
 * [Neptune](https://neptune.ml/)
 * [Model Chimp](https://www.modelchimp.com/)
+
+### Logging
+
+* [TQDM](https://tqdm.github.io/)
+* [Logguru](https://github.com/Delgan/loguru)
 
 ## Updates
 
