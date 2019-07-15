@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 
 
-def init_variables(session: tf.Session):
+def init_variables(session: tf.compat.v1.Session):
     """
     #### Initialize TensorFlow variables
     """
@@ -35,7 +35,7 @@ def set_random_seeds(seed: int = 7):
 
     # set random seeds,
     np.random.seed(seed)
-    tf.set_random_seed(seed)
+    tf.compat.v1.set_random_seed(seed)
 
 
 def use_gpu(gpu: str):
