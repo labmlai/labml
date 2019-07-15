@@ -5,7 +5,7 @@ import os
 
 import lab.lab_utils as utils
 from lab import colors
-from lab.lab import Lab
+from lab import Lab
 from lab.logger import Logger
 
 
