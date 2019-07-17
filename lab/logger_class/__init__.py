@@ -12,12 +12,12 @@ from typing import List, Tuple, Optional, Dict
 
 from lab import colors
 from lab.colors import ANSICode
-from lab.logger import iterator
-from lab.logger.delayed_keyboard_interrupt import DelayedKeyboardInterrupt
-from lab.logger.loop import Loop
-from lab.logger.sections import Section, OuterSection, LoopingSection, section_factory
-from lab.logger.store import Store
-from lab.logger.writers import Writer, ProgressDictWriter, ScreenWriter
+from lab.logger_class import iterator
+from lab.logger_class.delayed_keyboard_interrupt import DelayedKeyboardInterrupt
+from lab.logger_class.loop import Loop
+from lab.logger_class.sections import Section, OuterSection, LoopingSection, section_factory
+from lab.logger_class.store import Store
+from lab.logger_class.writers import Writer, ProgressDictWriter, ScreenWriter
 
 
 class ProgressSaver:
@@ -30,23 +30,24 @@ class CheckpointSaver:
         raise NotImplementedError()
 
 
+logger_singleton = None
+
+
 class Logger:
     """
     ## 🖨 Logger class
     """
 
-    def __init__(self, *,
-                 is_color=True,
-                 progress_saver: Optional[ProgressSaver] = None,
-                 checkpoint_saver: Optional[CheckpointSaver] = None):
+    def __init__(self):
         """
         ### Initializer
         :param is_color: whether to use colours in console output
         """
+        if logger_singleton is not None:
+            raise RuntimeError("Only one instance of logger can exist")
+
         self.__store = Store()
         self.__writers: List[Writer] = []
-
-        self.is_color = is_color
 
         self.__loop: Optional[Loop] = None
         self.__sections: List[Section] = []
@@ -54,15 +55,21 @@ class Logger:
         self.__indicators_print = []
         self.__progress_dict = {}
 
-        self.__screen_writer = ScreenWriter(is_color)
+        self.__screen_writer = ScreenWriter(True)
         self.__progress_dict_writer = ProgressDictWriter()
 
-        self.__progress_saver: Optional[ProgressSaver] = progress_saver
-        self.__checkpoint_saver: Optional[CheckpointSaver] = checkpoint_saver
+        self.__progress_saver: Optional[ProgressSaver] = None
+        self.__checkpoint_saver: Optional[CheckpointSaver] = None
 
         self.__start_global_step: Optional[int] = None
         self.__global_step: Optional[int] = None
         self.__last_global_step: Optional[int] = None
+
+    def set_progress_saver(self, saver: ProgressSaver):
+        self.__progress_saver = saver
+
+    def set_checkpoint_saver(self, saver: CheckpointSaver):
+        self.__checkpoint_saver = saver
 
     @property
     def global_step(self) -> int:
@@ -152,7 +159,7 @@ class Logger:
 
     def store(self, *args, **kwargs):
         """
-        ### Stores a value in the logger.
+        ### Stores a value in the logger_class.
 
         This may be added to a queue, a list or stored as
         a TensorBoard histogram depending on the
@@ -296,11 +303,11 @@ class Logger:
     def section_enter(self, section):
         if len(self.__sections) == 0:
             raise RuntimeError("Entering a section without creating a section.\n"
-                               "Always use logger.section to create a section")
+                               "Always use logger_class.section to create a section")
 
         if section is not self.__sections[-1]:
             raise RuntimeError("Entering a section other than the one last_created\n"
-                               "Always user with logger.section(...):")
+                               "Always user with logger_class.section(...):")
 
         if len(self.__sections) > 1 and not self.__sections[-2].is_parented:
             self.__sections[-2].make_parent()
@@ -377,3 +384,6 @@ class Logger:
         else:
             assert len(kwargs.keys()) == 0
             self._log_key_value([(i, v) for i, v in enumerate(args)], False)
+
+
+logger_singleton = Logger()

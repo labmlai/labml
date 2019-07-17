@@ -2,8 +2,8 @@ import time
 from typing import Optional, Dict
 
 from lab import colors
-from lab.logger.sections import Section, section_factory
-from lab import logger as logger_base
+from lab.logger_class.sections import Section, section_factory
+from lab import logger_class as logger_base
 
 
 class Loop:

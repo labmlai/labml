@@ -1,7 +1,7 @@
 from collections import deque
 from typing import Dict, List, Tuple
 
-from lab.logger.writers import Writer
+from lab.logger_class.writers import Writer
 
 
 class Store:
@@ -65,7 +65,7 @@ class Store:
 
     def store(self, *args, **kwargs):
         """
-        ### Stores a value in the logger.
+        ### Stores a value in the logger_class.
 
         This may be added to a queue, a list or stored as
         a TensorBoard histogram depending on the

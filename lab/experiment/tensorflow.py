@@ -5,8 +5,8 @@ from typing import List, Optional
 import numpy as np
 import tensorflow as tf
 
-from lab import tf_util, util, experiment
-from lab.logger import tensorboard_writer, CheckpointSaver
+from lab import tf_util, util, experiment, logger
+from lab.logger_class import tensorboard_writer, CheckpointSaver
 
 
 class Checkpoint(CheckpointSaver):
@@ -141,11 +141,11 @@ class Experiment(experiment.Experiment):
         self.__checkpoint_saver = Checkpoint(self.info.checkpoint_path)
         return self.__checkpoint_saver
 
-    def create_writer(self, session: tf.Session):
+    def create_writer(self, session: tf.compat.v1.Session):
         """
         ## Create TensorFlow summary writer
         """
-        self.logger.add_writer(tensorboard_writer.Writer(
+        logger.add_writer(tensorboard_writer.Writer(
             tf.compat.v1.summary.FileWriter(str(self.info.summary_path), session.graph)))
 
     def set_variables(self, variables: List[tf.Variable]):
@@ -165,9 +165,9 @@ class Experiment(experiment.Experiment):
 
         if not is_init:
             # load checkpoint if we are starting from middle
-            with self.logger.section("Loading checkpoint") as m:
+            with logger.section("Loading checkpoint") as m:
                 is_successful = self.__checkpoint_saver.load(session)
-                self.logger.set_successful(is_successful)
+                logger.set_successful(is_successful)
                 if is_successful:
                     global_step = self.__checkpoint_saver.max_step
 
@@ -175,11 +175,11 @@ class Experiment(experiment.Experiment):
 
         if global_step == 0:
             # initialize variables and clear summaries if we are starting from scratch
-            with self.logger.section("Clearing summaries"):
+            with logger.section("Clearing summaries"):
                 self.clear_summaries()
-            with self.logger.section("Clearing checkpoints"):
+            with logger.section("Clearing checkpoints"):
                 self.clear_checkpoints()
-            with self.logger.section("Initializing variables"):
+            with logger.section("Initializing variables"):
                 tf_util.init_variables(session)
 
         self.create_writer(session)
@@ -191,5 +191,5 @@ class Experiment(experiment.Experiment):
         Load a checkpoint or reset based on `global_step`.
         """
 
-        with self.logger.section("Loading checkpoint") as m:
+        with logger.section("Loading checkpoint") as m:
             m.is_successful = self.__checkpoint_saver.load(session)

@@ -2,7 +2,7 @@ import math
 import time
 
 from lab import colors
-from lab import logger as logger_base
+from lab import logger_class as logger_base
 
 
 class Section:

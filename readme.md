@@ -351,3 +351,6 @@ This library is was made by combining these bunch of tools.
 	* Nested sections
 	* Helpers for iterators
 	
+* **July 17, 2019**
+	* Singleton logger - 
+	  *much simpler usage although it might not be able to handle complexities later*

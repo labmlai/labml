@@ -8,7 +8,7 @@ def init_variables(session: tf.compat.v1.Session):
     """
     #### Initialize TensorFlow variables
     """
-    init_op = tf.global_variables_initializer()
+    init_op = tf.compat.v1.global_variables_initializer()
     session.run(init_op)
 
 

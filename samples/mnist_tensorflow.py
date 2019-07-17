@@ -19,6 +19,7 @@ import argparse
 
 import tensorflow as tf
 
+from lab import logger
 from lab.experiment.tensorflow import Experiment
 
 # Declare the experiment
@@ -27,8 +28,6 @@ EXPERIMENT = Experiment(name="mnist_tensorflow",
                         comment="Test",
                         check_repo_dirty=False
                         )
-
-logger = EXPERIMENT.logger
 
 
 def create_mnist_dataset(data, labels, batch_size):
@@ -160,7 +159,7 @@ def main():
     batches = len(x_train) // args.batch_size
 
     with tf.Session() as session:
-        EXPERIMENT.start_train(0, session)
+        EXPERIMENT.start_train(session)
 
         # Loop through the monitored iterator
         for epoch in logger.loop(range(0, args.epochs)):

@@ -1,18 +1,17 @@
 """
 ```trial
-2019-06-17 13:51:03
+2019-07-17 08:45:45
 Test
-[[dirty]]: 🧹  logger 2
+[[dirty]]: Merge branch 'master' of github.com:vpj/lab
+
+merge
 start_step: 0
 
-----------------------------
-| global_step | train_loss |
-----------------------------
-|         930 |       0.11 |
-|       1,868 |       0.08 |
-|       2,806 |       0.05 |
-|       3,744 |       0.04 |
-----------------------------
+---------------------------------------------------
+| global_step | train_loss | test_loss | accuracy |
+---------------------------------------------------
+|         937 |       0.09 |      0.10 |     0.97 |
+---------------------------------------------------
 ```
 """
 
@@ -24,6 +23,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 
+from lab import logger
 from lab.experiment.pytorch import Experiment
 
 # Declare the experiment
@@ -32,8 +32,6 @@ EXPERIMENT = Experiment(name="mnist_pytorch",
                         comment="Test",
                         check_repo_dirty=False
                         )
-
-logger = EXPERIMENT.logger
 
 
 class Net(nn.Module):
@@ -162,7 +160,7 @@ def main():
             logger.add_indicator(f"{name}_grad", is_histogram=True, is_print=False)
 
     # Start the experiment
-    EXPERIMENT.start_train(0)
+    EXPERIMENT.start_train()
 
     # Loop through the monitored iterator
     for epoch in logger.loop(range(0, args.epochs)):

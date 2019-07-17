@@ -5,10 +5,12 @@ from typing import Dict, Optional
 import git
 import numpy as np
 
-from lab import colors, util, Lab
+from lab import colors, util
+from lab import logger
 from lab.commenter import Commenter
 from lab.experiment.experiment_trial import Trial
-from lab.logger import Logger, ProgressSaver, CheckpointSaver
+from lab.lab import Lab
+from lab.logger_class import ProgressSaver
 
 commenter = Commenter(
     comment_start='"""',
@@ -171,8 +173,8 @@ class Experiment:
                                                          is_log_python_file=is_log_python_file)
 
         checkpoint_saver = self._create_checkpoint_saver()
-        self.logger = Logger(progress_saver=self.__progress_saver,
-                             checkpoint_saver=checkpoint_saver)
+        logger.set_progress_saver(self.__progress_saver)
+        logger.set_checkpoint_saver(checkpoint_saver)
 
     def _create_checkpoint_saver(self):
         return None
@@ -181,14 +183,14 @@ class Experiment:
         """
         ## 🖨 Print the experiment info and check git repo status
         """
-        self.logger.log_color([
+        logger.log_color([
             (self.info.name, colors.Style.bold)
         ])
-        self.logger.log_color([
+        logger.log_color([
             ("\t", None),
             (self.trial.comment, colors.BrightColor.cyan)
         ])
-        self.logger.log_color([
+        logger.log_color([
             ("\t", None),
             ("[dirty]" if self.trial.is_dirty else "[clean]", None),
             (": ", None),
@@ -197,9 +199,9 @@ class Experiment:
 
         # Exit if git repository is dirty
         if self.check_repo_dirty and self.trial.is_dirty:
-            self.logger.log("Cannot trial an experiment with uncommitted changes. ",
+            logger.log("Cannot trial an experiment with uncommitted changes. ",
                             new_line=False)
-            self.logger.log("[FAIL]", color=colors.BrightColor.red)
+            logger.log("[FAIL]", color=colors.BrightColor.red)
             exit(1)
 
     def save_npy(self, array: np.ndarray, name: str):
@@ -262,7 +264,7 @@ class Experiment:
 
     def _start(self, global_step: int):
         self.trial.start_step = global_step
-        self.logger.set_start_global_step(global_step)
+        logger.set_start_global_step(global_step)
 
         self.__progress_saver.save()
 

@@ -7,7 +7,8 @@ import tensorflow as tf
 import torch.nn
 
 from lab import experiment, util
-from lab.logger import tensorboard_writer, CheckpointSaver
+from lab.logger_class import tensorboard_writer, CheckpointSaver
+from lab import logger
 
 
 class Checkpoint(CheckpointSaver):
@@ -144,7 +145,7 @@ class Experiment(experiment.Experiment):
         """
         ## Create TensorFlow summary writer
         """
-        self.logger.add_writer(tensorboard_writer.Writer(
+        logger.add_writer(tensorboard_writer.Writer(
             tf.compat.v1.summary.FileWriter(str(self.info.summary_path))))
 
     def add_models(self, models: Dict[str, torch.nn.Module]):
@@ -164,9 +165,9 @@ class Experiment(experiment.Experiment):
 
         if not is_init:
             # load checkpoint if we are starting from middle
-            with self.logger.section("Loading checkpoint"):
+            with logger.section("Loading checkpoint"):
                 is_successful = self.__checkpoint_saver.load()
-                self.logger.set_successful(is_successful)
+                logger.set_successful(is_successful)
                 if is_successful:
                     global_step = self.__checkpoint_saver.max_step
 
@@ -174,9 +175,9 @@ class Experiment(experiment.Experiment):
 
         if global_step == 0:
             # initialize variables and clear summaries if we are starting from scratch
-            with self.logger.section("Clearing summaries"):
+            with logger.section("Clearing summaries"):
                 self.clear_summaries()
-            with self.logger.section("Clearing checkpoints"):
+            with logger.section("Clearing checkpoints"):
                 self.clear_checkpoints()
 
         self.create_writer()
@@ -188,5 +189,5 @@ class Experiment(experiment.Experiment):
         Load a checkpoint or reset based on `global_step`.
         """
 
-        with self.logger.section("Loading checkpoint") as m:
+        with logger.section("Loading checkpoint") as m:
             m.is_successful = self.__checkpoint_saver.load()

@@ -1,8 +1,9 @@
 from typing import List
 
-from lab import colors, util, Lab
+from lab import colors, util
+from lab.lab import Lab
 from lab.experiment import ExperimentInfo, Trial
-from lab.logger import Logger
+from lab import Logger
 
 
 def list_experiments(lab: Lab, logger: Logger):

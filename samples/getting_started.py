@@ -1,8 +1,10 @@
 """
 ```trial
-2019-06-20 16:36:29
+2019-07-17 08:43:34
 Sample lab experiment
-[[dirty]]: 🐛  typos
+[[dirty]]: Merge branch 'master' of github.com:vpj/lab
+
+merge
 start_step: 0
 ```
 """
@@ -13,16 +15,15 @@ import time
 
 import tensorflow as tf
 
+from lab import logger
 from lab.experiment.tensorflow import Experiment
+
 
 # Create the sample experiment
 EXPERIMENT = Experiment(name="Sample",
                         python_file=__file__,
                         comment="Sample lab experiment",
                         check_repo_dirty=False)
-
-# Get a reference to logger
-logger = EXPERIMENT.logger
 
 # Sections are use to keep track of
 # what's going on from the console output.
@@ -61,12 +62,12 @@ logger.add_indicator("advantage_reward", is_histogram=False, is_print=False, is_
 # Create a TensorFlow session
 with tf.Session() as session:
     # Start the experiment from scratch, without loading from a
-    # saved checkpoint.
+    # saved checkpoint ('is_init=True')
     # This will clear all the old checkpoints and summaries for this
     # experiment.
-    # If you start with the continued non-zero `global_step`
+    # If you start with 'is_init=False',
     # the experiment will load from the last saved checkpoint.
-    EXPERIMENT.start_train(0, session)
+    EXPERIMENT.start_train(session, is_init=True)
 
     # This is the main training loop of this project.
     for global_step in logger.loop(range(50)):
