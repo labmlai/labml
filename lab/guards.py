@@ -3,6 +3,8 @@ import tokenize
 from io import BytesIO
 from typing import Dict, NamedTuple
 
+import torch
+
 
 class GuardError(Exception):
     def __init__(self, msg: str):
@@ -64,7 +66,7 @@ class GuardSameSize:
 
     def get_single_value(self, identifier, caller: Definition):
         # TODO: use caller for name spaces
-        if identifier == '_':
+        if identifier[0] == '_':
             return None
 
         if identifier in self._values:
@@ -93,7 +95,7 @@ class GuardSameSize:
     def set_value(self, parsed, value, caller):
         assert len(parsed) == 1
         identifier = parsed[0]
-        if identifier == '_':
+        if identifier[0] == '_':
             return
 
         self._values[identifier] = value
@@ -146,7 +148,8 @@ class GuardSameSize:
             if v != value:
                 raise GuardError("All shapes to be guarded must be equal")
 
-        if type(value) == list or type(value) == tuple:
+        value_type = type(value)
+        if value_type == list or value_type == tuple or value_type is torch.Size:
             if len(value) != len(strings):
                 raise GuardError("Number of dimensions do not match")
             values = list(value)
@@ -159,16 +162,27 @@ class GuardSameSize:
         for v, s in zip(values, strings):
             self.guard_single(v, s, caller)
 
+        if len(values) == 1:
+            return values[0]
+        else:
+            return [v for v in values]
 
-guard = GuardSameSize(0)
+
+_guard = GuardSameSize(1)
+
+
+def guard(*args):
+    return _guard.guard(*args)
 
 
 def test():
-    guard.guard(5, 'batch_size')
-    guard.guard((2, 3), 'x', 'y')
-    guard.guard((5, 2), 'batch_size', 'x')
-    guard.guard((7, 2), 'batch_size+x', 'x')
-    guard.guard((6, 2), '(batch_size*x)-y', 'x')
+    test_guard = GuardSameSize(0)
+
+    test_guard.guard(5, 'batch_size')
+    test_guard.guard((2, 3), 'x', 'y')
+    test_guard.guard((5, 2), 'batch_size', 'x')
+    test_guard.guard((7, 2), 'batch_size+x', 'x')
+    test_guard.guard((6, 2), '(batch_size*x)-y', 'x')
 
 
 if __name__ == '__main__':

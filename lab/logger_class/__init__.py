@@ -219,7 +219,7 @@ class Logger:
 
         self.__checkpoint_saver.save(self.global_step, args)
 
-    def iterator(self, name, iterable: typing.Iterable,
+    def iterator(self, name, iterable: typing.Union[typing.Iterable, typing.Sized, int],
                  total_steps: Optional[int] = None, *,
                  is_silent: bool = False,
                  is_timed: bool = True):
