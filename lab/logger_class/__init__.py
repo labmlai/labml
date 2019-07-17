@@ -41,7 +41,6 @@ class Logger:
     def __init__(self):
         """
         ### Initializer
-        :param is_color: whether to use colours in console output
         """
         if logger_singleton is not None:
             raise RuntimeError("Only one instance of logger can exist")
