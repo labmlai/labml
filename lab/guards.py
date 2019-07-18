@@ -156,8 +156,10 @@ class GuardSameSize:
         else:
             values = [value]
 
-        stack = inspect.stack()
-        caller = frame_info_to_definition(stack[1 + self.caller_depth])
+        # FIXME Inspect messes with garbage collection
+        # stack = inspect.stack()
+        # caller = frame_info_to_definition(stack[1 + self.caller_depth])
+        caller = Definition('', 0)
 
         for v, s in zip(values, strings):
             self.guard_single(v, s, caller)
