@@ -5,8 +5,8 @@ import os
 
 import lab.lab_utils as utils
 from lab import colors
-from lab import Lab
-from lab.logger import Logger
+from lab.lab import Lab
+from lab import logger
 
 
 def main():
@@ -24,8 +24,6 @@ def main():
                         help='List of experiments')
 
     args = parser.parse_args()
-
-    logger = Logger()
 
     if args.list:
         utils.list_experiments(lab, logger)
