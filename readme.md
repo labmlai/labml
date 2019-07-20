@@ -5,7 +5,7 @@
 # [Lab 2.0](https://github.com/vpj/lab)
 
 This library helps you organize machine learning experiments.
-It is a quite small library, 
+It is a quite small library,
  and most of the modules can be used independently of each other.
 This doesn't have any user interface.
 Experiment results are maintained in a folder structure,
@@ -119,7 +119,7 @@ You don't need the `.lab.yaml` file if you only plan on using the logger.
 
 ### Samples
 
-See [mnist_pytorch.py](http://blog.varunajayasiri.com/ml/lab/mnist_pytorch.html) 
+See [mnist_pytorch.py](http://blog.varunajayasiri.com/ml/lab/mnist_pytorch.html)
 or [mnist_tensorflow.py](http://blog.varunajayasiri.com/ml/lab/mnist_tensorflow.html)
 for examples.
 
@@ -181,7 +181,7 @@ with logger.section("Create model"):
 ```
 
 Sections let you monitor time takes for
-different tasks and also helps keep the code clean 
+different tasks and also helps keep the code clean
 by separating different blocks of code.
 
 These can be within loops as well.
@@ -346,12 +346,11 @@ This library is was made by combining these bunch of tools.
 
 * **July 12, 2019**
 	* TensborBoard embedding helper
-	
+
 * **July 15, 2019**
 	* Nested sections
 	* Helpers for iterators
-	
+
 * **July 17, 2019**
-	* Singleton logger - 
+	* Singleton logger -
 	  *much simpler usage although it might not be able to handle complexities later*
-	* Guards
