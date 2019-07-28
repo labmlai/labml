@@ -1,7 +1,7 @@
 import numpy as np
-import tensorflow as tf
 
 import lab.logger_class.writers
+from lab import tf_compat
 
 
 def _get_histogram(values):
@@ -10,7 +10,7 @@ def _get_histogram(values):
     """
 
     values = np.array(values)
-    hist = tf.compat.v1.HistogramProto()
+    hist = tf_compat.HistogramProto()
     hist.min = float(np.min(values))
     hist.max = float(np.max(values))
     hist.num = int(np.prod(values.shape))
@@ -83,11 +83,11 @@ def _get_pair_histogram(values):
 
         a[y_i, x_i] += 1
 
-    return tf.compat.v1.make_tensor_proto(a)
+    return tf_compat.make_tensor_proto(a)
 
 
 class Writer(lab.logger_class.writers.Writer):
-    def __init__(self, file_writer: tf.compat.v1.summary.FileWriter):
+    def __init__(self, file_writer: tf_compat.summary.FileWriter):
         super().__init__()
 
         self.__writer = file_writer
@@ -98,7 +98,7 @@ class Writer(lab.logger_class.writers.Writer):
               pairs,
               scalars,
               tf_summaries):
-        summary = tf.compat.v1.Summary()
+        summary = tf_compat.Summary()
 
         for k, v in queues.items():
             if len(v) == 0:

@@ -1,11 +1,18 @@
 """
 ```trial
-2019-07-17 08:43:34
+2019-07-28 16:10:06
 Sample lab experiment
-[[dirty]]: Merge branch 'master' of github.com:vpj/lab
-
-merge
+[[dirty]]: 🗑  remove guards, use https://github.com/vpj/guards
 start_step: 0
+
+--------------------------
+| global_step |   reward |
+--------------------------
+|          10 |     1.50 |
+|          20 |     4.83 |
+|          30 |     8.17 |
+|          40 |    11.50 |
+--------------------------
 ```
 """
 
@@ -20,7 +27,7 @@ from lab.experiment.tensorflow import Experiment
 
 
 # Create the sample experiment
-EXPERIMENT = Experiment(name="Sample",
+EXPERIMENT = Experiment(name="sample",
                         python_file=__file__,
                         comment="Sample lab experiment",
                         check_repo_dirty=False)

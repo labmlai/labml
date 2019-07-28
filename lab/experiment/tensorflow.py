@@ -5,7 +5,7 @@ from typing import List, Optional
 import numpy as np
 import tensorflow as tf
 
-from lab import tf_util, util, experiment, logger
+from lab import tf_util, util, experiment, logger, tf_compat
 from lab.logger_class import tensorboard_writer, CheckpointSaver
 
 
@@ -141,12 +141,12 @@ class Experiment(experiment.Experiment):
         self.__checkpoint_saver = Checkpoint(self.info.checkpoint_path)
         return self.__checkpoint_saver
 
-    def create_writer(self, session: tf.compat.v1.Session):
+    def create_writer(self, session: tf_compat.Session):
         """
         ## Create TensorFlow summary writer
         """
         logger.add_writer(tensorboard_writer.Writer(
-            tf.compat.v1.summary.FileWriter(str(self.info.summary_path), session.graph)))
+            tf_compat.summary.FileWriter(str(self.info.summary_path), session.graph)))
 
     def set_variables(self, variables: List[tf.Variable]):
         """

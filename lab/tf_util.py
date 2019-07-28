@@ -2,13 +2,14 @@ import os
 
 import numpy as np
 import tensorflow as tf
+from lab import tf_compat
 
 
-def init_variables(session: tf.compat.v1.Session):
+def init_variables(session: tf_compat.Session):
     """
     #### Initialize TensorFlow variables
     """
-    init_op = tf.compat.v1.global_variables_initializer()
+    init_op = tf_compat.global_variables_initializer()
     session.run(init_op)
 
 
@@ -35,7 +36,7 @@ def set_random_seeds(seed: int = 7):
 
     # set random seeds,
     np.random.seed(seed)
-    tf.compat.v1.set_random_seed(seed)
+    tf_compat.set_random_seed(seed)
 
 
 def use_gpu(gpu: str):

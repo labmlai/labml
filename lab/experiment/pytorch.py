@@ -1,14 +1,13 @@
-import pathlib
-from typing import Optional, List, Dict
-
 import json
+import pathlib
+from typing import Optional, Dict
+
 import numpy as np
-import tensorflow as tf
 import torch.nn
 
-from lab import experiment, util
-from lab.logger_class import tensorboard_writer, CheckpointSaver
+from lab import experiment, util, tf_compat
 from lab import logger
+from lab.logger_class import tensorboard_writer, CheckpointSaver
 
 
 class Checkpoint(CheckpointSaver):
@@ -146,7 +145,7 @@ class Experiment(experiment.Experiment):
         ## Create TensorFlow summary writer
         """
         logger.add_writer(tensorboard_writer.Writer(
-            tf.compat.v1.summary.FileWriter(str(self.info.summary_path))))
+            tf_compat.summary.FileWriter(str(self.info.summary_path))))
 
     def add_models(self, models: Dict[str, torch.nn.Module]):
         """
