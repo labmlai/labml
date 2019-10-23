@@ -281,13 +281,13 @@ This small tool lets you start TensorBoard without having to type in all the log
 
 To get a list of all available experiments
 ```bash
-LAB/tb.py -l
+tensorboard.py -l
 ```
 
 To analyse experiments `exp1` and `exp2`:
 
 ```bash
-LAB/tb.py -e exp1 exp2
+tensorboard.py -e exp1 exp2
 ```
 
 ---
