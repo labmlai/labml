@@ -3,17 +3,21 @@ import inspect
 import time
 
 import typing
-from lab.configs import option, append, Configs
+from lab.configs import option, append, Configs, ConfigProcessor
+
+
+class SampleModel:
+    def __init__(self, *, workers_count):
+        self.w = workers_count
 
 
 class Sample(Configs):
     total_global_steps: int = 10
     workers_count: int = 10
     empty: str
-    steps = []
 
-    def instance_func(self, *, x:int):
-        pass
+    # def instance_func(self, *, x:int):
+    #     pass
 
     @staticmethod
     def input_model(*, workers_count: int):
@@ -21,9 +25,8 @@ class Sample(Configs):
 
     model = 'simple_model'
 
-    @staticmethod
     @option('model', 'simple_model')
-    def _model_simple_model(total_global_steps):
+    def _model_simple_model(self, *, total_global_steps):
         return total_global_steps * 3
 
     # When collecting unordered items
@@ -32,8 +35,14 @@ class Sample(Configs):
         return None
 
     @append('steps')
-    def model_step(self, model):
+    def model_step(self, *, model):
         return model
+
+    model_obj = SampleModel
+
+    @staticmethod
+    def print(*, model_obj: SampleModel):
+        print(model_obj, model_obj.w)
 
 
 class SampleChild(Sample):
@@ -53,8 +62,9 @@ print(configs.__dict__, Sample.__dict__, flush=True)
 
 # print(Sample.__dict__['_model_simple_model'].__dict__, flush=True)
 
-time.sleep(1)
-print(type(Sample.instance_func), inspect.getfullargspec(Sample.instance_func), flush=True)
+# time.sleep(1)
+
+# print(type(Sample.instance_func), inspect.getfullargspec(Sample.instance_func), flush=True)
 print(type(Sample.input_model), inspect.getfullargspec(Sample.input_model), flush=True)
 
 print(SampleChild.__dict__, SampleChild.__bases__)
@@ -65,3 +75,6 @@ print(type(SampleChild), inspect.getfullargspec(SampleChild))
 print(inspect.getfile(SampleChild), inspect.getsource(SampleChild))
 f = SampleChild
 x = f(test=2)
+
+processor = ConfigProcessor(configs)
+processor.calculate()
