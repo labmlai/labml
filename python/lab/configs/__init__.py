@@ -157,7 +157,8 @@ class ConfigProcessor:
             raise ConfigPropertyException(func)
 
         for arg in arg_spec.kwonlyargs:
-            if (arg not in self.values) and (arg not in self.properties):
+            if ((arg not in self.values) and (arg not in self.properties) and
+                    (arg not in self.list_appends)):
                 raise MissingConfigException(func, arg)
 
     def __get_property(self, key):
@@ -182,6 +183,7 @@ class ConfigProcessor:
             raise ValueError(f"Missing config {key}")
 
     def __add_to_topological_order(self, key):
+        assert self.stack.pop() == key
         self.is_computed.add(key)
         self.topological_order.append(key)
 
@@ -205,7 +207,6 @@ class ConfigProcessor:
             _, args = self.__get_args(f)
             for a in args:
                 if a not in self.is_computed:
-                    self.__add_to_stack(key)
                     self.__add_to_stack(a)
                     return
 
@@ -223,7 +224,7 @@ class ConfigProcessor:
 
     def __dfs(self):
         while len(self.stack) > 0:
-            key = self.stack.pop()
+            key = self.stack[-1]
             self.__traverse(key)
 
     def __topological_sort(self):
