@@ -1,8 +1,8 @@
 """
 ```trial
-2019-11-24 08:21:16
+2019-11-25 06:57:10
 Test
-[[dirty]]: ♻️  move dashboard to a new repo
+[[dirty]]: ♻️  mnist pytorch to use configs
 start_step: 0
 ```
 """
@@ -54,6 +54,15 @@ class Loop:
         self.optimizer = optimizer
         self.log_interval = log_interval
 
+    def _startup(self):
+        logger.add_indicator("train_loss", queue_limit=10, is_print=True)
+        logger.add_indicator("test_loss", is_histogram=False, is_print=True)
+        logger.add_indicator("accuracy", is_histogram=False, is_print=True)
+        for name, param in self.model.named_parameters():
+            if param.requires_grad:
+                logger.add_indicator(name, is_histogram=True, is_print=False)
+                logger.add_indicator(f"{name}_grad", is_histogram=True, is_print=False)
+
     def _train(self, epoch):
         with logger.section("Train", total_steps=len(self.train_loader)):
             self.model.train()
@@ -94,10 +103,18 @@ class Loop:
             logger.store(test_loss=test_loss / len(self.test_loader.dataset))
             logger.store(accuracy=correct / len(self.test_loader.dataset))
 
-    def __call__(self):
-        # Start the experiment
-        EXPERIMENT.start_train()
-        print(self.epochs)
+    def step(self):
+        # Training and testing
+        self._train(epoch)
+        self._test()
+
+        # Add histograms with model parameter values and gradients
+        for name, param in self.model.named_parameters():
+            if param.requires_grad:
+                logger.store(name, param.data.cpu().numpy())
+                logger.store(f"{name}_grad", param.grad.cpu().numpy())
+
+    def loop(self):
         # Loop through the monitored iterator
         for epoch in logger.loop(range(0, self.epochs)):
             # Delayed keyboard interrupt handling to use
@@ -107,17 +124,9 @@ class Loop:
             # i.e. the loop won't stop in the middle of an epoch.
             try:
                 with logger.delayed_keyboard_interrupt():
+                    self.step()
 
-                    # Training and testing
-                    self._train(epoch)
-                    self._test()
-
-                    # Add histograms with model parameter values and gradients
-                    for name, param in self.model.named_parameters():
-                        if param.requires_grad:
-                            logger.store(name, param.data.cpu().numpy())
-                            logger.store(f"{name}_grad", param.grad.cpu().numpy())
-
+                    print('epoch')
                     # Clear line and output to console
                     logger.write()
 
@@ -136,6 +145,16 @@ class Loop:
                 logger.new_line()
                 logger.log("\nKilling loop...")
                 break
+
+    def __call__(self):
+        # Start the experiment
+        self._startup()
+
+        EXPERIMENT.start_train()
+        print(self.epochs)
+
+        self.loop()
+
 
 
 class Configs(configs.Configs):
@@ -186,16 +205,6 @@ class Configs(configs.Configs):
 
     def set_seed(self, *, seed: int):
         torch.manual_seed(seed)
-
-    @configs.append('startup')
-    def _logger_indicators(self, *, model):
-        logger.add_indicator("train_loss", queue_limit=10, is_print=True)
-        logger.add_indicator("test_loss", is_histogram=False, is_print=True)
-        logger.add_indicator("accuracy", is_histogram=False, is_print=True)
-        for name, param in model.named_parameters():
-            if param.requires_grad:
-                logger.add_indicator(name, is_histogram=True, is_print=False)
-                logger.add_indicator(f"{name}_grad", is_histogram=True, is_print=False)
 
     loop = Loop
 
