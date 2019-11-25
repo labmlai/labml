@@ -1,8 +1,8 @@
 """
 ```trial
-2019-11-25 07:03:34
+2019-11-25 07:38:07
 Test
-[[dirty]]: ♻️  pytorch example cleanup
+[[dirty]]: 🐛 fix step(epoch)
 start_step: 0
 ```
 """
@@ -44,9 +44,66 @@ class Net(nn.Module):
 
 
 class Loop:
-    def __init__(self, *, epochs, model, device, train_loader, test_loader, optimizer,
+    def __init__(self, *, epochs, models):
+        self.__epochs = epochs
+        self.__models = models
+
+    def startup(self):
+        pass
+
+    def step(self, epoch):
+        raise NotImplementedError()
+
+    def loop(self):
+        # Loop through the monitored iterator
+        for epoch in logger.loop(range(0, self.__epochs)):
+            # Delayed keyboard interrupt handling to use
+            # keyboard interrupts to end the loop.
+            # This will capture interrupts and finish
+            # the loop at the end of processing the iteration;
+            # i.e. the loop won't stop in the middle of an epoch.
+            try:
+                with logger.delayed_keyboard_interrupt():
+                    self.step(epoch)
+
+                    # Add histograms with model parameter values and gradients
+                    for model_name, model in self.__models.items():
+                        model_name = f"{model_name}_" if model_name != '' else model_name
+                        for name, param in self.model.named_parameters():
+                            if param.requires_grad:
+                                logger.store(f"{model_name}{name}", param.data.cpu().numpy())
+                                logger.store(f"{model_name}{name}_grad", param.grad.cpu().numpy())
+
+                    # Clear line and output to console
+                    logger.write()
+
+                    # Output the progress summaries to `trial.yaml` and
+                    # to the python file header
+                    logger.save_progress()
+
+                    # Clear line and go to the next line;
+                    # that is, we add a new line to the output
+                    # at the end of each epoch
+                    logger.new_line()
+
+            # Handled delayed interrupt
+            except KeyboardInterrupt:
+                logger.finish_loop()
+                logger.new_line()
+                logger.log("\nKilling loop...")
+                break
+
+    def __call__(self):
+        # Start the experiment
+        self.startup()
+
+        self.loop()
+
+
+class MNISTLoop(Loop):
+    def __init__(self, *, epochs, models, model, device, train_loader, test_loader, optimizer,
                  log_interval):
-        self.epochs = epochs
+        super().__init__(epochs=epochs, models=models)
         self.model = model
         self.device = device
         self.train_loader = train_loader
@@ -54,7 +111,7 @@ class Loop:
         self.optimizer = optimizer
         self.log_interval = log_interval
 
-    def _startup(self):
+    def startup(self):
         logger.add_indicator("train_loss", queue_limit=10, is_print=True)
         logger.add_indicator("test_loss", is_histogram=False, is_print=True)
         logger.add_indicator("accuracy", is_histogram=False, is_print=True)
@@ -62,6 +119,8 @@ class Loop:
             if param.requires_grad:
                 logger.add_indicator(name, is_histogram=True, is_print=False)
                 logger.add_indicator(f"{name}_grad", is_histogram=True, is_print=False)
+
+        EXPERIMENT.start_train()
 
     def _train(self, epoch):
         with logger.section("Train", total_steps=len(self.train_loader)):
@@ -107,54 +166,6 @@ class Loop:
         # Training and testing
         self._train(epoch)
         self._test()
-
-        # Add histograms with model parameter values and gradients
-        for name, param in self.model.named_parameters():
-            if param.requires_grad:
-                logger.store(name, param.data.cpu().numpy())
-                logger.store(f"{name}_grad", param.grad.cpu().numpy())
-
-    def loop(self):
-        # Loop through the monitored iterator
-        for epoch in logger.loop(range(0, self.epochs)):
-            # Delayed keyboard interrupt handling to use
-            # keyboard interrupts to end the loop.
-            # This will capture interrupts and finish
-            # the loop at the end of processing the iteration;
-            # i.e. the loop won't stop in the middle of an epoch.
-            try:
-                with logger.delayed_keyboard_interrupt():
-                    self.step(epoch)
-
-                    print('epoch')
-                    # Clear line and output to console
-                    logger.write()
-
-                    # Output the progress summaries to `trial.yaml` and
-                    # to the python file header
-                    logger.save_progress()
-
-                    # Clear line and go to the next line;
-                    # that is, we add a new line to the output
-                    # at the end of each epoch
-                    logger.new_line()
-
-            # Handled delayed interrupt
-            except KeyboardInterrupt:
-                logger.finish_loop()
-                logger.new_line()
-                logger.log("\nKilling loop...")
-                break
-
-    def __call__(self):
-        # Start the experiment
-        self._startup()
-
-        EXPERIMENT.start_train()
-        print(self.epochs)
-
-        self.loop()
-
 
 
 class Configs(configs.Configs):
@@ -206,7 +217,10 @@ class Configs(configs.Configs):
     def set_seed(self, *, seed: int):
         torch.manual_seed(seed)
 
-    loop = Loop
+    def models(self, *, model):
+        return {'': model}
+
+    loop = MNISTLoop
 
 
 def main():
