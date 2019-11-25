@@ -1,8 +1,8 @@
 """
 ```trial
-2019-11-25 06:57:10
+2019-11-25 07:03:34
 Test
-[[dirty]]: ♻️  mnist pytorch to use configs
+[[dirty]]: ♻️  pytorch example cleanup
 start_step: 0
 ```
 """
@@ -103,7 +103,7 @@ class Loop:
             logger.store(test_loss=test_loss / len(self.test_loader.dataset))
             logger.store(accuracy=correct / len(self.test_loader.dataset))
 
-    def step(self):
+    def step(self, epoch):
         # Training and testing
         self._train(epoch)
         self._test()
@@ -124,7 +124,7 @@ class Loop:
             # i.e. the loop won't stop in the middle of an epoch.
             try:
                 with logger.delayed_keyboard_interrupt():
-                    self.step()
+                    self.step(epoch)
 
                     print('epoch')
                     # Clear line and output to console
