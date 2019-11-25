@@ -27,6 +27,7 @@ MODELS = {}
 
 
 class Model(nn.Module):
+    """Can intercept all the model calls"""
     def __init__(self, name):
         super().__init__()
         MODELS[name] = self
@@ -62,6 +63,15 @@ class Loop:
     def step(self, epoch):
         raise NotImplementedError()
 
+    def __log_model_params(self):
+        # Add histograms with model parameter values and gradients
+        for model_name, model in MODELS.items():
+            model_name = f"{model_name}_" if model_name != '' else model_name
+            for name, param in model.named_parameters():
+                if param.requires_grad:
+                    logger.store(f"{model_name}{name}", param.data.cpu().numpy())
+                    logger.store(f"{model_name}{name}_grad", param.grad.cpu().numpy())
+
     def loop(self):
         # Loop through the monitored iterator
         for epoch in logger.loop(range(0, self.__epochs)):
@@ -74,14 +84,8 @@ class Loop:
                 with logger.delayed_keyboard_interrupt():
                     self.step(epoch)
 
-                    # Add histograms with model parameter values and gradients
-                    for model_name, model in MODELS.items():
-                        model_name = f"{model_name}_" if model_name != '' else model_name
-                        for name, param in model.named_parameters():
-                            if param.requires_grad:
-                                logger.store(f"{model_name}{name}", param.data.cpu().numpy())
-                                logger.store(f"{model_name}{name}_grad", param.grad.cpu().numpy())
-
+                    self.__log_model_params()
+                    
                     # Clear line and output to console
                     logger.write()
 
