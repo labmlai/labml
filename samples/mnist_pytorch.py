@@ -1,8 +1,8 @@
 """
 ```trial
-2019-11-25 07:38:07
+2019-11-25 07:50:19
 Test
-[[dirty]]: 🐛 fix step(epoch)
+[[dirty]]: loop
 start_step: 0
 ```
 """
@@ -23,10 +23,18 @@ EXPERIMENT = Experiment(name="mnist_pytorch",
                         check_repo_dirty=False
                         )
 
+MODELS = {}
 
-class Net(nn.Module):
+
+class Model(nn.Module):
+    def __init__(self, name):
+        super().__init__()
+        MODELS[name] = self
+
+
+class Net(Model):
     def __init__(self):
-        super(Net, self).__init__()
+        super().__init__('MyModel')
         self.conv1 = nn.Conv2d(1, 20, 5, 1)
         self.conv2 = nn.Conv2d(20, 50, 5, 1)
         self.fc1 = nn.Linear(4 * 4 * 50, 500)
@@ -44,9 +52,9 @@ class Net(nn.Module):
 
 
 class Loop:
-    def __init__(self, *, epochs, models):
+    def __init__(self, *, epochs):
         self.__epochs = epochs
-        self.__models = models
+        print(MODELS)
 
     def startup(self):
         pass
@@ -67,9 +75,9 @@ class Loop:
                     self.step(epoch)
 
                     # Add histograms with model parameter values and gradients
-                    for model_name, model in self.__models.items():
+                    for model_name, model in MODELS.items():
                         model_name = f"{model_name}_" if model_name != '' else model_name
-                        for name, param in self.model.named_parameters():
+                        for name, param in model.named_parameters():
                             if param.requires_grad:
                                 logger.store(f"{model_name}{name}", param.data.cpu().numpy())
                                 logger.store(f"{model_name}{name}_grad", param.grad.cpu().numpy())
@@ -101,9 +109,9 @@ class Loop:
 
 
 class MNISTLoop(Loop):
-    def __init__(self, *, epochs, models, model, device, train_loader, test_loader, optimizer,
+    def __init__(self, *, epochs, model, device, train_loader, test_loader, optimizer,
                  log_interval):
-        super().__init__(epochs=epochs, models=models)
+        super().__init__(epochs=epochs)
         self.model = model
         self.device = device
         self.train_loader = train_loader
@@ -216,9 +224,6 @@ class Configs(configs.Configs):
 
     def set_seed(self, *, seed: int):
         torch.manual_seed(seed)
-
-    def models(self, *, model):
-        return {'': model}
 
     loop = MNISTLoop
 
