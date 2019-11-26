@@ -40,6 +40,7 @@ class ExperimentInfo:
         self.diff_path = self.experiment_path / "diffs"
 
         self.summary_path = self.experiment_path / "log"
+        self.sqlite_path = self.experiment_path / "data.sqlite"
         self.screenshots_path = self.experiment_path / 'screenshots'
         self.trials_log_file = self.experiment_path / "trials.yaml"
 

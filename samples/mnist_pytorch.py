@@ -1,8 +1,8 @@
 """
 ```trial
-2019-11-25 07:50:19
+2019-11-25 16:43:08
 Test
-[[dirty]]: loop
+[[dirty]]: ♻️  model base calss to collect all models
 start_step: 0
 ```
 """
@@ -28,6 +28,7 @@ MODELS = {}
 
 class Model(nn.Module):
     """Can intercept all the model calls"""
+
     def __init__(self, name):
         super().__init__()
         MODELS[name] = self
@@ -53,9 +54,13 @@ class Net(Model):
 
 
 class Loop:
-    def __init__(self, *, epochs):
+    def __init__(self, *, epochs, is_save_models, is_log_parameters,
+                 log_new_line_interval, log_progress_interval):
         self.__epochs = epochs
-        print(MODELS)
+        self.__is_save_models = is_save_models
+        self.__is_log_parameters = is_log_parameters
+        self.__log_new_line_interval = log_new_line_interval
+        self.__log_progress_interval = log_progress_interval
 
     def startup(self):
         pass
@@ -64,13 +69,16 @@ class Loop:
         raise NotImplementedError()
 
     def __log_model_params(self):
+        if not self.__is_log_parameters:
+            return
+
         # Add histograms with model parameter values and gradients
         for model_name, model in MODELS.items():
             model_name = f"{model_name}_" if model_name != '' else model_name
             for name, param in model.named_parameters():
                 if param.requires_grad:
-                    logger.store(f"{model_name}{name}", param.data.cpu().numpy())
-                    logger.store(f"{model_name}{name}_grad", param.grad.cpu().numpy())
+                    logger.store(f"{model_name}_{name}", param.data.cpu().numpy())
+                    logger.store(f"{model_name}_{name}_grad", param.grad.cpu().numpy())
 
     def loop(self):
         # Loop through the monitored iterator
@@ -85,18 +93,20 @@ class Loop:
                     self.step(epoch)
 
                     self.__log_model_params()
-                    
+
                     # Clear line and output to console
                     logger.write()
 
                     # Output the progress summaries to `trial.yaml` and
                     # to the python file header
-                    logger.save_progress()
+                    if (epoch + 1) % self.__log_progress_interval == 0:
+                        logger.save_progress()
 
                     # Clear line and go to the next line;
                     # that is, we add a new line to the output
                     # at the end of each epoch
-                    logger.new_line()
+                    if (epoch + 1) % self.__log_new_line_interval == 0:
+                        logger.new_line()
 
             # Handled delayed interrupt
             except KeyboardInterrupt:
@@ -107,15 +117,31 @@ class Loop:
 
     def __call__(self):
         # Start the experiment
+        for model_name, model in MODELS.items():
+            model_name = f"{model_name}_" if model_name != '' else model_name
+            for name, param in model.named_parameters():
+                if param.requires_grad:
+                    logger.add_indicator(f"{model_name}_{name}",
+                                         is_histogram=True,
+                                         is_print=False)
+                    logger.add_indicator(f"{model_name}_{name}_grad",
+                                         is_histogram=True,
+                                         is_print=False)
+
         self.startup()
 
         self.loop()
 
 
 class MNISTLoop(Loop):
-    def __init__(self, *, epochs, model, device, train_loader, test_loader, optimizer,
-                 log_interval):
-        super().__init__(epochs=epochs)
+    def __init__(self, *, model, device, train_loader, test_loader, optimizer,
+                 log_interval, epochs, is_save_models, is_log_parameters,
+                 log_new_line_interval, log_progress_interval):
+        super().__init__(epochs=epochs,
+                         is_save_models=is_save_models,
+                         is_log_parameters=is_log_parameters,
+                         log_new_line_interval=log_new_line_interval,
+                         log_progress_interval=log_progress_interval)
         self.model = model
         self.device = device
         self.train_loader = train_loader
@@ -127,10 +153,6 @@ class MNISTLoop(Loop):
         logger.add_indicator("train_loss", queue_limit=10, is_print=True)
         logger.add_indicator("test_loss", is_histogram=False, is_print=True)
         logger.add_indicator("accuracy", is_histogram=False, is_print=True)
-        for name, param in self.model.named_parameters():
-            if param.requires_grad:
-                logger.add_indicator(name, is_histogram=True, is_print=False)
-                logger.add_indicator(f"{name}_grad", is_histogram=True, is_print=False)
 
         EXPERIMENT.start_train()
 
@@ -180,7 +202,14 @@ class MNISTLoop(Loop):
         self._test()
 
 
-class Configs(configs.Configs):
+class BaseConfigs(configs.Configs):
+    is_save_models: bool = False
+    is_log_parameters: bool = True
+    log_new_line_interval: int = 1
+    log_progress_interval: int = 1
+
+
+class Configs(BaseConfigs):
     batch_size: int = 64
     test_batch_size: int = 1000
     epochs: int = 10
@@ -190,7 +219,6 @@ class Configs(configs.Configs):
     cuda_device: str = "cuda"
     seed: int = 5
     log_interval: int = 10
-    save_model: bool = False
 
     def is_cuda(self, *, use_cuda: bool) -> bool:
         return use_cuda and torch.cuda.is_available()
