@@ -8,8 +8,7 @@ class Writer:
               queues,
               histograms,
               pairs,
-              scalars,
-              tf_summaries):
+              scalars):
         raise NotImplementedError()
 
 
@@ -26,8 +25,7 @@ class ProgressDictWriter(Writer):
               queues,
               histograms,
               pairs,
-              scalars,
-              tf_summaries):
+              scalars):
         res = dict(global_step=f"{global_step :8,}")
 
         for k in self.indicators:
@@ -63,8 +61,7 @@ class ScreenWriter(Writer):
               queues,
               histograms,
               pairs,
-              scalars,
-              tf_summaries):
+              scalars):
         parts = []
 
         for k in self.indicators:

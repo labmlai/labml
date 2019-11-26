@@ -10,7 +10,6 @@ class Store:
         self.histograms = {}
         self.pairs: Dict[str, List[Tuple[int, int]]] = {}
         self.scalars = {}
-        self.tf_summaries = []
 
     def add_indicator(self, name: str, *,
                       queue_limit: int = None,
@@ -77,11 +76,8 @@ class Store:
             self._store_kvs(**kwargs)
         elif len(args) == 1:
             assert not kwargs
-            if isinstance(args[0], list):
-                self._store_list(args[0])
-            else:
-                assert isinstance(args[0], bytes)
-                self.tf_summaries.append(args[0])
+            assert isinstance(args[0], list)
+            self._store_list(args[0])
         elif len(args) == 2:
             assert isinstance(args[0], str)
             if isinstance(args[1], list):
@@ -97,12 +93,10 @@ class Store:
             self.scalars[k] = []
         for k in self.pairs:
             self.pairs[k] = []
-        self.tf_summaries = []
 
     def write(self, writer: Writer, global_step):
         return writer.write(global_step=global_step,
                             queues=self.queues,
                             histograms=self.histograms,
                             pairs=self.pairs,
-                            scalars=self.scalars,
-                            tf_summaries=self.tf_summaries)
+                            scalars=self.scalars)

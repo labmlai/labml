@@ -5,9 +5,9 @@ from typing import Optional, Dict
 import numpy as np
 import torch.nn
 
-from lab import experiment, util, tf_compat
+from lab import experiment, util
 from lab import logger
-from lab.logger_class import tensorboard_writer, CheckpointSaver, sqlite_writer
+from lab.logger_class import CheckpointSaver, sqlite_writer
 
 
 class Checkpoint(CheckpointSaver):
@@ -144,8 +144,6 @@ class Experiment(experiment.Experiment):
         """
         ## Create TensorFlow summary writer
         """
-        logger.add_writer(tensorboard_writer.Writer(
-            tf_compat.summary.FileWriter(str(self.info.summary_path))))
         logger.add_writer(sqlite_writer.Writer(self.info.sqlite_path))
 
     def add_models(self, models: Dict[str, torch.nn.Module]):

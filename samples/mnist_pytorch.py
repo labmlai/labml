@@ -1,12 +1,3 @@
-"""
-```trial
-2019-11-25 16:43:08
-Test
-[[dirty]]: ♻️  model base calss to collect all models
-start_step: 0
-```
-"""
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -20,7 +11,8 @@ from lab.experiment.pytorch import Experiment
 EXPERIMENT = Experiment(name="mnist_pytorch",
                         python_file=__file__,
                         comment="Test",
-                        check_repo_dirty=False
+                        check_repo_dirty=False,
+                        is_log_python_file=False
                         )
 
 MODELS = {}
