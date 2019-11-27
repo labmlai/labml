@@ -195,9 +195,6 @@ class Logger:
         ### Output the stored log values to screen and TensorBoard summaries.
         """
 
-        if self.__loop is None:
-            raise RuntimeError("Cannot write stats without loop")
-
         global_step = self.global_step
 
         for w in self.__writers:
@@ -205,7 +202,16 @@ class Logger:
         self.__indicators_print = self.__store.write(self.__screen_writer, global_step)
         self.__progress_dict = self.__store.write(self.__progress_dict_writer, global_step)
         self.__store.clear()
-        self.__log_line()
+
+        parts = [(f"{self.global_step :8,}:  ", colors.BrightColor.orange)]
+        if self.__loop is None:
+            parts += self.__indicators_print
+        else:
+            parts += self.__loop.log_sections()
+            parts += self.__indicators_print
+            parts += self.__loop.log_progress()
+
+        self.log_color(parts, new_line=False)
 
     def save_progress(self):
         if self.__progress_saver is None:
@@ -315,22 +321,10 @@ class Logger:
         self.__log_line()
 
     def __log_line(self):
-        if self.__loop is not None:
-            self.__log_looping_line()
-            return
-
         if len(self.__sections) == 0:
             return
 
         self.log_color(self.__sections[-1].log(), new_line=False)
-
-    def __log_looping_line(self):
-        parts = [(f"{self.global_step :8,}:  ", colors.BrightColor.orange)]
-        parts += self.__loop.log_sections()
-        parts += self.__indicators_print
-        parts += self.__loop.log_progress()
-
-        self.log_color(parts, new_line=False)
 
     def section_exit(self, section):
         if len(self.__sections) == 0:
