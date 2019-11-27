@@ -1,15 +1,17 @@
 from collections import deque
 from typing import Dict, List, Tuple
 
+import lab
 from lab.logger_class.writers import Writer
 
 
 class Store:
-    def __init__(self):
+    def __init__(self, logger: 'lab.Logger'):
         self.queues = {}
         self.histograms = {}
         self.pairs: Dict[str, List[Tuple[int, int]]] = {}
         self.scalars = {}
+        self.__logger = logger
 
     def add_indicator(self, name: str, *,
                       queue_limit: int = None,
@@ -46,6 +48,8 @@ class Store:
                 assert type(v) == list
                 self.pairs[k] += v
         else:
+            if k not in self.scalars:
+                self.__logger.add_indicator(k, is_histogram=False, is_print=True)
             self.scalars[k].append(v)
 
     def _store_kvs(self, **kwargs):

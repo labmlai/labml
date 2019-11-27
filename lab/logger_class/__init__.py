@@ -45,7 +45,7 @@ class Logger:
         if logger_singleton is not None:
             raise RuntimeError("Only one instance of logger can exist")
 
-        self.__store = Store()
+        self.__store = Store(self)
         self.__writers: List[Writer] = []
 
         self.__loop: Optional[Loop] = None
