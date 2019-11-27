@@ -4,47 +4,18 @@ from lab import colors
 
 
 class Writer:
+    def add_indicator(self, name: str, *,
+                      indicator_type: str,
+                      queue_limit: int,
+                      is_print: bool):
+        raise NotImplementedError()
+
     def write(self, *, global_step: int,
               queues,
               histograms,
               pairs,
               scalars):
         raise NotImplementedError()
-
-
-class ProgressDictWriter(Writer):
-    def __init__(self):
-        super().__init__()
-
-        self.indicators = []
-
-    def add_indicator(self, name):
-        self.indicators.append(name)
-
-    def write(self, *, global_step: int,
-              queues,
-              histograms,
-              pairs,
-              scalars):
-        res = dict(global_step=f"{global_step :8,}")
-
-        for k in self.indicators:
-            if k in queues:
-                if len(queues[k]) == 0:
-                    continue
-                v = np.mean(queues[k])
-            elif k in histograms:
-                if len(histograms[k]) == 0:
-                    continue
-                v = np.mean(histograms[k])
-            else:
-                if len(scalars[k]) == 0:
-                    continue
-                v = np.mean(scalars[k])
-
-            res[k] = f"{v :8,.2f}"
-
-        return res
 
 
 class ScreenWriter(Writer):
@@ -54,8 +25,12 @@ class ScreenWriter(Writer):
         self.indicators = []
         self.is_color = is_color
 
-    def add_indicator(self, name):
-        self.indicators.append(name)
+    def add_indicator(self, name: str, *,
+                      indicator_type: str,
+                      queue_limit: int,
+                      is_print: bool):
+        if is_print:
+            self.indicators.append(name)
 
     def write(self, *, global_step: int,
               queues,

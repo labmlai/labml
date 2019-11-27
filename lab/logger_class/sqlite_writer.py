@@ -19,7 +19,23 @@ class Writer(lab.logger_class.writers.Writer):
             self.conn.execute('''CREATE TABLE scalars
                          (key text, step integer, value real)''')
         except sqlite3.OperationalError:
-            print('Table exists')
+            print('Scalar table exists')
+
+        try:
+            # Create table
+            self.conn.execute('''CREATE TABLE indicators
+                         (key text, indicator_type text, queue_limit integer, is_print integer)''')
+        except sqlite3.OperationalError:
+            print('Indicators table exists')
+
+    def add_indicator(self, name: str, *,
+                      indicator_type: str,
+                      queue_limit: int,
+                      is_print: bool):
+        self.conn.execute(
+            f"INSERT INTO indicators VALUES ('{name}', '{indicator_type}',"
+            f" {queue_limit}, {int(is_print)})")
+        self.conn.commit()
 
     def write(self, *, global_step: int,
               queues,

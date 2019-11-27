@@ -14,22 +14,22 @@ class Store:
         self.__logger = logger
 
     def add_indicator(self, name: str, *,
-                      queue_limit: int = None,
-                      is_histogram: bool = True,
-                      is_pair: bool = False):
+                      indicator_type: str,
+                      queue_limit: int):
         """
         ### Add an indicator
         """
 
-        if queue_limit is not None:
+        if indicator_type == 'queue':
             self.queues[name] = deque(maxlen=queue_limit)
-        elif is_histogram:
+        elif indicator_type == 'histogram':
             self.histograms[name] = []
-        else:
-            self.scalars[name] = []
-
-        if is_pair:
+        elif indicator_type == 'pair':
             self.pairs[name] = []
+        elif indicator_type == 'scalar':
+            self.scalars[name] = []
+        else:
+            raise ValueError(f"Unknown indicator type: {indicator_type}")
 
     def _store_list(self, items: List[Dict[str, float]]):
         for item in items:
@@ -49,7 +49,7 @@ class Store:
                 self.pairs[k] += v
         else:
             if k not in self.scalars:
-                self.__logger.add_indicator(k, is_histogram=False, is_print=True)
+                self.__logger.add_indicator(k, is_print=True)
             self.scalars[k].append(v)
 
     def _store_kvs(self, **kwargs):

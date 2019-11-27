@@ -47,12 +47,11 @@ class Net(Model):
 
 class Loop:
     def __init__(self, *, epochs, is_save_models, is_log_parameters,
-                 log_new_line_interval, log_progress_interval):
+                 log_new_line_interval):
         self.__epochs = epochs
         self.__is_save_models = is_save_models
         self.__is_log_parameters = is_log_parameters
         self.__log_new_line_interval = log_new_line_interval
-        self.__log_progress_interval = log_progress_interval
 
     def startup(self):
         pass
@@ -89,11 +88,6 @@ class Loop:
                     # Clear line and output to console
                     logger.write()
 
-                    # Output the progress summaries to `trial.yaml` and
-                    # to the python file header
-                    if (epoch + 1) % self.__log_progress_interval == 0:
-                        logger.save_progress()
-
                     # Clear line and go to the next line;
                     # that is, we add a new line to the output
                     # at the end of each epoch
@@ -114,10 +108,10 @@ class Loop:
             for name, param in model.named_parameters():
                 if param.requires_grad:
                     logger.add_indicator(f"{model_name}_{name}",
-                                         is_histogram=True,
+                                         indicator_type='histogram',
                                          is_print=False)
                     logger.add_indicator(f"{model_name}_{name}_grad",
-                                         is_histogram=True,
+                                         indicator_type='histogram',
                                          is_print=False)
 
         self.startup()
@@ -128,12 +122,11 @@ class Loop:
 class MNISTLoop(Loop):
     def __init__(self, *, model, device, train_loader, test_loader, optimizer,
                  log_interval, epochs, is_save_models, is_log_parameters,
-                 log_new_line_interval, log_progress_interval):
+                 log_new_line_interval):
         super().__init__(epochs=epochs,
                          is_save_models=is_save_models,
                          is_log_parameters=is_log_parameters,
-                         log_new_line_interval=log_new_line_interval,
-                         log_progress_interval=log_progress_interval)
+                         log_new_line_interval=log_new_line_interval)
         self.model = model
         self.device = device
         self.train_loader = train_loader
@@ -142,9 +135,9 @@ class MNISTLoop(Loop):
         self.log_interval = log_interval
 
     def startup(self):
-        logger.add_indicator("train_loss", queue_limit=10, is_print=True)
-        logger.add_indicator("test_loss", is_histogram=False, is_print=True)
-        logger.add_indicator("accuracy", is_histogram=False, is_print=True)
+        logger.add_indicator("train_loss", indicator_type='histogram')
+        logger.add_indicator("test_loss", indicator_type='histogram')
+        logger.add_indicator("accuracy", indicator_type='histogram')
 
         EXPERIMENT.start_train()
 
@@ -198,7 +191,6 @@ class BaseConfigs(configs.Configs):
     is_save_models: bool = False
     is_log_parameters: bool = True
     log_new_line_interval: int = 1
-    log_progress_interval: int = 1
 
 
 class Configs(BaseConfigs):

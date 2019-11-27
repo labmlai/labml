@@ -8,7 +8,7 @@ This module contains logging and monotring helpers.
 Logger prints to the screen and writes TensorBoard summaries.
 """
 import typing
-from typing import List, Tuple, Optional, Dict
+from typing import List, Tuple, Optional
 
 from lab import colors
 from lab.colors import ANSICode
@@ -17,12 +17,7 @@ from lab.logger_class.delayed_keyboard_interrupt import DelayedKeyboardInterrupt
 from lab.logger_class.loop import Loop
 from lab.logger_class.sections import Section, OuterSection, LoopingSection, section_factory
 from lab.logger_class.store import Store
-from lab.logger_class.writers import Writer, ProgressDictWriter, ScreenWriter
-
-
-class ProgressSaver:
-    def save(self, progress: Dict[str, str]):
-        raise NotImplementedError()
+from lab.logger_class.writers import Writer, ScreenWriter
 
 
 class CheckpointSaver:
@@ -52,20 +47,15 @@ class Logger:
         self.__sections: List[Section] = []
 
         self.__indicators_print = []
-        self.__progress_dict = {}
 
         self.__screen_writer = ScreenWriter(True)
-        self.__progress_dict_writer = ProgressDictWriter()
+        self.__writers.append(self.__screen_writer)
 
-        self.__progress_saver: Optional[ProgressSaver] = None
         self.__checkpoint_saver: Optional[CheckpointSaver] = None
 
         self.__start_global_step: Optional[int] = None
         self.__global_step: Optional[int] = None
         self.__last_global_step: Optional[int] = None
-
-    def set_progress_saver(self, saver: ProgressSaver):
-        self.__progress_saver = saver
 
     def set_checkpoint_saver(self, saver: CheckpointSaver):
         self.__checkpoint_saver = saver
@@ -130,31 +120,21 @@ class Logger:
         self.log("".join(coded), new_line=new_line)
 
     def add_indicator(self, name: str, *,
-                      queue_limit: int = None,
-                      is_histogram: bool = True,
-                      is_print: bool = True,
-                      is_progress: Optional[bool] = None,
-                      is_pair: bool = False):
+                      indicator_type: str = 'scalar',
+                      queue_limit: int = 10,
+                      is_print: bool = True):
+
         """
         ### Add an indicator
         """
 
-        if is_print:
-            self.__screen_writer.add_indicator(name)
-
-        if is_progress is None:
-            is_progress = is_print
-
-        if is_progress:
-            self.__progress_dict_writer.add_indicator(name)
-
-        if is_pair:
-            assert not is_print and not is_progress and not is_histogram and queue_limit is None
-
+        for w in self.__writers:
+            w.add_indicator(name, indicator_type=indicator_type,
+                            queue_limit=queue_limit,
+                            is_print=is_print)
         self.__store.add_indicator(name,
-                                   queue_limit=queue_limit,
-                                   is_histogram=is_histogram,
-                                   is_pair=is_pair)
+                                   indicator_type=indicator_type,
+                                   queue_limit=queue_limit)
 
     def store(self, *args, **kwargs):
         """
@@ -182,10 +162,6 @@ class Logger:
 
         self.__global_step += global_step
 
-    @property
-    def progress_dict(self):
-        return self.__progress_dict
-
     @staticmethod
     def new_line():
         print()
@@ -200,7 +176,6 @@ class Logger:
         for w in self.__writers:
             self.__store.write(w, global_step)
         self.__indicators_print = self.__store.write(self.__screen_writer, global_step)
-        self.__progress_dict = self.__store.write(self.__progress_dict_writer, global_step)
         self.__store.clear()
 
         parts = [(f"{self.global_step :8,}:  ", colors.BrightColor.orange)]
@@ -212,12 +187,6 @@ class Logger:
             parts += self.__loop.log_progress()
 
         self.log_color(parts, new_line=False)
-
-    def save_progress(self):
-        if self.__progress_saver is None:
-            return
-
-        self.__progress_saver.save(self.__progress_dict)
 
     def save_checkpoint(self, *args):
         if self.__checkpoint_saver is None:

@@ -10,7 +10,6 @@ from lab import logger
 from lab.commenter import Commenter
 from lab.experiment.experiment_trial import Trial
 from lab.lab import Lab
-from lab.logger_class import ProgressSaver
 
 commenter = Commenter(
     comment_start='"""',
@@ -50,67 +49,6 @@ class ExperimentInfo:
         """
         p = pathlib.Path(self.summary_path)
         return p.exists()
-
-
-class _ExperimentProgressSaver(ProgressSaver):
-    def __init__(self, *,
-                 trial: Trial,
-                 trials_log_file: pathlib.PurePath,
-                 is_log_python_file: bool):
-        self.trial = trial
-        self.trials_log_file = trials_log_file
-        self.is_log_python_file = is_log_python_file
-
-    def __log_python_file(self):
-        if not self.is_log_python_file:
-            return
-
-        try:
-            with open(self.trial.python_file, "r") as file:
-                lines = file.read().splitlines()
-
-            trial_print = self.trial.pretty_print()
-
-            lines = commenter.update(lines, trial_print)
-            code = '\n'.join(lines)
-
-            with open(self.trial.python_file, "w") as file:
-                file.write(code)
-        except FileNotFoundError:
-            pass
-
-    def __log_trial(self, is_add: bool):
-        """
-        ### Log trial
-
-        This will add or update a trial in the `trials.yaml` file
-        """
-        try:
-            with open(str(self.trials_log_file), "r") as file:
-                trials = util.yaml_load(file.read())
-                if trials is None:
-                    trials = []
-        except FileNotFoundError:
-            trials = []
-
-        if is_add or len(trials) == 0:
-            trials.append(self.trial.to_dict())
-        else:
-            trials[-1] = self.trial.to_dict()
-
-        self.trial.index = len(trials) - 1
-
-        with open(str(self.trials_log_file), "w") as file:
-            file.write(util.yaml_dump(trials))
-
-    def save(self, progress: Optional[Dict[str, str]] = None):
-        if progress is not None:
-            self.trial.set_progress(progress)
-            self.__log_trial(is_add=False)
-        else:
-            self.__log_trial(is_add=True)
-
-        self.__log_python_file()
 
 
 class Experiment:
@@ -169,12 +107,8 @@ class Experiment:
         self.trial.commit_message = repo.head.commit.message.strip()
         self.trial.is_dirty = repo.is_dirty()
         self.trial.diff = repo.git.diff()
-        self.__progress_saver = _ExperimentProgressSaver(trial=self.trial,
-                                                         trials_log_file=self.info.trials_log_file,
-                                                         is_log_python_file=is_log_python_file)
 
         checkpoint_saver = self._create_checkpoint_saver()
-        logger.set_progress_saver(self.__progress_saver)
         logger.set_checkpoint_saver(checkpoint_saver)
 
     def _create_checkpoint_saver(self):
@@ -266,8 +200,6 @@ class Experiment:
     def _start(self, global_step: int):
         self.trial.start_step = global_step
         logger.set_start_global_step(global_step)
-
-        self.__progress_saver.save()
 
         path = pathlib.Path(self.info.diff_path)
         if not path.exists():
