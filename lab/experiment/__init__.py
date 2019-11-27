@@ -10,6 +10,7 @@ from lab import logger
 from lab.commenter import Commenter
 from lab.experiment.experiment_trial import Trial
 from lab.lab import Lab
+from lab.logger_class import sqlite_writer
 
 commenter = Commenter(
     comment_start='"""',
@@ -110,6 +111,7 @@ class Experiment:
 
         checkpoint_saver = self._create_checkpoint_saver()
         logger.set_checkpoint_saver(checkpoint_saver)
+        logger.add_writer(sqlite_writer.Writer(self.info.sqlite_path))
 
     def _create_checkpoint_saver(self):
         return None

@@ -1,5 +1,5 @@
 import sqlite3
-from pathlib import Path
+from pathlib import PurePath
 
 import numpy as np
 
@@ -9,7 +9,7 @@ _HISTOGRAM_QUANTILES_10 = [i / 10. for i in range(11)]
 
 
 class Writer(lab.logger_class.writers.Writer):
-    def __init__(self, sqlite_path: Path):
+    def __init__(self, sqlite_path: PurePath):
         super().__init__()
 
         self.conn = sqlite3.connect(str(sqlite_path))
@@ -47,14 +47,14 @@ class Writer(lab.logger_class.writers.Writer):
                 continue
             # summary.value.add(tag=k, histo=_get_histogram(v))
             self.conn.execute(
-                f"INSERT INTO scalars VALUES ('{k}_mean', {global_step}, {float(np.mean(v))})")
+                f"INSERT INTO scalars VALUES ('{k}.mean', {global_step}, {float(np.mean(v))})")
 
         for k, v in histograms.items():
             if len(v) == 0:
                 continue
             # summary.value.add(tag=k, histo=_get_histogram(v))
             self.conn.execute(
-                f"INSERT INTO scalars VALUES ('{k}_mean', {global_step}, {float(np.mean(v))})")
+                f"INSERT INTO scalars VALUES ('{k}.mean', {global_step}, {float(np.mean(v))})")
 
         # for k, v in pairs.items():
         #     if len(v) == 0:

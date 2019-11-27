@@ -104,13 +104,12 @@ class Loop:
     def __call__(self):
         # Start the experiment
         for model_name, model in MODELS.items():
-            model_name = f"{model_name}_" if model_name != '' else model_name
             for name, param in model.named_parameters():
                 if param.requires_grad:
-                    logger.add_indicator(f"{model_name}_{name}",
+                    logger.add_indicator(f"{model_name}.{name}",
                                          indicator_type='histogram',
                                          is_print=False)
-                    logger.add_indicator(f"{model_name}_{name}_grad",
+                    logger.add_indicator(f"{model_name}.{name}.grad",
                                          indicator_type='histogram',
                                          is_print=False)
 

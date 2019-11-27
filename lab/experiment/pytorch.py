@@ -140,12 +140,6 @@ class Experiment(experiment.Experiment):
         self.__checkpoint_saver = Checkpoint(self.info.checkpoint_path)
         return self.__checkpoint_saver
 
-    def create_writer(self):
-        """
-        ## Create TensorFlow summary writer
-        """
-        logger.add_writer(sqlite_writer.Writer(self.info.sqlite_path))
-
     def add_models(self, models: Dict[str, torch.nn.Module]):
         """
         ## Set variable for saving and loading
@@ -177,8 +171,6 @@ class Experiment(experiment.Experiment):
                 self.clear_summaries()
             with logger.section("Clearing checkpoints"):
                 self.clear_checkpoints()
-
-        self.create_writer()
 
     def start_replay(self):
         """
