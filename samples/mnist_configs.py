@@ -11,8 +11,7 @@ from lab.experiment.pytorch import Experiment
 EXPERIMENT = Experiment(name="mnist_pytorch",
                         python_file=__file__,
                         comment="Test",
-                        check_repo_dirty=False,
-                        is_log_python_file=False
+                        check_repo_dirty=False
                         )
 
 MODELS = {}

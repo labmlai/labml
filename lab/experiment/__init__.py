@@ -64,8 +64,7 @@ class Experiment:
                  name: str,
                  python_file: str,
                  comment: str,
-                 check_repo_dirty: Optional[bool],
-                 is_log_python_file: Optional[bool]):
+                 check_repo_dirty: Optional[bool]):
         """
         ### Create the experiment
 
@@ -86,8 +85,6 @@ class Experiment:
 
         if check_repo_dirty is None:
             check_repo_dirty = self.lab.check_repo_dirty
-        if is_log_python_file is None:
-            is_log_python_file = self.lab.is_log_python_file
 
         self.info = ExperimentInfo(self.lab, name)
 
@@ -112,6 +109,26 @@ class Experiment:
         checkpoint_saver = self._create_checkpoint_saver()
         logger.set_checkpoint_saver(checkpoint_saver)
         logger.add_writer(sqlite_writer.Writer(self.info.sqlite_path))
+
+    def _save_trial(self):
+        """
+        ### Log trial
+        This will add or update a trial in the `trials.yaml` file
+        """
+        try:
+            with open(str(self.info.trials_log_file), "r") as file:
+                trials = util.yaml_load(file.read())
+                if trials is None:
+                    trials = []
+        except FileNotFoundError:
+            trials = []
+
+        trials.append(self.trial.to_dict())
+
+        self.trial.index = len(trials) - 1
+
+        with open(str(self.info.trials_log_file), "w") as file:
+            file.write(util.yaml_dump(trials))
 
     def _create_checkpoint_saver(self):
         return None
@@ -202,6 +219,8 @@ class Experiment:
     def _start(self, global_step: int):
         self.trial.start_step = global_step
         logger.set_start_global_step(global_step)
+
+        self._save_trial()
 
         path = pathlib.Path(self.info.diff_path)
         if not path.exists():
