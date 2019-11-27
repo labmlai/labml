@@ -26,18 +26,20 @@ class Writer(lab.logger_class.writers.Writer):
               histograms,
               pairs,
               scalars):
-        # for k, v in queues.items():
-        #     if len(v) == 0:
-        #         continue
-        #     summary.value.add(tag=k, histo=_get_histogram(v))
-        #     summary.value.add(tag=f"{k}_mean", simple_value=float(np.mean(v)))
-        #
-        # for k, v in histograms.items():
-        #     if len(v) == 0:
-        #         continue
-        #     summary.value.add(tag=k, histo=_get_histogram(v))
-        #     summary.value.add(tag=f"{k}_mean", simple_value=float(np.mean(v)))
-        #
+        for k, v in queues.items():
+            if len(v) == 0:
+                continue
+            # summary.value.add(tag=k, histo=_get_histogram(v))
+            self.conn.execute(
+                f"INSERT INTO scalars VALUES ('{k}_mean', {global_step}, {float(np.mean(v))})")
+
+        for k, v in histograms.items():
+            if len(v) == 0:
+                continue
+            # summary.value.add(tag=k, histo=_get_histogram(v))
+            self.conn.execute(
+                f"INSERT INTO scalars VALUES ('{k}_mean', {global_step}, {float(np.mean(v))})")
+
         # for k, v in pairs.items():
         #     if len(v) == 0:
         #         continue
@@ -48,3 +50,5 @@ class Writer(lab.logger_class.writers.Writer):
                 continue
             self.conn.execute(
                 f"INSERT INTO scalars VALUES ('{k}', {global_step}, {float(np.mean(v))})")
+
+        self.conn.commit()
