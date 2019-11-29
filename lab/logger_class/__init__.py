@@ -181,12 +181,9 @@ class Logger:
         parts = [(f"{self.global_step :8,}:  ", colors.BrightColor.orange)]
         if self.__loop is None:
             parts += self.__indicators_print
+            self.log_color(parts, new_line=False)
         else:
-            parts += self.__loop.log_sections()
-            parts += self.__indicators_print
-            parts += self.__loop.log_progress()
-
-        self.log_color(parts, new_line=False)
+            self.__log_looping_line()
 
     def save_checkpoint(self, *args):
         if self.__checkpoint_saver is None:
@@ -289,7 +286,19 @@ class Logger:
 
         self.__log_line()
 
+    def __log_looping_line(self):
+        parts = [(f"{self.global_step :8,}:  ", colors.BrightColor.orange)]
+        parts += self.__loop.log_sections()
+        parts += self.__indicators_print
+        parts += self.__loop.log_progress()
+
+        self.log_color(parts, new_line=False)
+
     def __log_line(self):
+        if self.__loop is not None:
+            self.__log_looping_line()
+            return
+
         if len(self.__sections) == 0:
             return
 
