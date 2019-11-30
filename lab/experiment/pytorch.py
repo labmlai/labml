@@ -135,7 +135,7 @@ class Experiment(experiment.Experiment):
                          check_repo_dirty=check_repo_dirty)
 
     def _create_checkpoint_saver(self):
-        self.__checkpoint_saver = Checkpoint(self.info.checkpoint_path)
+        self.__checkpoint_saver = Checkpoint(self.run.checkpoint_path)
         return self.__checkpoint_saver
 
     def add_models(self, models: Dict[str, torch.nn.Module]):

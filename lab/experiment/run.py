@@ -1,5 +1,8 @@
 import time
+from pathlib import Path, PurePath
 from typing import List, Dict
+
+from lab import util
 
 
 def _struct_time_to_time(t: time.struct_time):
@@ -13,7 +16,7 @@ def _struct_time_to_date(t: time.struct_time):
 _GLOBAL_STEP = 'global_step'
 
 
-class Trial:
+class Run:
     """
     # Trial 🏃‍
 
@@ -30,8 +33,6 @@ class Trial:
     If you want to try different configs, create multiple experiments.
     """
 
-    progress: List[Dict[str, str]]
-
     def __init__(self, *,
                  python_file: str,
                  trial_date: str,
@@ -41,8 +42,10 @@ class Trial:
                  commit_message: str or None = None,
                  is_dirty: bool = True,
                  diff: str or None = None,
+                 index: int,
+                 experiment_path: PurePath,
                  start_step: int = 0):
-        self.index = -1
+        self.index = index
         self.commit = commit
         self.is_dirty = is_dirty
         self.diff = diff
@@ -53,17 +56,32 @@ class Trial:
         self.commit_message = commit_message
         self.start_step = start_step
 
+        self.run_path = experiment_path / str(index)
+        self.checkpoint_path = self.run_path / "checkpoints"
+        self.npy_path = self.run_path / "npy"
+
+        self.diff_path = self.run_path / "source.diff"
+
+        self.sqlite_path = self.run_path / "sqlite.db"
+        self.info_path = self.run_path / "run.yaml"
+
     @classmethod
-    def new_trial(cls, *,
-                  python_file: str,
-                  trial_time: time.struct_time,
-                  comment: str):
+    def create(cls, *,
+               experiment_path: PurePath,
+               python_file: str,
+               trial_time: time.struct_time,
+               comment: str):
         """
         ## Create a new trial
         """
+        runs = [int(child.name) for child in Path(experiment_path).iterdir()]
+        runs.sort()
+
         return cls(python_file=python_file,
                    trial_date=_struct_time_to_date(trial_time),
                    trial_time=_struct_time_to_time(trial_time),
+                   index=runs[-1],
+                   experiment_path=experiment_path,
                    comment=comment)
 
     @classmethod
@@ -106,8 +124,12 @@ class Trial:
 
     def __str__(self):
         return f"Trial(comment=\"{self.comment}\"," \
-            f" commit=\"{self.commit_message}\"," \
-            f" date={self.trial_date}, time={self.trial_time}"
+               f" commit=\"{self.commit_message}\"," \
+               f" date={self.trial_date}, time={self.trial_time}"
 
     def __repr__(self):
         return self.__str__()
+
+    def save_info(self):
+        with open(str(self.info_path), "w") as file:
+            file.write(util.yaml_dump(self.to_dict()))
