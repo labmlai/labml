@@ -64,6 +64,7 @@ class Experiment:
             experiment_path.mkdir(parents=True)
 
         self.run = Run.create(
+            experiment_path=self.experiment_path,
             python_file=python_file,
             trial_time=time.localtime(),
             comment=comment)
@@ -132,10 +133,7 @@ class Experiment:
         logger.set_start_global_step(global_step)
 
         self.run.save_info()
+        logger.save_indicators(self.run.indicators_path)
 
-        path = pathlib.Path(self.run.diff_path)
-        if not path.exists():
-            path.mkdir(parents=True)
-
-        with open(str(path / f"{self.run.index}.diff"), "w") as f:
+        with open(str(self.run.diff_path), "w") as f:
             f.write(self.run.diff)

@@ -8,9 +8,10 @@ This module contains logging and monotring helpers.
 Logger prints to the screen and writes TensorBoard summaries.
 """
 import typing
+from pathlib import PurePath
 from typing import List, Tuple, Optional
 
-from lab import colors
+from lab import colors, util
 from lab.colors import ANSICode
 from lab.logger_class import iterator
 from lab.logger_class.delayed_keyboard_interrupt import DelayedKeyboardInterrupt
@@ -56,6 +57,8 @@ class Logger:
         self.__start_global_step: Optional[int] = None
         self.__global_step: Optional[int] = None
         self.__last_global_step: Optional[int] = None
+        self.__indicators = {}
+        self.__indicators_file = None
 
     def set_checkpoint_saver(self, saver: CheckpointSaver):
         self.__checkpoint_saver = saver
@@ -135,6 +138,19 @@ class Logger:
         self.__store.add_indicator(name,
                                    indicator_type=indicator_type,
                                    queue_limit=queue_limit)
+
+        self.__indicators[name] = dict(indicator_type=indicator_type,
+                                       queue_limit=queue_limit,
+                                       is_print=is_print)
+
+        if self.__indicators_file is not None:
+            self.save_indicators(self.__indicators_file)
+
+    def save_indicators(self, file: PurePath):
+        self.__indicators_file = file
+
+        with open(str(file), "w") as file:
+            file.write(util.yaml_dump(self.__indicators))
 
     def store(self, *args, **kwargs):
         """

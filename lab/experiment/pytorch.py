@@ -163,13 +163,6 @@ class Experiment(experiment.Experiment):
 
         self._start(global_step)
 
-        if global_step == 0:
-            # initialize variables and clear summaries if we are starting from scratch
-            with logger.section("Clearing summaries"):
-                self.clear_summaries()
-            with logger.section("Clearing checkpoints"):
-                self.clear_checkpoints()
-
     def start_replay(self):
         """
         ## Start replaying experiment

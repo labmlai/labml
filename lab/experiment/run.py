@@ -64,6 +64,7 @@ class Run:
 
         self.sqlite_path = self.run_path / "sqlite.db"
         self.info_path = self.run_path / "run.yaml"
+        self.indicators_path = self.run_path / "indicators.yaml"
 
     @classmethod
     def create(cls, *,
@@ -77,10 +78,15 @@ class Run:
         runs = [int(child.name) for child in Path(experiment_path).iterdir()]
         runs.sort()
 
+        if len(runs) > 0:
+            this_run = runs[-1] + 1
+        else:
+            this_run = 1
+
         return cls(python_file=python_file,
                    trial_date=_struct_time_to_date(trial_time),
                    trial_time=_struct_time_to_time(trial_time),
-                   index=runs[-1],
+                   index=this_run,
                    experiment_path=experiment_path,
                    comment=comment)
 
@@ -131,5 +137,9 @@ class Run:
         return self.__str__()
 
     def save_info(self):
+        run_path = Path(self.run_path)
+        if not run_path.exists():
+            run_path.mkdir(parents=True)
+
         with open(str(self.info_path), "w") as file:
             file.write(util.yaml_dump(self.to_dict()))

@@ -8,7 +8,7 @@ class Writer:
                       indicator_type: str,
                       queue_limit: int,
                       is_print: bool):
-        raise NotImplementedError()
+        pass
 
     def write(self, *, global_step: int,
               queues,

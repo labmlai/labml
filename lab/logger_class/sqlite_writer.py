@@ -9,10 +9,19 @@ _HISTOGRAM_QUANTILES_10 = [i / 10. for i in range(11)]
 
 
 class Writer(lab.logger_class.writers.Writer):
+    conn: sqlite3.Connection
+
     def __init__(self, sqlite_path: PurePath):
         super().__init__()
 
-        self.conn = sqlite3.connect(str(sqlite_path))
+        self.sqlite_path = sqlite_path
+        self.conn = None
+
+    def __connect(self):
+        if self.conn is not None:
+            return
+
+        self.conn = sqlite3.connect(str(self.sqlite_path))
 
         try:
             # Create table
@@ -21,27 +30,13 @@ class Writer(lab.logger_class.writers.Writer):
         except sqlite3.OperationalError:
             print('Scalar table exists')
 
-        try:
-            # Create table
-            self.conn.execute('''CREATE TABLE indicators
-                         (key text, indicator_type text, queue_limit integer, is_print integer)''')
-        except sqlite3.OperationalError:
-            print('Indicators table exists')
-
-    def add_indicator(self, name: str, *,
-                      indicator_type: str,
-                      queue_limit: int,
-                      is_print: bool):
-        self.conn.execute(
-            f"INSERT INTO indicators VALUES ('{name}', '{indicator_type}',"
-            f" {queue_limit}, {int(is_print)})")
-        self.conn.commit()
-
     def write(self, *, global_step: int,
               queues,
               histograms,
               pairs,
               scalars):
+        self.__connect()
+
         for k, v in queues.items():
             if len(v) == 0:
                 continue
