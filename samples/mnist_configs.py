@@ -64,11 +64,10 @@ class Loop:
 
         # Add histograms with model parameter values and gradients
         for model_name, model in MODELS.items():
-            model_name = f"{model_name}_" if model_name != '' else model_name
             for name, param in model.named_parameters():
                 if param.requires_grad:
-                    logger.store(f"{model_name}_{name}", param.data.cpu().numpy())
-                    logger.store(f"{model_name}_{name}_grad", param.grad.cpu().numpy())
+                    logger.store(f"{model_name}.{name}", param.data.cpu().numpy())
+                    logger.store(f"{model_name}.{name}.grad", param.grad.cpu().numpy())
 
     def loop(self):
         # Loop through the monitored iterator
@@ -133,7 +132,7 @@ class MNISTLoop(Loop):
         self.log_interval = log_interval
 
     def startup(self):
-        logger.add_indicator("train_loss", indicator_type='histogram')
+        logger.add_indicator("train_loss", indicator_type='queue', queue_limit=20)
         logger.add_indicator("test_loss", indicator_type='histogram')
         logger.add_indicator("accuracy", indicator_type='histogram')
 
