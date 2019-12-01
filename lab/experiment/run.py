@@ -63,6 +63,8 @@ class Run:
         self.diff_path = self.run_path / "source.diff"
 
         self.sqlite_path = self.run_path / "sqlite.db"
+        self.tensorboard_log_path = self.run_path / "tensorboard"
+
         self.info_path = self.run_path / "run.yaml"
         self.indicators_path = self.run_path / "indicators.yaml"
 
