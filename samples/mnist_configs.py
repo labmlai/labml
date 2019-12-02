@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 
-from lab import logger, configs
+from lab import logger, configs, IndicatorOptions, IndicatorType
 from lab.experiment.pytorch import Experiment
 
 # Declare the experiment
@@ -105,11 +105,11 @@ class Loop:
             for name, param in model.named_parameters():
                 if param.requires_grad:
                     logger.add_indicator(f"{model_name}.{name}",
-                                         indicator_type='histogram',
-                                         is_print=False)
+                                         IndicatorType.histogram,
+                                         IndicatorOptions(is_print=False))
                     logger.add_indicator(f"{model_name}.{name}.grad",
-                                         indicator_type='histogram',
-                                         is_print=False)
+                                         IndicatorType.histogram,
+                                         IndicatorOptions(is_print=False))
 
         self.startup()
 
@@ -132,9 +132,9 @@ class MNISTLoop(Loop):
         self.log_interval = log_interval
 
     def startup(self):
-        logger.add_indicator("train_loss", indicator_type='queue', queue_limit=20)
-        logger.add_indicator("test_loss", indicator_type='histogram')
-        logger.add_indicator("accuracy", indicator_type='histogram')
+        logger.add_indicator("train_loss", IndicatorType.queue, IndicatorOptions(queue_size=20))
+        logger.add_indicator("test_loss", IndicatorType.histogram)
+        logger.add_indicator("accuracy", IndicatorType.histogram)
 
         EXPERIMENT.start_train()
 

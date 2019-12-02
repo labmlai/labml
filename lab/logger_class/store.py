@@ -1,70 +1,75 @@
 from collections import deque
-from typing import Dict, List, Tuple
+from pathlib import PurePath
+from typing import Dict, List
 
 import lab
-from lab.logger_class.writers import Writer
+from lab import util
+from .indicators import IndicatorType, IndicatorOptions, Indicator
+from .writers import Writer
 
 
 class Store:
-    def __init__(self, logger: 'lab.Logger'):
-        self.queues = {}
-        self.histograms = {}
-        self.pairs: Dict[str, List[Tuple[int, int]]] = {}
-        self.scalars = {}
-        self.__logger = logger
+    indicators: Dict[str, Indicator]
 
-    def add_indicator(self, name: str, *,
-                      indicator_type: str,
-                      queue_limit: int):
+    def __init__(self, logger: 'lab.Logger'):
+        self.values = {}
+        # self.queues = {}
+        # self.histograms = {}
+        # self.pairs: Dict[str, List[Tuple[int, int]]] = {}
+        # self.scalars = {}
+        self.__logger = logger
+        self.indicators = {}
+        self.__indicators_file = None
+
+    def save_indicators(self, file: PurePath):
+        self.__indicators_file = file
+
+        indicators = {k: ind.to_dict() for k, ind in self.indicators.items()}
+        with open(str(file), "w") as file:
+            file.write(util.yaml_dump(indicators))
+
+    def add_indicator(self, indicator: Indicator):
         """
         ### Add an indicator
         """
 
-        if indicator_type == 'queue':
-            self.queues[name] = deque(maxlen=queue_limit)
-        elif indicator_type == 'histogram':
-            self.histograms[name] = []
-        elif indicator_type == 'pair':
-            self.pairs[name] = []
-        elif indicator_type == 'scalar':
-            self.scalars[name] = []
+        assert indicator.name not in self.indicators
+
+        self.indicators[indicator.name] = indicator
+
+        self.__init_value(indicator.name)
+
+        if self.__indicators_file is not None:
+            self.save_indicators(self.__indicators_file)
+
+    def __init_value(self, name):
+        ind = self.indicators[name]
+        if ind.type_ == 'queue':
+            self.values[name] = deque(maxlen=ind.options.queue_size)
         else:
-            raise ValueError(f"Unknown indicator type: {indicator_type}")
+            self.values[name] = []
 
     def _store_list(self, items: List[Dict[str, float]]):
         for item in items:
             self.store(**item)
 
     def _store_kv(self, k, v):
-        if k in self.queues:
-            self.queues[k].append(v)
-        elif k in self.histograms:
-            self.histograms[k].append(v)
-        elif k in self.pairs:
+        if k not in self.indicators:
+            self.__logger.add_indicator(k, IndicatorType.scalar, IndicatorOptions(is_print=True))
+
+        if self.indicators[k].type_ == IndicatorType.pair:
             if type(v) == tuple:
                 assert len(v) == 2
-                self.pairs[k].append((v[0], v[1]))
+                self.values[k].append((v[0], v[1]))
             else:
                 assert type(v) == list
-                self.pairs[k] += v
+                self.values[k] += v
         else:
-            if k not in self.scalars:
-                self.__logger.add_indicator(k, is_print=True)
-            self.scalars[k].append(v)
+            self.values[k].append(v)
 
     def _store_kvs(self, **kwargs):
         for k, v in kwargs.items():
             self._store_kv(k, v)
-
-    def has_key(self, k):
-        if k in self.queues:
-            return len(self.queues[k]) > 0
-        elif k in self.histograms:
-            return len(self.histograms[k]) > 0
-        elif k in self.pairs:
-            return len(self.pairs[k]) > 0
-        else:
-            return len(self.scalars[k]) > 0
 
     def store(self, *args, **kwargs):
         """
@@ -91,16 +96,11 @@ class Store:
                 self._store_kv(args[0], args[1])
 
     def clear(self):
-        for k in self.histograms:
-            self.histograms[k] = []
-        for k in self.scalars:
-            self.scalars[k] = []
-        for k in self.pairs:
-            self.pairs[k] = []
+        for k, v in self.indicators.items():
+            if v.type_ != IndicatorType.queue:
+                self.__init_value(k)
 
     def write(self, writer: Writer, global_step):
         return writer.write(global_step=global_step,
-                            queues=self.queues,
-                            histograms=self.histograms,
-                            pairs=self.pairs,
-                            scalars=self.scalars)
+                            values=self.values,
+                            indicators=self.indicators)

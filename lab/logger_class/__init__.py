@@ -11,14 +11,15 @@ import typing
 from pathlib import PurePath
 from typing import List, Tuple, Optional
 
-from lab import colors, util
+from lab import colors
 from lab.colors import ANSICode
 from lab.logger_class import iterator
-from lab.logger_class.delayed_keyboard_interrupt import DelayedKeyboardInterrupt
-from lab.logger_class.loop import Loop
-from lab.logger_class.sections import Section, OuterSection, LoopingSection, section_factory
-from lab.logger_class.store import Store
-from lab.logger_class.writers import Writer, ScreenWriter
+from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
+from .indicators import IndicatorType, IndicatorOptions, Indicator
+from .loop import Loop
+from .sections import Section, OuterSection, LoopingSection, section_factory
+from .store import Store
+from .writers import Writer, ScreenWriter
 
 
 class CheckpointSaver:
@@ -57,8 +58,6 @@ class Logger:
         self.__start_global_step: Optional[int] = None
         self.__global_step: Optional[int] = None
         self.__last_global_step: Optional[int] = None
-        self.__indicators = {}
-        self.__indicators_file = None
 
     def set_checkpoint_saver(self, saver: CheckpointSaver):
         self.__checkpoint_saver = saver
@@ -122,35 +121,23 @@ class Logger:
         coded = [self.ansi_code(text, color) for text, color in parts]
         self.log("".join(coded), new_line=new_line)
 
-    def add_indicator(self, name: str, *,
-                      indicator_type: str = 'scalar',
-                      queue_limit: int = 10,
-                      is_print: bool = True):
+    def add_indicator(self, name: str,
+                      type_: IndicatorType,
+                      options: IndicatorOptions = None):
 
         """
         ### Add an indicator
         """
 
-        for w in self.__writers:
-            w.add_indicator(name, indicator_type=indicator_type,
-                            queue_limit=queue_limit,
-                            is_print=is_print)
-        self.__store.add_indicator(name,
-                                   indicator_type=indicator_type,
-                                   queue_limit=queue_limit)
+        if options is None:
+            options = IndicatorOptions()
 
-        self.__indicators[name] = dict(indicator_type=indicator_type,
-                                       queue_limit=queue_limit,
-                                       is_print=is_print)
+        indicator = Indicator(name, type_, options)
 
-        if self.__indicators_file is not None:
-            self.save_indicators(self.__indicators_file)
+        self.__store.add_indicator(indicator)
 
     def save_indicators(self, file: PurePath):
-        self.__indicators_file = file
-
-        with open(str(file), "w") as file:
-            file.write(util.yaml_dump(self.__indicators))
+        self.__store.save_indicators(file)
 
     def store(self, *args, **kwargs):
         """
