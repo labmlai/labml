@@ -132,9 +132,9 @@ class MNISTLoop(Loop):
         self.log_interval = log_interval
 
     def startup(self):
-        logger.add_indicator("train_loss", IndicatorType.queue, IndicatorOptions(queue_size=20))
-        logger.add_indicator("test_loss", IndicatorType.histogram)
-        logger.add_indicator("accuracy", IndicatorType.histogram)
+        logger.add_indicator("train_loss", IndicatorType.queue, IndicatorOptions(queue_size=20, is_print=True))
+        logger.add_indicator("test_loss", IndicatorType.histogram, IndicatorOptions(is_print=True))
+        logger.add_indicator("accuracy", IndicatorType.histogram, IndicatorOptions(is_print=True))
 
         EXPERIMENT.start_train()
 
