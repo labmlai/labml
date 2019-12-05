@@ -110,9 +110,8 @@ class Experiment(experiment.Experiment):
 
     def __init__(self, *,
                  name: str,
-                 python_file: str,
-                 comment: str,
-                 check_repo_dirty: Optional[bool] = None):
+                 python_file: Optional[str] = None,
+                 comment: str):
         """
         ### Create the experiment
 
@@ -131,8 +130,7 @@ class Experiment(experiment.Experiment):
 
         super().__init__(name=name,
                          python_file=python_file,
-                         comment=comment,
-                         check_repo_dirty=check_repo_dirty)
+                         comment=comment)
 
     def _create_checkpoint_saver(self):
         self.__checkpoint_saver = Checkpoint(self.run.checkpoint_path)

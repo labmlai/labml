@@ -9,10 +9,7 @@ from lab.experiment.pytorch import Experiment
 
 # Declare the experiment
 EXPERIMENT = Experiment(name="mnist_pytorch",
-                        python_file=__file__,
-                        comment="Test",
-                        check_repo_dirty=False
-                        )
+                        comment="Test")
 
 MODELS = {}
 

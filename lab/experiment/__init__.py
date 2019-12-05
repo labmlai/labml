@@ -1,11 +1,12 @@
+import inspect
 import pathlib
 import time
-from typing import Dict, Optional
+from typing import Optional, List
 
 import git
 import numpy as np
 
-from lab import colors, util
+from lab import colors
 from lab import logger
 from lab.commenter import Commenter
 from lab.experiment.run import Run
@@ -30,9 +31,8 @@ class Experiment:
 
     def __init__(self, *,
                  name: str,
-                 python_file: str,
-                 comment: str,
-                 check_repo_dirty: Optional[bool]):
+                 python_file: Optional[str],
+                 comment: str):
         """
         ### Create the experiment
 
@@ -49,15 +49,23 @@ class Experiment:
         Experiment maintains the locations of checkpoints, logs, etc.
         """
 
-        self.lab = Lab(python_file)
+        if python_file is None:
+            frames: List[inspect.FrameInfo] = inspect.stack()
+            lab_src = pathlib.PurePath(__file__).parent.parent
 
-        if check_repo_dirty is None:
-            check_repo_dirty = self.lab.check_repo_dirty
+            for f in frames:
+                module_path = pathlib.PurePath(f.filename)
+                if str(module_path).startswith(str(lab_src)):
+                    continue
+                python_file = str(module_path)
+                break
+
+        self.lab = Lab(python_file)
 
         self.name = name
         self.experiment_path = self.lab.experiments / name
 
-        self.check_repo_dirty = check_repo_dirty
+        self.check_repo_dirty = self.lab.check_repo_dirty
 
         experiment_path = pathlib.Path(self.experiment_path)
         if not experiment_path.exists():
@@ -103,7 +111,7 @@ class Experiment:
         ])
 
         # Exit if git repository is dirty
-        if self.check_repo_dirty and self.run.is_dirty:
+        if self._check_repo_dirty and self.run.is_dirty:
             logger.log("Cannot trial an experiment with uncommitted changes. ",
                        new_line=False)
             logger.log("[FAIL]", color=colors.BrightColor.red)
