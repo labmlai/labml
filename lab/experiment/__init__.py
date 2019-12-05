@@ -1,4 +1,3 @@
-import inspect
 import pathlib
 import time
 from typing import Optional, List
@@ -29,10 +28,13 @@ class Experiment:
     An experiment can have multiple trials.
     """
 
+    # whether not to start the experiment if there are uncommitted changes.
+    check_repo_dirty: bool
+
     def __init__(self, *,
-                 name: str,
+                 name: Optional[str],
                  python_file: Optional[str],
-                 comment: str):
+                 comment: Optional[str]):
         """
         ### Create the experiment
 
@@ -40,8 +42,6 @@ class Experiment:
         :param python_file: `__file__` that invokes this. This is stored in
          the experiments list.
         :param comment: a short description of the experiment
-        :param check_repo_dirty: whether not to start the experiment if
-         there are uncommitted changes.
 
         The experiments log keeps track of `python_file`, `name`, `comment` as
          well as the git commit.
@@ -50,17 +50,16 @@ class Experiment:
         """
 
         if python_file is None:
-            frames: List[inspect.FrameInfo] = inspect.stack()
-            lab_src = pathlib.PurePath(__file__).parent.parent
-
-            for f in frames:
-                module_path = pathlib.PurePath(f.filename)
-                if str(module_path).startswith(str(lab_src)):
-                    continue
-                python_file = str(module_path)
-                break
+            python_file = self.__get_caller_file()
 
         self.lab = Lab(python_file)
+
+        if name is None:
+            file_path = pathlib.PurePath(python_file)
+            name = file_path.stem
+
+        if comment is None:
+            comment = ''
 
         self.name = name
         self.experiment_path = self.lab.experiments / name
@@ -89,6 +88,21 @@ class Experiment:
         logger.add_writer(sqlite_writer.Writer(self.run.sqlite_path))
         logger.add_writer(tensorboard_writer.Writer(self.run.tensorboard_log_path))
 
+    @staticmethod
+    def __get_caller_file():
+        import inspect
+
+        frames: List[inspect.FrameInfo] = inspect.stack()
+        lab_src = pathlib.PurePath(__file__).parent.parent
+
+        for f in frames:
+            module_path = pathlib.PurePath(f.filename)
+            if str(module_path).startswith(str(lab_src)):
+                continue
+            return module_path
+
+        return ''
+
     def _create_checkpoint_saver(self):
         return None
 
@@ -111,7 +125,7 @@ class Experiment:
         ])
 
         # Exit if git repository is dirty
-        if self._check_repo_dirty and self.run.is_dirty:
+        if self.check_repo_dirty and self.run.is_dirty:
             logger.log("Cannot trial an experiment with uncommitted changes. ",
                        new_line=False)
             logger.log("[FAIL]", color=colors.BrightColor.red)

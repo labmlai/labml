@@ -108,10 +108,12 @@ class Experiment(experiment.Experiment):
     An experiment can have multiple trials.
     """
 
+    __checkpoint_saver: Checkpoint
+
     def __init__(self, *,
-                 name: str,
+                 name: Optional[str] = None,
                  python_file: Optional[str] = None,
-                 comment: str):
+                 comment: Optional[str] = None):
         """
         ### Create the experiment
 
@@ -119,8 +121,6 @@ class Experiment(experiment.Experiment):
         :param python_file: `__file__` that invokes this. This is stored in
          the experiments list.
         :param comment: a short description of the experiment
-        :param check_repo_dirty: whether not to start the experiment if
-         there are uncommitted changes.
 
         The experiments log keeps track of `python_file`, `name`, `comment` as
          well as the git commit.
@@ -134,7 +134,6 @@ class Experiment(experiment.Experiment):
 
     def _create_checkpoint_saver(self):
         self.__checkpoint_saver = Checkpoint(self.run.checkpoint_path)
-        return self.__checkpoint_saver
 
     def add_models(self, models: Dict[str, torch.nn.Module]):
         """

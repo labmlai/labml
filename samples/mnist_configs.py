@@ -8,8 +8,7 @@ from lab import logger, configs, IndicatorOptions, IndicatorType
 from lab.experiment.pytorch import Experiment
 
 # Declare the experiment
-EXPERIMENT = Experiment(name="mnist_pytorch",
-                        comment="Test")
+EXPERIMENT = Experiment()
 
 MODELS = {}
 
