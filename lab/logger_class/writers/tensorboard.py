@@ -6,7 +6,7 @@ import numpy as np
 import lab.logger_class.writers
 import tensorflow as tf
 
-from .indicators import Indicator, IndicatorType
+from lab.logger_class.indicators import Indicator, IndicatorType
 
 
 class Writer(lab.logger_class.writers.Writer):

@@ -5,7 +5,7 @@ from typing import Dict, Optional
 import numpy as np
 
 import lab.logger_class.writers
-from .indicators import Indicator
+from lab.logger_class.indicators import Indicator
 
 
 class Writer(lab.logger_class.writers.Writer):

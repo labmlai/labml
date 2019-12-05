@@ -10,7 +10,7 @@ from lab import logger
 from lab.commenter import Commenter
 from lab.experiment.run import Run
 from lab.lab import Lab
-from lab.logger_class import sqlite_writer, tensorboard_writer
+from lab.logger_class.writers import sqlite, tensorboard
 
 commenter = Commenter(
     comment_start='"""',
@@ -85,8 +85,8 @@ class Experiment:
 
         checkpoint_saver = self._create_checkpoint_saver()
         logger.internal.set_checkpoint_saver(checkpoint_saver)
-        logger.internal.add_writer(sqlite_writer.Writer(self.run.sqlite_path))
-        logger.internal.add_writer(tensorboard_writer.Writer(self.run.tensorboard_log_path))
+        logger.internal.add_writer(sqlite.Writer(self.run.sqlite_path))
+        logger.internal.add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
 
     @staticmethod
     def __get_caller_file():

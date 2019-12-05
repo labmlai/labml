@@ -3,7 +3,7 @@ from typing import Dict
 import numpy as np
 
 from lab import colors
-from .indicators import Indicator
+from lab.logger_class.indicators import Indicator
 
 
 class Writer:
