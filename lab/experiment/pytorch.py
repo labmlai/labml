@@ -7,7 +7,7 @@ import torch.nn
 
 from lab import experiment, util
 from lab import logger
-from lab.logger_class import CheckpointSaver, sqlite_writer
+from lab.logger_class import CheckpointSaver
 
 
 class Checkpoint(CheckpointSaver):

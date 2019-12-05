@@ -84,9 +84,9 @@ class Experiment:
         self.run.diff = repo.git.diff()
 
         checkpoint_saver = self._create_checkpoint_saver()
-        logger.set_checkpoint_saver(checkpoint_saver)
-        logger.add_writer(sqlite_writer.Writer(self.run.sqlite_path))
-        logger.add_writer(tensorboard_writer.Writer(self.run.tensorboard_log_path))
+        logger.internal.set_checkpoint_saver(checkpoint_saver)
+        logger.internal.add_writer(sqlite_writer.Writer(self.run.sqlite_path))
+        logger.internal.add_writer(tensorboard_writer.Writer(self.run.tensorboard_log_path))
 
     @staticmethod
     def __get_caller_file():
@@ -153,10 +153,10 @@ class Experiment:
 
     def _start(self, global_step: int):
         self.run.start_step = global_step
-        logger.set_start_global_step(global_step)
+        logger.internal.set_start_global_step(global_step)
 
         self.run.save_info()
-        logger.save_indicators(self.run.indicators_path)
+        logger.internal.save_indicators(self.run.indicators_path)
 
         with open(str(self.run.diff_path), "w") as f:
             f.write(self.run.diff)

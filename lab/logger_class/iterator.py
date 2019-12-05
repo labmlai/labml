@@ -5,7 +5,7 @@ from lab import logger_class as logger_base
 
 class Iterator:
     def __init__(self, *,
-                 logger: 'logger_base.Logger',
+                 logger: 'logger_base.LoggerInternal',
                  name: str,
                  iterable: typing.Union[Iterable, typing.Sized, int],
                  is_silent: bool,

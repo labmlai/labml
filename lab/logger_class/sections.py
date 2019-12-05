@@ -226,7 +226,7 @@ class LoopingSection(Section):
         return parts
 
 
-def section_factory(logger: 'logger_base.Logger',
+def section_factory(logger: 'logger_base.LoggerInternal',
                     name: str,
                     is_looping: bool,
                     is_silent: bool,

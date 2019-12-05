@@ -34,7 +34,8 @@ class Writer(lab.logger_class.writers.Writer):
         except sqlite3.OperationalError:
             print('Scalar table exists')
 
-    def _parse_key(self, key: str):
+    @staticmethod
+    def _parse_key(key: str):
         return key.replace('.', '_')
 
     def write(self, *,

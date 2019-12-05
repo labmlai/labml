@@ -2,7 +2,7 @@ from collections import deque
 from pathlib import PurePath
 from typing import Dict, List
 
-import lab
+from lab import logger_class as logger_base
 from lab import util
 from .indicators import IndicatorType, IndicatorOptions, Indicator
 from .writers import Writer
@@ -11,7 +11,7 @@ from .writers import Writer
 class Store:
     indicators: Dict[str, Indicator]
 
-    def __init__(self, logger: 'lab.Logger'):
+    def __init__(self, logger: 'logger_base.LoggerInternal'):
         self.values = {}
         # self.queues = {}
         # self.histograms = {}

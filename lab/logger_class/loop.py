@@ -8,7 +8,7 @@ from lab import logger_class as logger_base
 
 class Loop:
     def __init__(self, iterator: range, *,
-                 logger: 'logger_base.Logger',
+                 logger: 'logger_base.LoggerInternal',
                  is_print_iteration_time: bool):
         """
         Creates an iterator with a range `iterator`.

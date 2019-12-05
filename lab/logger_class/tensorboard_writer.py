@@ -22,7 +22,8 @@ class Writer(lab.logger_class.writers.Writer):
 
         self.__writer = tf.summary.create_file_writer(str(self.__log_path))
 
-    def _parse_key(self, key: str):
+    @staticmethod
+    def _parse_key(key: str):
         return key.replace('.', '/')
 
     def write(self, *,
@@ -45,4 +46,3 @@ class Writer(lab.logger_class.writers.Writer):
                     key = self._parse_key(f"{k}")
 
                 tf.summary.scalar(key, float(np.mean(v)), step=global_step)
-
