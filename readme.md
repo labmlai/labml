@@ -4,12 +4,22 @@
 
 # [🚧 Lab 3.0](https://github.com/vpj/lab)
 
+**⚠️ This is the development version, with a lot of frequent breaking changes.**
+Feel free to try it out.
+Use the [previous](https://github.com/vpj/lab/tree/2.0) stable version if you want to use it in a project.
+
 This library helps you organize machine learning experiments.
 It is a quite small library,
  and most of the modules can be used independently of each other.
 This doesn't have any user interface.
 Experiment results are maintained in a folder structure,
 and there is a Python API to access them.
+
+## What's new
+
+* 🚧 Manage configurations
+* 🚧 [Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
+* Simpler API
 
 ## Features
 
@@ -97,6 +107,8 @@ Logger has a simple API to produce pretty console outputs.
 <p align="center"><img style="max-width:100%" src="/images/loop.gif" /></p>
 
 ---
+
+**⚠️ The following documentation is not up-to-date with the new development version.**
 
 ## Getting Started
 
