@@ -3,19 +3,23 @@ import typing
 
 class Configs:
     __computers = {}
+    test = {}
 
     @classmethod
     def compute(cls, name=None, option_name=None, *, is_default=None, is_append=None, value=None):
         if cls.__name__ not in computers:
             computers[cls.__name__] = {}
+        print(cls.test)
         if '_computers' not in cls.__dict__:
-            cls._computers = {}
+            cls.__computers = {}
+            cls.__test = {}
+            cls.test = 'name'
 
         def wrapper(func: typing.Callable):
             _name = func.__name__ if name is None else name
             _option_name = func.__name__ if option_name is None else option_name
             computers[cls.__name__][_name] = func
-            cls.__dict__['_computers'][_name] = func
+            cls.__computers[_name] = func
 
             return func
 
