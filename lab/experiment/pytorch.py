@@ -1,13 +1,13 @@
 import json
 import pathlib
-from typing import Optional, Dict
+from typing import Optional, Dict, Set
 
 import numpy as np
 import torch.nn
 
-from lab import experiment, util, tf_compat
+from lab import experiment, util
 from lab import logger
-from lab.logger_class import tensorboard_writer, CheckpointSaver
+from lab.logger_class.internal import CheckpointSaver
 
 
 class Checkpoint(CheckpointSaver):
@@ -108,12 +108,13 @@ class Experiment(experiment.Experiment):
     An experiment can have multiple trials.
     """
 
+    __checkpoint_saver: Checkpoint
+
     def __init__(self, *,
-                 name: str,
-                 python_file: str,
-                 comment: str,
-                 check_repo_dirty: Optional[bool] = None,
-                 is_log_python_file: Optional[bool] = None):
+                 name: Optional[str] = None,
+                 python_file: Optional[str] = None,
+                 comment: Optional[str] = None,
+                 writers: Set[str] = None):
         """
         ### Create the experiment
 
@@ -121,8 +122,6 @@ class Experiment(experiment.Experiment):
         :param python_file: `__file__` that invokes this. This is stored in
          the experiments list.
         :param comment: a short description of the experiment
-        :param check_repo_dirty: whether not to start the experiment if
-         there are uncommitted changes.
 
         The experiments log keeps track of `python_file`, `name`, `comment` as
          well as the git commit.
@@ -133,19 +132,10 @@ class Experiment(experiment.Experiment):
         super().__init__(name=name,
                          python_file=python_file,
                          comment=comment,
-                         check_repo_dirty=check_repo_dirty,
-                         is_log_python_file=is_log_python_file)
+                         writers=writers)
 
     def _create_checkpoint_saver(self):
-        self.__checkpoint_saver = Checkpoint(self.info.checkpoint_path)
-        return self.__checkpoint_saver
-
-    def create_writer(self):
-        """
-        ## Create TensorFlow summary writer
-        """
-        logger.add_writer(tensorboard_writer.Writer(
-            tf_compat.summary.FileWriter(str(self.info.summary_path))))
+        self.__checkpoint_saver = Checkpoint(self.run.checkpoint_path)
 
     def add_models(self, models: Dict[str, torch.nn.Module]):
         """
@@ -171,15 +161,6 @@ class Experiment(experiment.Experiment):
                     global_step = self.__checkpoint_saver.max_step
 
         self._start(global_step)
-
-        if global_step == 0:
-            # initialize variables and clear summaries if we are starting from scratch
-            with logger.section("Clearing summaries"):
-                self.clear_summaries()
-            with logger.section("Clearing checkpoints"):
-                self.clear_checkpoints()
-
-        self.create_writer()
 
     def start_replay(self):
         """

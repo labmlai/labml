@@ -1,5 +1,8 @@
 import time
+from pathlib import Path, PurePath
 from typing import List, Dict
+
+from lab import util
 
 
 def _struct_time_to_time(t: time.struct_time):
@@ -13,7 +16,7 @@ def _struct_time_to_date(t: time.struct_time):
 _GLOBAL_STEP = 'global_step'
 
 
-class Trial:
+class Run:
     """
     # Trial 🏃‍
 
@@ -30,8 +33,6 @@ class Trial:
     If you want to try different configs, create multiple experiments.
     """
 
-    progress: List[Dict[str, str]]
-
     def __init__(self, *,
                  python_file: str,
                  trial_date: str,
@@ -41,10 +42,10 @@ class Trial:
                  commit_message: str or None = None,
                  is_dirty: bool = True,
                  diff: str or None = None,
-                 start_step: int = 0,
-                 progress=None,
-                 progress_limit: int = 16):
-        self.index = -1
+                 index: int,
+                 experiment_path: PurePath,
+                 start_step: int = 0):
+        self.index = index
         self.commit = commit
         self.is_dirty = is_dirty
         self.diff = diff
@@ -54,26 +55,41 @@ class Trial:
         self.comment = comment
         self.commit_message = commit_message
         self.start_step = start_step
-        if progress is None:
-            self.progress = []
-        else:
-            self.progress = progress
 
-        assert progress_limit % 2 == 0
-        assert progress_limit >= 8
-        self.progress_limit = progress_limit
+        self.run_path = experiment_path / str(index)
+        self.checkpoint_path = self.run_path / "checkpoints"
+        self.npy_path = self.run_path / "npy"
+
+        self.diff_path = self.run_path / "source.diff"
+
+        self.sqlite_path = self.run_path / "sqlite.db"
+        self.tensorboard_log_path = self.run_path / "tensorboard"
+
+        self.info_path = self.run_path / "run.yaml"
+        self.indicators_path = self.run_path / "indicators.yaml"
 
     @classmethod
-    def new_trial(cls, *,
-                  python_file: str,
-                  trial_time: time.struct_time,
-                  comment: str):
+    def create(cls, *,
+               experiment_path: PurePath,
+               python_file: str,
+               trial_time: time.struct_time,
+               comment: str):
         """
         ## Create a new trial
         """
+        runs = [int(child.name) for child in Path(experiment_path).iterdir()]
+        runs.sort()
+
+        if len(runs) > 0:
+            this_run = runs[-1] + 1
+        else:
+            this_run = 1
+
         return cls(python_file=python_file,
                    trial_date=_struct_time_to_date(trial_time),
                    trial_time=_struct_time_to_time(trial_time),
+                   index=this_run,
+                   experiment_path=experiment_path,
                    comment=comment)
 
     @classmethod
@@ -95,8 +111,7 @@ class Trial:
             commit=self.commit,
             commit_message=self.commit_message,
             is_dirty=self.is_dirty,
-            start_step=self.start_step,
-            progress=self.progress
+            start_step=self.start_step
         )
 
     def pretty_print(self) -> List[str]:
@@ -113,64 +128,20 @@ class Trial:
             f"start_step: {self.start_step}"
         ]
 
-        # Stop if no progress is available
-        if len(self.progress) == 0:
-            return res
-
-        res.append('')
-
-        # Print progress table
-        lens = {}
-        for k, v in self.progress[0].items():
-            lens[k] = max(len(k), len(v))
-
-        line = []
-        for k, v in self.progress[0].items():
-            line.append(' ' * (lens[k] - len(k)) + k)
-        line = '| ' + ' | '.join(line) + ' |'
-        res.append('-' * len(line))
-        res.append(line)
-        res.append('-' * len(line))
-
-        for p in self.progress:
-            line = [' ' * (lens[k] - len(str(v))) + str(v) for k, v in p.items()]
-            line = '| ' + ' | '.join(line) + ' |'
-            res.append(line)
-
-        res.append('-' * len(line))
-
         return res
 
     def __str__(self):
         return f"Trial(comment=\"{self.comment}\"," \
-            f" commit=\"{self.commit_message}\"," \
-            f" date={self.trial_date}, time={self.trial_time}"
+               f" commit=\"{self.commit_message}\"," \
+               f" date={self.trial_date}, time={self.trial_time}"
 
     def __repr__(self):
         return self.__str__()
 
-    def set_progress(self, progress: Dict[str, str]):
-        """
-        ## Add or update progress
-        """
+    def save_info(self):
+        run_path = Path(self.run_path)
+        if not run_path.exists():
+            run_path.mkdir(parents=True)
 
-        assert _GLOBAL_STEP in progress
-
-        if len(self.progress) < 2:
-            self.progress.append(progress)
-        else:
-            g0 = int(self.progress[0][_GLOBAL_STEP].replace(',', ''))
-            g1 = int(self.progress[1][_GLOBAL_STEP].replace(',', ''))
-            gp = int(self.progress[-2][_GLOBAL_STEP].replace(',', ''))
-            gf = int(self.progress[-1][_GLOBAL_STEP].replace(',', ''))
-
-            if g1 - g0 <= gf - gp:
-                # add
-                if len(self.progress) == self.progress_limit:
-                    shrunk = []
-                    for i in range(self.progress_limit // 2):
-                        shrunk.append(self.progress[2 * i + 1])
-                    self.progress = shrunk
-                self.progress.append(progress)
-            else:
-                self.progress[-1] = progress
+        with open(str(self.info_path), "w") as file:
+            file.write(util.yaml_dump(self.to_dict()))

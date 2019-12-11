@@ -3,12 +3,12 @@ from typing import Optional, Dict
 
 from lab import colors
 from lab.logger_class.sections import Section, section_factory
-from lab import logger_class as logger_base
+from lab.logger_class import internal
 
 
 class Loop:
     def __init__(self, iterator: range, *,
-                 logger: 'logger_base.Logger',
+                 logger: 'internal.LoggerInternal',
                  is_print_iteration_time: bool):
         """
         Creates an iterator with a range `iterator`.

@@ -2,12 +2,12 @@ import math
 import time
 
 from lab import colors
-from lab import logger_class as logger_base
+from lab.logger_class import internal
 
 
 class Section:
     def __init__(self, *,
-                 logger: 'logger_base.Logger',
+                 logger: 'internal.LoggerInternal',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,
@@ -86,7 +86,7 @@ class Section:
 
 class OuterSection(Section):
     def __init__(self, *,
-                 logger: 'logger_base.Logger',
+                 logger: 'internal.LoggerInternal',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,
@@ -137,7 +137,7 @@ class OuterSection(Section):
 
 class LoopingSection(Section):
     def __init__(self, *,
-                 logger: 'logger_base.Logger',
+                 logger: 'internal.LoggerInternal',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,
@@ -226,7 +226,7 @@ class LoopingSection(Section):
         return parts
 
 
-def section_factory(logger: 'logger_base.Logger',
+def section_factory(logger: 'internal.LoggerInternal',
                     name: str,
                     is_looping: bool,
                     is_silent: bool,

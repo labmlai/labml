@@ -1,11 +1,11 @@
 import typing
 from typing import Optional, Iterable
-from lab import logger_class as logger_base
+from lab.logger_class import internal
 
 
 class Iterator:
     def __init__(self, *,
-                 logger: 'logger_base.Logger',
+                 logger: 'internal.LoggerInternal',
                  name: str,
                  iterable: typing.Union[Iterable, typing.Sized, int],
                  is_silent: bool,
