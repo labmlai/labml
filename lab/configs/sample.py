@@ -1,48 +1,26 @@
-import functools
 import inspect
-import time
-
 import typing
-from lab.configs import option, append, Configs, ConfigProcessor
+
+from lab.configs import Configs, ConfigProcessor
 
 
 class SampleModel:
-    def __init__(self, *, workers_count):
-        self.w = workers_count
+    def __init__(self, c: 'Sample'):
+        self.w = c.workers_count
 
 
 class Sample(Configs):
     total_global_steps: int = 10
     workers_count: int = 10
-    empty: str
+    # empty: str
 
-    # def instance_func(self, *, x:int):
-    #     pass
+    x = 'string'
 
-    @staticmethod
-    def input_model(*, workers_count: int):
-        return workers_count * 2
+    input_model: int
+    model: int
 
-    model = 'simple_model'
-
-    @option('model', 'simple_model')
-    def _model_simple_model(self, *, total_global_steps):
-        return total_global_steps * 3
-
-    # When collecting unordered items
-    @append('steps')
-    def remove_first(self):
-        return None
-
-    @append('steps')
-    def model_step(self, *, model):
-        return model
-
-    model_obj = SampleModel
-
-    @staticmethod
-    def print(*, model_obj: SampleModel):
-        print(model_obj, model_obj.w)
+    # get from type annotations
+    model_obj: SampleModel
 
 
 class SampleChild(Sample):
@@ -52,29 +30,28 @@ class SampleChild(Sample):
     new_attr = 2
 
 
+@Sample.calc()
+def input_model(c: Sample):
+    return c.workers_count * 2
+
+
+@Sample.calc('model')
+def simple_model(c: Sample):
+    return c.total_global_steps * 3
+
+
+# When collecting unordered items
+@Sample.list('steps')
+def remove_first():
+    return None
+
+
+@Sample.list('steps')
+def model_step(c: Sample):
+    return c.model
+
+
 configs = Sample()
-
-print(typing.get_type_hints(configs), flush=True)
-print(typing.get_type_hints(Sample), flush=True)
-
-print(typing.get_type_hints(configs.input_model), flush=True)
-print(configs.__dict__, Sample.__dict__, flush=True)
-
-# print(Sample.__dict__['_model_simple_model'].__dict__, flush=True)
-
-# time.sleep(1)
-
-# print(type(Sample.instance_func), inspect.getfullargspec(Sample.instance_func), flush=True)
-print(type(Sample.input_model), inspect.getfullargspec(Sample.input_model), flush=True)
-
-print(SampleChild.__dict__, SampleChild.__bases__)
-print(isinstance(SampleChild(test=1), Sample))
-
-print(Sample.__bases__)
-print(type(SampleChild), inspect.getfullargspec(SampleChild))
-print(inspect.getfile(SampleChild), inspect.getsource(SampleChild))
-f = SampleChild
-x = f(test=2)
 
 processor = ConfigProcessor(configs)
 processor.calculate()

@@ -45,9 +45,22 @@ class Sample(Configs):
 
     # get from type annotations
     model_obj: SampleModel
+
     # def instance_func(self, *, x:int):
     #     pass
 
+    def __init__(self):
+        self.model = 2
+
+
+class SubClass(Sample):
+    def __init__(self):
+        super().__init__()
+        self.model_obj = 3
+
+
+sample = Sample()
+sub_class = SubClass()
 
 computers = {}
 
