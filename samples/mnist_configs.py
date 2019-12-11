@@ -1,3 +1,5 @@
+from typing import Dict
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -8,7 +10,7 @@ from lab import logger, configs, IndicatorOptions, IndicatorType
 from lab.experiment.pytorch import Experiment
 
 # Declare the experiment
-EXPERIMENT = Experiment()
+EXPERIMENT = Experiment(writers={'sqlite'})
 
 MODELS = {}
 
@@ -113,19 +115,17 @@ class Loop:
 
 
 class MNISTLoop(Loop):
-    def __init__(self, *, model, device, train_loader, test_loader, optimizer,
-                 log_interval, epochs, is_save_models, is_log_parameters,
-                 log_new_line_interval):
-        super().__init__(epochs=epochs,
-                         is_save_models=is_save_models,
-                         is_log_parameters=is_log_parameters,
-                         log_new_line_interval=log_new_line_interval)
-        self.model = model
-        self.device = device
-        self.train_loader = train_loader
-        self.test_loader = test_loader
-        self.optimizer = optimizer
-        self.log_interval = log_interval
+    def __init__(self, c: 'Configs'):
+        super().__init__(epochs=c.epochs,
+                         is_save_models=c.is_save_models,
+                         is_log_parameters=c.is_log_parameters,
+                         log_new_line_interval=c.log_new_line_interval)
+        self.model = c.model
+        self.device = c.device
+        self.train_loader = c.train_loader
+        self.test_loader = c.test_loader
+        self.optimizer = c.optimizer
+        self.log_interval = c.log_interval
 
     def startup(self):
         logger.add_indicator("train_loss", IndicatorType.queue,
@@ -193,59 +193,88 @@ class Configs(BaseConfigs):
     batch_size: int = 64
     test_batch_size: int = 1000
     epochs: int = 10
-    learning_rate: float = 0.01
-    momentum: float = 0.5
     use_cuda: float = True
-    cuda_device: str = "cuda"
+    cuda_device: str = "cuda:1"
     seed: int = 5
     log_interval: int = 10
 
-    def is_cuda(self, *, use_cuda: bool) -> bool:
-        return use_cuda and torch.cuda.is_available()
+    loop: MNISTLoop
 
-    def device(self, *, is_cuda: bool, cuda_device: str):
-        return torch.device(cuda_device if is_cuda else "cpu")
+    is_cuda: bool
 
-    def data_loader_args(self, *, is_cuda):
-        return {'num_workers': 1, 'pin_memory': True} if is_cuda else {}
+    device: any
 
-    def train_loader(self, *, batch_size, data_loader_args):
-        with logger.section("Training data"):
-            return torch.utils.data.DataLoader(
-                datasets.MNIST('./data', train=True, download=True,
-                               transform=transforms.Compose([
-                                   transforms.ToTensor(),
-                                   transforms.Normalize((0.1307,), (0.3081,))
-                               ])),
-                batch_size=batch_size, shuffle=True, **data_loader_args)
+    data_loader_args: Dict
 
-    def test_loader(self, *, test_batch_size, data_loader_args):
+    train_loader: torch.utils.data.DataLoader
+    test_loader: torch.utils.data.DataLoader
+
+    model: nn.Module
+
+    learning_rate: float = 0.01
+    momentum: float = 0.5
+    optimizer: optim.SGD
+
+
+@Configs.calc()
+def is_cuda(c: Configs) -> bool:
+    return c.use_cuda and torch.cuda.is_available()
+
+
+@Configs.calc()
+def device(c: Configs):
+    return torch.device(c.cuda_device if c.is_cuda else "cpu")
+
+
+@Configs.calc()
+def data_loader_args(c: Configs):
+    return {'num_workers': 1, 'pin_memory': True} if c.is_cuda else {}
+
+
+@Configs.calc()
+def train_loader(c: Configs):
+    with logger.section("Training data"):
         return torch.utils.data.DataLoader(
-            datasets.MNIST('./data', train=False, transform=transforms.Compose([
-                transforms.ToTensor(),
-                transforms.Normalize((0.1307,), (0.3081,))
-            ])),
-            batch_size=test_batch_size, shuffle=True, **data_loader_args)
+            datasets.MNIST('./data', train=True, download=True,
+                           transform=transforms.Compose([
+                               transforms.ToTensor(),
+                               transforms.Normalize((0.1307,), (0.3081,))
+                           ])),
+            batch_size=c.batch_size, shuffle=True, **c.data_loader_args)
 
-    def model(self, *, device, set_seed):
-        with logger.section("Create model"):
-            return Net().to(device)
 
-    def optimizer(self, *, model, learning_rate, momentum):
-        return optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum)
+@Configs.calc()
+def test_loader(c: Configs):
+    return torch.utils.data.DataLoader(
+        datasets.MNIST('./data', train=False, transform=transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,))
+        ])),
+        batch_size=c.test_batch_size, shuffle=True, **c.data_loader_args)
 
-    def set_seed(self, *, seed: int):
-        torch.manual_seed(seed)
 
-    loop = MNISTLoop
+@Configs.calc()
+def model(c: Configs):
+    with logger.section("Create model"):
+        return Net().to(c.device)
+
+
+@Configs.calc()
+def optimizer(c: Configs):
+    return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
+
+
+@Configs.calc()
+def set_seed(c: Configs):
+    torch.manual_seed(c.seed)
 
 
 def main():
     conf = Configs()
     proc = configs.ConfigProcessor(conf)
     proc.calculate()
-    loop = proc.computed['loop']
-    loop()
+
+    conf.loop()
 
 
 if __name__ == '__main__':

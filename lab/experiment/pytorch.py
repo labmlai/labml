@@ -1,6 +1,6 @@
 import json
 import pathlib
-from typing import Optional, Dict
+from typing import Optional, Dict, Set
 
 import numpy as np
 import torch.nn
@@ -113,7 +113,8 @@ class Experiment(experiment.Experiment):
     def __init__(self, *,
                  name: Optional[str] = None,
                  python_file: Optional[str] = None,
-                 comment: Optional[str] = None):
+                 comment: Optional[str] = None,
+                 writers: Set[str] = None):
         """
         ### Create the experiment
 
@@ -130,7 +131,8 @@ class Experiment(experiment.Experiment):
 
         super().__init__(name=name,
                          python_file=python_file,
-                         comment=comment)
+                         comment=comment,
+                         writers=writers)
 
     def _create_checkpoint_saver(self):
         self.__checkpoint_saver = Checkpoint(self.run.checkpoint_path)

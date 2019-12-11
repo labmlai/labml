@@ -1,6 +1,6 @@
 import pathlib
 import time
-from typing import Optional, List
+from typing import Optional, List, Set
 
 import git
 import numpy as np
@@ -34,7 +34,8 @@ class Experiment:
     def __init__(self, *,
                  name: Optional[str],
                  python_file: Optional[str],
-                 comment: Optional[str]):
+                 comment: Optional[str],
+                 writers: Set[str] = None):
         """
         ### Create the experiment
 
@@ -85,8 +86,14 @@ class Experiment:
 
         checkpoint_saver = self._create_checkpoint_saver()
         logger.internal.set_checkpoint_saver(checkpoint_saver)
-        logger.internal.add_writer(sqlite.Writer(self.run.sqlite_path))
-        logger.internal.add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
+
+        if writers is None:
+            writers = {'sqlite', 'tensorboard'}
+
+        if 'sqlite' in writers:
+            logger.internal.add_writer(sqlite.Writer(self.run.sqlite_path))
+        if 'tensorboard' in writers:
+            logger.internal.add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
 
     @staticmethod
     def __get_caller_file():

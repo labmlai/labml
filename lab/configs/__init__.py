@@ -103,6 +103,9 @@ class DependencyParser(ast.NodeVisitor):
 
     def visit_Attribute(self, node: ast.Attribute):
         while not isinstance(node.value, ast.Name):
+            if not isinstance(node.value, ast.Attribute):
+                return
+
             node = node.value
 
         if node.value.id != self.arg_name:
