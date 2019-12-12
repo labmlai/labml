@@ -15,98 +15,57 @@ This doesn't have any user interface.
 Experiment results are maintained in a folder structure,
 and there is a Python API to access them.
 
-## What's new
+## What's new and what has changed
+ 
+### Manage configurations and hyperparameters
 
-* 🚧 Manage configurations
-* 🚧 [Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
-* Simpler API
+You can setup configs/hyperparameters with functions.
+[🧪lab](https://github.com/vpj/lab) would identify the dependencies and run them in order.
 
-## Features
+```python
+@Configs.calc()
+def model(c: Configs):
+    return Net().to(c.device)
+```
+
+You can setup multiple options for configuration functions. 
+So you don't have to write a bunch if statements to handle configs.
+
+```python
+@Configs.calc('optimizer')
+def sgd(c: Configs):
+    return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
+
+@Configs.calc('optimizer')
+def adam(c: Configs):
+    return optim.Adam(c.model.parameters())
+```
+
+
+### [🎛 Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
+
+The web dashboard helps navigate experiments and multiple runs.
+You can checkout the configs and a summary of perrformace.
+You can launch Tensoboard directly from there.
+
+Eventually, we want to let you edit configs and run new experiments and analyse
+outputs on the dashboard.
+
+### Simpler API
+
+The API was made simpler.
+The main focus was to make it easier to start using [🧪lab](https://github.com/vpj/lab).
+Main components and features such as the logger, experiments, and configs are more independent 
+of each other and can be used individually.
 
 ### Organize Experiments
 
-Maintains logs, summaries and checkpoints of all the experiments in a folder
-structure without you explicitly having to worry about them.
+[🧪lab](https://github.com/vpj/lab) organizes experiments and each of the runs.
+It keeps track of the git commits, diffs as well.
 
-```
-logs
-├── experiment1
-│   ├── checkpoints
-│   │   └── 📄 Saved checkpoints
-│   ├── log
-│   │   └── 📄 TensorBoard summaries
-│   ├── diffs
-│   │   └── 📄 diffs when experiment was run
-│   └── trials.yaml
-└── experimnent2...
-    ├──
-    ...
-```
+Since the introduction of [🎛 dashboard](https://github.com/vpj/lab_dashboard), we
+no longer automatically write comments on source file.
 
-The `trials.yaml` file keeps the summaries of each run for that experiment in
-a human readable form.
-
-```yaml
-- comment: 📊  with gradients
-  commit: f763d41b7f5d2ca4dd4431d5a5354d937ed3d32d
-  commit_message: "📊 logging gradient summaries"
-  is_dirty: 'true'
-  progress:
-  - accuracy: '    0.30'
-    global_step: '   3,752'
-    test_loss: '    2.22'
-    train_loss: '    2.22'
-  - ...
-  python_file: /progrect/experiments/mnist_simple_convolution.py
-  start_step: '0'
-  trial_date: '2019-06-14'
-  trial_time: '16:13:18'
-- ...
-```
-
-It keeps references to **git commit** when the experiement was run,
-along with other information like date, the python file executed and
-experiment description.
-
-Optionally, the library can update the python file by
- inserting experiment results as a comment 👇 automatically.
-
-```python
-"""
-```trial
-2019-02-12 16:03:16
-Sample lab experiment
-[[dirty]]: 🤪 jupyter saved
-start_step: 0
-
--------------------------------------
-| global_step |   reward |     loss |
--------------------------------------
-|           9 |     1.50 |    13.50 |
-|          19 |     4.83 |    23.50 |
-|          29 |     8.17 |    33.50 |
-|          39 |    11.50 |    43.50 |
-|             ...                   |
--------------------------------------
-"""
-```
-
-### Custom Visualizations of TensorBoard summaries
-
-<p align="center"><img style="max-width:100%" src="/images/distribution.png" /></p>
-
-With the visualization helper functions you can plot distributions easily on a Jupyter Notebook.
-
-Here's a link to a
- [sample Jupyter Notebook with custom charts](https://github.com/vpj/lab/blob/master/analytics/sample_analytics.ipynb).
-
-### Logger
-
-Logger has a simple API to produce pretty console outputs.
-
-<p align="center"><img style="max-width:100%" src="/images/loop.gif" /></p>
-
----
 
 **⚠️ The following documentation is not up-to-date with the new development version.**
 
