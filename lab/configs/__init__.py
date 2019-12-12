@@ -4,8 +4,9 @@ import random
 import string
 import textwrap
 from collections import OrderedDict
+from enum import Enum
 from typing import List, NamedTuple, Dict, Callable, Type, cast, Set, Optional, \
-    OrderedDict as OrderedDictType
+    OrderedDict as OrderedDictType, Union
 
 
 def random_string(length=10):
@@ -27,7 +28,8 @@ class Configs:
     _calculators: Dict[str, List[Calculator]] = {}
 
     @classmethod
-    def calc(cls, name: str = None, option: str = None, *, is_append: bool = None):
+    def calc(cls, name: Union[str, List[str]] = None, option: str = None, *,
+             is_append: bool = None):
         if _CALCULATORS not in cls.__dict__:
             cls._calculators = {}
 
@@ -146,6 +148,34 @@ class CyclicDependencyException(ValueError):
 
 
 RESERVED = {'calc', 'list'}
+
+
+class FunctionType(Enum):
+    pass_configs = 'pass_configs'
+    pass_parameters = 'pass_parameters'
+
+
+class Function:
+    func: Callable
+    type_: FunctionType
+    dependencies: Set[str]
+    results: List[str]
+
+    def __get_type(self):
+        return FunctionType.pass_configs
+
+    def __get_dependencies(self):
+        return set()
+
+    def __init__(self, func, results):
+        self.func = func
+        self.type_ = self.__get_type()
+        self.dependencies = self.__get_dependencies()
+        self.results = results
+
+    def __call__(self, configs: Configs):
+        # Call and set values
+        pass
 
 
 class ConfigProcessor:
