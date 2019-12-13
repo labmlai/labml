@@ -1,26 +1,9 @@
-"""
-# Logger class
-
-*Should be initialized via `Experiment`*
-
-This module contains logging and monitoring helpers.
-
-Logger prints to the screen and writes TensorBoard summaries.
-"""
-
-from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
-from .indicators import IndicatorType, IndicatorOptions, Indicator
-from .internal import LoggerInternal as _LoggerInternal
-from .iterator import Iterator
-from .loop import Loop
-from .sections import Section, OuterSection, LoopingSection, section_factory
-from .store import Store
-from .writers import Writer, ScreenWriter
-
 import typing
 from typing import List, Tuple, Optional
 
 from lab.colors import ANSICode
+from .logger_class.indicators import IndicatorType, IndicatorOptions
+from .logger_class.internal import LoggerInternal as _LoggerInternal
 
 _internal: Optional[_LoggerInternal] = None
 

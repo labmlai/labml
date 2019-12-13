@@ -90,15 +90,15 @@ class Experiment:
         self.run.diff = repo.git.diff()
 
         checkpoint_saver = self._create_checkpoint_saver()
-        logger.internal.set_checkpoint_saver(checkpoint_saver)
+        logger.internal().set_checkpoint_saver(checkpoint_saver)
 
         if writers is None:
             writers = {'sqlite', 'tensorboard'}
 
         if 'sqlite' in writers:
-            logger.internal.add_writer(sqlite.Writer(self.run.sqlite_path))
+            logger.internal().add_writer(sqlite.Writer(self.run.sqlite_path))
         if 'tensorboard' in writers:
-            logger.internal.add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
+            logger.internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
 
     @staticmethod
     def __get_caller_file():
@@ -182,7 +182,7 @@ class Experiment:
             global_step = 0
 
         self.run.start_step = global_step
-        logger.internal.set_start_global_step(global_step)
+        logger.internal().set_start_global_step(global_step)
 
         self.__print_info_and_check_repo()
 
@@ -195,7 +195,7 @@ class Experiment:
             proc.calculate(run_order)
             proc.save(self.run.configs_path)
 
-        logger.internal.save_indicators(self.run.indicators_path)
+        logger.internal().save_indicators(self.run.indicators_path)
 
         with open(str(self.run.diff_path), "w") as f:
             f.write(self.run.diff)

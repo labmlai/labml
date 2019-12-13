@@ -1,7 +1,7 @@
 import signal
 
 from lab import colors
-from lab.logger_class import internal
+import lab
 
 
 class DelayedKeyboardInterrupt:
@@ -9,7 +9,7 @@ class DelayedKeyboardInterrupt:
     ### Capture `KeyboardInterrupt` and fire it later
     """
 
-    def __init__(self, logger: 'internal.LoggerInternal'):
+    def __init__(self, logger: 'lab.logger_class.internal.LoggerInternal'):
         self.signal_received = None
         self.logger = logger
 
