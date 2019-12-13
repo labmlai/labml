@@ -2,14 +2,13 @@ from pathlib import PurePath
 from typing import Dict
 
 import numpy as np
-
-import lab.logger_class.writers
 import tensorflow as tf
 
-from lab.logger_class.indicators import Indicator, IndicatorType
+from . import Writer as WriteBase
+from ..indicators import Indicator, IndicatorType
 
 
-class Writer(lab.logger_class.writers.Writer):
+class Writer(WriteBase):
     def __init__(self, log_path: PurePath):
         super().__init__()
 

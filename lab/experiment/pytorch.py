@@ -7,7 +7,7 @@ import torch.nn
 
 from lab import experiment, util
 from lab.configs import Configs
-from lab.logger_class.internal import CheckpointSaver
+from lab.logger.internal import CheckpointSaver
 
 
 class Checkpoint(CheckpointSaver):

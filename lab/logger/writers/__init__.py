@@ -2,8 +2,8 @@ from typing import Dict
 
 import numpy as np
 
-from lab import colors
-from lab.logger_class.indicators import Indicator
+from ... import colors
+from ..indicators import Indicator
 
 
 class Writer:

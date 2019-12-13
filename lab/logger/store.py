@@ -2,7 +2,7 @@ from collections import deque
 from pathlib import PurePath
 from typing import Dict, List
 
-from lab.logger_class import internal
+from lab.logger import internal
 from lab import util
 from .indicators import IndicatorType, IndicatorOptions, Indicator
 from .writers import Writer
@@ -73,7 +73,7 @@ class Store:
 
     def store(self, *args, **kwargs):
         """
-        ### Stores a value in the logger_class.
+        ### Stores a value in the logger.
 
         This may be added to a queue, a list or stored as
         a TensorBoard histogram depending on the

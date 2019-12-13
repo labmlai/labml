@@ -125,7 +125,7 @@ class LoggerInternal:
 
     def store(self, *args, **kwargs):
         """
-        ### Stores a value in the logger_class.
+        ### Stores a value in the logger.
 
         This may be added to a queue, a list or stored as
         a TensorBoard histogram depending on the
@@ -261,11 +261,11 @@ class LoggerInternal:
     def section_enter(self, section):
         if len(self.__sections) == 0:
             raise RuntimeError("Entering a section without creating a section.\n"
-                               "Always use logger_class.section to create a section")
+                               "Always use logger.section to create a section")
 
         if section is not self.__sections[-1]:
             raise RuntimeError("Entering a section other than the one last_created\n"
-                               "Always user with logger_class.section(...):")
+                               "Always user with logger.section(...):")
 
         if len(self.__sections) > 1 and not self.__sections[-2].is_parented:
             self.__sections[-2].make_parent()

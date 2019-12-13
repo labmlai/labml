@@ -1,11 +1,28 @@
+"""
+# Logger class
+
+*Should be initialized via `Experiment`*
+
+This module contains logging and monitoring helpers.
+
+Logger prints to the screen and writes TensorBoard summaries.
+"""
+
+# from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
+from .indicators import IndicatorType, IndicatorOptions
+# from .indicators import Indicator
+from .internal import LoggerInternal as _LoggerInternal
+# from .iterator import Iterator
+# from .loop import Loop
+# from .sections import Section, OuterSection, LoopingSection, section_factory
+# from .store import Store
+# from .writers import Writer, ScreenWriter
+
 import typing
-from typing import List, Tuple, Optional
 
-from lab.colors import ANSICode
-from .logger_class.indicators import IndicatorType, IndicatorOptions
-from .logger_class.internal import LoggerInternal as _LoggerInternal
+from lab.colors import ANSICode as _ANSICode
 
-_internal: Optional[_LoggerInternal] = None
+_internal: typing.Optional[_LoggerInternal] = None
 
 
 def internal() -> _LoggerInternal:
@@ -17,7 +34,7 @@ def internal() -> _LoggerInternal:
 
 
 def log(message, *,
-        color: List[ANSICode] or ANSICode or None = None,
+        color: typing.List[_ANSICode] or _ANSICode or None = None,
         new_line=True):
     """
     ### Print a message to screen in color
@@ -26,7 +43,7 @@ def log(message, *,
     internal().log(message, color=color, new_line=new_line)
 
 
-def log_color(parts: List[Tuple[str, ANSICode or None]], *,
+def log_color(parts: typing.List[typing.Tuple[str, _ANSICode or None]], *,
               new_line=True):
     """
     ### Print a message with different colors.
@@ -47,7 +64,7 @@ def add_indicator(name: str,
 
 def store(*args, **kwargs):
     """
-    ### Stores a value in the logger_class.
+    ### Stores a value in the logger.
 
     This may be added to a queue, a list or stored as
     a TensorBoard histogram depending on the
@@ -82,7 +99,7 @@ def save_checkpoint(*args):
 
 
 def iterator(name, iterable: typing.Union[typing.Iterable, typing.Sized, int],
-             total_steps: Optional[int] = None, *,
+             total_steps: typing.Optional[int] = None, *,
              is_silent: bool = False,
              is_timed: bool = True):
     return internal().iterator(name, iterable, total_steps, is_silent=is_silent,

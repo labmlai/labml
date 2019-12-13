@@ -1,6 +1,6 @@
 import typing
 from typing import Optional, Iterable
-from lab.logger_class import internal
+from lab.logger import internal
 
 
 class Iterator:

@@ -9,7 +9,7 @@ class DelayedKeyboardInterrupt:
     ### Capture `KeyboardInterrupt` and fire it later
     """
 
-    def __init__(self, logger: 'lab.logger_class.internal.LoggerInternal'):
+    def __init__(self, logger: 'lab.logger.internal.LoggerInternal'):
         self.signal_received = None
         self.logger = logger
 

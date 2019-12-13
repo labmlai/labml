@@ -4,11 +4,11 @@ from typing import Dict, Optional
 
 import numpy as np
 
-import lab.logger_class.writers
-from lab.logger_class.indicators import Indicator
+from . import Writer as WriteBase
+from ..indicators import Indicator
 
 
-class Writer(lab.logger_class.writers.Writer):
+class Writer(WriteBase):
     conn: Optional[sqlite3.Connection]
 
     def __init__(self, sqlite_path: PurePath):

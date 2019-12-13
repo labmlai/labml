@@ -1,2 +1,2 @@
-from .logger_class import IndicatorType, IndicatorOptions
+from .logger import IndicatorType, IndicatorOptions
 import lab.logger as logger

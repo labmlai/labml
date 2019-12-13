@@ -2,7 +2,7 @@ import math
 import time
 
 from lab import colors
-from lab.logger_class import internal
+from lab.logger import internal
 
 
 class Section:

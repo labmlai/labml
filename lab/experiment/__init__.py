@@ -11,7 +11,7 @@ from lab.commenter import Commenter
 from lab.configs import Configs, ConfigProcessor
 from lab.experiment.run import Run
 from lab.lab import Lab
-from lab.logger_class.writers import sqlite, tensorboard
+from lab.logger.writers import sqlite, tensorboard
 
 commenter = Commenter(
     comment_start='"""',
