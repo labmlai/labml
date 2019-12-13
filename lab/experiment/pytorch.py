@@ -136,6 +136,7 @@ class Experiment(experiment.Experiment):
 
     def _create_checkpoint_saver(self):
         self.__checkpoint_saver = Checkpoint(self.run.checkpoint_path)
+        return self.__checkpoint_saver
 
     def add_models(self, models: Dict[str, torch.nn.Module]):
         """
@@ -143,31 +144,8 @@ class Experiment(experiment.Experiment):
         """
         self.__checkpoint_saver.add_models(models)
 
-    def start_train(self, is_init: bool = True):
-        """
-        ## Start experiment
-
-        Load a checkpoint or reset based on `global_step`.
-        """
-
-        global_step = 0
-
-        if not is_init:
-            # load checkpoint if we are starting from middle
-            with logger.section("Loading checkpoint"):
-                is_successful = self.__checkpoint_saver.load()
-                logger.set_successful(is_successful)
-                if is_successful:
-                    global_step = self.__checkpoint_saver.max_step
-
-        self._start(global_step)
-
-    def start_replay(self):
-        """
-        ## Start replaying experiment
-
-        Load a checkpoint or reset based on `global_step`.
-        """
-
-        with logger.section("Loading checkpoint") as m:
-            m.is_successful = self.__checkpoint_saver.load()
+    def _load_checkpoint(self):
+        is_successful = self.__checkpoint_saver.load()
+        if not is_successful:
+            return None
+        return self.__checkpoint_saver.max_step

@@ -133,7 +133,7 @@ class MNISTLoop(Loop):
         logger.add_indicator("accuracy", IndicatorType.histogram,
                              IndicatorOptions(is_print=True))
 
-        EXPERIMENT.start_train()
+        EXPERIMENT.start()
 
     def _train(self, epoch):
         with logger.section("Train", total_steps=len(self.train_loader)):

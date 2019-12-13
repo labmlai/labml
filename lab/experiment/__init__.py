@@ -113,17 +113,19 @@ class Experiment:
     def _create_checkpoint_saver(self):
         return None
 
-    def print_info_and_check_repo(self):
+    def __print_info_and_check_repo(self):
         """
         ## 🖨 Print the experiment info and check git repo status
         """
         logger.log_color([
             (self.name, colors.Style.bold)
         ])
-        logger.log_color([
-            ("\t", None),
-            (self.run.comment, colors.BrightColor.cyan)
-        ])
+        if self.run.comment != '':
+            logger.log_color([
+                ("\t", None),
+                (self.run.comment, colors.BrightColor.cyan)
+            ])
+
         logger.log_color([
             ("\t", None),
             ("[dirty]" if self.run.is_dirty else "[clean]", None),
@@ -158,12 +160,27 @@ class Experiment:
         file_name = name + ".npy"
         return np.load(str(self.run.npy_path / file_name))
 
-    def _start(self, global_step: int):
+    def _load_checkpoint(self):
+        raise NotImplementedError()
+
+    def start(self, is_init: bool = True):
+        if not is_init:
+            with logger.section("Loading checkpoint"):
+                global_step = self._load_checkpoint()
+                if global_step is None:
+                    logger.set_successful(False)
+                    global_step = 0
+        else:
+            global_step = 0
+
         self.run.start_step = global_step
         logger.internal.set_start_global_step(global_step)
+
+        self.__print_info_and_check_repo()
 
         self.run.save_info()
         logger.internal.save_indicators(self.run.indicators_path)
 
         with open(str(self.run.diff_path), "w") as f:
             f.write(self.run.diff)
+
