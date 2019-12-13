@@ -3,10 +3,11 @@ import inspect
 import random
 import string
 import textwrap
+import warnings
 from collections import OrderedDict
 from enum import Enum
-from typing import List, NamedTuple, Dict, Callable, Type, cast, Set, Optional, \
-    OrderedDict as OrderedDictType, Union
+from typing import List, Dict, Callable, Type, cast, Set, Optional, \
+    OrderedDict as OrderedDictType, Union, Any, Tuple
 
 
 def random_string(length=10):
@@ -14,37 +15,131 @@ def random_string(length=10):
     return ''.join(random.choice(letters) for _ in range(length))
 
 
-class Calculator(NamedTuple):
+_CALCULATORS = '_calculators'
+
+
+class FunctionKind(Enum):
+    pass_configs = 'pass_configs'
+    pass_parameters = 'pass_parameters'
+
+
+class Calculator:
     func: Callable
-    config_name: str
+    kind: FunctionKind
+    dependencies: Set[str]
+    config_names: Union[str, List[str]]
     option_name: str
     is_append: bool
+    params: List[inspect.Parameter]
 
+    def __get_type(self):
+        key, pos = 0, 0
 
-_CALCULATORS = '_calculators'
+        for p in self.params:
+            if p.kind == p.POSITIONAL_OR_KEYWORD:
+                pos += 1
+            elif p.kind == p.KEYWORD_ONLY:
+                key += 1
+            else:
+                assert False, "Only positional or keyword only arguments should be accepted"
+
+        if pos == 1:
+            assert key == 0
+            return FunctionKind.pass_configs
+        else:
+            warnings.warn("Use configs object, because it's easier to refactor, find usage etc",
+                          FutureWarning)
+            assert pos == 0
+            return FunctionKind.pass_parameters
+
+    def __get_dependencies(self):
+        if self.kind == FunctionKind.pass_configs:
+            parser = DependencyParser(self.func)
+            assert not parser.is_referenced, f"{self.func.__name__} should only use attributes of configs"
+            return parser.required
+        else:
+            return {p.name for p in self.params}
+
+    def __get_option_name(self, option_name: str):
+        if option_name is not None:
+            return option_name
+        else:
+            return self.func.__name__
+
+    def __get_config_names(self, config_names: Union[str, List[str]]):
+        if config_names is None:
+            return self.func.__name__
+        elif type(config_names) == str:
+            return config_names
+        else:
+            assert type(config_names) == list
+            assert len(config_names) > 0
+            return config_names
+
+    def __get_params(self):
+        func_type = type(self.func)
+
+        if func_type == type:
+            init_func = cast(object, self.func).__init__
+            spec: inspect.Signature = inspect.signature(init_func)
+            params: List[inspect.Parameter] = list(spec.parameters.values())
+            assert len(params) > 0
+            assert params[0].kind == inspect.Parameter.POSITIONAL_OR_KEYWORD
+            assert params[0].name == 'self'
+            return params[1:]
+        else:
+            spec: inspect.Signature = inspect.signature(self.func)
+            params: List[inspect.Parameter] = list(spec.parameters.values())
+            return params
+
+    def __init__(self, func, *,
+                 config_names: Union[str, List[str]],
+                 option_name: str,
+                 is_append: bool):
+        self.func = func
+        self.config_names = self.__get_config_names(config_names)
+        self.is_append = is_append
+        assert not (self.is_append and len(self.config_names) > 1)
+        self.option_name = self.__get_option_name(option_name)
+
+        self.params = self.__get_params()
+
+        self.kind = self.__get_type()
+        self.dependencies = self.__get_dependencies()
+
+    def __call__(self, configs: 'Configs'):
+        if self.kind == FunctionKind.pass_configs:
+            if len(self.params) == 1:
+                return self.func(configs)
+            else:
+                return self.func()
+        else:
+            kwargs = {p.name: configs.__getattribute__(p.name) for p in self.params}
+            return self.func(**kwargs)
 
 
 class Configs:
     _calculators: Dict[str, List[Calculator]] = {}
 
     @classmethod
-    def calc(cls, name: Union[str, List[str]] = None, option: str = None, *,
-             is_append: bool = None):
+    def calc(cls, name: Union[str, List[str]] = None,
+             option: str = None, *,
+             is_append: bool = False):
         if _CALCULATORS not in cls.__dict__:
             cls._calculators = {}
 
         def wrapper(func: Callable):
-            _name = func.__name__ if name is None else name
-            if option is not None:
-                _option = option
+
+            calc = Calculator(func, config_names=name, option_name=option, is_append=is_append)
+            if type(calc.config_names) == str:
+                config_names = [calc.config_names]
             else:
-                _option = func.__name__
+                config_names = calc.config_names
 
-            calc = Calculator(func, _name, option, is_append)
-            if _name not in cls._calculators:
-                cls._calculators[_name] = []
-
-            cls._calculators[_name].append(calc)
+            for n in config_names:
+                if n not in cls._calculators:
+                    cls._calculators[n] = []
+                cls._calculators[n].append(calc)
 
             return func
 
@@ -150,40 +245,15 @@ class CyclicDependencyException(ValueError):
 RESERVED = {'calc', 'list'}
 
 
-class FunctionType(Enum):
-    pass_configs = 'pass_configs'
-    pass_parameters = 'pass_parameters'
-
-
-class Function:
-    func: Callable
-    type_: FunctionType
-    dependencies: Set[str]
-    results: List[str]
-
-    def __get_type(self):
-        return FunctionType.pass_configs
-
-    def __get_dependencies(self):
-        return set()
-
-    def __init__(self, func, results):
-        self.func = func
-        self.type_ = self.__get_type()
-        self.dependencies = self.__get_dependencies()
-        self.results = results
-
-    def __call__(self, configs: Configs):
-        # Call and set values
-        pass
-
-
 class ConfigProcessor:
-    options: Dict[str, OrderedDictType[str, Callable]]
+    options: Dict[str, OrderedDictType[str, Calculator]]
     types: Dict[str, Type]
     values: Dict[str, any]
-    list_appends: Dict[str, List[Callable]]
+    list_appends: Dict[str, List[Calculator]]
     dependencies: Dict[str, Set[str]]
+
+    is_computed: Set[str]
+    is_top_sorted: Set[str]
 
     def __init__(self, configs, values: Dict[str, any] = None):
         assert isinstance(configs, Configs)
@@ -204,7 +274,7 @@ class ConfigProcessor:
                 self.__collect_value(k, v)
 
             if _CALCULATORS in c.__dict__:
-                for k, calcs in c.__dict__['_calculators'].items():
+                for k, calcs in c.__dict__[_CALCULATORS].items():
                     for v in calcs:
                         self.__collect_calculator(k, v)
 
@@ -243,61 +313,17 @@ class ConfigProcessor:
         if v.is_append:
             if k not in self.list_appends:
                 self.list_appends[k] = []
-            self.list_appends[k].append(v.func)
+            self.list_appends[k].append(v)
         else:
             if k not in self.options:
                 self.options[k] = OrderedDict()
-            self.options[k][v.option_name] = v.func
+            self.options[k][v.option_name] = v
 
-    def __check_properties(self):
-        """
-        Checks all the `properties`, `options` and `list_appends`
-        """
-
-        for opts in self.options.values():
-            for p in opts.values():
-                self.__check_callable(p)
-        for appends in self.list_appends.values():
-            for p in appends:
-                self.__check_callable(p)
-
-    def __check_callable(self, func: Callable):
-        func_type = type(func)
-
-        if func_type == type:
-            init_func = cast(object, func).__init__
-            spec: inspect.Signature = inspect.signature(init_func)
-            params = spec.parameters
-            if len(params) != 2 and len(params) != 1:
-                raise ConfigPropertyException(func)
-        else:
-            spec: inspect.Signature = inspect.signature(func)
-            params = spec.parameters
-            if len(params) > 1:
-                raise ConfigPropertyException(func)
-
-    def __call_func(self, func: Callable):
-        func_type = type(func)
-
-        if func_type == type:
-            init_func = cast(object, func).__init__
-            spec: inspect.Signature = inspect.signature(init_func)
-            params = spec.parameters
-            if len(params) == 2:
-                return func(self.configs)
-            else:
-                return func()
-        else:
-            spec: inspect.Signature = inspect.signature(func)
-            params = spec.parameters
-            if len(params) == 1:
-                return func(self.configs)
-            else:
-                return func()
-
-    def __get_property(self, key):
+    def __get_property(self, key) -> Tuple[Any, Union[None, Calculator, List[Calculator]]]:
         if key in self.options:
             value = self.values[key]
+            if value not in self.options[key]:
+                return value, None
             return None, self.options[key][value]
 
         if key in self.list_appends:
@@ -307,19 +333,19 @@ class ConfigProcessor:
 
     def __add_to_topological_order(self, key):
         assert self.stack.pop() == key
-        self.is_computed.add(key)
+        self.is_top_sorted.add(key)
         self.topological_order.append(key)
 
     def __traverse(self, key):
         for d in self.dependencies[key]:
-            if d not in self.is_computed:
+            if d not in self.is_top_sorted:
                 self.__add_to_stack(d)
                 return
 
         self.__add_to_topological_order(key)
 
     def __add_to_stack(self, key):
-        if key in self.is_computed:
+        if key in self.is_top_sorted:
             return
 
         if key in self.visited:
@@ -335,7 +361,7 @@ class ConfigProcessor:
 
     def __calculate_missing_values(self):
         for k in self.types:
-            if k in self.values:
+            if k in self.values and self.values[k] is not None:
                 continue
 
             if k in self.list_appends:
@@ -347,11 +373,14 @@ class ConfigProcessor:
 
             if type(self.types[k]) == type:
                 self.options[k] = OrderedDict()
-                self.options[k][k] = self.types[k]
+                self.options[k][k] = Calculator(self.types[k],
+                                                config_names=k,
+                                                option_name=k,
+                                                is_append=False)
                 self.values[k] = k
                 continue
 
-            assert False, f"Cannot compute {k}"
+            assert k in self.values, f"Cannot compute {k}"
 
     def __get_dependencies(self, key) -> Set[str]:
         assert not (key in self.options and key in self.list_appends), \
@@ -359,13 +388,14 @@ class ConfigProcessor:
 
         if key in self.options:
             value = self.values[key]
-            func = self.options[key][value]
-            return _get_dependencies(func)
+            if value not in self.options[key]:
+                return set()
+            return self.options[key][value].dependencies
 
         if key in self.list_appends:
             dep = set()
             for func in self.list_appends[key]:
-                dep = dep.union(_get_dependencies(func))
+                dep = dep.union(func.dependencies)
 
             return dep
 
@@ -379,7 +409,7 @@ class ConfigProcessor:
     def __topological_sort(self, keys: Optional[List[str]] = None):
         self.visited = set()
         self.stack = []
-        self.is_computed = set()
+        self.is_top_sorted = set()
         self.topological_order = []
 
         if keys is None:
@@ -389,24 +419,36 @@ class ConfigProcessor:
             self.__add_to_stack(k)
             self.__dfs()
 
+    def __set_configs(self, key, value):
+        assert key not in self.is_computed
+        self.is_computed.add(key)
+        self.configs.__setattr__(key, value)
+
     def __compute(self, key):
+        if key in self.is_computed:
+            return
+
         value, funcs = self.__get_property(key)
         if value is not None:
-            return value
+            self.__set_configs(key, value)
         elif type(funcs) == list:
-            return [self.__call_func(f) for f in funcs]
+            self.__set_configs(key, [f(self.configs) for f in funcs])
         else:
-            return self.__call_func(funcs)
+            value = funcs(self.configs)
+            if type(funcs.config_names) == str:
+                self.__set_configs(key, value)
+            else:
+                for i, k in enumerate(funcs.config_names):
+                    self.__set_configs(k, value[i])
 
     def __compute_values(self):
+        self.is_computed = set()
+
         for k in self.topological_order:
-            self.configs.__setattr__(k, self.__compute(k))
+            self.__compute(k)
 
     def calculate(self):
-        self.__check_properties()
         self.__calculate_missing_values()
         self.__create_graph()
         self.__topological_sort()
         self.__compute_values()
-
-        print(self.configs)

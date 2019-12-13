@@ -1,3 +1,4 @@
 gitpython
 pyyaml
 numpy
+-r requirements/dev.txt
