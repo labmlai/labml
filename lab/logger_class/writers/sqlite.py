@@ -17,43 +17,42 @@ class Writer(lab.logger_class.writers.Writer):
         self.sqlite_path = sqlite_path
         self.conn = None
 
-    def __connect(self, indicators: Dict[str, Indicator]):
+    def __connect(self):
         if self.conn is not None:
             return
 
         self.conn = sqlite3.connect(str(self.sqlite_path))
 
         try:
-            for k, ind in indicators.items():
-                if ind.type_ != 'scalar':
-                    key = self._parse_key(f'{ind.name}.mean')
-                else:
-                    key = self._parse_key(f'{ind.name}')
-                self.conn.execute(f"CREATE TABLE values_{key} (step integer, value real)")
+            self.conn.execute(f"CREATE TABLE scalars (indicator text, step integer, value real)")
 
         except sqlite3.OperationalError:
             print('Scalar table exists')
 
     @staticmethod
     def _parse_key(key: str):
-        return key.replace('.', '_')
+        return key
+        # if we name tables
+        # return key.replace('.', '_')
+
+    def _get_key(self, indicator):
+        if indicator.type_ != 'scalar':
+            return self._parse_key(f'{indicator.name}.mean')
+        else:
+            return self._parse_key(f'{indicator.name}')
 
     def write(self, *,
               global_step: int,
               values: Dict[str, any],
               indicators: Dict[str, Indicator]):
-        self.__connect(indicators)
+        self.__connect()
 
         for k, ind in indicators.items():
             v = values[k]
             if len(v) == 0:
                 continue
-            # summary.value.add(tag=k, histo=_get_histogram(v))
-            if ind.type_ != 'scalar':
-                key = self._parse_key(f'{ind.name}.mean')
-            else:
-                key = self._parse_key(f'{ind.name}')
+            key = self._get_key(ind)
             self.conn.execute(
-                f"INSERT INTO values_{key} VALUES ({global_step}, {float(np.mean(v))})")
+                f"INSERT INTO scalars VALUES ('{key}', {global_step}, {float(np.mean(v))})")
 
         self.conn.commit()

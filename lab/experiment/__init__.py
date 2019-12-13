@@ -106,7 +106,7 @@ class Experiment:
             module_path = pathlib.PurePath(f.filename)
             if str(module_path).startswith(str(lab_src)):
                 continue
-            return module_path
+            return str(module_path)
 
         return ''
 
