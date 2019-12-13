@@ -6,8 +6,11 @@ import textwrap
 import warnings
 from collections import OrderedDict
 from enum import Enum
+from pathlib import PurePath
 from typing import List, Dict, Callable, Type, cast, Set, Optional, \
     OrderedDict as OrderedDictType, Union, Any, Tuple
+
+from lab import util
 
 
 def random_string(length=10):
@@ -246,6 +249,10 @@ RESERVED = {'calc', 'list'}
 
 
 class ConfigProcessor:
+    topological_order: List[str]
+    stack: List[str]
+    visited: Set[str]
+
     options: Dict[str, OrderedDictType[str, Calculator]]
     types: Dict[str, Type]
     values: Dict[str, any]
@@ -273,16 +280,20 @@ class ConfigProcessor:
             for k, v in c.__dict__.items():
                 self.__collect_value(k, v)
 
+        for c in classes:
             if _CALCULATORS in c.__dict__:
                 for k, calcs in c.__dict__[_CALCULATORS].items():
+                    assert k in self.types, k
                     for v in calcs:
                         self.__collect_calculator(k, v)
 
         for k, v in configs.__dict__.items():
+            assert k in self.types
             self.__collect_value(k, v)
 
         if values is not None:
             for k, v in values.items():
+                assert k in self.types
                 self.__collect_value(k, v)
 
     @staticmethod
@@ -331,34 +342,6 @@ class ConfigProcessor:
 
         return self.values[key], None
 
-    def __add_to_topological_order(self, key):
-        assert self.stack.pop() == key
-        self.is_top_sorted.add(key)
-        self.topological_order.append(key)
-
-    def __traverse(self, key):
-        for d in self.dependencies[key]:
-            if d not in self.is_top_sorted:
-                self.__add_to_stack(d)
-                return
-
-        self.__add_to_topological_order(key)
-
-    def __add_to_stack(self, key):
-        if key in self.is_top_sorted:
-            return
-
-        if key in self.visited:
-            raise CyclicDependencyException(key)
-
-        self.visited.add(key)
-        self.stack.append(key)
-
-    def __dfs(self):
-        while len(self.stack) > 0:
-            key = self.stack[-1]
-            self.__traverse(key)
-
     def __calculate_missing_values(self):
         for k in self.types:
             if k in self.values and self.values[k] is not None:
@@ -406,14 +389,37 @@ class ConfigProcessor:
         for k in self.types:
             self.dependencies[k] = self.__get_dependencies(k)
 
-    def __topological_sort(self, keys: Optional[List[str]] = None):
-        self.visited = set()
-        self.stack = []
-        self.is_top_sorted = set()
-        self.topological_order = []
+    def __add_to_topological_order(self, key):
+        assert self.stack.pop() == key
+        self.is_top_sorted.add(key)
+        self.topological_order.append(key)
 
-        if keys is None:
-            keys = self.types.keys()
+    def __traverse(self, key):
+        for d in self.dependencies[key]:
+            if d not in self.is_top_sorted:
+                self.__add_to_stack(d)
+                return
+
+        self.__add_to_topological_order(key)
+
+    def __add_to_stack(self, key):
+        if key in self.is_top_sorted:
+            return
+
+        if key in self.visited:
+            raise CyclicDependencyException(key)
+
+        self.visited.add(key)
+        self.stack.append(key)
+
+    def __dfs(self):
+        while len(self.stack) > 0:
+            key = self.stack[-1]
+            self.__traverse(key)
+
+    def __topological_sort(self, keys: List[str]):
+        for k in keys:
+            assert k not in self.is_top_sorted
 
         for k in keys:
             self.__add_to_stack(k)
@@ -447,8 +453,35 @@ class ConfigProcessor:
         for k in self.topological_order:
             self.__compute(k)
 
-    def calculate(self):
+    def calculate(self, run_order: Optional[List[Union[List[str], str]]]):
+        if run_order is None:
+            run_order = [list(self.types.keys())]
+
+        for i in range(len(run_order)):
+            keys = run_order[i]
+            if type(keys) == str:
+                run_order[i] = [keys]
+
         self.__calculate_missing_values()
         self.__create_graph()
-        self.__topological_sort()
-        self.__compute_values()
+
+        self.visited = set()
+        self.stack = []
+        self.is_top_sorted = set()
+        self.topological_order = []
+
+        for keys in run_order:
+            self.__topological_sort(keys)
+            self.__compute_values()
+
+    def save(self, configs_path: PurePath):
+        configs = {
+            'values': self.values,
+            'options': {}
+        }
+
+        for k, opts in self.options.items():
+            configs['options'][k] = [o for o in opts]
+
+        with open(str(configs_path), "w") as file:
+            file.write(util.yaml_dump(configs))

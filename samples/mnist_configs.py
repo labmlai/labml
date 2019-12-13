@@ -10,9 +10,6 @@ from torchvision import datasets, transforms
 from lab import logger, configs, IndicatorOptions, IndicatorType
 from lab.experiment.pytorch import Experiment
 
-# Declare the experiment
-EXPERIMENT = Experiment(writers={'sqlite'})
-
 MODELS = {}
 
 
@@ -50,9 +47,6 @@ class Loop:
         self.__is_log_parameters = loop_configs.is_log_parameters
         self.__log_new_line_interval = loop_configs.log_new_line_interval
         print(self.__epochs)
-
-    def startup(self):
-        pass
 
     def step(self, epoch):
         raise NotImplementedError()
@@ -98,7 +92,7 @@ class Loop:
                 logger.log("\nKilling loop...")
                 break
 
-    def __call__(self):
+    def startup(self):
         # Start the experiment
         for model_name, m in MODELS.items():
             for name, param in m.named_parameters():
@@ -110,8 +104,8 @@ class Loop:
                                          IndicatorType.histogram,
                                          IndicatorOptions(is_print=False))
 
+    def __call__(self):
         self.startup()
-
         self.loop()
 
 
@@ -126,14 +120,14 @@ class MNISTLoop(Loop):
         self.log_interval = c.log_interval
 
     def startup(self):
+        super().startup()
+
         logger.add_indicator("train_loss", IndicatorType.queue,
                              IndicatorOptions(queue_size=20, is_print=True))
         logger.add_indicator("test_loss", IndicatorType.histogram,
                              IndicatorOptions(is_print=True))
         logger.add_indicator("accuracy", IndicatorType.histogram,
                              IndicatorOptions(is_print=True))
-
-        EXPERIMENT.start()
 
     def _train(self, epoch):
         with logger.section("Train", total_steps=len(self.train_loader)):
@@ -235,10 +229,17 @@ class Configs(LoopConfigs, LoaderConfigs):
     momentum: float = 0.5
     optimizer: optim.SGD
 
+    set_seed = None
+
 
 @Configs.calc('epochs')
-def calc_epochs(c: Configs):
+def from_batch(c: Configs):
     return 2 * c.batch_size
+
+
+@Configs.calc('epochs')
+def random(c: Configs):
+    return c.seed
 
 
 # Get dependencies from parameters.
@@ -291,14 +292,15 @@ def model_optimizer(c: Configs):
 
 @Configs.calc()
 def set_seed(c: Configs):
-    torch.manual_seed(c.seed)
+    with logger.section("Setting seed"):
+        torch.manual_seed(c.seed)
 
 
 def main():
     conf = Configs()
-    proc = configs.ConfigProcessor(conf)
-    proc.calculate()
-
+    experiment = Experiment(writers={'sqlite'}, configs=conf)
+    experiment.start(configs_dict={'epochs': 'random'},
+                     run_order=['set_seed', 'loop'])
     conf.loop()
 
 

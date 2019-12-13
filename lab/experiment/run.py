@@ -67,6 +67,7 @@ class Run:
 
         self.info_path = self.run_path / "run.yaml"
         self.indicators_path = self.run_path / "indicators.yaml"
+        self.configs_path = self.run_path / "configs.yaml"
 
     @classmethod
     def create(cls, *,

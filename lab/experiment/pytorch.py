@@ -6,7 +6,7 @@ import numpy as np
 import torch.nn
 
 from lab import experiment, util
-from lab import logger
+from lab.configs import Configs
 from lab.logger_class.internal import CheckpointSaver
 
 
@@ -114,6 +114,7 @@ class Experiment(experiment.Experiment):
                  name: Optional[str] = None,
                  python_file: Optional[str] = None,
                  comment: Optional[str] = None,
+                 configs: Optional[Configs] = None,
                  writers: Set[str] = None):
         """
         ### Create the experiment
@@ -132,6 +133,7 @@ class Experiment(experiment.Experiment):
         super().__init__(name=name,
                          python_file=python_file,
                          comment=comment,
+                         configs=configs,
                          writers=writers)
 
     def _create_checkpoint_saver(self):

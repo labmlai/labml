@@ -1,6 +1,6 @@
 import pathlib
 import time
-from typing import Optional, List, Set
+from typing import Optional, List, Set, Dict, Union
 
 import git
 import numpy as np
@@ -8,6 +8,7 @@ import numpy as np
 from lab import colors
 from lab import logger
 from lab.commenter import Commenter
+from lab.configs import Configs, ConfigProcessor
 from lab.experiment.run import Run
 from lab.lab import Lab
 from lab.logger_class.writers import sqlite, tensorboard
@@ -27,6 +28,7 @@ class Experiment:
     Each experiment has different configurations or algorithms.
     An experiment can have multiple trials.
     """
+    configs: Optional[Configs]
 
     # whether not to start the experiment if there are uncommitted changes.
     check_repo_dirty: bool
@@ -35,6 +37,7 @@ class Experiment:
                  name: Optional[str],
                  python_file: Optional[str],
                  comment: Optional[str],
+                 configs: Optional[Configs],
                  writers: Set[str] = None):
         """
         ### Create the experiment
@@ -70,6 +73,8 @@ class Experiment:
         experiment_path = pathlib.Path(self.experiment_path)
         if not experiment_path.exists():
             experiment_path.mkdir(parents=True)
+
+        self.configs = configs
 
         self.run = Run.create(
             experiment_path=self.experiment_path,
@@ -163,7 +168,10 @@ class Experiment:
     def _load_checkpoint(self):
         raise NotImplementedError()
 
-    def start(self, is_init: bool = True):
+    def start(self, *,
+              is_init: bool = True,
+              configs_dict: Dict[str, any] = None,
+              run_order: Optional[List[Union[List[str], str]]] = None):
         if not is_init:
             with logger.section("Loading checkpoint"):
                 global_step = self._load_checkpoint()
@@ -179,8 +187,15 @@ class Experiment:
         self.__print_info_and_check_repo()
 
         self.run.save_info()
+
+        if self.configs is not None:
+            if configs_dict is None:
+                configs_dict = {}
+            proc = ConfigProcessor(self.configs, configs_dict)
+            proc.calculate(run_order)
+            proc.save(self.run.configs_path)
+
         logger.internal.save_indicators(self.run.indicators_path)
 
         with open(str(self.run.diff_path), "w") as f:
             f.write(self.run.diff)
-
