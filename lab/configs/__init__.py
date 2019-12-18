@@ -448,10 +448,9 @@ class ConfigProcessor:
                     self.__set_configs(k, value[i])
 
     def __compute_values(self):
-        self.is_computed = set()
-
         for k in self.topological_order:
-            self.__compute(k)
+            if k not in self.is_computed:
+                self.__compute(k)
 
     def calculate(self, run_order: Optional[List[Union[List[str], str]]]):
         if run_order is None:
@@ -469,6 +468,8 @@ class ConfigProcessor:
         self.stack = []
         self.is_top_sorted = set()
         self.topological_order = []
+        self.is_computed = set()
+
 
         for keys in run_order:
             self.__topological_sort(keys)
