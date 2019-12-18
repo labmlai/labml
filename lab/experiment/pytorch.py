@@ -25,10 +25,7 @@ class Checkpoint(CheckpointSaver):
         """
         self.__models.update(models)
 
-    def save(self, global_step, args):
-        self._save(global_step)
-
-    def _save(self, global_step):
+    def save(self, global_step):
         """
         ## Save model as a set of numpy arrays
         """

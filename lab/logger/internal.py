@@ -13,7 +13,7 @@ from .writers import Writer, ScreenWriter
 
 
 class CheckpointSaver:
-    def save(self, global_step, args):
+    def save(self, global_step):
         raise NotImplementedError()
 
 
@@ -172,11 +172,11 @@ class LoggerInternal:
         else:
             self.__log_looping_line()
 
-    def save_checkpoint(self, *args):
+    def save_checkpoint(self):
         if self.__checkpoint_saver is None:
             return
 
-        self.__checkpoint_saver.save(self.global_step, args)
+        self.__checkpoint_saver.save(self.global_step)
 
     def iterator(self, name, iterable: typing.Union[typing.Iterable, typing.Sized, int],
                  total_steps: Optional[int] = None, *,

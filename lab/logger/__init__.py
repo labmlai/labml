@@ -94,8 +94,8 @@ def write():
     internal().write()
 
 
-def save_checkpoint(*args):
-    internal().save_checkpoint(*args)
+def save_checkpoint():
+    internal().save_checkpoint()
 
 
 def iterator(name, iterable: typing.Union[typing.Iterable, typing.Sized, int],
