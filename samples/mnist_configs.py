@@ -130,44 +130,40 @@ class MNISTLoop(Loop):
                              IndicatorOptions(is_print=True))
 
     def _train(self):
-        with logger.section("Train", total_steps=len(self.train_loader)):
-            self.model.train()
-            for batch_idx, (data, target) in enumerate(self.train_loader):
-                data, target = data.to(self.device), target.to(self.device)
-                self.optimizer.zero_grad()
-                output = self.model(data)
-                loss = func.nll_loss(output, target)
-                loss.backward()
-                self.optimizer.step()
+        self.model.train()
+        for i, (data, target) in logger.enumerator("Train", self.train_loader):
+            data, target = data.to(self.device), target.to(self.device)
+            self.optimizer.zero_grad()
+            output = self.model(data)
+            loss = func.nll_loss(output, target)
+            loss.backward()
+            self.optimizer.step()
 
-                # Add training loss to the logger.
-                # The logger will queue the values and output the mean
-                logger.store(train_loss=loss.item())
-                logger.progress(batch_idx + 1)
-                logger.add_global_step()
+            # Add training loss to the logger.
+            # The logger will queue the values and output the mean
+            logger.store(train_loss=loss.item())
+            logger.add_global_step()
 
-                # Print output to the console
-                if batch_idx % self.log_interval == 0:
-                    # Output the indicators
-                    logger.write()
+            # Print output to the console
+            if i % self.log_interval == 0:
+                # Output the indicators
+                logger.write()
 
     def _test(self):
-        with logger.section("Test", total_steps=len(self.test_loader)):
-            self.model.eval()
-            test_loss = 0
-            correct = 0
-            with torch.no_grad():
-                for batch_idx, (data, target) in enumerate(self.test_loader):
-                    data, target = data.to(self.device), target.to(self.device)
-                    output = self.model(data)
-                    test_loss += func.nll_loss(output, target, reduction='sum').item()
-                    pred = output.argmax(dim=1, keepdim=True)
-                    correct += pred.eq(target.view_as(pred)).sum().item()
-                    logger.progress(batch_idx + 1)
+        self.model.eval()
+        test_loss = 0
+        correct = 0
+        with torch.no_grad():
+            for data, target in logger.iterator("Test", self.test_loader):
+                data, target = data.to(self.device), target.to(self.device)
+                output = self.model(data)
+                test_loss += func.nll_loss(output, target, reduction='sum').item()
+                pred = output.argmax(dim=1, keepdim=True)
+                correct += pred.eq(target.view_as(pred)).sum().item()
 
-            # Add test loss and accuracy to logger
-            logger.store(test_loss=test_loss / len(self.test_loader.dataset))
-            logger.store(accuracy=correct / len(self.test_loader.dataset))
+        # Add test loss and accuracy to logger
+        logger.store(test_loss=test_loss / len(self.test_loader.dataset))
+        logger.store(accuracy=correct / len(self.test_loader.dataset))
 
     def step(self, epoch):
         # Training and testing
