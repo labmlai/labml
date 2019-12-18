@@ -129,7 +129,7 @@ class MNISTLoop(Loop):
         logger.add_indicator("accuracy", IndicatorType.histogram,
                              IndicatorOptions(is_print=True))
 
-    def _train(self, epoch):
+    def _train(self):
         with logger.section("Train", total_steps=len(self.train_loader)):
             self.model.train()
             for batch_idx, (data, target) in enumerate(self.train_loader):
@@ -144,7 +144,7 @@ class MNISTLoop(Loop):
                 # The logger will queue the values and output the mean
                 logger.store(train_loss=loss.item())
                 logger.progress(batch_idx + 1)
-                logger.set_global_step(epoch * len(self.train_loader) + batch_idx)
+                logger.add_global_step()
 
                 # Print output to the console
                 if batch_idx % self.log_interval == 0:
@@ -171,7 +171,7 @@ class MNISTLoop(Loop):
 
     def step(self, epoch):
         # Training and testing
-        self._train(epoch)
+        self._train()
         self._test()
 
 
