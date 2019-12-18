@@ -172,6 +172,13 @@ class Experiment:
               is_init: bool = True,
               configs_dict: Dict[str, any] = None,
               run_order: Optional[List[Union[List[str], str]]] = None):
+        if self.configs is not None:
+            if configs_dict is None:
+                configs_dict = {}
+            proc = ConfigProcessor(self.configs, configs_dict)
+            proc.calculate(run_order)
+            proc.save(self.run.configs_path)
+
         if not is_init:
             with logger.section("Loading checkpoint"):
                 global_step = self._load_checkpoint()
@@ -187,13 +194,6 @@ class Experiment:
         self.__print_info_and_check_repo()
 
         self.run.save_info()
-
-        if self.configs is not None:
-            if configs_dict is None:
-                configs_dict = {}
-            proc = ConfigProcessor(self.configs, configs_dict)
-            proc.calculate(run_order)
-            proc.save(self.run.configs_path)
 
         logger.internal().save_indicators(self.run.indicators_path)
 
