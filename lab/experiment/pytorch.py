@@ -57,9 +57,9 @@ class Checkpoint(CheckpointSaver):
             f.write(json.dumps(files))
 
         # Delete old checkpoints
-        for c in checkpoints_path.iterdir():
-            if c.name != checkpoint_path.name:
-                util.rm_tree(c)
+        # for c in checkpoints_path.iterdir():
+        #     if c.name != checkpoint_path.name:
+        #         util.rm_tree(c)
 
     def load(self):
         """
@@ -111,7 +111,6 @@ class Experiment(experiment.Experiment):
                  name: Optional[str] = None,
                  python_file: Optional[str] = None,
                  comment: Optional[str] = None,
-                 configs: Optional[Configs] = None,
                  writers: Set[str] = None):
         """
         ### Create the experiment
@@ -130,7 +129,6 @@ class Experiment(experiment.Experiment):
         super().__init__(name=name,
                          python_file=python_file,
                          comment=comment,
-                         configs=configs,
                          writers=writers)
 
     def _create_checkpoint_saver(self):

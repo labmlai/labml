@@ -148,6 +148,7 @@ class MNISTLoop(Loop):
             if i % self.log_interval == 0:
                 # Output the indicators
                 logger.write()
+                logger.save_checkpoint()
 
     def _test(self):
         self.model.eval()
@@ -294,9 +295,12 @@ def set_seed(c: Configs):
 
 def main():
     conf = Configs()
-    experiment = Experiment(writers={'sqlite'}, configs=conf)
-    experiment.start(configs_dict={'epochs': 'random'},
-                     run_order=['set_seed', 'loop'])
+    experiment = Experiment(writers={'sqlite'})
+    experiment.calc_configs(conf,
+                            {'epochs': 'random'},
+                            ['set_seed', 'loop'])
+    experiment.add_models(MODELS)
+    experiment.start()
     conf.loop()
 
 
