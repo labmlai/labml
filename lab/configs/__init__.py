@@ -105,7 +105,8 @@ class ConfigProcessor:
         with open(str(configs_path), "w") as file:
             file.write(util.yaml_dump(configs))
 
-    def __print_config(self, key, *, value=None, option=None,
+    @staticmethod
+    def __print_config(key, *, value=None, option=None,
                        other_options=None, is_ignored=False, is_list=False):
         parts = ['\t']
 
