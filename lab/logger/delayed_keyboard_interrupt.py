@@ -1,6 +1,6 @@
 import signal
 
-from lab import colors
+from lab.logger import colors
 import lab
 
 

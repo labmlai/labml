@@ -1,9 +1,8 @@
 import time
 from typing import Optional, Dict
 
-from lab import colors
 from lab.logger.sections import Section, section_factory
-from lab.logger import internal
+from lab.logger import internal, colors
 
 
 class Loop:

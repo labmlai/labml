@@ -2,7 +2,7 @@ from typing import Dict
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as func
+import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data
 from torchvision import datasets, transforms
@@ -21,19 +21,18 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(500, 10)
 
     def forward(self, x):
-        x = func.relu(self.conv1(x))
-        x = func.max_pool2d(x, 2, 2)
-        x = func.relu(self.conv2(x))
-        x = func.max_pool2d(x, 2, 2)
+        x = F.relu(self.conv1(x))
+        x = F.max_pool2d(x, 2, 2)
+        x = F.relu(self.conv2(x))
+        x = F.max_pool2d(x, 2, 2)
         x = x.view(-1, 4 * 4 * 50)
-        x = func.relu(self.fc1(x))
+        x = F.relu(self.fc1(x))
         x = self.fc2(x)
-        return func.log_softmax(x, dim=1)
+        return F.log_softmax(x, dim=1)
 
 
 class MNISTLoop:
     def __init__(self, c: 'Configs'):
-        super().__init__()
         self.model = c.model
         self.device = c.device
         self.train_loader = c.train_loader
@@ -61,7 +60,7 @@ class MNISTLoop:
             data, target = data.to(self.device), target.to(self.device)
             self.optimizer.zero_grad()
             output = self.model(data)
-            loss = func.nll_loss(output, target)
+            loss = F.nll_loss(output, target)
             loss.backward()
             self.optimizer.step()
 
@@ -74,7 +73,6 @@ class MNISTLoop:
             if i % self.log_interval == 0:
                 # Output the indicators
                 logger.write()
-                logger.save_checkpoint()
 
     def _test(self):
         self.model.eval()
@@ -84,7 +82,7 @@ class MNISTLoop:
             for data, target in logger.iterator("Test", self.test_loader):
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
-                test_loss += func.nll_loss(output, target, reduction='sum').item()
+                test_loss += F.nll_loss(output, target, reduction='sum').item()
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
@@ -115,6 +113,9 @@ class MNISTLoop:
             # at the end of each epoch
             if (epoch + 1) % self.__log_new_line_interval == 0:
                 logger.new_line()
+
+            if self.__is_save_models:
+                logger.save_checkpoint()
 
     def __call__(self):
         self.startup()

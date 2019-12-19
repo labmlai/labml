@@ -2,7 +2,7 @@ from typing import Dict
 
 import numpy as np
 
-from ... import colors
+from .. import colors
 from ..indicators import Indicator
 
 

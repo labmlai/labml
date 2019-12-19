@@ -20,7 +20,7 @@ from .internal import LoggerInternal as _LoggerInternal
 
 import typing
 
-from lab.colors import ANSICode as _ANSICode
+from lab.logger.colors import ANSICode as _ANSICode
 
 _internal: typing.Optional[_LoggerInternal] = None
 

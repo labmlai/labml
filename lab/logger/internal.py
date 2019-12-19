@@ -2,7 +2,7 @@ import typing
 from pathlib import PurePath
 from typing import List, Optional, Tuple
 
-from lab import colors
+from . import colors
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
 from .indicators import IndicatorType, IndicatorOptions, Indicator
 from .iterator import Iterator

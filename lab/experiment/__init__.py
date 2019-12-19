@@ -5,7 +5,7 @@ from typing import Optional, List, Set, Dict, Union
 import git
 import numpy as np
 
-from lab import colors
+from lab.logger import colors
 from lab import logger
 from lab.commenter import Commenter
 from lab.configs import Configs, ConfigProcessor

@@ -1,8 +1,7 @@
 import math
 import time
 
-from lab import colors
-from lab.logger import internal
+from lab.logger import internal, colors
 
 
 class Section:
