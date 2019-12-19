@@ -5,18 +5,15 @@ from typing import Optional, Dict, Set
 import numpy as np
 import torch.nn
 
-from lab import experiment, util
-from lab.configs import Configs
+from lab import experiment
 from lab.logger.internal import CheckpointSaver
 
 
 class Checkpoint(CheckpointSaver):
-    max_step: Optional[int]
     __models: Dict[str, torch.nn.Module]
 
     def __init__(self, path: pathlib.PurePath):
         self.path = path
-        self.max_step = None
         self.__models = {}
 
     def add_models(self, models: Dict[str, torch.nn.Module]):
@@ -61,23 +58,10 @@ class Checkpoint(CheckpointSaver):
         #     if c.name != checkpoint_path.name:
         #         util.rm_tree(c)
 
-    def load(self):
+    def load(self, checkpoint_path):
         """
         ## Load model as a set of numpy arrays
         """
-
-        checkpoints_path = pathlib.Path(self.path)
-        if not checkpoints_path.exists():
-            return False
-
-        max_step = -1
-        for c in checkpoints_path.iterdir():
-            max_step = max(max_step, int(c.name))
-
-        if max_step < 0:
-            return False
-
-        checkpoint_path = checkpoints_path / str(max_step)
 
         with open(str(checkpoint_path / "info.json"), "r") as f:
             files = json.loads(f.readline())
@@ -93,7 +77,6 @@ class Checkpoint(CheckpointSaver):
 
             model.load_state_dict(state)
 
-        self.max_step = max_step
         return True
 
 
@@ -141,8 +124,12 @@ class Experiment(experiment.Experiment):
         """
         self.__checkpoint_saver.add_models(models)
 
-    def _load_checkpoint(self):
-        is_successful = self.__checkpoint_saver.load()
+    def _load_checkpoint(self, run: Optional[int], checkpoint: Optional[int]):
+        checkpoint_path, checkpoint = self.run.get_checkpoint(run, checkpoint)
+        if checkpoint_path is None:
+            return None
+
+        is_successful = self.__checkpoint_saver.load(checkpoint_path)
         if not is_successful:
             return None
-        return self.__checkpoint_saver.max_step
+        return checkpoint

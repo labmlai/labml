@@ -56,6 +56,7 @@ class Run:
         self.commit_message = commit_message
         self.start_step = start_step
 
+        self.experiment_path = experiment_path
         self.run_path = experiment_path / str(index)
         self.checkpoint_path = self.run_path / "checkpoints"
         self.npy_path = self.run_path / "npy"
@@ -92,6 +93,48 @@ class Run:
                    index=this_run,
                    experiment_path=experiment_path,
                    comment=comment)
+
+    def __get_checkpoint(self, run: int):
+        run_path = self.experiment_path / str(run)
+        checkpoint_path = Path(run_path / "checkpoints")
+        if not checkpoint_path.exists():
+            return None
+
+        checkpoints = [int(child.name) for child in Path(checkpoint_path).iterdir()]
+        checkpoints.sort()
+        if len(checkpoints) == 0:
+            return None
+        else:
+            return checkpoints[-1]
+
+    def get_checkpoint(self, run: int, checkpoint: int):
+        if run is None:
+            run = -1
+        if checkpoint is None:
+            checkpoint = -1
+
+        if run == -1:
+            runs = [int(child.name) for child in Path(self.experiment_path).iterdir()]
+            runs.sort()
+
+            for r in reversed(runs):
+                if r == self.index:
+                    continue
+                checkpoint = self.__get_checkpoint(r)
+                if checkpoint is None:
+                    continue
+                run = r
+                break
+
+        if run == -1:
+            return None, None
+
+        if checkpoint == -1:
+            checkpoint = self.__get_checkpoint(run)
+
+        run_path = self.experiment_path / str(run)
+        checkpoint_path = run_path / "checkpoints"
+        return checkpoint_path / str(checkpoint), checkpoint
 
     @classmethod
     def from_dict(cls, data: Dict[str, any]):

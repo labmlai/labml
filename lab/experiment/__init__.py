@@ -5,20 +5,12 @@ from typing import Optional, List, Set, Dict, Union
 import git
 import numpy as np
 
-from lab.logger import colors
 from lab import logger
-from lab.commenter import Commenter
 from lab.configs import Configs, ConfigProcessor
 from lab.experiment.run import Run
 from lab.lab import Lab
+from lab.logger import colors
 from lab.logger.writers import sqlite, tensorboard
-
-commenter = Commenter(
-    comment_start='"""',
-    comment_end='"""',
-    add_start='```trial',
-    add_end='```'
-)
 
 
 class Experiment:
@@ -164,7 +156,7 @@ class Experiment:
         file_name = name + ".npy"
         return np.load(str(self.run.npy_path / file_name))
 
-    def _load_checkpoint(self):
+    def _load_checkpoint(self, run: Optional[int], checkpoint: Optional[int]):
         raise NotImplementedError()
 
     def calc_configs(self,
@@ -177,10 +169,11 @@ class Experiment:
         self.configs_processor.calculate(run_order)
 
     def start(self, *,
-              is_init: bool = True):
-        if not is_init:
+              run: Optional[int] = None,
+              checkpoint: Optional[int] = None):
+        if run is not None:
             with logger.section("Loading checkpoint"):
-                global_step = self._load_checkpoint()
+                global_step = self._load_checkpoint(run, checkpoint)
                 if global_step is None:
                     logger.set_successful(False)
                     global_step = 0
