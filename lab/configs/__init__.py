@@ -6,7 +6,6 @@ from lab import util, logger
 from .calculator import Calculator
 from .config_function import ConfigFunction
 from .parser import Parser
-from ..logger import colors
 from ..logger.colors import BrightColor as Color
 
 _CALCULATORS = '_calculators'
