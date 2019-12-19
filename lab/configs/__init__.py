@@ -83,11 +83,24 @@ class ConfigProcessor:
         configs = {
             'values': self.parser.values,
             'options': {},
+            'list_appends': {k: True for k in self.parser.list_appends},
+            'computed': {},
             'order': self.calculator.topological_order
         }
 
         for k, opts in self.parser.options.items():
-            configs['options'][k] = [o for o in opts]
+            configs['options'][k] = list(opts.keys())
+
+        for k in self.parser.types:
+            computed = getattr(self.calculator.configs, k)
+            if computed is None:
+                continue
+
+            computed_str = str(computed)
+            if len(computed_str) > 100:
+                computed_str = computed_str[:150]
+
+            configs['computed'][k] = computed_str
 
         with open(str(configs_path), "w") as file:
             file.write(util.yaml_dump(configs))
