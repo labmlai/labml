@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, NamedTuple
 
 import torch
 import torch.nn as nn
@@ -9,12 +9,21 @@ from torchvision import datasets, transforms
 
 from lab import logger, configs, IndicatorOptions, IndicatorType
 from lab.experiment.pytorch import Experiment
-from lab.logger import util as logger_util
+
+MODELS = {}
 
 
-class Net(nn.Module):
-    def __init__(self):
+class Model(nn.Module):
+    """Can intercept all the model calls"""
+
+    def __init__(self, name):
         super().__init__()
+        MODELS[name] = self
+
+
+class Net(Model):
+    def __init__(self):
+        super().__init__('MyModel')
         self.conv1 = nn.Conv2d(1, 20, 5, 1)
         self.conv2 = nn.Conv2d(20, 50, 5, 1)
         self.fc1 = nn.Linear(4 * 4 * 50, 500)
@@ -31,22 +40,87 @@ class Net(nn.Module):
         return func.log_softmax(x, dim=1)
 
 
-class MNISTLoop:
+class Loop:
+    def __init__(self, loop_configs):
+        self.__epochs = loop_configs.epochs
+        self.__is_save_models = loop_configs.is_save_models
+        self.__is_log_parameters = loop_configs.is_log_parameters
+        self.__log_new_line_interval = loop_configs.log_new_line_interval
+        print(self.__epochs)
+
+    def step(self, epoch):
+        raise NotImplementedError()
+
+    def __log_model_params(self):
+        if not self.__is_log_parameters:
+            return
+
+        # Add histograms with model parameter values and gradients
+        for model_name, m in MODELS.items():
+            for name, param in m.named_parameters():
+                if param.requires_grad:
+                    logger.store(f"{model_name}.{name}", param.data.cpu().numpy())
+                    logger.store(f"{model_name}.{name}.grad", param.grad.cpu().numpy())
+
+    def loop(self):
+        # Loop through the monitored iterator
+        for epoch in logger.loop(range(0, self.__epochs)):
+            # Delayed keyboard interrupt handling to use
+            # keyboard interrupts to end the loop.
+            # This will capture interrupts and finish
+            # the loop at the end of processing the iteration;
+            # i.e. the loop won't stop in the middle of an epoch.
+            try:
+                with logger.delayed_keyboard_interrupt():
+                    self.step(epoch)
+
+                    self.__log_model_params()
+
+                    # Clear line and output to console
+                    logger.write()
+
+                    # Clear line and go to the next line;
+                    # that is, we add a new line to the output
+                    # at the end of each epoch
+                    if (epoch + 1) % self.__log_new_line_interval == 0:
+                        logger.new_line()
+
+            # Handled delayed interrupt
+            except KeyboardInterrupt:
+                logger.finish_loop()
+                logger.new_line()
+                logger.log("\nKilling loop...")
+                break
+
+    def startup(self):
+        # Start the experiment
+        for model_name, m in MODELS.items():
+            for name, param in m.named_parameters():
+                if param.requires_grad:
+                    logger.add_indicator(f"{model_name}.{name}",
+                                         IndicatorType.histogram,
+                                         IndicatorOptions(is_print=False))
+                    logger.add_indicator(f"{model_name}.{name}.grad",
+                                         IndicatorType.histogram,
+                                         IndicatorOptions(is_print=False))
+
+    def __call__(self):
+        self.startup()
+        self.loop()
+
+
+class MNISTLoop(Loop):
     def __init__(self, c: 'Configs'):
-        super().__init__()
+        super().__init__(loop_configs=c.loop_configs)
         self.model = c.model
         self.device = c.device
         self.train_loader = c.train_loader
         self.test_loader = c.test_loader
         self.optimizer = c.optimizer
         self.log_interval = c.log_interval
-        self.__epochs = c.epochs
-        self.__is_save_models = c.is_save_models
-        self.__is_log_parameters = c.is_log_parameters
-        self.__log_new_line_interval = c.log_new_line_interval
 
     def startup(self):
-        logger_util.add_model_indicators(self.model)
+        super().startup()
 
         logger.add_indicator("train_loss", IndicatorType.queue,
                              IndicatorOptions(queue_size=20, is_print=True))
@@ -92,33 +166,17 @@ class MNISTLoop:
         logger.store(test_loss=test_loss / len(self.test_loader.dataset))
         logger.store(accuracy=correct / len(self.test_loader.dataset))
 
-    def __log_model_params(self):
-        if not self.__is_log_parameters:
-            return
+    def step(self, epoch):
+        # Training and testing
+        self._train()
+        self._test()
 
-        # Add histograms with model parameter values and gradients
-        logger_util.store_model_indicators(self.model)
 
-    def loop(self):
-        # Loop through the monitored iterator
-        for epoch in logger.loop(range(0, self.__epochs)):
-            self._train()
-            self._test()
-
-            self.__log_model_params()
-
-            # Clear line and output to console
-            logger.write()
-
-            # Clear line and go to the next line;
-            # that is, we add a new line to the output
-            # at the end of each epoch
-            if (epoch + 1) % self.__log_new_line_interval == 0:
-                logger.new_line()
-
-    def __call__(self):
-        self.startup()
-        self.loop()
+class LoopConfigsTuple(NamedTuple):
+    epochs: int = 10
+    is_save_models: bool = False
+    is_log_parameters: bool = True
+    log_new_line_interval: int = 1
 
 
 class LoopConfigs(configs.Configs):
@@ -126,6 +184,16 @@ class LoopConfigs(configs.Configs):
     is_save_models: bool = False
     is_log_parameters: bool = True
     log_new_line_interval: int = 1
+
+    loop_configs: LoopConfigsTuple
+
+
+@LoopConfigs.calc('loop_configs')
+def _loop_configs(c: LoopConfigs):
+    return LoopConfigsTuple(epochs=c.epochs,
+                            is_save_models=c.is_save_models,
+                            is_log_parameters=c.is_log_parameters,
+                            log_new_line_interval=c.log_new_line_interval)
 
 
 class LoaderConfigs(configs.Configs):
@@ -231,7 +299,7 @@ def main():
     experiment.calc_configs(conf,
                             {'epochs': 'random'},
                             ['set_seed', 'loop'])
-    experiment.add_models(dict(model=conf.model))
+    experiment.add_models(MODELS)
     experiment.start()
     conf.loop()
 
