@@ -1,4 +1,6 @@
 import pathlib
+import random
+import string
 
 import yaml
 
@@ -21,3 +23,8 @@ def rm_tree(path_to_remove: pathlib.Path):
         path_to_remove.rmdir()
     else:
         path_to_remove.unlink()
+
+
+def random_string(length=10):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for _ in range(length))
