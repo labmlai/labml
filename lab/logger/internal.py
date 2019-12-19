@@ -1,6 +1,6 @@
 import typing
 from pathlib import PurePath
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from . import colors
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
@@ -96,13 +96,19 @@ class LoggerInternal:
 
         print("\r" + text, end=end_char, flush=True)
 
-    def log_color(self, parts: List[Tuple[str, colors.ANSICode or None]], *,
+    def log_color(self, parts: List[Union[str, Tuple[str, colors.ANSICode]]], *,
                   new_line=True):
         """
         ### Print a message with different colors.
         """
 
-        coded = [self.ansi_code(text, color) for text, color in parts]
+        tuple_parts = []
+        for p in parts:
+            if type(p) == str:
+                tuple_parts.append((p, None))
+            else:
+                tuple_parts.append(p)
+        coded = [self.ansi_code(text, color) for text, color in tuple_parts]
         self.log("".join(coded), new_line=new_line)
 
     def add_indicator(self, name: str,
@@ -178,7 +184,7 @@ class LoggerInternal:
 
         self.__checkpoint_saver.save(self.global_step)
 
-    def iterator(self, name, iterable: typing.Union[typing.Iterable, typing.Sized, int],
+    def iterator(self, name, iterable: Union[typing.Iterable, typing.Sized, int],
                  total_steps: Optional[int] = None, *,
                  is_silent: bool = False,
                  is_timed: bool = True):

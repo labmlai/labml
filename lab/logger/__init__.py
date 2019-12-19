@@ -43,7 +43,7 @@ def log(message, *,
     internal().log(message, color=color, new_line=new_line)
 
 
-def log_color(parts: typing.List[typing.Tuple[str, _ANSICode or None]], *,
+def log_color(parts: typing.List[typing.Union[str, typing.Tuple[str, colors.ANSICode]]], *,
               new_line=True):
     """
     ### Print a message with different colors.

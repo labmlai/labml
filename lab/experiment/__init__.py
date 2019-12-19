@@ -166,7 +166,7 @@ class Experiment:
         if configs_dict is None:
             configs_dict = {}
         self.configs_processor = ConfigProcessor(configs, configs_dict)
-        self.configs_processor.calculate(run_order)
+        self.configs_processor(run_order)
 
     def start(self, *,
               run: Optional[int] = None,
@@ -184,6 +184,7 @@ class Experiment:
         logger.internal().set_start_global_step(global_step)
 
         self.__print_info_and_check_repo()
+        self.configs_processor.print()
 
         self.run.save_info()
 

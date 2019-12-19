@@ -147,8 +147,6 @@ class Configs(LoopConfigs, LoaderConfigs):
 
     loop: MNISTLoop
 
-    is_cuda: bool
-
     device: any
 
     data_loader_args: Dict
@@ -160,6 +158,8 @@ class Configs(LoopConfigs, LoaderConfigs):
     optimizer: optim.SGD
 
     set_seed = None
+
+    not_used: bool = 10
 
 
 @Configs.calc('epochs')
@@ -176,12 +176,12 @@ def random(c: Configs):
 # The code looks cleaner, but might cause problems when you want to refactor
 # later.
 # It will be harder to use static analysis tools to find the usage of configs.
-@Configs.calc(['is_cuda', 'device', 'data_loader_args'])
+@Configs.calc(['device', 'data_loader_args'])
 def cuda(*, use_cuda, cuda_device):
     is_cuda = use_cuda and torch.cuda.is_available()
     device = torch.device(cuda_device if is_cuda else "cpu")
     dl_args = {'num_workers': 1, 'pin_memory': True} if is_cuda else {}
-    return is_cuda, device, dl_args
+    return device, dl_args
 
 
 def _data_loader(is_train, batch_size, data_loader_args):

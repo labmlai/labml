@@ -1,165 +1,161 @@
-import ast
-import inspect
-import textwrap
-import warnings
-from enum import Enum
-from typing import List, Callable, cast, Set, Union
-
+from typing import List, Dict, Type, Set, Optional, \
+    OrderedDict as OrderedDictType, Union, Any, Tuple
 from typing import TYPE_CHECKING
+
+from .config_function import ConfigFunction
 
 if TYPE_CHECKING:
     from . import Configs
 
 
-class DependencyParser(ast.NodeVisitor):
-    def __init__(self, func: Callable):
-        if type(func) == type:
-            func = cast(object, func).__init__
-            spec: inspect.Signature = inspect.signature(func)
-            params = spec.parameters
-            assert len(params) == 2
-            param: inspect.Parameter = params[list(params.keys())[1]]
-            source = textwrap.dedent(inspect.getsource(func))
+class Calculator:
+    options: Dict[str, OrderedDictType[str, ConfigFunction]]
+    types: Dict[str, Type]
+    values: Dict[str, any]
+    list_appends: Dict[str, List[ConfigFunction]]
 
-        else:
-            spec: inspect.Signature = inspect.signature(func)
-            params = spec.parameters
-            assert len(params) == 1
-            param: inspect.Parameter = params[list(params.keys())[0]]
-            source = inspect.getsource(func)
+    configs: 'Configs'
 
-        assert (param.kind == param.POSITIONAL_ONLY or
-                param.kind == param.POSITIONAL_OR_KEYWORD)
+    dependencies: Dict[str, Set[str]]
+    topological_order: List[str]
+    stack: List[str]
+    visited: Set[str]
+    is_computed: Set[str]
+    is_top_sorted: Set[str]
 
-        self.arg_name = param.name
+    def __init__(self, *,
+                 configs: 'Configs',
+                 options: Dict[str, OrderedDictType[str, ConfigFunction]],
+                 types: Dict[str, Type],
+                 values: Dict[str, any],
+                 list_appends: Dict[str, List[ConfigFunction]]):
+        self.configs = configs
+        self.options = options
+        self.types = types
+        self.values = values
+        self.list_appends = list_appends
 
-        self.required = set()
-        self.is_referenced = False
+        self.visited = set()
+        self.stack = []
+        self.is_top_sorted = set()
+        self.topological_order = []
+        self.is_computed = set()
 
-        parsed = ast.parse(source)
-        self.visit(parsed)
+    def __get_property(self, key) -> Tuple[Any, Union[None, ConfigFunction, List[ConfigFunction]]]:
+        if key in self.options:
+            value = self.values[key]
+            if value not in self.options[key]:
+                return value, None
+            return None, self.options[key][value]
 
-    def visit_Attribute(self, node: ast.Attribute):
-        while not isinstance(node.value, ast.Name):
-            if not isinstance(node.value, ast.Attribute):
+        if key in self.list_appends:
+            return None, [f for f in self.list_appends[key]]
+
+        return self.values[key], None
+
+    def __get_dependencies(self, key) -> Set[str]:
+        assert not (key in self.options and key in self.list_appends), \
+            f"{key} in options and appends"
+
+        if key in self.options:
+            value = self.values[key]
+            if value not in self.options[key]:
+                return set()
+            return self.options[key][value].dependencies
+
+        if key in self.list_appends:
+            dep = set()
+            for func in self.list_appends[key]:
+                dep = dep.union(func.dependencies)
+
+            return dep
+
+        return set()
+
+    def __create_graph(self):
+        self.dependencies = {}
+        for k in self.types:
+            self.dependencies[k] = self.__get_dependencies(k)
+
+    def __add_to_topological_order(self, key):
+        assert self.stack.pop() == key
+        self.is_top_sorted.add(key)
+        self.topological_order.append(key)
+
+    def __traverse(self, key):
+        for d in self.dependencies[key]:
+            if d not in self.is_top_sorted:
+                self.__add_to_stack(d)
                 return
 
-            node = node.value
+        self.__add_to_topological_order(key)
 
-        if node.value.id != self.arg_name:
+    def __add_to_stack(self, key):
+        if key in self.is_top_sorted:
             return
 
-        self.required.add(node.attr)
+        assert key not in self.visited, f"Cyclic dependency: {key}"
 
-    # Only visits if not captured before
-    def visit_Name(self, node: ast.Name):
-        if node.id == self.arg_name:
-            self.is_referenced = True
-            print(f"Referenced {node.id} in {node.lineno}:{node.col_offset}")
+        self.visited.add(key)
+        self.stack.append(key)
 
+    def __dfs(self):
+        while len(self.stack) > 0:
+            key = self.stack[-1]
+            self.__traverse(key)
 
-def _get_dependencies(func: Callable) -> Set[str]:
-    parser = DependencyParser(func)
-    assert not parser.is_referenced, f"{func} should only use attributes of configs"
-    return parser.required
+    def __topological_sort(self, keys: List[str]):
+        for k in keys:
+            assert k not in self.is_top_sorted
 
+        for k in keys:
+            self.__add_to_stack(k)
+            self.__dfs()
 
-class FunctionKind(Enum):
-    pass_configs = 'pass_configs'
-    pass_parameters = 'pass_parameters'
+    def __set_configs(self, key, value):
+        assert key not in self.is_computed
+        self.is_computed.add(key)
+        self.configs.__setattr__(key, value)
 
+    def __compute(self, key):
+        if key in self.is_computed:
+            return
 
-class Calculator:
-    func: Callable
-    kind: FunctionKind
-    dependencies: Set[str]
-    config_names: Union[str, List[str]]
-    option_name: str
-    is_append: bool
-    params: List[inspect.Parameter]
-
-    def __get_type(self):
-        key, pos = 0, 0
-
-        for p in self.params:
-            if p.kind == p.POSITIONAL_OR_KEYWORD:
-                pos += 1
-            elif p.kind == p.KEYWORD_ONLY:
-                key += 1
+        value, funcs = self.__get_property(key)
+        if value is not None:
+            self.__set_configs(key, value)
+        elif type(funcs) == list:
+            self.__set_configs(key, [f(self.configs) for f in funcs])
+        else:
+            value = funcs(self.configs)
+            if type(funcs.config_names) == str:
+                self.__set_configs(key, value)
             else:
-                assert False, "Only positional or keyword only arguments should be accepted"
+                for i, k in enumerate(funcs.config_names):
+                    self.__set_configs(k, value[i])
 
-        if pos == 1:
-            assert key == 0
-            return FunctionKind.pass_configs
-        else:
-            warnings.warn("Use configs object, because it's easier to refactor, find usage etc",
-                          FutureWarning)
-            assert pos == 0
-            return FunctionKind.pass_parameters
+    def __compute_values(self):
+        for k in self.topological_order:
+            if k not in self.is_computed:
+                self.__compute(k)
 
-    def __get_dependencies(self):
-        if self.kind == FunctionKind.pass_configs:
-            parser = DependencyParser(self.func)
-            assert not parser.is_referenced, \
-                f"{self.func.__name__} should only use attributes of configs"
-            return parser.required
-        else:
-            return {p.name for p in self.params}
+    def __call__(self, run_order: Optional[List[Union[List[str], str]]]):
+        if run_order is None:
+            run_order = [list(self.types.keys())]
 
-    def __get_option_name(self, option_name: str):
-        if option_name is not None:
-            return option_name
-        else:
-            return self.func.__name__
+        for i in range(len(run_order)):
+            keys = run_order[i]
+            if type(keys) == str:
+                run_order[i] = [keys]
 
-    def __get_config_names(self, config_names: Union[str, List[str]]):
-        if config_names is None:
-            return self.func.__name__
-        elif type(config_names) == str:
-            return config_names
-        else:
-            assert type(config_names) == list
-            assert len(config_names) > 0
-            return config_names
+        self.__create_graph()
 
-    def __get_params(self):
-        func_type = type(self.func)
+        self.visited = set()
+        self.stack = []
+        self.is_top_sorted = set()
+        self.topological_order = []
+        self.is_computed = set()
 
-        if func_type == type:
-            init_func = cast(object, self.func).__init__
-            spec: inspect.Signature = inspect.signature(init_func)
-            params: List[inspect.Parameter] = list(spec.parameters.values())
-            assert len(params) > 0
-            assert params[0].kind == inspect.Parameter.POSITIONAL_OR_KEYWORD
-            assert params[0].name == 'self'
-            return params[1:]
-        else:
-            spec: inspect.Signature = inspect.signature(self.func)
-            params: List[inspect.Parameter] = list(spec.parameters.values())
-            return params
-
-    def __init__(self, func, *,
-                 config_names: Union[str, List[str]],
-                 option_name: str,
-                 is_append: bool):
-        self.func = func
-        self.config_names = self.__get_config_names(config_names)
-        self.is_append = is_append
-        assert not (self.is_append and len(self.config_names) > 1)
-        self.option_name = self.__get_option_name(option_name)
-
-        self.params = self.__get_params()
-
-        self.kind = self.__get_type()
-        self.dependencies = self.__get_dependencies()
-
-    def __call__(self, configs: Configs):
-        if self.kind == FunctionKind.pass_configs:
-            if len(self.params) == 1:
-                return self.func(configs)
-            else:
-                return self.func()
-        else:
-            kwargs = {p.name: configs.__getattribute__(p.name) for p in self.params}
-            return self.func(**kwargs)
+        for keys in run_order:
+            self.__topological_sort(keys)
+            self.__compute_values()

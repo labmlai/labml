@@ -41,6 +41,8 @@ class BrightColor(ANSICode):
     cyan = 96
     white = 97
 
+    gray = 37
+
 
 class Background(ANSICode):
     black = 40
