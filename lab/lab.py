@@ -1,7 +1,7 @@
 from pathlib import PurePath, Path
 from typing import List
 
-from lab import util
+from . import util
 
 _CONFIG_FILE_NAME = '.lab.yaml'
 
@@ -23,7 +23,6 @@ class Lab:
 
         self.path = PurePath(config['path'])
         self.check_repo_dirty = config['check_repo_dirty']
-        self.is_log_python_file = config['is_log_python_file']
 
     @staticmethod
     def __get_config(configs):

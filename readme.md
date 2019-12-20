@@ -67,18 +67,18 @@ Since the introduction of [🎛 dashboard](https://github.com/vpj/lab_dashboard)
 no longer automatically write comments on source file.
 
 
-**⚠️ The following documentation is not up-to-date with the new development version.**
-
 ## Getting Started
 
-Clone this repository and add a symbolic link to lab.
+#### Install it via `pip` directly from github.
 
 ```bash
-ln -s ~/repo/lab your_project/lab
+pip install -e git+git@github.com:vpj/lab.git#egg=lab
 ```
 
-The create a `.lab.yaml` file. An empty file at the root of the project should
-be enough. You can set project level configs for 'check_repo_dirty' and 'is_log_python_file'
+#### Create a `.lab.yaml` file.
+An empty file at the root of the project should
+be enough. You can set project level configs for
+ 'check_repo_dirty' and 'is_log_python_file'
 in the config file.
 
 The idea is to have a separate python file for each major expirment,
@@ -93,6 +93,8 @@ You don't need the `.lab.yaml` file if you only plan on using the logger.
 See [mnist_pytorch.py](http://blog.varunajayasiri.com/ml/lab/mnist_pytorch.html)
 or [mnist_tensorflow.py](http://blog.varunajayasiri.com/ml/lab/mnist_tensorflow.html)
 for examples.
+
+**⚠️ The following documentation is not up-to-date with the new development version.**
 
 ## Usage
 

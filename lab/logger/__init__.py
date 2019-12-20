@@ -8,19 +8,11 @@ This module contains logging and monitoring helpers.
 Logger prints to the screen and writes TensorBoard summaries.
 """
 
-# from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
-from .indicators import IndicatorType, IndicatorOptions
-# from .indicators import Indicator
-from .internal import LoggerInternal as _LoggerInternal
-# from .iterator import Iterator
-# from .loop import Loop
-# from .sections import Section, OuterSection, LoopingSection, section_factory
-# from .store import Store
-# from .writers import Writer, ScreenWriter
-
 import typing
 
-from lab.logger.colors import ANSICode as _ANSICode
+from .colors import ANSICode
+from .indicators import IndicatorType, IndicatorOptions
+from .internal import LoggerInternal as _LoggerInternal
 
 _internal: typing.Optional[_LoggerInternal] = None
 
@@ -34,7 +26,7 @@ def internal() -> _LoggerInternal:
 
 
 def log(message, *,
-        color: typing.List[_ANSICode] or _ANSICode or None = None,
+        color: typing.List[ANSICode] or ANSICode or None = None,
         new_line=True):
     """
     ### Print a message to screen in color
@@ -43,7 +35,7 @@ def log(message, *,
     internal().log(message, color=color, new_line=new_line)
 
 
-def log_color(parts: typing.List[typing.Union[str, typing.Tuple[str, colors.ANSICode]]], *,
+def log_color(parts: typing.List[typing.Union[str, typing.Tuple[str, ANSICode]]], *,
               new_line=True):
     """
     ### Print a message with different colors.
