@@ -1,13 +1,3 @@
-"""
-# Logger class
-
-*Should be initialized via `Experiment`*
-
-This module contains logging and monitoring helpers.
-
-Logger prints to the screen and writes TensorBoard summaries.
-"""
-
 import typing
 
 from .colors import ANSICode
@@ -28,29 +18,17 @@ def internal() -> _LoggerInternal:
 def log(message, *,
         color: typing.List[ANSICode] or ANSICode or None = None,
         new_line=True):
-    """
-    ### Print a message to screen in color
-    """
-
     internal().log(message, color=color, new_line=new_line)
 
 
 def log_color(parts: typing.List[typing.Union[str, typing.Tuple[str, ANSICode]]], *,
               new_line=True):
-    """
-    ### Print a message with different colors.
-    """
-
     internal().log_color(parts, new_line=new_line)
 
 
 def add_indicator(name: str,
                   type_: IndicatorType = IndicatorType.scalar,
                   options: IndicatorOptions = None):
-    """
-    ### Add an indicator
-    """
-
     internal().add_indicator(name, type_, options)
 
 
