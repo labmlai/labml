@@ -91,7 +91,7 @@ class ConfigProcessor:
             configs['options'][k] = list(opts.keys())
 
         for k in self.parser.types:
-            computed = getattr(self.calculator.configs, k)
+            computed = getattr(self.calculator.configs, k, None)
             if computed is None:
                 continue
 
@@ -160,7 +160,7 @@ class ConfigProcessor:
                 ignored.add(k)
 
         for k in order:
-            computed = getattr(self.calculator.configs, k)
+            computed = getattr(self.calculator.configs, k, None)
 
             if k in ignored:
                 parts = self.__print_config(k, is_ignored=True)

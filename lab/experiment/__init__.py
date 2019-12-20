@@ -114,18 +114,18 @@ class Experiment:
         ## 🖨 Print the experiment info and check git repo status
         """
         logger.log_color([
-            (self.name, colors.Style.bold)
+            (self.name, colors.Style.bold),
+            ': ',
+            (str(self.run.index), colors.BrightColor.gray)
         ])
+
         if self.run.comment != '':
-            logger.log_color([
-                ("\t", None),
-                (self.run.comment, colors.BrightColor.cyan)
-            ])
+            logger.log_color(['\t', (self.run.comment, colors.BrightColor.cyan)])
 
         logger.log_color([
-            ("\t", None),
-            ("[dirty]" if self.run.is_dirty else "[clean]", None),
-            (": ", None),
+            "\t"
+            "[dirty]" if self.run.is_dirty else "[clean]",
+            ": ",
             (f"\"{self.run.commit_message.strip()}\"", colors.BrightColor.orange)
         ])
 

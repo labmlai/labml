@@ -15,12 +15,51 @@ This doesn't have any user interface.
 Experiment results are maintained in a folder structure,
 and there is a Python API to access them.
 
-## What's new and what has changed
- 
-### Manage configurations and hyperparameters
+## Features
 
-You can setup configs/hyperparameters with functions.
-[🧪lab](https://github.com/vpj/lab) would identify the dependencies and run them in order.
+### Organize Experiments
+
+Maintains logs, summaries and checkpoints of all the experiment runs in a folder structure.
+
+```
+logs
+├── experiment1
+│   ├── run1
+│   │   ├── run.yaml
+│   │   ├── configs.yaml
+│   │   ├── indicators.yaml
+│   │   ├── source.diff
+│   │   ├── checkpoints
+│   │   │   └── 📄 Saved checkpoints
+│   │   └── tensorboard
+│   │       └── 📄 TensorBoard summaries
+│   ├── run1
+│   ...
+└── experiment2...
+    ├──
+    ...
+```
+
+### [🎛 Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
+
+The web dashboard helps navigate experiments and multiple runs.
+You can checkout the configs and a summary of performance.
+You can launch TensorBoard directly from there.
+
+Eventually, we want to let you edit configs and run new experiments and analyse
+outputs on the dashboard.
+
+### Logger
+
+Logger has a simple API to produce pretty console outputs.
+
+<p align="center"><img style="max-width:100%" src="/images/loop.gif" /></p>
+
+### Manage configurations and hyper-parameters
+
+You can setup configs/hyper-parameters with functions.
+[🧪lab](https://github.com/vpj/lab) would identify the dependencies and run 
+them in topological order.
 
 ```python
 @Configs.calc()
@@ -40,32 +79,6 @@ def sgd(c: Configs):
 def adam(c: Configs):
     return optim.Adam(c.model.parameters())
 ```
-
-
-### [🎛 Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
-
-The web dashboard helps navigate experiments and multiple runs.
-You can checkout the configs and a summary of perrformace.
-You can launch Tensoboard directly from there.
-
-Eventually, we want to let you edit configs and run new experiments and analyse
-outputs on the dashboard.
-
-### Simpler API
-
-The API was made simpler.
-The main focus was to make it easier to start using [🧪lab](https://github.com/vpj/lab).
-Main components and features such as the logger, experiments, and configs are more independent 
-of each other and can be used individually.
-
-### Organize Experiments
-
-[🧪lab](https://github.com/vpj/lab) organizes experiments and each of the runs.
-It keeps track of the git commits, diffs as well.
-
-Since the introduction of [🎛 dashboard](https://github.com/vpj/lab_dashboard), we
-no longer automatically write comments on source file.
-
 
 ## Getting Started
 
