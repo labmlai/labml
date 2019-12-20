@@ -78,101 +78,50 @@ pip install -e git+git@github.com:vpj/lab.git#egg=lab
 #### Create a `.lab.yaml` file.
 An empty file at the root of the project should
 be enough. You can set project level configs for
- 'check_repo_dirty' and 'is_log_python_file'
+ 'check_repo_dirty' and 'path'
 in the config file.
 
-The idea is to have a separate python file for each major expirment,
- like different architectures.
-Minor changes can go as trials, like bug fixes and improvements.
-The TensorBoard summaries are replaced for each trial.
+Lab will store all experiment data in folder `logs/` 
+relative to `.lab.yaml` file.
+If `path` is set in `.lab.yaml` then it will be stored in `[path]logs/`
+ relative to `.lab.yaml` file.
 
 You don't need the `.lab.yaml` file if you only plan on using the logger.
 
 ### Samples
 
-See [mnist_pytorch.py](http://blog.varunajayasiri.com/ml/lab/mnist_pytorch.html)
-or [mnist_tensorflow.py](http://blog.varunajayasiri.com/ml/lab/mnist_tensorflow.html)
-for examples.
-
-**⚠️ The following documentation is not up-to-date with the new development version.**
+[samples folder](https://github.com/vpj/lab/tree/master/samples) contains a
+ bunch of examples of using 🧪 lab.
 
 ## Usage
 
-### Create Experiment
-```python
-EXPERIMENT = Experiment(name="mnist_pytorch",
-                        python_file=__file__,
-                        comment="Test",
-                        check_repo_dirty=False,
-			is_log_python_file=True)
-```
-
-* `name`: Name of the experiment
-* `python_file`: The python file with the experiment definition.
-* `comment`: Comment about the current experiment trial
-* `check_repo_dirty`: If `True` the experiment is halted if there are uncommitted changes to the git repository.
-* `is_log_python_file`: Whether to update the python source file with experiemnt results on the top.
-
-```python
-EXPERIMENT.start_train()
-```
-
-You need to call `start_train` before starting the experiment to clear old logs and
-do other initialization work.
-
-It will load from a saved state if you call `EXPERIMENT.start_train(False)`.
-
-Call `start_replay`, when you want to just evaluate a model by loading from saved checkpoint.
-
-```python
-EXPERIMENT.start_replay()
-```
-
 ### Logger
 
-`EXPERIMENT.logger` gives logger instance for the experiment.
-
-You can also directly initialize a logger with `Logger()`,
-in which case it will only output to the screen.
-
-### Loop
-
 ```python
-for step in logger.loop(range(0, total_steps)):
-	# training code ...
+from lab import logger
+from lab.logger import colors
 ```
 
-The `Loop` keeps track of the time taken and time remaining for the loop.
-
-### Sections
+#### Logging with colors
 
 ```python
-with logger.section("Load data"):
-    # code to load data
-with logger.section("Create model"):
-    # code to create model
+logger.log("Red", color=colors.BrightColor.red)
+logger.log_color([
+    ('Red', colors.BrightColor.red),
+    'Normal',
+    ('Cyan', colors.BrightColor.cyan)
+])
 ```
 
-Sections let you monitor time takes for
-different tasks and also helps keep the code clean
-by separating different blocks of code.
-
-These can be within loops as well.
-
-### Progress
+#### Logging debug info
 
 ```python
-for step in logger.loop(range(0, total_steps)):
-	with logger.section("train", total_steps=100):
-	    for i in range(100):
-		# Multiple training steps in the inner loop
-		logger.progress(i)
-	    # Clears the progress when complete
+logger.info(a=2, b=1)
+logger.info(dict(name='Name', price=22))
 ```
 
-This shows the progress for training in the inner loop.
-You can do progress monitoring within sections outside the
- `logger.loop` as well.
+**⚠️ The following documentation is not up-to-date with the new development version.**
+
 
 ### Log indicators
 
@@ -217,13 +166,45 @@ logger.new_line()
 
 This will start a new line in the console.
 
+### Loop
 
-### Save Progress
 ```python
-logger.save_progress()
+for step in logger.loop(range(0, total_steps)):
+	# training code ...
 ```
 
-This saves the progress stats in `trials.yaml` and python file header
+The `Loop` keeps track of the time taken and time remaining for the loop.
+
+### Sections
+
+```python
+with logger.section("Load data"):
+    # code to load data
+with logger.section("Create model"):
+    # code to create model
+```
+
+Sections let you monitor time takes for
+different tasks and also helps keep the code clean
+by separating different blocks of code.
+
+These can be within loops as well.
+
+### Progress
+
+```python
+for step in logger.loop(range(0, total_steps)):
+	with logger.section("train", total_steps=100):
+	    for i in range(100):
+		# Multiple training steps in the inner loop
+		logger.progress(i)
+	    # Clears the progress when complete
+```
+
+This shows the progress for training in the inner loop.
+You can do progress monitoring within sections outside the
+ `logger.loop` as well.
+
 
 ### Save Checkpoint
 ```python
@@ -233,6 +214,38 @@ logger.save_checkpoint()
 This saves a checkpoint and you can start from the saved checkpoint with
 `EXPERIMENT.start_train(global_step)`, or with `EXPERIMENT.start_replay(global_step)`
 if you just want inference. When started with `start_replay` it won't update any of the logs.
+
+
+### Create Experiment
+```python
+EXPERIMENT = Experiment(name="mnist_pytorch",
+                        python_file=__file__,
+                        comment="Test",
+                        check_repo_dirty=False,
+			is_log_python_file=True)
+```
+
+* `name`: Name of the experiment
+* `python_file`: The python file with the experiment definition.
+* `comment`: Comment about the current experiment trial
+* `check_repo_dirty`: If `True` the experiment is halted if there are uncommitted changes to the git repository.
+* `is_log_python_file`: Whether to update the python source file with experiemnt results on the top.
+
+```python
+EXPERIMENT.start_train()
+```
+
+You need to call `start_train` before starting the experiment to clear old logs and
+do other initialization work.
+
+It will load from a saved state if you call `EXPERIMENT.start_train(False)`.
+
+Call `start_replay`, when you want to just evaluate a model by loading from saved checkpoint.
+
+```python
+EXPERIMENT.start_replay()
+```
+
 
 ### Keyboard Interrupts
 
@@ -295,35 +308,3 @@ This library is was made by combining these bunch of tools.
 
 * [TQDM](https://tqdm.github.io/)
 * [Loguru](https://github.com/Delgan/loguru)
-
-## Updates
-
-* **November 16, 2018**
-    * Initial public release
-
-* **December 21, 2018**
-    * TensorBoard invoker
-    * Tool set for custom visualizations of TensorBoard summaries
-    * Automatically adds headers to python files with experiment results
-
-* **February 10, 2019**
-	* Two dimensional summaries
-
-* **June 16, 2019**
-	* PyTorch support
-	* Improved Documentation
-	* MNIST examples
-
-* **June 19, 2019**
-	* New API for logger
-
-* **July 12, 2019**
-	* TensborBoard embedding helper
-
-* **July 15, 2019**
-	* Nested sections
-	* Helpers for iterators
-
-* **July 17, 2019**
-	* Singleton logger -
-	  *much simpler usage although it might not be able to handle complexities later*
