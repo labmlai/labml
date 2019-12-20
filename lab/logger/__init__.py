@@ -45,7 +45,7 @@ def log_color(parts: typing.List[typing.Union[str, typing.Tuple[str, ANSICode]]]
 
 
 def add_indicator(name: str,
-                  type_: IndicatorType,
+                  type_: IndicatorType = IndicatorType.scalar,
                   options: IndicatorOptions = None):
     """
     ### Add an indicator

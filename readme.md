@@ -102,7 +102,7 @@ from lab import logger
 from lab.logger import colors
 ```
 
-#### Logging with colors
+##### Logging with colors
 
 ```python
 logger.log("Red", color=colors.BrightColor.red)
@@ -113,67 +113,61 @@ logger.log_color([
 ])
 ```
 
-#### Logging debug info
+##### Logging debug info
 
 ```python
 logger.info(a=2, b=1)
 logger.info(dict(name='Name', price=22))
 ```
 
-**⚠️ The following documentation is not up-to-date with the new development version.**
-
-
 ### Log indicators
 
-```python
-logger.add_indicator("reward", queue_limit=10)
-logger.add_indicator("fps", is_histogram=False, is_progress=False)
-logger.add_indicator("loss", is_histogram=True)
-logger.add_indicator("advantage_reward", is_histogram=False, is_print=False, is_pair=True)
-```
+Here you specify indicators and the logger stores them temporarily and write in batches.
+It can aggregate and write them as means or histograms.
 
-* `queue_limit: int = None`: If the queue size is specified the values are added to a fixed sized queue and the mean and histogram can be used.
-* `is_histogram: bool = True`: If true a TensorBoard histogram summaries is produced along with the mean scalar.
-* `is_print: bool = True`: If true the mean value is printed to the console
-* `is_progress: Optional[bool] = None`: If true the mean value is recorded in experiment summary in `trials.yaml` and in the python file header. If a value is not provided it is set to be equal to `is_print`.
-* `is_pair: bool = False`: Whether the values are pairs of values. *This is still experimental*. This can be used to produce multi dimensional visualizations.
-
-The values are stored using `logger.store` function.
+#### Example
 
 ```python
-logger.store(
-    reward=global_step / 3.0,
-    fps=12
-)
-logger.store('loss', i)
-logger.store(advantage_reward=(i, i * 2))
+for i in range(1, N):
+    logger.add_global_step()
+    loss = train()
+    logger.store(loss=loss)
+    if i % 10 == 0:
+        logger.write()
+    if i % 1000 == 0:
+        logger.new_line()
 ```
 
-### Write Logs
-```python
-logger.write()
-```
+This stores all the loss values and writes the logs the mean on every tenth iteration.
+Console output line is replaced until `new_line` is called.
 
-This will write the stored and values in the logger and clear the buffers.
-It will write to console as well as TensorBoard summaries.
-
-In standard usage of this library we do not move to new_lines after each console output.
-Instead we update the stats on the same line and move to a new line after a few iterations.
+#### Indicator settings
 
 ```python
-logger.new_line()
+add_indicator(name: str,
+              type_: IndicatorType = IndicatorType.scalar,
+              options: IndicatorOptions = None)
+
+class IndicatorType(Enum):
+    queue = 'queue'
+    histogram = 'histogram'
+    scalar = 'scalar'
+    pair = 'pair'
+
+class IndicatorOptions(NamedTuple):
+    is_print: bool = False
+    queue_size: int = 10
 ```
 
-This will start a new line in the console.
+You can specify details of an indicator using `add_indicator`.
+If this is not called like the example above, it assumes a `scalar`
+ with `is_print=True`.
+ 
+`histogram` indicators will log a histogram of data.
+`queue` will store data in a `deque` of size `queue_size`, and log histograms.
+Both of these will log the means too. And if `is_print` is `True` it will print the mean.
 
-### Loop
-
-```python
-for step in logger.loop(range(0, total_steps)):
-	# training code ...
-```
-
-The `Loop` keeps track of the time taken and time remaining for the loop.
+`pair` is still under development.
 
 ### Sections
 
@@ -184,97 +178,78 @@ with logger.section("Create model"):
     # code to create model
 ```
 
-Sections let you monitor time takes for
-different tasks and also helps keep the code clean
+Sections let you monitor time taken for
+different tasks and also helps *keep the code clean*
 by separating different blocks of code.
 
-These can be within loops as well.
+##### Progress
 
-### Progress
+```python
+with logger.section("train", total_steps=100):
+    for i in range(100):
+        # Multiple training steps in the inner loop
+        logger.progress(i)
+```
+
+This shows the progress for code within the section.
+
+##### Iterator and Enumerator
+```python
+for data, target in logger.iterator("Test", test_loader):
+    ...
+
+for i, (data, target) in logger.enumerator("Train", train_loader):
+    ...
+```
+
+This combines `section` and `progress`
+
+### Loop
 
 ```python
 for step in logger.loop(range(0, total_steps)):
-	with logger.section("train", total_steps=100):
-	    for i in range(100):
-		# Multiple training steps in the inner loop
-		logger.progress(i)
-	    # Clears the progress when complete
+	# training code ...
 ```
 
-This shows the progress for training in the inner loop.
-You can do progress monitoring within sections outside the
- `logger.loop` as well.
+The `loop` keeps track of the time taken and time remaining for the loop.
+You can use *sections*, *iterators* and *enumerators* within loop.
 
 
-### Save Checkpoint
+### Experiment
+
+```python
+exp = Experiment(name="mnist_pytorch",
+                 comment="Test")
+```
+
+* `name`: Name of the experiment;
+ If not provided, this defaults to the calling python filename
+* `comment`: Comment about the current experiment run
+
+##### Starting an expriemnt
+```python
+exp.start()
+```
+
+This does the initialization work like creating log folders, writing run details, etc.
+
+```python
+exp.start(run=-1)
+```
+
+This starts the experiment from where it was left in the last run.
+You can provide a specific the run index to start from.
+
+##### Save Checkpoint
 ```python
 logger.save_checkpoint()
 ```
 
 This saves a checkpoint and you can start from the saved checkpoint with
-`EXPERIMENT.start_train(global_step)`, or with `EXPERIMENT.start_replay(global_step)`
-if you just want inference. When started with `start_replay` it won't update any of the logs.
+`exp.start(run=-1)`.
 
-
-### Create Experiment
-```python
-EXPERIMENT = Experiment(name="mnist_pytorch",
-                        python_file=__file__,
-                        comment="Test",
-                        check_repo_dirty=False,
-			is_log_python_file=True)
-```
-
-* `name`: Name of the experiment
-* `python_file`: The python file with the experiment definition.
-* `comment`: Comment about the current experiment trial
-* `check_repo_dirty`: If `True` the experiment is halted if there are uncommitted changes to the git repository.
-* `is_log_python_file`: Whether to update the python source file with experiemnt results on the top.
-
-```python
-EXPERIMENT.start_train()
-```
-
-You need to call `start_train` before starting the experiment to clear old logs and
-do other initialization work.
-
-It will load from a saved state if you call `EXPERIMENT.start_train(False)`.
-
-Call `start_replay`, when you want to just evaluate a model by loading from saved checkpoint.
-
-```python
-EXPERIMENT.start_replay()
-```
-
-
-### Keyboard Interrupts
-
-```python
-try:
-    with logger.delayed_keyboard_interrupt():
-    	# segment of code that needs to run without breaking in the middle
-except KeyboardInterrupt:
-	# handle the interruption after the code segment is executed
-```
-
-You can wrap a segment of code that needs to run without interruptions
-within a `with logger.delayed_keyboard_interrupt()`.
-
-Two consecutive interruptions will halt the code segment.
-
-### Start TensorBoard
-This small tool lets you start TensorBoard without having to type in all the log paths.
-
-To get a list of all available experiments
-```bash
-LAB/tb.py -l
-```
-
-To analyse experiments `exp1` and `exp2`:
-
-```bash
-LAB/tb.py -e exp1 exp2
-```
+### 🚧 Configs
+### 🚧 Training Loop
 
 ---
 
