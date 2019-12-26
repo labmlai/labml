@@ -44,11 +44,17 @@ class TrainingLoop:
 
     def __iter__(self):
         iter(self.__loop)
-        self.old_handler = signal.signal(signal.SIGINT, self.__handler)
+        try:
+            self.old_handler = signal.signal(signal.SIGINT, self.__handler)
+        except ValueError:
+            pass
         return self
 
     def __finish(self):
-        signal.signal(signal.SIGINT, self.old_handler)
+        try:
+            signal.signal(signal.SIGINT, self.old_handler)
+        except ValueError:
+            pass
         logger.write()
         logger.new_line()
         if self.__is_save_models:
