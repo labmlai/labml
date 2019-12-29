@@ -55,7 +55,7 @@ class LoggerInternal:
         if self.__start_global_step is not None:
             global_step = self.__start_global_step
 
-        if self.__loop is not None:
+        if self.__is_looping():
             return global_step + self.__loop.counter
 
         if self.__last_global_step is not None:
@@ -159,6 +159,12 @@ class LoggerInternal:
     def new_line():
         print()
 
+    def __is_looping(self):
+        if self.__loop is not None and self.__loop.is_started:
+            return True
+        else:
+            return False
+
     def write(self):
         """
         ### Output the stored log values to screen and TensorBoard summaries.
@@ -172,11 +178,11 @@ class LoggerInternal:
         self.__store.clear()
 
         parts = [(f"{self.global_step :8,}:  ", colors.BrightColor.orange)]
-        if self.__loop is None:
+        if self.__is_looping():
+            self.__log_looping_line()
+        else:
             parts += self.__indicators_print
             self.log_color(parts, new_line=False)
-        else:
-            self.__log_looping_line()
 
     def save_checkpoint(self):
         if self.__checkpoint_saver is None:
@@ -213,7 +219,7 @@ class LoggerInternal:
                 is_partial: bool = False,
                 total_steps: float = 1.0):
 
-        if self.__loop is not None:
+        if self.__is_looping():
             if len(self.__sections) != 0:
                 raise RuntimeError("No nested sections within loop")
 
@@ -288,7 +294,7 @@ class LoggerInternal:
         self.log_color(parts, new_line=False)
 
     def __log_line(self):
-        if self.__loop is not None:
+        if self.__is_looping():
             self.__log_looping_line()
             return
 

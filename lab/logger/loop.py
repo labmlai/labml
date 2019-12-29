@@ -28,8 +28,10 @@ class Loop:
         self.__global_step: Optional[int] = None
         self.__looping_sections: Dict[str, Section] = {}
         self._is_print_iteration_time = is_print_iteration_time
+        self.is_started = False
 
     def __iter__(self):
+        self.is_started = True
         self.iterator_iter = iter(self.iterator)
         self._start_time = time.time()
         self._init_time = 0.
