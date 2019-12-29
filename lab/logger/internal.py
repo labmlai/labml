@@ -43,6 +43,14 @@ class LoggerInternal:
         self.__global_step: Optional[int] = None
         self.__last_global_step: Optional[int] = None
 
+        self.__data_path = None
+
+    def set_data_path(self, data_path: PurePath):
+        self.__data_path = data_path
+
+    def get_data_path(self) -> PurePath:
+        return self.__data_path
+
     def set_checkpoint_saver(self, saver: CheckpointSaver):
         self.__checkpoint_saver = saver
 

@@ -123,3 +123,7 @@ def info(*args, **kwargs):
     """
 
     internal().info(*args, **kwargs)
+
+
+def get_data_path():
+    internal().get_data_path()

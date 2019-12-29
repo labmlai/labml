@@ -23,6 +23,7 @@ class Lab:
 
         self.path = PurePath(config['path'])
         self.check_repo_dirty = config['check_repo_dirty']
+        self.data_path = self.path / config['data_path']
 
     @staticmethod
     def __get_config(configs):
@@ -30,7 +31,8 @@ class Lab:
             path=None,
             check_repo_dirty=True,
             is_log_python_file=True,
-            config_file_path=None
+            config_file_path=None,
+            data_path='.'
         )
 
         for c in reversed(configs):

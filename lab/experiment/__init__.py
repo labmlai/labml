@@ -49,6 +49,8 @@ class Experiment:
 
         self.lab = Lab(python_file)
 
+        logger.internal().set_data_path(self.lab.data_path)
+
         if name is None:
             file_path = pathlib.PurePath(python_file)
             name = file_path.stem
