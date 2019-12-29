@@ -32,7 +32,7 @@ class Lab:
             check_repo_dirty=True,
             is_log_python_file=True,
             config_file_path=None,
-            data_path='.'
+            data_path='data'
         )
 
         for c in reversed(configs):

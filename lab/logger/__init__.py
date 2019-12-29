@@ -126,4 +126,4 @@ def info(*args, **kwargs):
 
 
 def get_data_path():
-    internal().get_data_path()
+    return internal().get_data_path()
