@@ -169,7 +169,9 @@ def cuda(*, use_cuda, cuda_device):
 
 def _data_loader(is_train, batch_size, data_loader_args):
     return torch.utils.data.DataLoader(
-        datasets.MNIST('./data', train=is_train, download=True,
+        datasets.MNIST(str(logger.get_data_path()),
+                       train=is_train,
+                       download=True,
                        transform=transforms.Compose([
                            transforms.ToTensor(),
                            transforms.Normalize((0.1307,), (0.3081,))
