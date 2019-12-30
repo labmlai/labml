@@ -137,8 +137,8 @@ def _test():
                     f"{s}{c}{b}{s.name}, {c.name}, {b.name}{Reset}")
 
     for s in Style:
-        for i, c in enumerate(BrightColor):
-            for j, b in enumerate(BrightBackground):
+        for i, c in enumerate(_BrightColor):
+            for j, b in enumerate(_BrightBackground):
                 if s.name != 'none' and (i > 1 or j > 1):
                     continue
                 if c.name != 'none' and (j > 0):
