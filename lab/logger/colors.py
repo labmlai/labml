@@ -6,21 +6,26 @@ from enum import Enum
 
 class ANSICode(Enum):
     def __str__(self):
-        return f"\33[{self.value}m"
+        if self.value is None:
+            return ""
+        else:
+            return f"\33[{self.value}m"
 
 
 class Style(ANSICode):
+    none = None
     normal = 0
     bold = 1
-    light = 2
+    light = 2  # - PyCharm/Jupyter
 
-    italic = 3  # Not supported in PyCharm
+    italic = 3  # - PyCharm/Jupyter
     underline = 4
 
-    highlight = 7
+    highlight = 7  # Changes background in PyCharm/Terminal
 
 
 class Color(ANSICode):
+    none = None
     black = 30
     red = 31
     green = 32
@@ -32,6 +37,11 @@ class Color(ANSICode):
 
 
 class BrightColor(ANSICode):
+    # - iTerm2
+    # - doesn't work well with white bg
+    # - Dull on Jupyter
+    none = None
+
     black = 90
     red = 91
     green = 92
@@ -41,10 +51,12 @@ class BrightColor(ANSICode):
     cyan = 96
     white = 97
 
-    gray = 37
+    gray = 37  # - Terminal/Jupyter
 
 
 class Background(ANSICode):
+    none = None
+
     black = 40
     red = 41
     green = 42
@@ -55,7 +67,9 @@ class Background(ANSICode):
     white = 47
 
 
-class BrightBackground(ANSICode):
+class BrightBackground(ANSICode):  # - iTerm2 - (doesn't work well with white bg)
+    none = None
+
     black = 100
     red = 101
     green = 102
@@ -68,7 +82,8 @@ class BrightBackground(ANSICode):
 
 Reset = "\33[0m"
 
-if __name__ == "__main__":
+
+def _test():
     for i in [0, 38, 48]:
         for j in [5]:
             for k in range(16):
@@ -86,9 +101,25 @@ if __name__ == "__main__":
     print("")
 
     for s in Style:
-        for c in Color:
-            for b in Background:
+        for i, c in enumerate(Color):
+            for j, b in enumerate(Background):
+                if s.name != 'none' and (i > 1 or j > 1):
+                    continue
+                if c.name != 'none' and (j > 0):
+                    continue
                 print(
                     f"{s}{c}{b}{s.name}, {c.name}, {b.name}{Reset}")
 
-    print(Style.bold.name)
+    for s in Style:
+        for i, c in enumerate(BrightColor):
+            for j, b in enumerate(BrightBackground):
+                if s.name != 'none' and (i > 1 or j > 1):
+                    continue
+                if c.name != 'none' and (j > 0):
+                    continue
+                print(
+                    f"{s}{c}{b}{s.name}, {c.name}, {b.name}{Reset}")
+
+
+if __name__ == "__main__":
+    _test()
