@@ -9,7 +9,7 @@ from lab import logger
 from lab.configs import Configs, ConfigProcessor
 from lab.experiment.run import Run
 from lab.lab import Lab
-from lab.logger import colors
+from lab.logger.colors import Text
 from lab.logger.writers import sqlite, tensorboard
 
 
@@ -116,26 +116,26 @@ class Experiment:
         ## 🖨 Print the experiment info and check git repo status
         """
         logger.log_color([
-            (self.name, colors.Style.bold),
+            (self.name, Text.title),
             ': ',
-            (str(self.run.index), colors.BrightColor.gray)
+            (str(self.run.index), Text.meta)
         ])
 
         if self.run.comment != '':
-            logger.log_color(['\t', (self.run.comment, colors.BrightColor.cyan)])
+            logger.log_color(['\t', (self.run.comment, Text.highlight)])
 
         logger.log_color([
             "\t"
             "[dirty]" if self.run.is_dirty else "[clean]",
             ": ",
-            (f"\"{self.run.commit_message.strip()}\"", colors.BrightColor.orange)
+            (f"\"{self.run.commit_message.strip()}\"", Text.highlight)
         ])
 
         # Exit if git repository is dirty
         if self.check_repo_dirty and self.run.is_dirty:
             logger.log("Cannot trial an experiment with uncommitted changes. ",
                        new_line=False)
-            logger.log("[FAIL]", color=colors.BrightColor.red)
+            logger.log("[FAIL]", color=Text.danger)
             exit(1)
 
     def save_npy(self, array: np.ndarray, name: str):

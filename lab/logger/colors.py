@@ -1,15 +1,31 @@
 """
 Console colors
 """
+import warnings
 from enum import Enum
+
+
+def __getattr__(name):
+    if name == 'BrightColor':
+        warnings.warn("BrightColor is unsupported in iTerm2, dull on Jupyter"
+                      " and looks bad on white background")
+        return _BrightColor
+    elif name == 'BrightBackground':
+        warnings.warn("BrightBackground is unsupported in iTerm2, dull on Jupyter"
+                      " and looks bad on white background")
+        return _BrightBackground
 
 
 class ANSICode(Enum):
     def __str__(self):
         if self.value is None:
             return ""
-        else:
+        elif type(self.value) == int:
             return f"\33[{self.value}m"
+        elif type(self.value) == list:
+            return ''.join([f"\33[{v}m" for v in self.value])
+        else:
+            assert False
 
 
 class Style(ANSICode):
@@ -36,10 +52,22 @@ class Color(ANSICode):
     white = 37
 
 
-class BrightColor(ANSICode):
-    # - iTerm2
-    # - doesn't work well with white bg
-    # - Dull on Jupyter
+class Text(ANSICode):
+    none = None
+    danger = Color.red.value
+    success = Color.green.value
+    warning = Color.orange.value
+    meta = Color.blue.value
+    key = Color.cyan.value
+    meta2 = Color.purple.value
+    title = [Style.bold.value, Style.underline.value]
+    heading = Style.underline.value
+    value = Style.bold.value
+    highlight = [Style.bold.value, Color.orange.value]
+    subtle = [Style.light.value, Color.white.value]
+
+
+class _BrightColor(ANSICode):
     none = None
 
     black = 90
@@ -50,8 +78,6 @@ class BrightColor(ANSICode):
     purple = 95
     cyan = 96
     white = 97
-
-    gray = 37  # - Terminal/Jupyter
 
 
 class Background(ANSICode):
@@ -67,7 +93,7 @@ class Background(ANSICode):
     white = 47
 
 
-class BrightBackground(ANSICode):  # - iTerm2 - (doesn't work well with white bg)
+class _BrightBackground(ANSICode):  # - iTerm2 - (doesn't work well with white bg)
     none = None
 
     black = 100

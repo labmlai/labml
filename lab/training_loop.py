@@ -2,7 +2,7 @@ import signal
 from typing import Any, Tuple, Optional
 
 from . import logger
-from .logger import colors
+from .logger.colors import Text
 from .configs import Configs
 
 
@@ -73,7 +73,7 @@ class TrainingLoop:
     def __next__(self):
         if self.__signal_received is not None:
             logger.log('\nKilling Loop.',
-                       color=colors.Color.red)
+                       color=Text.danger)
             logger.finish_loop()
             self.__finish()
             raise StopIteration("SIGINT")
@@ -104,4 +104,4 @@ class TrainingLoop:
         # Store the interrupt signal for later
         self.__signal_received = (sig, frame)
         logger.log('\nSIGINT received. Delaying KeyboardInterrupt.',
-                   color=colors.Color.red)
+                   color=Text.danger)

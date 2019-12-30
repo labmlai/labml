@@ -2,7 +2,7 @@ import typing
 from pathlib import PurePath
 from typing import List, Optional, Tuple, Union
 
-from . import colors
+from .colors import Text, ANSICode, Reset
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
 from .indicators import IndicatorType, IndicatorOptions, Indicator
 from .iterator import Iterator
@@ -72,22 +72,22 @@ class LoggerInternal:
         return global_step
 
     @staticmethod
-    def ansi_code(text: str, color: List[colors.ANSICode] or colors.ANSICode or None):
+    def ansi_code(text: str, color: List[ANSICode] or ANSICode or None):
         """
         ### Add ansi color codes
         """
         if color is None:
             return text
         elif type(color) is list:
-            return "".join(color) + f"{text}{colors.Reset}"
+            return "".join(color) + f"{text}{Reset}"
         else:
-            return f"{color}{text}{colors.Reset}"
+            return f"{color}{text}{Reset}"
 
     def add_writer(self, writer: Writer):
         self.__writers.append(writer)
 
     def log(self, message, *,
-            color: List[colors.ANSICode] or colors.ANSICode or None = None,
+            color: List[ANSICode] or ANSICode or None = None,
             new_line=True):
         """
         ### Print a message to screen in color
@@ -104,7 +104,7 @@ class LoggerInternal:
 
         print("\r" + text, end=end_char, flush=True)
 
-    def log_color(self, parts: List[Union[str, Tuple[str, colors.ANSICode]]], *,
+    def log_color(self, parts: List[Union[str, Tuple[str, ANSICode]]], *,
                   new_line=True):
         """
         ### Print a message with different colors.
@@ -185,7 +185,7 @@ class LoggerInternal:
         self.__indicators_print = self.__store.write(self.__screen_writer, global_step)
         self.__store.clear()
 
-        parts = [(f"{self.global_step :8,}:  ", colors.BrightColor.orange)]
+        parts = [(f"{self.global_step :8,}:  ", Text.highlight)]
         if self.__is_looping():
             self.__log_looping_line()
         else:
@@ -294,7 +294,7 @@ class LoggerInternal:
         self.__log_line()
 
     def __log_looping_line(self):
-        parts = [(f"{self.global_step :8,}:  ", colors.BrightColor.orange)]
+        parts = [(f"{self.global_step :8,}:  ", Text.highlight)]
         parts += self.__loop.log_sections()
         parts += self.__indicators_print
         parts += self.__loop.log_progress()
@@ -336,13 +336,13 @@ class LoggerInternal:
         for k, v in items:
             count += 1
             spaces = " " * (max_key_len - len(str(k)))
-            self.log_color([(f"{spaces}{k}: ", None),
-                            (str(v), colors.Style.bold)])
+            self.log_color([(f"{spaces}{k}: ", Text.key),
+                            (str(v), Text.value)])
 
         if is_show_count:
             self.log_color([
                 ("Total ", None),
-                (str(count), colors.Style.bold),
+                (str(count), Text.meta),
                 (" item(s)", None)])
 
     def info(self, *args, **kwargs):

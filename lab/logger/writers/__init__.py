@@ -2,7 +2,7 @@ from typing import Dict
 
 import numpy as np
 
-from .. import colors
+from ..colors import Text
 from ..indicators import Indicator
 
 
@@ -37,7 +37,7 @@ class ScreenWriter(Writer):
 
             parts.append((f" {k}: ", None))
             if self.is_color:
-                parts.append((f"{v :8,.2f}", colors.Style.bold))
+                parts.append((f"{v :8,.2f}", Text.value))
             else:
                 parts.append((f"{v :8,.2f}", None))
 

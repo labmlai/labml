@@ -6,7 +6,7 @@ from lab import util, logger
 from .calculator import Calculator
 from .config_function import ConfigFunction
 from .parser import Parser
-from ..logger.colors import BrightColor as Color
+from ..logger.colors import Text
 
 _CALCULATORS = '_calculators'
 
@@ -110,15 +110,15 @@ class ConfigProcessor:
         parts = ['\t']
 
         if is_ignored:
-            parts.append((key, Color.gray))
+            parts.append((key, Text.subtle))
             return parts
 
-        parts.append(key)
+        parts.append((key, Text.key))
 
         if is_list:
-            parts.append(('[]', Color.gray))
+            parts.append(('[]', Text.subtle))
 
-        parts.append((' = ', Color.gray))
+        parts.append((' = ', Text.subtle))
 
         if other_options is None:
             other_options = []
@@ -127,24 +127,24 @@ class ConfigProcessor:
             value_str = str(value)
             value_str = value_str.replace('\n', '')
             if len(value_str) < 10:
-                parts.append((f"{value_str}", Color.cyan))
+                parts.append((f"{value_str}", Text.value))
             else:
-                parts.append((f"{value_str[:10]}...", Color.cyan))
+                parts.append((f"{value_str[:10]}...", Text.value))
             parts.append('\t')
 
         if option is not None:
             if len(other_options) == 0:
-                parts.append((option, Color.gray))
+                parts.append((option, Text.subtle))
             else:
-                parts.append((option, Color.orange))
+                parts.append((option, Text.value))
 
         if len(other_options) > 0:
-            parts.append(('\t[', Color.gray))
+            parts.append(('\t[', Text.subtle))
             for i, opt in enumerate(other_options):
                 if i > 0:
-                    parts.append((', ', Color.gray))
+                    parts.append((', ', Text.subtle))
                 parts.append(opt)
-            parts.append((']', Color.gray))
+            parts.append((']', Text.subtle))
 
         return parts
 

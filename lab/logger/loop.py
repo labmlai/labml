@@ -2,7 +2,8 @@ import time
 from typing import Optional, Dict
 
 from lab.logger.sections import Section, section_factory
-from lab.logger import internal, colors
+from lab.logger import internal
+from .colors import Text
 
 
 class Loop:
@@ -87,9 +88,9 @@ class Loop:
 
         to_print = [("  ", None)]
         if self._is_print_iteration_time:
-            to_print.append((f"{estimate:,.0f}ms", colors.BrightColor.cyan))
+            to_print.append((f"{estimate:,.0f}ms", Text.meta))
         to_print.append((f"{spent_h:3d}:{spent_m:02d}m/{remain_h:3d}:{remain_m:02d}m  ",
-                         colors.BrightColor.purple))
+                         Text.meta2))
 
         return to_print
 

@@ -1,6 +1,6 @@
 import signal
 
-from lab.logger import colors
+from .colors import Text
 import lab
 
 
@@ -27,7 +27,7 @@ class DelayedKeyboardInterrupt:
         # Store the interrupt signal for later
         self.signal_received = (sig, frame)
         self.logger.log('\nSIGINT received. Delaying KeyboardInterrupt.',
-                        color=colors.Color.red)
+                        color=Text.danger)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Reset handler

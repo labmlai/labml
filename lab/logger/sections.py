@@ -1,7 +1,8 @@
 import math
 import time
 
-from lab.logger import internal, colors
+from . import internal
+from .colors import Text
 
 
 class Section:
@@ -120,14 +121,14 @@ class OuterSection(Section):
                 parts.append((f" {math.floor(self._progress * 100) :4.0f}%", None))
         else:
             if self.is_successful:
-                parts.append(("...[DONE]", colors.BrightColor.green))
+                parts.append(("...[DONE]", Text.success))
             else:
-                parts.append(("...[FAIL]", colors.BrightColor.red))
+                parts.append(("...[FAIL]", Text.danger))
 
             if self._is_timed:
                 duration_ms = 1000 * (self._end_time - self._start_time)
                 parts.append((f"\t{duration_ms :,.2f}ms",
-                              colors.BrightColor.cyan))
+                              Text.meta))
 
             parts.append(("\n", None))
 
@@ -203,13 +204,13 @@ class LoopingSection(Section):
         color = None
 
         if not self.is_successful:
-            color = colors.BrightColor.red
+            color = Text.danger
 
         if self._progress == 0.:
-            parts.append(("  ...", colors.Color.orange))
+            parts.append(("  ...", Text.subtle))
         else:
             parts.append((f"{math.floor(self._progress * 100) :4.0f}%",
-                          color or colors.Color.orange))
+                          color or Text.subtle))
 
         if self._is_timed:
             duration_ms = 1000 * self._calc_estimated_time()
@@ -220,7 +221,7 @@ class LoopingSection(Section):
             else:
                 s = (" " * (self._time_length - tl)) + s
 
-            parts.append((s, color or colors.BrightColor.cyan))
+            parts.append((s, color or Text.meta))
 
         return parts
 
