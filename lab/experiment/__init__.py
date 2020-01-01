@@ -10,6 +10,7 @@ from lab.configs import Configs, ConfigProcessor
 from lab.experiment.run import Run
 from lab.lab import Lab
 from lab.logger.colors import Text
+from lab.logger.internal import CheckpointSaver
 from lab.logger.writers import sqlite, tensorboard
 
 
@@ -20,7 +21,7 @@ class Experiment:
     Each experiment has different configurations or algorithms.
     An experiment can have multiple trials.
     """
-    configs_processor: ConfigProcessor
+    configs_processor: Optional[ConfigProcessor]
 
     # whether not to start the experiment if there are uncommitted changes.
     check_repo_dirty: bool
@@ -108,7 +109,7 @@ class Experiment:
 
         return ''
 
-    def _create_checkpoint_saver(self):
+    def _create_checkpoint_saver(self) -> Optional[CheckpointSaver]:
         return None
 
     def __print_info_and_check_repo(self):
@@ -186,7 +187,8 @@ class Experiment:
         logger.internal().set_start_global_step(global_step)
 
         self.__print_info_and_check_repo()
-        self.configs_processor.print()
+        if self.configs_processor is not None:
+            self.configs_processor.print()
 
         self.run.save_info()
 
