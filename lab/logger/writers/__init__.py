@@ -40,7 +40,7 @@ class ScreenWriter(Writer):
             return self.get_empty_string(8, 2)
 
         estimate = self._estimates[k] / (1 - self._beta_pow[k])
-        lg = int(np.floor(np.log10(estimate))) + 1
+        lg = int(np.ceil(np.log10(estimate))) + 1
 
         decimals = 7 - lg
         decimals = max(1, decimals)

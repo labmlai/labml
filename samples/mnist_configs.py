@@ -64,7 +64,7 @@ class MNISTLoop:
 
             # Add training loss to the logger.
             # The logger will queue the values and output the mean
-            logger.store(train_loss=loss.item())
+            logger.store(train_loss=loss)
             logger.add_global_step()
 
             # Print output to the console

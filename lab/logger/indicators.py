@@ -1,8 +1,30 @@
 from collections import deque
-from enum import Enum
-from typing import NamedTuple, Dict
+from typing import Dict
 
 import numpy as np
+
+try:
+    import torch
+except ImportError:
+    torch = None
+
+
+def _to_numpy(value):
+    type_ = type(value)
+
+    if type_ == float or type_ == int:
+        return value
+
+    if type_ == np.ndarray:
+        return value
+
+    if torch is not None:
+        if type_ == torch.nn.parameter.Parameter:
+            return value.data.cpu().numpy()
+        if type_ == torch.Tensor:
+            return value.data.cpu().numpy()
+
+    assert False, f"Unknown type {type_}"
 
 
 class Indicator:
@@ -40,7 +62,7 @@ class Queue(Indicator):
         self._values = deque(maxlen=queue_size)
 
     def collect_value(self, value):
-        self._values.append(value)
+        self._values.append(_to_numpy(value))
 
     def to_dict(self) -> Dict:
         res = super().to_dict().copy()
@@ -93,7 +115,7 @@ class _Collection(Indicator):
         self._values = []
 
     def collect_value(self, value):
-        self._values.append(value)
+        self._values.append(_to_numpy(value))
 
     def clear(self):
         self._values = []

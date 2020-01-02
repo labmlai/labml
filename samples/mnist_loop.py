@@ -49,6 +49,7 @@ class MNIST:
         self.model.train()
         for i, (data, target) in logger.enumerator("Train", self.train_loader):
             data, target = data.to(self.device), target.to(self.device)
+
             self.optimizer.zero_grad()
             output = self.model(data)
             loss = F.nll_loss(output, target)
@@ -57,7 +58,7 @@ class MNIST:
 
             # Add training loss to the logger.
             # The logger will queue the values and output the mean
-            logger.store(train_loss=loss.item())
+            logger.store(train_loss=loss)
             logger.add_global_step()
 
             # Print output to the console
