@@ -7,7 +7,7 @@ import numpy as np
 
 from lab import logger
 from lab.configs import Configs, ConfigProcessor
-from lab.experiment.run import Run
+from lab.experiment.experiment_run import Run
 from lab.lab import Lab
 from lab.logger.colors import Text
 from lab.logger.internal import CheckpointSaver
@@ -21,6 +21,7 @@ class Experiment:
     Each experiment has different configurations or algorithms.
     An experiment can have multiple trials.
     """
+    run: Run
     configs_processor: Optional[ConfigProcessor]
 
     # whether not to start the experiment if there are uncommitted changes.
@@ -174,11 +175,11 @@ class Experiment:
         self.configs_processor(run_order)
 
     def start(self, *,
-              run: Optional[int] = None,
+              run_index: Optional[int] = None,
               checkpoint: Optional[int] = None):
-        if run is not None:
+        if run_index is not None:
             with logger.section("Loading checkpoint"):
-                global_step = self._load_checkpoint(run, checkpoint)
+                global_step = self._load_checkpoint(run_index, checkpoint)
                 if global_step is None:
                     logger.set_successful(False)
                     global_step = 0
@@ -198,6 +199,3 @@ class Experiment:
             self.configs_processor.save(self.run.configs_path)
 
         logger.internal().save_indicators(self.run.indicators_path)
-
-        with open(str(self.run.diff_path), "w") as f:
-            f.write(self.run.diff)

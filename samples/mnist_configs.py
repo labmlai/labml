@@ -241,7 +241,7 @@ def main():
                             {'epochs': 'random'},
                             ['set_seed', 'loop'])
     experiment.add_models(dict(model=conf.model))
-    experiment.start(run=-1)
+    experiment.start(run_index=-1)
     conf.loop()
 
 

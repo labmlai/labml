@@ -247,7 +247,7 @@ exp.start()
 This does the initialization work like creating log folders, writing run details, etc.
 
 ```python
-exp.start(run=-1)
+exp.start(run_index=-1)
 ```
 
 This starts the experiment from where it was left in the last run.

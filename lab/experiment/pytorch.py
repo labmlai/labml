@@ -6,6 +6,7 @@ import numpy as np
 import torch.nn
 
 from lab import experiment
+from lab.experiment import experiment_run
 from lab.logger.internal import CheckpointSaver
 
 
@@ -124,8 +125,11 @@ class Experiment(experiment.Experiment):
         """
         self.__checkpoint_saver.add_models(models)
 
-    def _load_checkpoint(self, run: Optional[int], checkpoint: Optional[int]):
-        checkpoint_path, checkpoint = self.run.get_checkpoint(run, checkpoint)
+    def _load_checkpoint(self, run_index: Optional[int], checkpoint: Optional[int]):
+        checkpoint_path, checkpoint = experiment_run.get_last_run_checkpoint(self.experiment_path,
+                                                                             self.run.index,
+                                                                             run_index,
+                                                                             checkpoint)
         if checkpoint_path is None:
             return None
 

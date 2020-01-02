@@ -83,7 +83,39 @@ class Queue(Indicator):
         return f'{self.name}.mean'
 
 
-class Pairs(Indicator):
+class _Collection(Indicator):
+    def __init__(self, name: str, is_print=False):
+        super().__init__(name=name, is_print=is_print)
+        self._values = []
+
+    def collect_value(self, value):
+        self._values.append(_to_numpy(value))
+
+    def clear(self):
+        self._values = []
+
+    def is_empty(self) -> bool:
+        return len(self._values) == 0
+
+    def get_mean(self) -> float:
+        return float(np.mean(self._values))
+
+    def get_histogram(self):
+        return self._values
+
+
+class Histogram(_Collection):
+    @property
+    def mean_key(self):
+        return f'{self.name}.mean'
+
+
+class Scalar(_Collection):
+    def get_histogram(self):
+        return None
+
+
+class Indexed(Indicator):
     def __init__(self, name: str):
         super().__init__(name=name, is_print=False)
         self._values = []
@@ -108,34 +140,3 @@ class Pairs(Indicator):
     def get_histogram(self):
         return None
 
-
-class _Collection(Indicator):
-    def __init__(self, name: str, is_print=False):
-        super().__init__(name=name, is_print=is_print)
-        self._values = []
-
-    def collect_value(self, value):
-        self._values.append(_to_numpy(value))
-
-    def clear(self):
-        self._values = []
-
-    def is_empty(self) -> bool:
-        return len(self._values) == 0
-
-    def get_mean(self) -> float:
-        return float(np.mean(self._values))
-
-
-class Histogram(_Collection):
-    @property
-    def mean_key(self):
-        return f'{self.name}.mean'
-
-    def get_histogram(self):
-        return self._values
-
-
-class Scalar(_Collection):
-    def get_histogram(self):
-        return None
