@@ -7,11 +7,13 @@ import torch.optim as optim
 import torch.utils.data
 from torchvision import datasets, transforms
 
-from lab import logger, configs, IndicatorOptions, IndicatorType
+from lab import logger, configs
 from lab import training_loop
 from lab.experiment.pytorch import Experiment
 from lab.logger import util as logger_util
 from lab.logger.colors import Text
+from lab.logger.indicators import Queue, Histogram
+
 
 class Net(nn.Module):
     def __init__(self):
@@ -90,12 +92,9 @@ class MNIST:
         # Training and testing
         logger_util.add_model_indicators(self.model)
 
-        logger.add_indicator("train_loss", IndicatorType.queue,
-                             IndicatorOptions(queue_size=20, is_print=True))
-        logger.add_indicator("test_loss", IndicatorType.histogram,
-                             IndicatorOptions(is_print=True))
-        logger.add_indicator("accuracy", IndicatorType.histogram,
-                             IndicatorOptions(is_print=True))
+        logger.add_indicator(Queue("train_loss", 20, True))
+        logger.add_indicator(Histogram("test_loss", True))
+        logger.add_indicator(Histogram("accuracy", True))
 
         for _ in self.loop:
             self._train()

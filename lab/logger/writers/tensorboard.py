@@ -1,11 +1,10 @@
 from pathlib import PurePath
 from typing import Dict
 
-import numpy as np
 import tensorflow as tf
 
 from . import Writer as WriteBase
-from ..indicators import Indicator, IndicatorType
+from ..indicators import Indicator
 
 
 class Writer(WriteBase):
@@ -27,21 +26,18 @@ class Writer(WriteBase):
 
     def write(self, *,
               global_step: int,
-              values: Dict[str, any],
               indicators: Dict[str, Indicator]):
         self.__connect()
 
         with self.__writer.as_default():
-            for k, ind in indicators.items():
-                v = values[k]
-                if len(v) == 0:
+            for ind in indicators.values():
+                if ind.is_empty():
                     continue
-                if ind.type_ == IndicatorType.queue or ind.type_ == IndicatorType.histogram:
-                    tf.summary.histogram(self._parse_key(k), v, step=global_step)
 
-                if ind.type_ != IndicatorType.scalar:
-                    key = self._parse_key(f"{k}.mean")
-                else:
-                    key = self._parse_key(f"{k}")
+                hist_data = ind.get_histogram()
+                if hist_data is not None:
+                    tf.summary.histogram(self._parse_key(ind.name), hist_data, step=global_step)
 
-                tf.summary.scalar(key, float(np.mean(v)), step=global_step)
+                mean_value = ind.get_mean()
+                if mean_value is not None:
+                    tf.summary.scalar(self._parse_key(ind.mean_key), mean_value, step=global_step)

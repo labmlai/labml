@@ -1,10 +1,9 @@
-from collections import deque
 from pathlib import PurePath
 from typing import Dict, List
 
-from lab.logger import internal
 from lab import util
-from .indicators import IndicatorType, IndicatorOptions, Indicator
+from lab.logger import internal
+from .indicators import Indicator, Scalar
 from .writers import Writer
 
 
@@ -37,17 +36,10 @@ class Store:
 
         self.indicators[indicator.name] = indicator
 
-        self.__init_value(indicator.name)
+        indicator.clear()
 
         if self.__indicators_file is not None:
             self.save_indicators(self.__indicators_file)
-
-    def __init_value(self, name):
-        ind = self.indicators[name]
-        if ind.type_ == 'queue':
-            self.values[name] = deque(maxlen=ind.options.queue_size)
-        else:
-            self.values[name] = []
 
     def _store_list(self, items: List[Dict[str, float]]):
         for item in items:
@@ -55,17 +47,9 @@ class Store:
 
     def _store_kv(self, k, v):
         if k not in self.indicators:
-            self.__logger.add_indicator(k, IndicatorType.scalar, IndicatorOptions(is_print=True))
+            self.__logger.add_indicator(Scalar(k, True))
 
-        if self.indicators[k].type_ == IndicatorType.pair:
-            if type(v) == tuple:
-                assert len(v) == 2
-                self.values[k].append((v[0], v[1]))
-            else:
-                assert type(v) == list
-                self.values[k] += v
-        else:
-            self.values[k].append(v)
+        self.indicators[k].collect_value(v)
 
     def _store_kvs(self, **kwargs):
         for k, v in kwargs.items():
@@ -97,10 +81,8 @@ class Store:
 
     def clear(self):
         for k, v in self.indicators.items():
-            if v.type_ != IndicatorType.queue:
-                self.__init_value(k)
+            v.clear()
 
     def write(self, writer: Writer, global_step):
         return writer.write(global_step=global_step,
-                            values=self.values,
                             indicators=self.indicators)

@@ -1,7 +1,7 @@
 from typing import Union, List, Tuple, Optional, Iterable, Sized
 
 from .colors import ANSICode
-from .indicators import IndicatorType, IndicatorOptions
+from .indicators import Indicator
 from .internal import LoggerInternal as _LoggerInternal
 
 _internal: Optional[_LoggerInternal] = None
@@ -25,10 +25,8 @@ def log(message: Union[str, List[Union[str, Tuple[str, ANSICode]]]],
         internal().log_color(message, is_new_line=is_new_line)
 
 
-def add_indicator(name: str,
-                  type_: IndicatorType = IndicatorType.scalar,
-                  options: IndicatorOptions = None):
-    internal().add_indicator(name, type_, options)
+def add_indicator(indicator: Indicator):
+    internal().add_indicator(indicator)
 
 
 def store(*args, **kwargs):

@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple, Union
 
 from .colors import Text, ANSICode, Reset
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
-from .indicators import IndicatorType, IndicatorOptions, Indicator
+from .indicators import Indicator
 from .iterator import Iterator
 from .loop import Loop
 from .sections import Section, OuterSection
@@ -119,19 +119,7 @@ class LoggerInternal:
         coded = [self.ansi_code(text, color) for text, color in tuple_parts]
         self.log("".join(coded), is_new_line=is_new_line)
 
-    def add_indicator(self, name: str,
-                      type_: IndicatorType,
-                      options: IndicatorOptions = None):
-
-        """
-        ### Add an indicator
-        """
-
-        if options is None:
-            options = IndicatorOptions()
-
-        indicator = Indicator(name, type_, options)
-
+    def add_indicator(self, indicator: Indicator):
         self.__store.add_indicator(indicator)
 
     def save_indicators(self, file: PurePath):

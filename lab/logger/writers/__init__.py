@@ -9,7 +9,6 @@ from ..indicators import Indicator
 class Writer:
     def write(self, *,
               global_step: int,
-              values: Dict[str, any],
               indicators: Dict[str, Indicator]):
         raise NotImplementedError()
 
@@ -55,22 +54,21 @@ class ScreenWriter(Writer):
 
     def write(self, *,
               global_step: int,
-              values: Dict[str, any],
               indicators: Dict[str, Indicator]):
         parts = []
 
-        for k, ind in indicators.items():
-            if not ind.options.is_print:
+        for ind in indicators.values():
+            if not ind.is_print:
                 continue
 
-            parts.append((f" {k}: ", None))
+            parts.append((f" {ind.name}: ", None))
 
-            if len(values[k]) == 0:
-                value = self.get_value_string(k, None)
+            if ind.is_empty():
+                value = self.get_value_string(ind.name, None)
             else:
-                v = np.mean(values[k])
-                self.update_estimate(k, v)
-                value = self.get_value_string(k, v)
+                v = ind.get_mean()
+                self.update_estimate(ind.name, v)
+                value = self.get_value_string(ind.name, v)
 
             if self.is_color:
                 parts.append((value, Text.value))
