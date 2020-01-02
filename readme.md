@@ -112,17 +112,17 @@ You don't need the `.lab.yaml` file if you only plan on using the logger.
 
 ```python
 from lab import logger
-from lab.logger import colors
+from lab.logger.colors import Text, Color
 ```
 
 ##### Logging with colors
 
 ```python
-logger.log("Red", color=colors.BrightColor.red)
-logger.log_color([
-    ('Red', colors.BrightColor.red),
+logger.log("Red", color=Text.danger)
+logger.log([
+    ('Red', Color.red),
     'Normal',
-    ('Cyan', colors.BrightColor.cyan)
+    ('Cyan', Color.cyan)
 ])
 ```
 

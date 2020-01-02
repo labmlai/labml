@@ -1,10 +1,10 @@
-import typing
+from typing import Union, List, Tuple, Optional, Iterable, Sized
 
 from .colors import ANSICode
 from .indicators import IndicatorType, IndicatorOptions
 from .internal import LoggerInternal as _LoggerInternal
 
-_internal: typing.Optional[_LoggerInternal] = None
+_internal: Optional[_LoggerInternal] = None
 
 
 def internal() -> _LoggerInternal:
@@ -15,15 +15,14 @@ def internal() -> _LoggerInternal:
     return _internal
 
 
-def log(message, *,
-        color: typing.List[ANSICode] or ANSICode or None = None,
-        new_line=True):
-    internal().log(message, color=color, new_line=new_line)
-
-
-def log_color(parts: typing.List[typing.Union[str, typing.Tuple[str, ANSICode]]], *,
-              new_line=True):
-    internal().log_color(parts, new_line=new_line)
+def log(message: Union[str, List[Union[str, Tuple[str, ANSICode]]]],
+        color: List[ANSICode] or ANSICode or None = None,
+        *,
+        is_new_line=True):
+    if type(message) == str:
+        internal().log(message, color=color, is_new_line=is_new_line)
+    elif type(message) == list:
+        internal().log_color(message, is_new_line=is_new_line)
 
 
 def add_indicator(name: str,
@@ -44,18 +43,6 @@ def store(*args, **kwargs):
     internal().store(*args, **kwargs)
 
 
-def set_global_step(global_step):
-    internal().set_global_step(global_step)
-
-
-def add_global_step(global_step: int = 1):
-    internal().add_global_step(global_step)
-
-
-def new_line():
-    internal().new_line()
-
-
 def write():
     """
     ### Output the stored log values to screen and TensorBoard summaries.
@@ -64,19 +51,27 @@ def write():
     internal().write()
 
 
-def save_checkpoint():
-    internal().save_checkpoint()
+def new_line():
+    internal().new_line()
 
 
-def iterator(name, iterable: typing.Union[typing.Iterable, typing.Sized, int],
-             total_steps: typing.Optional[int] = None, *,
+def set_global_step(global_step):
+    internal().set_global_step(global_step)
+
+
+def add_global_step(global_step: int = 1):
+    internal().add_global_step(global_step)
+
+
+def iterator(name, iterable: Union[Iterable, Sized, int],
+             total_steps: Optional[int] = None, *,
              is_silent: bool = False,
              is_timed: bool = True):
     return internal().iterator(name, iterable, total_steps, is_silent=is_silent,
                                is_timed=is_timed)
 
 
-def enumerator(name, iterable: typing.Sized, *,
+def enumerator(name, iterable: Sized, *,
                is_silent: bool = False,
                is_timed: bool = True):
     return internal().enumerator(name, iterable, is_silent=is_silent, is_timed=is_timed)
@@ -110,11 +105,8 @@ def finish_loop():
     internal().finish_loop()
 
 
-def delayed_keyboard_interrupt():
-    """
-    ### Create a section with a delayed keyboard interrupt
-    """
-    return internal().delayed_keyboard_interrupt()
+def save_checkpoint():
+    internal().save_checkpoint()
 
 
 def info(*args, **kwargs):

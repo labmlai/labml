@@ -117,7 +117,7 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
     # Reset epochs so that it'll be computed
     use_cuda: float = True
-    cuda_device: str = "cuda:1"
+    cuda_device: str = 1
     seed: int = 5
     train_log_interval: int = 10
 
@@ -162,7 +162,14 @@ def random(c: Configs):
 @Configs.calc(['is_cuda', 'device', 'data_loader_args'])
 def cuda(*, use_cuda, cuda_device):
     is_cuda = use_cuda and torch.cuda.is_available()
-    device = torch.device(cuda_device if is_cuda else "cpu")
+    if not is_cuda:
+        device = torch.device("cpu")
+    else:
+        if cuda_device < torch.cuda.device_count():
+            device = torch.device(f"cuda:{cuda_device}")
+        else:
+            logger.log(f"Cuda device index {cuda_device} higher than device count {torch.cuda.device_count()}")
+            device = torch.device(f"cuda:{torch.cuda.device_count() - 1}")
     dl_args = {'num_workers': 1, 'pin_memory': True} if is_cuda else {}
     return is_cuda, device, dl_args
 
@@ -213,7 +220,7 @@ def set_seed(c: Configs):
 
 def main():
     conf = Configs()
-    experiment = Experiment(writers={'sqlite', 'tensorboard'})
+    experiment = Experiment(writers={'sqlite'})
     experiment.calc_configs(conf,
                             {'epochs': 'random'},
                             ['set_seed', 'main'])

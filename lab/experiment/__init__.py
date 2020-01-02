@@ -116,16 +116,16 @@ class Experiment:
         """
         ## 🖨 Print the experiment info and check git repo status
         """
-        logger.log_color([
+        logger.log([
             (self.name, Text.title),
             ': ',
             (str(self.run.index), Text.meta)
         ])
 
         if self.run.comment != '':
-            logger.log_color(['\t', (self.run.comment, Text.highlight)])
+            logger.log(['\t', (self.run.comment, Text.highlight)])
 
-        logger.log_color([
+        logger.log([
             "\t"
             "[dirty]" if self.run.is_dirty else "[clean]",
             ": ",
@@ -135,7 +135,7 @@ class Experiment:
         # Exit if git repository is dirty
         if self.check_repo_dirty and self.run.is_dirty:
             logger.log("Cannot trial an experiment with uncommitted changes. ",
-                       new_line=False)
+                       is_new_line=False)
             logger.log("[FAIL]", color=Text.danger)
             exit(1)
 

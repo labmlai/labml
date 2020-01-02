@@ -184,4 +184,4 @@ class ConfigProcessor:
             else:
                 parts = self.__print_config(k, value=computed)
 
-            logger.log_color(parts)
+            logger.log(parts)

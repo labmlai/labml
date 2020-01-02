@@ -86,16 +86,16 @@ class LoggerInternal:
     def add_writer(self, writer: Writer):
         self.__writers.append(writer)
 
-    def log(self, message, *,
-            color: List[ANSICode] or ANSICode or None = None,
-            new_line=True):
+    def log(self, message,
+            color: List[ANSICode] or ANSICode or None = None, *,
+            is_new_line=True):
         """
         ### Print a message to screen in color
         """
 
         message = self.ansi_code(message, color)
 
-        if new_line:
+        if is_new_line:
             end_char = '\n'
         else:
             end_char = ''
@@ -105,7 +105,7 @@ class LoggerInternal:
         print("\r" + text, end=end_char, flush=True)
 
     def log_color(self, parts: List[Union[str, Tuple[str, ANSICode]]], *,
-                  new_line=True):
+                  is_new_line=True):
         """
         ### Print a message with different colors.
         """
@@ -117,7 +117,7 @@ class LoggerInternal:
             else:
                 tuple_parts.append(p)
         coded = [self.ansi_code(text, color) for text, color in tuple_parts]
-        self.log("".join(coded), new_line=new_line)
+        self.log("".join(coded), is_new_line=is_new_line)
 
     def add_indicator(self, name: str,
                       type_: IndicatorType,
@@ -190,7 +190,7 @@ class LoggerInternal:
             self.__log_looping_line()
         else:
             parts += self.__indicators_print
-            self.log_color(parts, new_line=False)
+            self.log_color(parts, is_new_line=False)
 
     def save_checkpoint(self):
         if self.__checkpoint_saver is None:
@@ -299,7 +299,7 @@ class LoggerInternal:
         parts += self.__indicators_print
         parts += self.__loop.log_progress()
 
-        self.log_color(parts, new_line=False)
+        self.log_color(parts, is_new_line=False)
 
     def __log_line(self):
         if self.__is_looping():
@@ -309,7 +309,7 @@ class LoggerInternal:
         if len(self.__sections) == 0:
             return
 
-        self.log_color(self.__sections[-1].log(), new_line=False)
+        self.log_color(self.__sections[-1].log(), is_new_line=False)
 
     def section_exit(self, section):
         if len(self.__sections) == 0:
