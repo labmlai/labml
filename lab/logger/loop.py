@@ -70,7 +70,8 @@ class Loop:
         if self._iter_time != 0:
             estimate = self._iter_time / (1 - self._beta_pow)
         else:
-            estimate = now - self._iter_start_time
+            estimate = sum([s.get_estimated_time()
+                            for s in self.__looping_sections.values()])
 
         total_time = estimate * self.steps + self._init_time
         remain = total_time - spent

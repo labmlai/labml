@@ -159,6 +159,8 @@ class ConfigProcessor:
                 order.append(k)
                 ignored.add(k)
 
+        logger.log("Configs:", Text.heading)
+
         for k in order:
             computed = getattr(self.calculator.configs, k, None)
 
@@ -185,3 +187,5 @@ class ConfigProcessor:
                 parts = self.__print_config(k, value=computed)
 
             logger.log(parts)
+
+        logger.new_line()

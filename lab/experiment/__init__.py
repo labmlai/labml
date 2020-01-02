@@ -116,6 +116,8 @@ class Experiment:
         """
         ## 🖨 Print the experiment info and check git repo status
         """
+
+        logger.new_line()
         logger.log([
             (self.name, Text.title),
             ': ',

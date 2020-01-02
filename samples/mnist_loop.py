@@ -11,7 +11,7 @@ from lab import logger, configs, IndicatorOptions, IndicatorType
 from lab import training_loop
 from lab.experiment.pytorch import Experiment
 from lab.logger import util as logger_util
-
+from lab.logger.colors import Text
 
 class Net(nn.Module):
     def __init__(self):
@@ -168,7 +168,8 @@ def cuda(*, use_cuda, cuda_device):
         if cuda_device < torch.cuda.device_count():
             device = torch.device(f"cuda:{cuda_device}")
         else:
-            logger.log(f"Cuda device index {cuda_device} higher than device count {torch.cuda.device_count()}")
+            logger.log(f"Cuda device index {cuda_device} higher than "
+                       f"device count {torch.cuda.device_count()}", Text.warning)
             device = torch.device(f"cuda:{torch.cuda.device_count() - 1}")
     dl_args = {'num_workers': 1, 'pin_memory': True} if is_cuda else {}
     return is_cuda, device, dl_args
