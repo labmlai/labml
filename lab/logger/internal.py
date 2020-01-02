@@ -7,7 +7,7 @@ from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
 from .indicators import IndicatorType, IndicatorOptions, Indicator
 from .iterator import Iterator
 from .loop import Loop
-from .sections import Section, section_factory
+from .sections import Section, OuterSection
 from .store import Store
 from .writers import Writer, ScreenWriter
 
@@ -238,14 +238,13 @@ class LoggerInternal:
                                               total_steps=total_steps)
             self.__sections.append(section)
         else:
-            self.__sections.append(section_factory(logger=self,
-                                                   name=name,
-                                                   is_silent=is_silent,
-                                                   is_timed=is_timed,
-                                                   is_partial=is_partial,
-                                                   total_steps=total_steps,
-                                                   is_looping=False,
-                                                   level=len(self.__sections)))
+            self.__sections.append(OuterSection(logger=self,
+                                                name=name,
+                                                is_silent=is_silent,
+                                                is_timed=is_timed,
+                                                is_partial=is_partial,
+                                                total_steps=total_steps,
+                                                level=len(self.__sections)))
 
         return self.__sections[-1]
 

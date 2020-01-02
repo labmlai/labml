@@ -157,7 +157,7 @@ class LoopingSection(Section):
         self._last_start_time = -1.
         self._last_step_time = -1.
 
-    def _get_estimated_time(self):
+    def get_estimated_time(self):
         et = self._estimated_time * self._beta
         et += (1 - self._beta) * self._last_step_time
         return et / (1 - self._beta_pow * self._beta)
@@ -165,7 +165,7 @@ class LoopingSection(Section):
     def _calc_estimated_time(self):
         if self._state != 'entered':
             if self._last_end_time == self._end_time:
-                return self._get_estimated_time()
+                return self.get_estimated_time()
             end_time = self._end_time
             end_progress = self._end_progress
             self._last_end_time = self._end_time
@@ -174,7 +174,7 @@ class LoopingSection(Section):
             end_progress = self._progress
 
         if end_progress - self._start_progress < 1e-6:
-            return self._get_estimated_time()
+            return self.get_estimated_time()
 
         current_estimate = ((end_time - self._start_time) /
                             (end_progress - self._start_progress))
@@ -191,7 +191,7 @@ class LoopingSection(Section):
             self._last_step_time = current_estimate
             self._last_start_time = self._start_time
 
-        return self._get_estimated_time()
+        return self.get_estimated_time()
 
     def log(self):
         if self._is_silent:
@@ -224,28 +224,3 @@ class LoopingSection(Section):
             parts.append((s, color or Text.meta))
 
         return parts
-
-
-def section_factory(logger: 'internal.LoggerInternal',
-                    name: str,
-                    is_looping: bool,
-                    is_silent: bool,
-                    is_timed: bool,
-                    is_partial: bool,
-                    total_steps: float,
-                    level: int = 0):
-    if is_looping:
-        return LoopingSection(logger=logger,
-                              name=name,
-                              is_silent=is_silent,
-                              is_timed=is_timed,
-                              is_partial=is_partial,
-                              total_steps=total_steps)
-    else:
-        return OuterSection(logger=logger,
-                            name=name,
-                            is_silent=is_silent,
-                            is_timed=is_timed,
-                            is_partial=is_partial,
-                            total_steps=total_steps,
-                            level=level)

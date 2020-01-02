@@ -1,8 +1,8 @@
 import time
 from typing import Optional, Dict
 
-from lab.logger.sections import Section, section_factory
 from lab.logger import internal
+from lab.logger.sections import LoopingSection
 from .colors import Text
 
 
@@ -16,7 +16,6 @@ class Loop:
         See example for usage.
         """
         self.iterator = iterator
-        self.sections = {}
         self._start_time = 0.
         self._iter_start_time = 0.
         self._init_time = 0.
@@ -27,7 +26,7 @@ class Loop:
         self.counter = 0
         self.logger = logger
         self.__global_step: Optional[int] = None
-        self.__looping_sections: Dict[str, Section] = {}
+        self.__looping_sections: Dict[str, LoopingSection] = {}
         self._is_print_iteration_time = is_print_iteration_time
         self.is_started = False
 
@@ -67,12 +66,11 @@ class Loop:
         """
         now = time.time()
         spent = now - self._start_time
-        current_iter = now - self._iter_start_time
 
         if self._iter_time != 0:
             estimate = self._iter_time / (1 - self._beta_pow)
         else:
-            estimate = current_iter
+            estimate = now - self._iter_start_time
 
         total_time = estimate * self.steps + self._init_time
         remain = total_time - spent
@@ -100,13 +98,12 @@ class Loop:
                     is_partial: bool,
                     total_steps: float):
         if name not in self.__looping_sections:
-            self.__looping_sections[name] = section_factory(logger=self.logger,
-                                                            name=name,
-                                                            is_silent=is_silent,
-                                                            is_timed=is_timed,
-                                                            is_partial=is_partial,
-                                                            total_steps=total_steps,
-                                                            is_looping=True)
+            self.__looping_sections[name] = LoopingSection(logger=self.logger,
+                                                           name=name,
+                                                           is_silent=is_silent,
+                                                           is_timed=is_timed,
+                                                           is_partial=is_partial,
+                                                           total_steps=total_steps)
         return self.__looping_sections[name]
 
     def log_sections(self):
