@@ -52,11 +52,26 @@ _ANSI_CODES = dict(
     bg_bright_blue=104,
     bg_bright_purple=105,
     bg_bright_cyan=106,
-    bg_bright_white=107,
-
+    bg_bright_white=107
 )
 
 ANSI_RESET = "\33[0m"
+
+_HTML_STYLES = dict(
+    normal='',
+    bold='font-weight:bold',
+    underline='text-decoration: underline',
+
+    # Colors
+    black='color: #3E424D',
+    red='color: #E75C58',
+    green='color: #00A250',
+    orange='color: #DDB62B',
+    blue='color: #208FFB',
+    purple='color: #D160C4',
+    cyan='color: #60C6C8',
+    white='color: #C5C1B4'
+)
 
 
 class StyleCode(Enum):
@@ -70,17 +85,22 @@ class StyleCode(Enum):
         else:
             assert False
 
+    def html_style(self):
+        if self.value is None:
+            return ""
+        elif type(self.value) == str:
+            return {_HTML_STYLES[self.value]}
+        elif type(self.value) == list:
+            return ';'.join([_HTML_STYLES[v] for v in self.value])
+        else:
+            assert False
+
 
 class Style(StyleCode):
     none = None
     normal = 'normal'
     bold = 'bold'
-    light = 'light'  # - PyCharm/Jupyter
-
-    italic = 'italic'  # - PyCharm/Jupyter
     underline = 'underline'
-
-    highlight = 'highlight'  # Changes background in PyCharm/Terminal
 
 
 class Color(StyleCode):
