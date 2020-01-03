@@ -142,6 +142,16 @@ logger.log([
 ])
 ```
 
+<svg version="1.1" 
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="100" height="50"
+>
+  <text font-size="16" x="10" y="20">
+    <tspan fill="red">Hello</tspan>,
+    <tspan fill="green">world</tspan>!
+  </text>
+</svg>
 
 <pre><font color=#E75C58>Red</font>
 <span style="color: #E75C58">Red</span><span style="color: #3E424D">Black</span><span style="color: #208FFB">Blue</span><span style="color: #60C6C8">Cyan</span><span style="color: #00A250">Green</span><span style="color: #DDB62B">Orange</span><span style="color: #D160C4">Purple</span><span style="color: #C5C1B4">White</span> Normal </pre>
