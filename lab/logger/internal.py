@@ -34,7 +34,7 @@ class LoggerInternal:
 
         self.__indicators_print = []
 
-        self.__screen_writer = ScreenWriter(True)
+        self.__screen_writer = ScreenWriter()
         self.__writers.append(self.__screen_writer)
 
         self.__checkpoint_saver: Optional[CheckpointSaver] = None

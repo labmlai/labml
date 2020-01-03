@@ -14,10 +14,9 @@ class Writer:
 
 
 class ScreenWriter(Writer):
-    def __init__(self, is_color=True):
+    def __init__(self):
         super().__init__()
 
-        self.is_color = is_color
         self._estimates = {}
         self._beta = 0.9
         self._beta_pow = {}
@@ -70,9 +69,6 @@ class ScreenWriter(Writer):
                 self.update_estimate(ind.name, v)
                 value = self.get_value_string(ind.name, v)
 
-            if self.is_color:
-                parts.append((value, Text.value))
-            else:
-                parts.append(value)
+            parts.append((value, Text.value))
 
         return parts
