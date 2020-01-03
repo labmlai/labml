@@ -153,7 +153,7 @@ logger.log([
   </text>
 </svg>
 
-<pre><font color=#E75C58>Red</font>
+<pre><font color=#E75C58>Red</font><b>Test</b><em>Test</em>
 <span style="color: #E75C58">Red</span><span style="color: #3E424D">Black</span><span style="color: #208FFB">Blue</span><span style="color: #60C6C8">Cyan</span><span style="color: #00A250">Green</span><span style="color: #DDB62B">Orange</span><span style="color: #D160C4">Purple</span><span style="color: #C5C1B4">White</span> Normal </pre>
 
 
