@@ -61,6 +61,7 @@ _HTML_STYLES = dict(
     normal='',
     bold='font-weight:bold',
     underline='text-decoration: underline',
+    light='',
 
     # Colors
     black='color: #3E424D',
@@ -89,7 +90,7 @@ class StyleCode(Enum):
         if self.value is None:
             return ""
         elif type(self.value) == str:
-            return {_HTML_STYLES[self.value]}
+            return _HTML_STYLES[self.value]
         elif type(self.value) == list:
             return ';'.join([_HTML_STYLES[v] for v in self.value])
         else:
@@ -101,6 +102,7 @@ class Style(StyleCode):
     normal = 'normal'
     bold = 'bold'
     underline = 'underline'
+    light = 'light'
 
 
 class Color(StyleCode):

@@ -33,9 +33,13 @@ def random_string(length=10):
 def is_ipynb():
     try:
         cfg = get_ipython().config
-        if cfg['IPKernelApp']['parent_appname'] == 'ipython-notebook':
+        if cfg['IPKernelApp'] is not None:
             return True
         else:
             return False
     except NameError:
         return False
+
+
+if __name__ == '__main__':
+    print(is_ipynb())
