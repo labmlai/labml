@@ -59,19 +59,19 @@ ANSI_RESET = "\33[0m"
 
 _HTML_STYLES = dict(
     normal='',
-    bold='font-weight:bold',
-    underline='text-decoration: underline',
+    bold=('<strong>', '</strong>'),
+    underline=('<span style="text-decoration: underline">', '</span>'),
     light='',
 
     # Colors
-    black='color: #3E424D',
-    red='color: #E75C58',
-    green='color: #00A250',
-    orange='color: #DDB62B',
-    blue='color: #208FFB',
-    purple='color: #D160C4',
-    cyan='color: #60C6C8',
-    white='color: #C5C1B4'
+    black=('<span style="color: #3E424D">', '</span>'),
+    red=('<span style="color: #E75C58">', '</span>'),
+    green=('<span style="color: #00A250">', '</span>'),
+    orange=('<span style="color: #DDB62B">', '</span>'),
+    blue=('<span style="color: #208FFB">', '</span>'),
+    purple=('<span style="color: #D160C4">', '</span>'),
+    cyan=('<span style="color: #60C6C8">', '</span>'),
+    white=('<span style="color: #C5C1B4">', '</span>')
 )
 
 
@@ -86,13 +86,23 @@ class StyleCode(Enum):
         else:
             assert False
 
-    def html_style(self):
+    def html_open(self):
         if self.value is None:
             return ""
         elif type(self.value) == str:
-            return _HTML_STYLES[self.value]
+            return _HTML_STYLES[self.value][0]
         elif type(self.value) == list:
-            return ';'.join([_HTML_STYLES[v] for v in self.value])
+            return ''.join([_HTML_STYLES[v][0] for v in self.value])
+        else:
+            assert False
+
+    def html_close(self):
+        if self.value is None:
+            return ""
+        elif type(self.value) == str:
+            return _HTML_STYLES[self.value][1]
+        elif type(self.value) == list:
+            return ''.join([_HTML_STYLES[v][1] for v in reversed(self.value)])
         else:
             assert False
 

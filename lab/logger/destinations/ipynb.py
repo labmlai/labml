@@ -36,11 +36,13 @@ class IpynbDestination(Destination):
         if color is None:
             return text
         elif type(color) is list:
-            style = "".join(color.html_style())
+            open_tags = ''.join([c.html_open() for c in color])
+            close_tags = ''.join([c.html_close() for c in reversed(color)])
         else:
-            style = color.html_style()
+            open_tags = color.html_open()
+            close_tags = color.html_close()
 
-        return f"<span style=\"{style}\">{text}</span>"
+        return open_tags + text + close_tags
 
     def log(self, parts: List[Union[str, Tuple[str, StyleCode]]], *,
             is_new_line=True):
