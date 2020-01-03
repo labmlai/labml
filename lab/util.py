@@ -28,3 +28,14 @@ def rm_tree(path_to_remove: pathlib.Path):
 def random_string(length=10):
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for _ in range(length))
+
+
+def is_ipynb():
+    try:
+        cfg = get_ipython().config
+        if cfg['IPKernelApp']['parent_appname'] == 'ipython-notebook':
+            return True
+        else:
+            return False
+    except NameError:
+        return False

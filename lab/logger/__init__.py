@@ -20,9 +20,9 @@ def log(message: Union[str, List[Union[str, Tuple[str, ANSICode]]]],
         *,
         is_new_line=True):
     if type(message) == str:
-        internal().log(message, color=color, is_new_line=is_new_line)
+        internal().log([(message, color)], is_new_line=is_new_line)
     elif type(message) == list:
-        internal().log_color(message, is_new_line=is_new_line)
+        internal().log(message, is_new_line=is_new_line)
 
 
 def add_indicator(indicator: Indicator):

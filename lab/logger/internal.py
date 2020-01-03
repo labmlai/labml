@@ -4,6 +4,7 @@ from typing import List, Optional, Tuple, Union
 
 from .colors import Text, ANSICode, Reset
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
+from .destinations.factory import create_destination
 from .indicators import Indicator
 from .iterator import Iterator
 from .loop import Loop
@@ -45,6 +46,8 @@ class LoggerInternal:
 
         self.__data_path = None
 
+        self.__destination = create_destination()
+
     def set_data_path(self, data_path: PurePath):
         self.__data_path = data_path
 
@@ -71,53 +74,16 @@ class LoggerInternal:
 
         return global_step
 
-    @staticmethod
-    def ansi_code(text: str, color: List[ANSICode] or ANSICode or None):
-        """
-        ### Add ansi color codes
-        """
-        if color is None:
-            return text
-        elif type(color) is list:
-            return "".join(color) + f"{text}{Reset}"
-        else:
-            return f"{color}{text}{Reset}"
-
     def add_writer(self, writer: Writer):
         self.__writers.append(writer)
 
-    def log(self, message,
-            color: List[ANSICode] or ANSICode or None = None, *,
+    def log(self, parts: List[Union[str, Tuple[str, ANSICode]]], *,
             is_new_line=True):
-        """
-        ### Print a message to screen in color
-        """
-
-        message = self.ansi_code(message, color)
-
-        if is_new_line:
-            end_char = '\n'
-        else:
-            end_char = ''
-
-        text = "".join(message)
-
-        print("\r" + text, end=end_char, flush=True)
-
-    def log_color(self, parts: List[Union[str, Tuple[str, ANSICode]]], *,
-                  is_new_line=True):
         """
         ### Print a message with different colors.
         """
 
-        tuple_parts = []
-        for p in parts:
-            if type(p) == str:
-                tuple_parts.append((p, None))
-            else:
-                tuple_parts.append(p)
-        coded = [self.ansi_code(text, color) for text, color in tuple_parts]
-        self.log("".join(coded), is_new_line=is_new_line)
+        self.__destination.log(parts, is_new_line=is_new_line)
 
     def add_indicator(self, indicator: Indicator):
         self.__store.add_indicator(indicator)
@@ -151,9 +117,8 @@ class LoggerInternal:
 
         self.__global_step += global_step
 
-    @staticmethod
-    def new_line():
-        print()
+    def new_line(self):
+        self.__destination.new_line()
 
     def __is_looping(self):
         if self.__loop is not None and self.__loop.is_started:
@@ -178,7 +143,7 @@ class LoggerInternal:
             self.__log_looping_line()
         else:
             parts += self.__indicators_print
-            self.log_color(parts, is_new_line=False)
+            self.log(parts, is_new_line=False)
 
     def save_checkpoint(self):
         if self.__checkpoint_saver is None:
@@ -286,7 +251,7 @@ class LoggerInternal:
         parts += self.__indicators_print
         parts += self.__loop.log_progress()
 
-        self.log_color(parts, is_new_line=False)
+        self.log(parts, is_new_line=False)
 
     def __log_line(self):
         if self.__is_looping():
@@ -296,7 +261,7 @@ class LoggerInternal:
         if len(self.__sections) == 0:
             return
 
-        self.log_color(self.__sections[-1].log(), is_new_line=False)
+        self.log(self.__sections[-1].log(), is_new_line=False)
 
     def section_exit(self, section):
         if len(self.__sections) == 0:
@@ -323,14 +288,14 @@ class LoggerInternal:
         for k, v in items:
             count += 1
             spaces = " " * (max_key_len - len(str(k)))
-            self.log_color([(f"{spaces}{k}: ", Text.key),
+            self.log([(f"{spaces}{k}: ", Text.key),
                             (str(v), Text.value)])
 
         if is_show_count:
-            self.log_color([
-                ("Total ", None),
+            self.log([
+                "Total ",
                 (str(count), Text.meta),
-                (" item(s)", None)])
+                " item(s)"])
 
     def info(self, *args, **kwargs):
         """
