@@ -2,7 +2,7 @@ import typing
 from pathlib import PurePath
 from typing import List, Optional, Tuple, Union
 
-from .colors import Text, ANSICode, Reset
+from .colors import Text, StyleCode
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
 from .destinations.factory import create_destination
 from .indicators import Indicator
@@ -77,7 +77,7 @@ class LoggerInternal:
     def add_writer(self, writer: Writer):
         self.__writers.append(writer)
 
-    def log(self, parts: List[Union[str, Tuple[str, ANSICode]]], *,
+    def log(self, parts: List[Union[str, Tuple[str, StyleCode]]], *,
             is_new_line=True):
         """
         ### Print a message with different colors.

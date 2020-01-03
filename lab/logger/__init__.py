@@ -1,6 +1,6 @@
 from typing import Union, List, Tuple, Optional, Iterable, Sized
 
-from .colors import ANSICode
+from .colors import StyleCode
 from .indicators import Indicator
 from .internal import LoggerInternal as _LoggerInternal
 
@@ -15,8 +15,8 @@ def internal() -> _LoggerInternal:
     return _internal
 
 
-def log(message: Union[str, List[Union[str, Tuple[str, ANSICode]]]],
-        color: List[ANSICode] or ANSICode or None = None,
+def log(message: Union[str, List[Union[str, Tuple[str, StyleCode]]]],
+        color: List[StyleCode] or StyleCode or None = None,
         *,
         is_new_line=True):
     if type(message) == str:

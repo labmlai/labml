@@ -4,55 +4,98 @@ Console colors
 import warnings
 from enum import Enum
 
+_ANSI_CODES = dict(
+    normal=0,
+    bold=1,
+    light=2,  # - PyCharm/Jupyter
 
-def __getattr__(name):
-    if name == 'BrightColor':
-        warnings.warn("BrightColor is unsupported in iTerm2, dull on Jupyter"
-                      " and looks bad on white background")
-        return _BrightColor
-    elif name == 'BrightBackground':
-        warnings.warn("BrightBackground is unsupported in iTerm2, dull on Jupyter"
-                      " and looks bad on white background")
-        return _BrightBackground
+    italic=3,  # - PyCharm/Jupyter
+    underline=4,
+
+    highlight=7,  # Changes background in PyCharm/Terminal
+
+    # Colors
+    black=30,
+    red=31,
+    green=32,
+    orange=33,
+    blue=34,
+    purple=35,
+    cyan=36,
+    white=37,
+
+    # Background [Not used anymore]
+    bg_black=40,
+    bg_red=41,
+    bg_green=42,
+    bg_orange=43,
+    bg_blue=44,
+    bg_purple=45,
+    bg_cyan=46,
+    bg_white=47,
+
+    # Bright Colors [Not used anymore]
+    bright_black=90,
+    bright_red=91,
+    bright_green=92,
+    bright_orange=93,
+    bright_blue=94,
+    bright_purple=95,
+    bright_cyan=96,
+    bright_white=97,
+
+    # Bright Background Colors [Not used anymore]
+    bg_bright_black=100,
+    bg_bright_red=101,
+    bg_bright_green=102,
+    bg_bright_orange=103,
+    bg_bright_blue=104,
+    bg_bright_purple=105,
+    bg_bright_cyan=106,
+    bg_bright_white=107,
+
+)
+
+ANSI_RESET = "\33[0m"
 
 
-class ANSICode(Enum):
-    def __str__(self):
+class StyleCode(Enum):
+    def ansi(self):
         if self.value is None:
-            return ""
-        elif type(self.value) == int:
-            return f"\33[{self.value}m"
+            return f"\33[{_ANSI_CODES['normal']}m"
+        elif type(self.value) == str:
+            return f"\33[{_ANSI_CODES[self.value]}m"
         elif type(self.value) == list:
-            return ''.join([f"\33[{v}m" for v in self.value])
+            return ''.join([f"\33[{_ANSI_CODES[v]}m" for v in self.value])
         else:
             assert False
 
 
-class Style(ANSICode):
+class Style(StyleCode):
     none = None
-    normal = 0
-    bold = 1
-    light = 2  # - PyCharm/Jupyter
+    normal = 'normal'
+    bold = 'bold'
+    light = 'light'  # - PyCharm/Jupyter
 
-    italic = 3  # - PyCharm/Jupyter
-    underline = 4
+    italic = 'italic'  # - PyCharm/Jupyter
+    underline = 'underline'
 
-    highlight = 7  # Changes background in PyCharm/Terminal
+    highlight = 'highlight'  # Changes background in PyCharm/Terminal
 
 
-class Color(ANSICode):
+class Color(StyleCode):
     none = None
-    black = 30
-    red = 31
-    green = 32
-    orange = 33
-    blue = 34
-    purple = 35
-    cyan = 36
-    white = 37
+    black = 'black'
+    red = 'red'
+    green = 'green'
+    orange = 'orange'
+    blue = 'blue'
+    purple = 'purple'
+    cyan = 'cyan'
+    white = 'white'
 
 
-class Text(ANSICode):
+class Text(StyleCode):
     none = None
     danger = Color.red.value
     success = Color.green.value
@@ -65,48 +108,6 @@ class Text(ANSICode):
     value = Style.bold.value
     highlight = [Style.bold.value, Color.orange.value]
     subtle = [Style.light.value, Color.white.value]
-
-
-class _BrightColor(ANSICode):
-    none = None
-
-    black = 90
-    red = 91
-    green = 92
-    orange = 93
-    blue = 94
-    purple = 95
-    cyan = 96
-    white = 97
-
-
-class Background(ANSICode):
-    none = None
-
-    black = 40
-    red = 41
-    green = 42
-    orange = 43
-    blue = 44
-    purple = 45
-    cyan = 46
-    white = 47
-
-
-class _BrightBackground(ANSICode):  # - iTerm2 - (doesn't work well with white bg)
-    none = None
-
-    black = 100
-    red = 101
-    green = 102
-    orange = 103
-    blue = 104
-    purple = 105
-    cyan = 106
-    white = 107
-
-
-Reset = "\33[0m"
 
 
 def _test():
@@ -125,26 +126,6 @@ def _test():
             print("")
 
     print("")
-
-    for s in Style:
-        for i, c in enumerate(Color):
-            for j, b in enumerate(Background):
-                if s.name != 'none' and (i > 1 or j > 1):
-                    continue
-                if c.name != 'none' and (j > 0):
-                    continue
-                print(
-                    f"{s}{c}{b}{s.name}, {c.name}, {b.name}{Reset}")
-
-    for s in Style:
-        for i, c in enumerate(_BrightColor):
-            for j, b in enumerate(_BrightBackground):
-                if s.name != 'none' and (i > 1 or j > 1):
-                    continue
-                if c.name != 'none' and (j > 0):
-                    continue
-                print(
-                    f"{s}{c}{b}{s.name}, {c.name}, {b.name}{Reset}")
 
 
 if __name__ == "__main__":
