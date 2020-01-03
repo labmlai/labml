@@ -58,7 +58,7 @@ Logger has a simple API to produce pretty console outputs.
 ### Manage configurations and hyper-parameters
 
 You can setup configs/hyper-parameters with functions.
-[🧪lab](https://github.com/vpj/lab) would identify the dependencies and run 
+[🧪lab](https://github.com/vpj/lab) would identify the dependencies and run
 them in topological order.
 
 ```python
@@ -67,7 +67,7 @@ def model(c: Configs):
     return Net().to(c.device)
 ```
 
-You can setup multiple options for configuration functions. 
+You can setup multiple options for configuration functions.
 So you don't have to write a bunch if statements to handle configs.
 
 ```python
@@ -94,7 +94,7 @@ be enough. You can set project level configs for
  'check_repo_dirty' and 'path'
 in the config file.
 
-Lab will store all experiment data in folder `logs/` 
+Lab will store all experiment data in folder `logs/`
 relative to `.lab.yaml` file.
 If `path` is set in `.lab.yaml` then it will be stored in `[path]logs/`
  relative to `.lab.yaml` file.
@@ -143,7 +143,7 @@ logger.log([
 ```
 
 
-<pre><span style="color: #E75C58">Red</span>
+<pre><font color=#E75C58>Red</font>
 <span style="color: #E75C58">Red</span><span style="color: #3E424D">Black</span><span style="color: #208FFB">Blue</span><span style="color: #60C6C8">Cyan</span><span style="color: #00A250">Green</span><span style="color: #DDB62B">Orange</span><span style="color: #D160C4">Purple</span><span style="color: #C5C1B4">White</span> Normal </pre>
 
 
@@ -224,7 +224,7 @@ Both of these will log the means too. And if `is_print` is `True` it will print 
 
 
 ```python
-# queue_size = 10, 
+# queue_size = 10,
 logger.add_indicator(Queue('reward', 10, True))
 # is_print default to False
 logger.add_indicator(Scalar('policy'))
