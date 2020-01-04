@@ -12,7 +12,7 @@ from lab.lab import Lab
 
 
 def get_lab():
-    return Lab(__file__)
+    return Lab('/Users/varuna/ml/lab3')
 
 
 def get_run_info(experiment_name: str, run_index: Optional[int] = None):
@@ -30,82 +30,45 @@ def get_run_info(experiment_name: str, run_index: Optional[int] = None):
     return run
 
 
-class Analyzer:
-    """
-    # TensorBoard Summary Analyzer
+class Dir:
+    def __init__(self, options):
+        self.__options = {k.replace('.', '_'): k for k in options}
+        self.__list = [k for k in self.__options.keys()]
 
-    This loads TensorBoard summaries, and provides a set of tools to
-    create customized charts on Jupyter notebooks.
+    def __dir__(self):
+        return self.__list
 
-    The data format we use is as follows 👇
+    def __getattr__(self, k):
+        return self.__options[k]
 
-    ```
-    [index,
-     0%,
-     6.68%,
-     15.87%,
-     30.85%,
-     50.00%,
-     69.15%,
-     84.13%,
-     93.32%,
-     100.00%]
-    ```
 
-    Each data point gives a histogram in the the above format.
-    """
+class TensorBoardAnalyzer:
+    def __init__(self, log_path):
+        self.event_acc = EventAccumulator(str(log_path))
 
-    def __init__(self, experiment_name: str, run_index: Optional[int] = None):
-        self.run_info = get_run_info(experiment_name)
-        self.event_acc = EventAccumulator(str(self.run_info.tensorboard_log_path))
-
-    def load_tensorboard(self):
+    def load(self):
         """
-        ## Load summaries
-        """
+    ## Load summaries
+    """
         self.event_acc.Reload()
 
-    def tensor(self, name=None):
+    def tensor(self, name):
         """
-        ## Get a tensor summary
+    ## Get a tensor summary
 
-        If 'name' is 'None' it returns a list of all available tensors.
-        """
-        if name is None:
-            return self.event_acc.Tags()['tensors']
-
+    If 'name' is 'None' it returns a list of all available tensors.
+    """
+        name = name.replace('.', '/')
         return self.event_acc.Tensors(name)
-
-    def scalar(self, name=None):
-        """
-        ## Get a scalar summary
-
-        If 'name' is 'None' it returns a list of all available scalars.
-        """
-        if name is None:
-            return self.event_acc.Tags()['scalars']
-
-        return self.event_acc.Scalars(name)
-
-    def histogram(self, name=None):
-        """
-        ## Get a histogram summary
-
-        If 'name' is 'None' it returns a list of all available histograms.
-        """
-        if name is None:
-            return self.event_acc.Tags()['histograms']
-
-        return self.event_acc.CompressedHistograms(name)
 
     @staticmethod
     def summarize(events):
         """
-        ## Merge many data points and get a distribution
-        """
+    ## Merge many data points and get a distribution
+    """
 
         step = np.mean([e.step for e in events])
-        values = np.sort([e.value for e in events])
+        values = np.sort([tf.make_ndarray(e.tensor_proto) for e in events])
         basis_points = np.percentile(values, [
             0,
             6.68,
@@ -120,10 +83,10 @@ class Analyzer:
 
         return np.concatenate(([step], basis_points))
 
-    def summarize_series(self, events):
+    def summarize_scalars(self, events):
         """
-        ### Shrink data points and produce a histogram
-        """
+    ### Shrink data points and produce a histogram
+    """
 
         # Shrink to 100 histograms
         interval = max(1, len(events) // 100)
@@ -143,8 +106,8 @@ class Analyzer:
     @staticmethod
     def summarize_compressed_histogram(events):
         """
-        ## Convert a TensorBoard histogram to our format
-        """
+    ## Convert a TensorBoard histogram to our format
+    """
         basis_points = [
             0,
             668,
@@ -171,8 +134,8 @@ class Analyzer:
                        line_width=1,
                        alpha=0.6):
         """
-        ## Render a density plot from data
-        """
+    ## Render a density plot from data
+    """
 
         # Mean line
         ln = ax.plot(data[:, 0], data[:, 5],
@@ -195,9 +158,9 @@ class Analyzer:
 
     def render_scalar(self, name, ax: Axes, color, *, levels=5, line_width=1, alpha=0.6):
         """
-        ## Summarize and render a scalar
-        """
-        data = self.summarize_series(self.scalar(name))
+    ## Summarize and render a scalar
+    """
+        data = self.summarize_scalars(self.tensor(name))
         self.render_density(ax, data, color, name,
                             levels=levels,
                             line_width=line_width,
@@ -205,8 +168,8 @@ class Analyzer:
 
     def render_histogram(self, name, ax: Axes, color, *, levels=5, line_width=1, alpha=0.6):
         """
-        ## Summarize and render a histogram
-        """
+    ## Summarize and render a histogram
+    """
         data = self.summarize_compressed_histogram(self.histogram(name))
         self.render_density(ax, data, color, name,
                             levels=levels,
@@ -278,6 +241,36 @@ class Analyzer:
             for j in range(axes.shape[1]):
                 axes[i, j].set_xlim(x_min, x_max)
                 axes[i, j].set_ylim(y_min, y_max)
+
+
+class Analyzer:
+    def __init__(self, experiment_name: str, run_index: Optional[int] = None):
+        self.run_info = get_run_info(experiment_name)
+        self.tb = TensorBoardAnalyzer(self.run_info.tensorboard_log_path)
+
+        with open(str(self.run_info.indicators_path), 'r') as f:
+            self.indicators = util.yaml_load(f.read())
+
+    def get_indicators(self, *args):
+        # TODO: Need to handle Queue's and mean scalars of histograms
+
+        dirs = {k: [] for k in args}
+
+        def add(class_name, key):
+            if class_name not in dirs:
+                return
+            dirs[class_name].append(key)
+
+        for k, v in self.indicators.items():
+            cn = v['class_name']
+            add(cn, k)
+            if cn == 'Histogram' :
+                add('Scalar', f"{k}.mean")
+            if cn == 'Queue':
+                add('Scalar', f"{k}.mean")
+                add('Histogram', k)
+
+        return [Dir(dirs[k]) for k in args]
 
 
 if __name__ == '__main__':
