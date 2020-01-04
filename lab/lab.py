@@ -25,6 +25,12 @@ class Lab:
         self.check_repo_dirty = config['check_repo_dirty']
         self.data_path = self.path / config['data_path']
 
+    def __str__(self):
+        return f"<Lab path={self.path}>"
+
+    def __repr__(self):
+        return str(self)
+
     @staticmethod
     def __get_config(configs):
         config = dict(

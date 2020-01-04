@@ -94,9 +94,9 @@ class RunInfo:
         return res
 
     def __str__(self):
-        return f"Run(comment=\"{self.comment}\"," \
+        return f"{self.__class__.__name__}(comment=\"{self.comment}\"," \
                f" commit=\"{self.commit_message}\"," \
-               f" date={self.trial_date}, time={self.trial_time}"
+               f" date={self.trial_date}, time={self.trial_time})"
 
     def __repr__(self):
         return self.__str__()
