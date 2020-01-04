@@ -1,3 +1,4 @@
+import os
 import pathlib
 import time
 from typing import Optional, List, Set, Dict, Union
@@ -12,6 +13,7 @@ from lab.lab import Lab
 from lab.logger.colors import Text
 from lab.logger.internal import CheckpointSaver
 from lab.logger.writers import sqlite, tensorboard
+from lab.util import is_ipynb
 
 
 class Experiment:
@@ -49,13 +51,21 @@ class Experiment:
         if python_file is None:
             python_file = self.__get_caller_file()
 
-        self.lab = Lab(python_file)
+        if python_file.startswith('<ipython'):
+            assert is_ipynb()
+            if name is None:
+                raise ValueError("You must specify python_file or experiment name"
+                                 " when creating an experiment from a python notebook.")
+            self.lab = Lab(os.getcwd())
+            python_file = 'notebook.ipynb'
+        else:
+            self.lab = Lab(python_file)
+
+            if name is None:
+                file_path = pathlib.PurePath(python_file)
+                name = file_path.stem
 
         logger.internal().set_data_path(self.lab.data_path)
-
-        if name is None:
-            file_path = pathlib.PurePath(python_file)
-            name = file_path.stem
 
         if comment is None:
             comment = ''
@@ -178,6 +188,10 @@ class Experiment:
               run_index: Optional[int] = None,
               checkpoint: Optional[int] = None):
         if run_index is not None:
+            if run_index == -1:
+                run_index = None
+            if checkpoint == -1:
+                checkpoint = None
             with logger.section("Loading checkpoint"):
                 global_step = self._load_checkpoint(run_index, checkpoint)
                 if global_step is None:

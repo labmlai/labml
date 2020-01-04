@@ -138,7 +138,7 @@ class Configs(LoopConfigs, LoaderConfigs):
 
     # Reset epochs so that it'll be computed
     epochs: int = None
-    use_cuda: float = True
+    use_cuda: bool = True
     cuda_device: int = 0
     seed: int = 5
     log_interval: int = 10
