@@ -61,18 +61,18 @@ def add_global_step(global_step: int = 1):
     internal().add_global_step(global_step)
 
 
-def iterator(name, iterable: Union[Iterable, Sized, int],
-             total_steps: Optional[int] = None, *,
-             is_silent: bool = False,
-             is_timed: bool = True):
-    return internal().iterator(name, iterable, total_steps, is_silent=is_silent,
-                               is_timed=is_timed)
+def iterate(name, iterable: Union[Iterable, Sized, int],
+            total_steps: Optional[int] = None, *,
+            is_silent: bool = False,
+            is_timed: bool = True):
+    return internal().iterate(name, iterable, total_steps, is_silent=is_silent,
+                              is_timed=is_timed)
 
 
-def enumerator(name, iterable: Sized, *,
-               is_silent: bool = False,
-               is_timed: bool = True):
-    return internal().enumerator(name, iterable, is_silent=is_silent, is_timed=is_timed)
+def enum(name, iterable: Sized, *,
+         is_silent: bool = False,
+         is_timed: bool = True):
+    return internal().enum(name, iterable, is_silent=is_silent, is_timed=is_timed)
 
 
 def section(name, *,

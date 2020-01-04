@@ -151,10 +151,10 @@ class LoggerInternal:
 
         self.__checkpoint_saver.save(self.global_step)
 
-    def iterator(self, name, iterable: Union[typing.Iterable, typing.Sized, int],
-                 total_steps: Optional[int] = None, *,
-                 is_silent: bool = False,
-                 is_timed: bool = True):
+    def iterate(self, name, iterable: Union[typing.Iterable, typing.Sized, int],
+                total_steps: Optional[int] = None, *,
+                is_silent: bool = False,
+                is_timed: bool = True):
         return Iterator(logger=self,
                         name=name,
                         iterable=iterable,
@@ -163,9 +163,9 @@ class LoggerInternal:
                         total_steps=total_steps,
                         is_enumarate=False)
 
-    def enumerator(self, name, iterable: typing.Sized, *,
-                   is_silent: bool = False,
-                   is_timed: bool = True):
+    def enum(self, name, iterable: typing.Sized, *,
+             is_silent: bool = False,
+             is_timed: bool = True):
         return Iterator(logger=self,
                         name=name,
                         iterable=iterable,

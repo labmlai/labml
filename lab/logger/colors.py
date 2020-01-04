@@ -58,10 +58,10 @@ _ANSI_CODES = dict(
 ANSI_RESET = "\33[0m"
 
 _HTML_STYLES = dict(
-    normal='',
+    normal=('', ''),
     bold=('<strong>', '</strong>'),
     underline=('<span style="text-decoration: underline">', '</span>'),
-    light='',
+    light=('', ''),
 
     # Colors
     black=('<span style="color: #3E424D">', '</span>'),

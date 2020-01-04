@@ -47,7 +47,7 @@ class MNIST:
 
     def _train(self):
         self.model.train()
-        for i, (data, target) in logger.enumerator("Train", self.train_loader):
+        for i, (data, target) in logger.enum("Train", self.train_loader):
             data, target = data.to(self.device), target.to(self.device)
 
             self.optimizer.zero_grad()
@@ -71,7 +71,7 @@ class MNIST:
         test_loss = 0
         correct = 0
         with torch.no_grad():
-            for data, target in logger.iterator("Test", self.test_loader):
+            for data, target in logger.iterate("Test", self.test_loader):
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
                 test_loss += F.nll_loss(output, target, reduction='sum').item()

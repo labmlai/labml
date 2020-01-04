@@ -116,9 +116,19 @@ class OuterSection(Section):
 
         if self._state is 'entered':
             if self._progress == 0.:
-                parts.append(("...", None))
+                parts.append("...")
+                if self._is_timed:
+
+                    duration_ms = 1000 * (time.time() - self._start_time)
+                    parts.append((f"\t{duration_ms :,.2f}ms",
+                                  Text.meta))
             else:
-                parts.append((f" {math.floor(self._progress * 100) :4.0f}%", None))
+                parts.append((f" {math.floor(self._progress * 100) :4.0f}%", Text.meta2))
+                if self._is_timed and self._progress > 0:
+                    duration_ms = 1000 * (time.time() - self._start_time)
+                    duration_ms /= self._progress
+                    parts.append((f"\t{duration_ms :,.2f}ms",
+                                  Text.meta))
         else:
             if self.is_successful:
                 parts.append(("...[DONE]", Text.success))
