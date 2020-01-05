@@ -1,6 +1,9 @@
+import pathlib
 import typing
 from pathlib import PurePath
 from typing import List, Optional, Tuple, Union
+
+import numpy as np
 
 from .colors import Text, StyleCode
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
@@ -45,6 +48,7 @@ class LoggerInternal:
         self.__last_global_step: Optional[int] = None
 
         self.__data_path = None
+        self.__numpy_path = None
 
         self.__destination = create_destination()
 
@@ -53,6 +57,21 @@ class LoggerInternal:
 
     def get_data_path(self) -> PurePath:
         return self.__data_path
+
+    def set_numpy_path(self, numpy_path: PurePath):
+        self.__numpy_path = numpy_path
+
+    def save_numpy(self, name: str, array: np.ndarray):
+        """
+        ## Save a single numpy array
+
+        This is used to save processed data
+        """
+        numpy_path = pathlib.Path(self.__numpy_path)
+        if not numpy_path.exists():
+            numpy_path.mkdir(parents=True)
+        file_name = name + ".npy"
+        np.save(str(numpy_path / file_name), array)
 
     def set_checkpoint_saver(self, saver: CheckpointSaver):
         self.__checkpoint_saver = saver

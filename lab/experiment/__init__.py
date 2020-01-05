@@ -105,6 +105,8 @@ class Experiment:
         if 'tensorboard' in writers:
             logger.internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
 
+        logger.internal().set_numpy_path(self.run.numpy_path)
+
     @staticmethod
     def __get_caller_file():
         import inspect
@@ -151,26 +153,6 @@ class Experiment:
                        is_new_line=False)
             logger.log("[FAIL]", color=Text.danger)
             exit(1)
-
-    def save_npy(self, array: np.ndarray, name: str):
-        """
-        ## Save a single numpy array
-
-        This is used to save processed data
-        """
-        npy_path = pathlib.Path(self.run.npy_path)
-        npy_path.mkdir(parents=True)
-        file_name = name + ".npy"
-        np.save(str(self.run.npy_path / file_name), array)
-
-    def load_npy(self, name: str):
-        """
-        ## Load a single numpy array
-
-        This is used to save processed data
-        """
-        file_name = name + ".npy"
-        return np.load(str(self.run.npy_path / file_name))
 
     def _load_checkpoint(self, run: Optional[int], checkpoint: Optional[int]):
         raise NotImplementedError()

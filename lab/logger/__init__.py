@@ -1,5 +1,7 @@
 from typing import Union, List, Tuple, Optional, Iterable, Sized
 
+import numpy as np
+
 from .colors import StyleCode
 from .indicators import Indicator
 from .internal import LoggerInternal as _LoggerInternal
@@ -117,3 +119,12 @@ def info(*args, **kwargs):
 
 def get_data_path():
     return internal().get_data_path()
+
+
+def save_numpy(name: str, array: np.ndarray):
+    """
+    ## Save a single numpy array
+
+    This is used to save processed data
+    """
+    internal().save_numpy(name, array)

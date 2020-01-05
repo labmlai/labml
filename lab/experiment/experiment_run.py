@@ -41,7 +41,7 @@ class RunInfo:
         self.experiment_path = experiment_path
         self.run_path = experiment_path / str(index)
         self.checkpoint_path = self.run_path / "checkpoints"
-        self.npy_path = self.run_path / "npy"
+        self.numpy_path = self.run_path / "numpy"
 
         self.diff_path = self.run_path / "source.diff"
 

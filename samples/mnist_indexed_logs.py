@@ -110,6 +110,9 @@ class MNIST:
         logger.add_indicator(IndexedScalar('test_sample_loss'))
         logger.add_indicator(IndexedScalar('test_sample_pred'))
 
+        test_data = np.array([d[0].numpy() for d in self.test_loader.dataset])
+        logger.save_numpy("test_data", test_data)
+
         for _ in self.loop:
             self._train()
             self._test()
