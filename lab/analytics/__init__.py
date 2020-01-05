@@ -423,6 +423,8 @@ class Analyzer:
             if cn == 'Queue':
                 add('Scalar', k, f"{k}.mean")
                 add('Histogram', k, k)
+            if cn == 'IndexedScalar':
+                add('Scalar', k, k)
 
         return [Dir(dirs[k]) for k in args]
 #
