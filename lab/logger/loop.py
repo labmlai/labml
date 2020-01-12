@@ -56,7 +56,7 @@ class Loop:
 
         self._iter_start_time = now
 
-        self.counter = next_value + 1
+        self.counter = next_value
 
         return next_value
 
