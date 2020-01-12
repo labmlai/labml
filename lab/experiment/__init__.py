@@ -149,9 +149,8 @@ class Experiment:
 
         # Exit if git repository is dirty
         if self.check_repo_dirty and self.run.is_dirty:
-            logger.log("Cannot trial an experiment with uncommitted changes. ",
-                       is_new_line=False)
-            logger.log("[FAIL]", color=Text.danger)
+            logger.log([("[FAIL]", Text.danger),
+                        " Cannot trial an experiment with uncommitted changes."])
             exit(1)
 
     def _load_checkpoint(self, run: Optional[int], checkpoint: Optional[int]):

@@ -67,6 +67,7 @@ def _get_dependencies(func: Callable) -> Set[str]:
 class FunctionKind(Enum):
     pass_configs = 'pass_configs'
     pass_parameters = 'pass_parameters'
+    pass_nothing = 'pass_nothing'
 
 
 class ConfigFunction:
@@ -92,6 +93,8 @@ class ConfigFunction:
         if pos == 1:
             assert key == 0
             return FunctionKind.pass_configs
+        elif pos == 0 and key == 0:
+            return FunctionKind.pass_nothing
         else:
             warnings.warn("Use configs object, because it's easier to refactor, find usage etc",
                           FutureWarning)
@@ -160,6 +163,8 @@ class ConfigFunction:
                 return self.func(configs)
             else:
                 return self.func()
-        else:
+        elif self.kind == FunctionKind.pass_parameters:
             kwargs = {p.name: configs.__getattribute__(p.name) for p in self.params}
             return self.func(**kwargs)
+        else:
+            return self.func()

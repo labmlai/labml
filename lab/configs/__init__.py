@@ -9,7 +9,7 @@ from .parser import Parser
 from ..logger.colors import Text
 
 _CALCULATORS = '_calculators'
-
+_CONFIG_PRINT_LEN = 40
 
 class Configs:
     _calculators: Dict[str, List[ConfigFunction]] = {}
@@ -126,10 +126,10 @@ class ConfigProcessor:
         if value is not None:
             value_str = str(value)
             value_str = value_str.replace('\n', '')
-            if len(value_str) < 10:
+            if len(value_str) < _CONFIG_PRINT_LEN:
                 parts.append((f"{value_str}", Text.value))
             else:
-                parts.append((f"{value_str[:10]}...", Text.value))
+                parts.append((f"{value_str[:_CONFIG_PRINT_LEN]}...", Text.value))
             parts.append('\t')
 
         if option is not None:
