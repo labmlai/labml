@@ -63,6 +63,10 @@ def add_global_step(global_step: int = 1):
     internal().add_global_step(global_step)
 
 
+def get_global_step() -> int:
+    return internal().global_step
+
+
 def iterate(name, iterable: Union[Iterable, Sized, int],
             total_steps: Optional[int] = None, *,
             is_silent: bool = False,
