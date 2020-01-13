@@ -126,3 +126,6 @@ class TrainingLoop:
             self.__finish()
             logger.log('Killing loop...', Text.danger)
             self.old_handler(sig, frame)
+
+    def __str__(self):
+        return "LabTrainingLoop"

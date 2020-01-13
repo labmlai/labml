@@ -32,6 +32,9 @@ class Section:
 
         self.is_successful = True
 
+    def get_estimated_time(self):
+        raise NotImplementedError()
+
     def __enter__(self):
         self._state = 'entered'
         self._has_entered_ever = True
@@ -91,12 +94,11 @@ class OuterSection(Section):
                  is_silent: bool,
                  is_timed: bool,
                  is_partial: bool,
+                 is_new_line: bool,
                  total_steps: float,
                  level: int):
         if is_partial:
             raise RuntimeError("Only sections within the loop can be partial.")
-
-        self._level = level
 
         super().__init__(logger=logger,
                          name=name,
@@ -104,6 +106,18 @@ class OuterSection(Section):
                          is_timed=is_timed,
                          is_partial=is_partial,
                          total_steps=total_steps)
+
+        self._level = level
+        self._is_new_line = is_new_line
+
+    def get_estimated_time(self):
+        if self._state is 'entered':
+            if self._progress == 0.:
+                return time.time() - self._start_time
+            else:
+                return (time.time() - self._start_time) / self._progress
+        else:
+            return self._end_time - self._start_time
 
     def log(self):
         if self._is_silent:
@@ -114,32 +128,23 @@ class OuterSection(Section):
 
         parts = [("  " * self._level + f"{self._name}", None)]
 
-        if self._state is 'entered':
+        if self._state == 'entered':
             if self._progress == 0.:
                 parts.append("...")
-                if self._is_timed:
-
-                    duration_ms = 1000 * (time.time() - self._start_time)
-                    parts.append((f"\t{duration_ms :,.2f}ms",
-                                  Text.meta))
             else:
                 parts.append((f" {math.floor(self._progress * 100) :4.0f}%", Text.meta2))
-                if self._is_timed and self._progress > 0:
-                    duration_ms = 1000 * (time.time() - self._start_time)
-                    duration_ms /= self._progress
-                    parts.append((f"\t{duration_ms :,.2f}ms",
-                                  Text.meta))
         else:
             if self.is_successful:
                 parts.append(("...[DONE]", Text.success))
             else:
                 parts.append(("...[FAIL]", Text.danger))
 
-            if self._is_timed:
-                duration_ms = 1000 * (self._end_time - self._start_time)
-                parts.append((f"\t{duration_ms :,.2f}ms",
-                              Text.meta))
+        if self._is_timed:
+            duration_ms = 1000 * self.get_estimated_time()
+            parts.append((f"\t{duration_ms :,.2f}ms",
+                          Text.meta))
 
+        if self._state != 'entered' and self._is_new_line:
             parts.append(("\n", None))
 
         return parts

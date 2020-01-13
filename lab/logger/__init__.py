@@ -85,11 +85,13 @@ def section(name, *,
             is_silent: bool = False,
             is_timed: bool = True,
             is_partial: bool = False,
+            is_new_line: bool = True,
             total_steps: float = 1.0):
     return internal().section(name, is_silent=is_silent,
                               is_timed=is_timed,
                               is_partial=is_partial,
-                              total_steps=total_steps)
+                              total_steps=total_steps,
+                              is_new_line=is_new_line)
 
 
 def progress(steps: float):

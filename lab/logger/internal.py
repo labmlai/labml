@@ -197,6 +197,7 @@ class LoggerInternal:
                 is_silent: bool = False,
                 is_timed: bool = True,
                 is_partial: bool = False,
+                is_new_line: bool = True,
                 total_steps: float = 1.0):
 
         if self.__is_looping():
@@ -215,6 +216,7 @@ class LoggerInternal:
                                                 is_silent=is_silent,
                                                 is_timed=is_timed,
                                                 is_partial=is_partial,
+                                                is_new_line=is_new_line,
                                                 total_steps=total_steps,
                                                 level=len(self.__sections)))
 
