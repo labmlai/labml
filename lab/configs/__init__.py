@@ -11,6 +11,7 @@ from ..logger.colors import Text
 _CALCULATORS = '_calculators'
 _CONFIG_PRINT_LEN = 40
 
+
 class Configs:
     _calculators: Dict[str, List[ConfigFunction]] = {}
 
