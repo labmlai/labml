@@ -137,7 +137,7 @@ class ConfigProcessor:
             if len(other_options) == 0:
                 parts.append((option, Text.subtle))
             else:
-                parts.append((option, Text.value))
+                parts.append((option, Text.none))
 
         if len(other_options) > 0:
             parts.append(('\t[', Text.subtle))
