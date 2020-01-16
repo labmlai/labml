@@ -2,11 +2,7 @@
   <img src="https://github.com/vpj/lab/raw/832758308905ee20ba9841fa80c47c77d7e58fda/images/logo.png?raw=true" width="100" title="Logo">
 </p>
 
-# [🚧 Lab 3.0](https://github.com/vpj/lab)
-
-**⚠️ This is the development version, with a lot of frequent bareaking changes.**
-Feel free to try it out.
-Use the [previous](https://github.com/vpj/lab/tree/2.0) stable version if you want to use it in a project.
+# [Lab 3.0](https://github.com/vpj/lab)
 
 This library helps you organize machine learning experiments.
 It is a quite small library,
@@ -58,7 +54,7 @@ Logger has a simple API to produce pretty console outputs.
 ### Manage configurations and hyper-parameters
 
 You can setup configs/hyper-parameters with functions.
-[🧪lab](https://github.com/vpj/lab) would identify the dependencies and run 
+[🧪lab](https://github.com/vpj/lab) would identify the dependencies and run
 them in topological order.
 
 ```python
@@ -67,7 +63,7 @@ def model(c: Configs):
     return Net().to(c.device)
 ```
 
-You can setup multiple options for configuration functions. 
+You can setup multiple options for configuration functions.
 So you don't have to write a bunch if statements to handle configs.
 
 ```python
@@ -94,7 +90,7 @@ be enough. You can set project level configs for
  'check_repo_dirty' and 'path'
 in the config file.
 
-Lab will store all experiment data in folder `logs/` 
+Lab will store all experiment data in folder `logs/`
 relative to `.lab.yaml` file.
 If `path` is set in `.lab.yaml` then it will be stored in `[path]logs/`
  relative to `.lab.yaml` file.
@@ -387,7 +383,7 @@ Both of these will log the means too. And if `is_print` is `True` it will print 
 
 
 ```python
-# queue_size = 10, 
+# queue_size = 10,
 logger.add_indicator(Queue('reward', 10, True))
 # is_print default to False
 logger.add_indicator(Scalar('policy'))
@@ -506,7 +502,7 @@ Configs classes can be inherited
 ```python
 class Configs(DeviceConfigs):
     model_size: int = 10
-        
+
     model: any = 'cnn_model'
 ```
 
