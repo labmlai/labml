@@ -111,6 +111,9 @@ class LoaderConfigs(configs.Configs):
 class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     epochs: int
 
+    loop_count = None
+    loop_step = None
+
     is_save_models = True
     batch_size: int = 64
     test_batch_size: int = 1000
@@ -142,7 +145,12 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
 @Configs.calc('loop_count')
 def from_batch(c: Configs):
-    return c.epochs
+    return c.epochs * len(c.train_loader)
+
+
+@Configs.calc('loop_step')
+def from_batch(c: Configs):
+    return len(c.train_loader)
 
 
 @Configs.calc('epochs')

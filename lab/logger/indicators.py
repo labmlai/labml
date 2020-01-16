@@ -39,8 +39,9 @@ class Indicator:
         raise NotImplementedError()
 
     def to_dict(self) -> Dict:
-        return dict(name=self.name,
-                    class_name=self.__class__.__name__)
+        return dict(class_name=self.__class__.__name__,
+                    name=self.name,
+                    is_print=self.is_print)
 
     def collect_value(self, value):
         raise NotImplementedError()
