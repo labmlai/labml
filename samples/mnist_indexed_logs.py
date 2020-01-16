@@ -127,6 +127,9 @@ class LoaderConfigs(configs.Configs):
 class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     epochs: int
 
+    loop_count = None
+    loop_step = None
+
     is_save_models = True
     batch_size: int = 64
     test_batch_size: int = 1000
@@ -140,8 +143,6 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     is_log_parameters: bool = True
 
     main: MNIST
-
-    is_cuda: bool
 
     device: any
 
@@ -158,7 +159,12 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
 @Configs.calc('loop_count')
 def from_batch(c: Configs):
-    return c.epochs
+    return c.epochs * len(c.train_loader)
+
+
+@Configs.calc('loop_step')
+def from_batch(c: Configs):
+    return len(c.train_loader)
 
 
 @Configs.calc('epochs')
@@ -175,7 +181,7 @@ def random(c: Configs):
 # The code looks cleaner, but might cause problems when you want to refactor
 # later.
 # It will be harder to use static analysis tools to find the usage of configs.
-@Configs.calc(['is_cuda', 'device', 'data_loader_args'])
+@Configs.calc(['device', 'data_loader_args'])
 def cuda(*, use_cuda, cuda_device):
     is_cuda = use_cuda and torch.cuda.is_available()
     if not is_cuda:
@@ -188,7 +194,7 @@ def cuda(*, use_cuda, cuda_device):
                        f"device count {torch.cuda.device_count()}", Text.warning)
             device = torch.device(f"cuda:{torch.cuda.device_count() - 1}")
     dl_args = {'num_workers': 1, 'pin_memory': True} if is_cuda else {}
-    return is_cuda, device, dl_args
+    return device, dl_args
 
 
 def _data_loader(is_train, batch_size, shuffle, data_loader_args):
@@ -242,7 +248,7 @@ def main():
                             {'epochs': 'random'},
                             ['set_seed', 'main'])
     experiment.add_models(dict(model=conf.model))
-    experiment.start()
+    experiment.start(run_index=-1)
     conf.main()
 
 

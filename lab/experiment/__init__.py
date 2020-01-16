@@ -153,7 +153,7 @@ class Experiment:
                         " Cannot trial an experiment with uncommitted changes."])
             exit(1)
 
-    def _load_checkpoint(self, run: Optional[int], checkpoint: Optional[int]):
+    def _load_checkpoint(self, checkpoint_path: pathlib.PurePath):
         raise NotImplementedError()
 
     def calc_configs(self,
@@ -164,20 +164,30 @@ class Experiment:
             configs_dict = {}
         self.configs_processor = ConfigProcessor(configs, configs_dict)
         self.configs_processor(run_order)
+        logger.new_line()
+
+    def __start_from_checkpoint(self, run_index: int, checkpoint: int):
+        checkpoint_path, global_step = experiment_run.get_last_run_checkpoint(
+            self.experiment_path,
+            run_index,
+            checkpoint,
+            {self.run.index})
+
+        if global_step is None:
+            return 0
+        else:
+            with logger.section("Loading checkpoint"):
+                self._load_checkpoint(checkpoint_path)
+
+        return global_step
 
     def start(self, *,
               run_index: Optional[int] = None,
               checkpoint: Optional[int] = None):
         if run_index is not None:
-            if run_index == -1:
-                run_index = None
-            if checkpoint == -1:
-                checkpoint = None
-            with logger.section("Loading checkpoint"):
-                global_step = self._load_checkpoint(run_index, checkpoint)
-                if global_step is None:
-                    logger.set_successful(False)
-                    global_step = 0
+            if checkpoint is None:
+                checkpoint = -1
+            global_step = self.__start_from_checkpoint(run_index, checkpoint)
         else:
             global_step = 0
 

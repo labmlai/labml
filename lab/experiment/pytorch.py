@@ -125,15 +125,5 @@ class Experiment(experiment.Experiment):
         """
         self.__checkpoint_saver.add_models(models)
 
-    def _load_checkpoint(self, run_index: Optional[int], checkpoint: Optional[int]):
-        checkpoint_path, checkpoint = experiment_run.get_last_run_checkpoint(self.experiment_path,
-                                                                             self.run.index,
-                                                                             run_index,
-                                                                             checkpoint)
-        if checkpoint_path is None:
-            return None
-
-        is_successful = self.__checkpoint_saver.load(checkpoint_path)
-        if not is_successful:
-            return None
-        return checkpoint
+    def _load_checkpoint(self, checkpoint_path: pathlib.PurePath):
+        self.__checkpoint_saver.load(checkpoint_path)

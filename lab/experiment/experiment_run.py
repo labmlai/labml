@@ -1,8 +1,11 @@
 import time
 from pathlib import Path, PurePath
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Set
 
-from lab import util
+import numpy as np
+
+from .. import util, logger
+from ..logger.colors import Text
 
 
 def _struct_time_to_time(t: time.struct_time):
@@ -174,43 +177,75 @@ class Run(RunInfo):
                 f.write(self.diff)
 
 
-def get_last_checkpoint(experiment_path: PurePath, run_index: int):
+def get_checkpoints(experiment_path: PurePath, run_index: int):
     run_path = experiment_path / str(run_index)
     checkpoint_path = Path(run_path / "checkpoints")
     if not checkpoint_path.exists():
-        return None
+        return {}
 
-    checkpoints = [int(child.name) for child in Path(checkpoint_path).iterdir()]
-    checkpoints.sort()
-    if len(checkpoints) == 0:
-        return None
+    return {int(child.name) for child in Path(checkpoint_path).iterdir()}
+
+
+def get_runs(experiment_path: PurePath):
+    return {int(child.name) for child in Path(experiment_path).iterdir()}
+
+
+def get_run_checkpoint(experiment_path: PurePath,
+                       run_index: int = -1, checkpoint: int = -1,
+                       skip_index: Set[int] = None):
+    if skip_index is None:
+        skip_index = {}
+    runs = get_runs(experiment_path)
+    runs.difference_update(skip_index)
+
+    if run_index < 0:
+        required_ri = np.max(list(runs)) + run_index + 1
     else:
-        return checkpoints[-1]
+        required_ri = run_index
 
-
-def get_last_run_index(experiment_path: PurePath, skip_index=None, with_checkpoint=True):
-    runs = [int(child.name) for child in Path(experiment_path).iterdir()]
-    runs.sort()
-
-    for r in reversed(runs):
-        if r == skip_index:
+    for ri in range(required_ri, -1, -1):
+        if ri not in runs:
             continue
-        if with_checkpoint:
-            checkpoint = get_last_checkpoint(experiment_path, r)
-            if checkpoint is None:
+
+        checkpoints = get_checkpoints(experiment_path, ri)
+        if len(checkpoints) == 0:
+            continue
+
+        if checkpoint < 0:
+            required_ci = np.max(list(checkpoints)) + checkpoint + 1
+        else:
+            required_ci = checkpoint
+
+        for ci in range(required_ci, -1, -1):
+            if ci not in checkpoints:
                 continue
-        return r
 
-    return None
+            return required_ri, ri, ci
+
+    return required_ri, None, None
 
 
-def get_last_run_checkpoint(experiment_path: PurePath, skip_index: int, run_index: Optional[int], checkpoint: Optional[int]):
+def get_last_run_checkpoint(experiment_path: PurePath,
+                            run_index: int = -1,
+                            checkpoint: int = -1,
+                            skip_index: Set[int] = None):
+    required_ri, run_index, checkpoint = get_run_checkpoint(experiment_path, run_index, checkpoint, skip_index)
+
     if run_index is None:
-        run_index = get_last_run_index(experiment_path, skip_index)
-    if run_index is None:
-        return None, None
-    if checkpoint is None:
-        checkpoint = get_last_checkpoint(experiment_path, run_index)
+        logger.log("Couldn't find a previous run/checkpoint")
+        return None
+
+    if required_ri > run_index:
+        logger.log(f"Skipped runs [{run_index + 1}...{required_ri}]", Text.warning)
+
+    logger.log(["Selected ",
+                ("run", Text.key),
+                " = ",
+                (run_index, Text.value),
+                " ",
+                ("checkpoint", Text.key),
+                " = ",
+                (checkpoint, Text.value)])
 
     run_path = experiment_path / str(run_index)
     checkpoint_path = run_path / "checkpoints"
