@@ -79,28 +79,47 @@ class ConfigProcessor:
     def __call__(self, run_order: Optional[List[Union[List[str], str]]]):
         self.calculator(run_order)
 
+    @staticmethod
+    def __is_primitive(value):
+        if value is None:
+            return True
+
+        if type(value) == str:
+            return True
+
+        if type(value) == int:
+            return True
+
+        if type(value) == bool:
+            return True
+
+        if type(value) == list and all([ConfigProcessor.__is_primitive(v) for v in value]):
+            return True
+
+        if type(value) == dict and all([ConfigProcessor.__is_primitive(v) for v in value.values()]):
+            return True
+
+        return False
+
+    @staticmethod
+    def __to_yaml(value):
+        if ConfigProcessor.__is_primitive(value):
+            return value
+        else:
+            return str(value)
+
     def save(self, configs_path: PurePath):
-        configs = {
-            'values': self.parser.values,
-            'options': {},
-            'list_appends': {k: True for k in self.parser.list_appends},
-            'computed': {},
-            'order': self.calculator.topological_order
-        }
-
-        for k, opts in self.parser.options.items():
-            configs['options'][k] = list(opts.keys())
-
-        for k in self.parser.types:
-            computed = getattr(self.calculator.configs, k, None)
-            if computed is None:
-                continue
-
-            computed_str = str(computed)
-            if len(computed_str) > 100:
-                computed_str = computed_str[:150]
-
-            configs['computed'][k] = computed_str
+        orders = {k: i for i, k in enumerate(self.calculator.topological_order)}
+        configs = {}
+        for k, v in self.parser.types.items():
+            configs[k] = {
+                'name': k,
+                'type': str(v),
+                'value': self.__to_yaml(self.parser.values.get(k, None)),
+                'order': orders.get(k, -1),
+                'options': list(self.parser.options.get(k, {}).keys()),
+                'computed': self.__to_yaml(getattr(self.calculator.configs, k, None))
+            }
 
         with open(str(configs_path), "w") as file:
             file.write(util.yaml_dump(configs))
