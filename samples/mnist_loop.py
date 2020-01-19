@@ -120,7 +120,7 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
     # Reset epochs so that it'll be computed
     use_cuda: float = True
-    cuda_device: str = 1
+    cuda_device: int = 0
     seed: int = 5
     train_log_interval: int = 10
 
