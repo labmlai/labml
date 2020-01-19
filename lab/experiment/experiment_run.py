@@ -198,6 +198,9 @@ def get_run_checkpoint(experiment_path: PurePath,
     runs = get_runs(experiment_path)
     runs.difference_update(skip_index)
 
+    if len(runs) == 0:
+        return None, None, None
+
     if run_index < 0:
         required_ri = np.max(list(runs)) + run_index + 1
     else:
@@ -233,7 +236,7 @@ def get_last_run_checkpoint(experiment_path: PurePath,
 
     if run_index is None:
         logger.log("Couldn't find a previous run/checkpoint")
-        return None
+        return None, None
 
     if required_ri > run_index:
         logger.log(f"Skipped runs [{run_index + 1}...{required_ri}]", Text.warning)

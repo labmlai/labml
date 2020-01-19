@@ -1,7 +1,7 @@
 import torch
 
-from .indicators import Histogram
-from .. import logger
+from lab.logger.indicators import Histogram
+from lab import logger
 
 
 def add_model_indicators(model: torch.nn.Module, model_name: str = "model"):
@@ -16,3 +16,5 @@ def store_model_indicators(model: torch.nn.Module, model_name: str = "model"):
         if param.requires_grad:
             logger.store(f"{model_name}.{name}", param)
             logger.store(f"{model_name}.{name}.grad", param.grad)
+
+
