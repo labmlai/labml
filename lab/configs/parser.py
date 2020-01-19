@@ -31,6 +31,7 @@ def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
 
 
 RESERVED = {'calc', 'list'}
+_STANDARD_TYPES = {int, str, bool, Dict, List}
 
 
 class Parser:
@@ -120,6 +121,9 @@ class Parser:
                 continue
 
             if type(self.types[k]) == type:
+                if self.types[k] in _STANDARD_TYPES:
+                    continue
+
                 self.options[k] = OrderedDict()
                 self.options[k][k] = ConfigFunction(self.types[k],
                                                     config_names=k,

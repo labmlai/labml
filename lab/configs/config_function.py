@@ -134,7 +134,7 @@ class ConfigFunction:
             spec: inspect.Signature = inspect.signature(init_func)
             params: List[inspect.Parameter] = list(spec.parameters.values())
             assert len(params) > 0
-            assert params[0].kind == inspect.Parameter.POSITIONAL_OR_KEYWORD
+            assert params[0].kind == inspect.Parameter.POSITIONAL_OR_KEYWORD, self.config_names
             assert params[0].name == 'self'
             return params[1:]
         else:

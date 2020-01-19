@@ -70,6 +70,8 @@ class Calculator:
 
             return dep
 
+        assert key in self.values, f"Cannot compute {key}"
+
         return set()
 
     def __create_graph(self):
