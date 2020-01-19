@@ -24,6 +24,7 @@ class Lab:
         self.path = PurePath(config['path'])
         self.check_repo_dirty = config['check_repo_dirty']
         self.data_path = self.path / config['data_path']
+        self.experiments = self.path / config['experiments_path']
 
     def __str__(self):
         return f"<Lab path={self.path}>"
@@ -38,14 +39,19 @@ class Lab:
             check_repo_dirty=True,
             is_log_python_file=True,
             config_file_path=None,
-            data_path='data'
+            data_path='data',
+            experiments_path='logs',
+            analytics_path='analytics',
+            analytics_templates={}
         )
 
-        for c in reversed(configs):
-            if 'path' in c:
-                c['path'] = c['config_file_path'] / c['path']
-            elif config['path'] is None:
-                c['path'] = c['config_file_path']
+        for i, c in enumerate(reversed(configs)):
+            if config['path'] is None:
+                config['path'] = c['config_file_path']
+
+            assert 'path' not in c
+            assert i == 0 or 'experiments_path' not in c
+            assert i == 0 or 'analytics_path' not in c
 
             for k, v in c.items():
                 if k not in config:
@@ -78,13 +84,6 @@ class Lab:
             path = path.parent
 
         return configs
-
-    @property
-    def experiments(self) -> PurePath:
-        """
-        ### Experiments path
-        """
-        return self.path / "logs"
 
     def get_experiments(self) -> List[Path]:
         """
