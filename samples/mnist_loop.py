@@ -110,6 +110,9 @@ class LoaderConfigs(configs.Configs):
 class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     epochs: int = 10
 
+    loop_step = None
+    loop_count = None
+
     is_save_models = True
     batch_size: int = 64
     test_batch_size: int = 1000

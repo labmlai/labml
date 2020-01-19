@@ -1,18 +1,17 @@
 from typing import Dict
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data
 from torchvision import datasets, transforms
-import numpy as np
 
 from lab import logger, configs
 from lab import training_loop
 from lab.experiment.pytorch import Experiment
-from lab.logger import util as logger_util
-from lab.logger.colors import Text
+from lab.logger.util import pytorch as logger_util
 from lab.logger.indicators import Queue, Histogram, IndexedScalar
 
 
@@ -125,10 +124,10 @@ class LoaderConfigs(configs.Configs):
 
 
 class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
-    epochs: int
+    epochs: int = 10
 
-    loop_count = None
     loop_step = None
+    loop_count = None
 
     is_save_models = True
     batch_size: int = 64
@@ -136,7 +135,7 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
     # Reset epochs so that it'll be computed
     use_cuda: float = True
-    cuda_device: str = 1
+    cuda_device: int = 0
     seed: int = 5
     train_log_interval: int = 10
 
@@ -157,47 +156,24 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     set_seed = None
 
 
-@Configs.calc('loop_count')
-def from_batch(c: Configs):
-    return c.epochs * len(c.train_loader)
-
-
-@Configs.calc('loop_step')
-def from_batch(c: Configs):
-    return len(c.train_loader)
-
-
-@Configs.calc('epochs')
-def from_batch(c: Configs):
-    return 2 * c.batch_size
-
-
-@Configs.calc('epochs')
-def random(c: Configs):
-    return c.seed
+# The config is inferred from the function name
+@Configs.calc()
+def data_loader_args(c: Configs):
+    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}
 
 
 # Get dependencies from parameters.
 # The code looks cleaner, but might cause problems when you want to refactor
 # later.
 # It will be harder to use static analysis tools to find the usage of configs.
-@Configs.calc(['device', 'data_loader_args'])
-def cuda(*, use_cuda, cuda_device):
-    is_cuda = use_cuda and torch.cuda.is_available()
-    if not is_cuda:
-        device = torch.device("cpu")
-    else:
-        if cuda_device < torch.cuda.device_count():
-            device = torch.device(f"cuda:{cuda_device}")
-        else:
-            logger.log(f"Cuda device index {cuda_device} higher than "
-                       f"device count {torch.cuda.device_count()}", Text.warning)
-            device = torch.device(f"cuda:{torch.cuda.device_count() - 1}")
-    dl_args = {'num_workers': 1, 'pin_memory': True} if is_cuda else {}
-    return device, dl_args
+@Configs.calc()
+def device(*, use_cuda, cuda_device):
+    from lab.util.pytorch import get_device
+
+    return get_device(use_cuda, cuda_device)
 
 
-def _data_loader(is_train, batch_size, shuffle, data_loader_args):
+def _data_loader(is_train, batch_size, dl_args):
     return torch.utils.data.DataLoader(
         datasets.MNIST(str(logger.get_data_path()),
                        train=is_train,
@@ -206,46 +182,66 @@ def _data_loader(is_train, batch_size, shuffle, data_loader_args):
                            transforms.ToTensor(),
                            transforms.Normalize((0.1307,), (0.3081,))
                        ])),
-        batch_size=batch_size, shuffle=shuffle, **data_loader_args)
+        batch_size=batch_size, shuffle=True, **dl_args)
 
 
-# The value name is inferred from the function name
-@Configs.calc()
-def train_loader(c: Configs):
+# Multiple configs can be computed from a single function
+@Configs.calc(['train_loader', 'test_loader'])
+def data_loaders(c: Configs):
     with logger.section("Training data"):
-        return _data_loader(True, c.batch_size, True, c.data_loader_args)
+        train = _data_loader(True, c.batch_size, c.data_loader_args)
 
-
-@Configs.calc()
-def test_loader(c: Configs):
     with logger.section("Testing data"):
-        return _data_loader(False, c.test_batch_size, False, c.data_loader_args)
+        test = _data_loader(False, c.test_batch_size, c.data_loader_args)
+
+    return train, test
 
 
 # Compute multiple results from a single function
-@Configs.calc(['model', 'optimizer'])
-def model_optimizer(c: Configs):
+@Configs.calc()
+def model(c: Configs):
     with logger.section("Create model"):
         m: Net = Net()
         m.to(c.device)
+        return m
 
+
+# Multiple options for configs can be provided. Option name is inferred from function name,
+# unless explicitly provided
+@Configs.calc('optimizer')
+def sgd_optimizer(c: Configs):
     with logger.section("Create optimizer"):
-        o = optim.SGD(m.parameters(), lr=c.learning_rate, momentum=c.momentum)
-
-    return m, o
+        return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
 
 
+@Configs.calc('optimizer')
+def adam_optimizer(c: Configs):
+    with logger.section("Create optimizer"):
+        return optim.Adam(c.model.parameters(), lr=c.learning_rate)
+
+
+# Returns nothing
 @Configs.calc()
 def set_seed(c: Configs):
     with logger.section("Setting seed"):
         torch.manual_seed(c.seed)
 
 
+@Configs.calc()
+def loop_count(c: Configs):
+    return c.epochs * len(c.train_loader)
+
+
+@Configs.calc()
+def loop_step(c: Configs):
+    return len(c.train_loader)
+
+
 def main():
     conf = Configs()
     experiment = Experiment(writers={'sqlite'})
     experiment.calc_configs(conf,
-                            {'epochs': 'random'},
+                            {'optimizer': 'sgd_optimizer'},
                             ['set_seed', 'main'])
     experiment.add_models(dict(model=conf.model))
     experiment.start()
