@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/vpj/lab/raw/832758308905ee20ba9841fa80c47c77d7e58fda/images/logo.png?raw=true" width="100" title="Logo">
+  <img src="https://github.com/vpj/lab/blob/master/images/logo.png?raw=true" width="100" title="Logo">
 </p>
 
 # [Lab 3.0](https://github.com/vpj/lab)
@@ -38,6 +38,10 @@ logs
 
 ### [🎛 Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
 
+<p align="center">
+  <img style="max-width:100%;" src="https://github.com/vpj/lab/blob/master/images/dashboard.png?raw=true" width="320" title="Logo">
+</p>
+
 The web dashboard helps navigate experiments and multiple runs.
 You can checkout the configs and a summary of performance.
 You can launch TensorBoard directly from there.
@@ -49,7 +53,7 @@ outputs on the dashboard.
 
 Logger has a simple API to produce pretty console outputs.
 
-<p align="center"><img style="max-width:100%" src="https://github.com/vpj/lab/raw/832758308905ee20ba9841fa80c47c77d7e58fda/images/loop.gif" /></p>
+<p align="center"><img style="max-width:100%" src="https://github.com/vpj/lab/blob/master/images/loop.gif" /></p>
 
 ### Manage configurations and hyper-parameters
 
