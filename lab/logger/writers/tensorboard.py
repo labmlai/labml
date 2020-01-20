@@ -1,3 +1,4 @@
+import os
 from pathlib import PurePath
 from typing import Dict
 
@@ -5,6 +6,8 @@ import tensorflow as tf
 
 from . import Writer as WriteBase
 from ..indicators import Indicator
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 
 class Writer(WriteBase):
