@@ -1,6 +1,7 @@
 import pathlib
 import random
 import string
+from typing import Dict
 
 import yaml
 
@@ -33,7 +34,11 @@ def random_string(length=10):
 def is_ipynb():
     try:
         cfg = get_ipython().config
-        if cfg['IPKernelApp'] is not None:
+        if cfg['IPKernelApp'] is None:
+            return False
+        
+        app: Dict = cfg['IPKernelApp']
+        if type(app) == dict and len(app.keys()) > 0:
             return True
         else:
             return False

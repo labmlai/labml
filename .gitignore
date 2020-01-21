@@ -7,3 +7,4 @@ logs/
 temp.ipynb
 .*.swp
 source.json
+*.egg-info/

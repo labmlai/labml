@@ -1,12 +1,12 @@
 import setuptools
 
-with open("README.md", "r") as f:
+with open("readme.md", "r") as f:
     long_description = f.read()
 
 print(setuptools.find_packages())
 
 setuptools.setup(
-    name='lab',
+    name='machine_learning_lab',
     version='3.0',
     author="Varuna Jayasiri",
     author_email="vpjayasiri@gmail.com",
