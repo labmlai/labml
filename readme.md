@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/vpj/lab/blob/master/images/logo.png?raw=true" width="100" title="Logo">
+  <img src="https://github.com/vpj/lab/raw/832758308905ee20ba9841fa80c47c77d7e58fda/images/logo.png?raw=true" width="100" title="Logo">
 </p>
 
 # [Lab 3.0](https://github.com/vpj/lab)
@@ -37,9 +37,8 @@ logs
 ```
 
 ### [🎛 Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
-
 <p align="center">
-  <img style="max-width:100%;" src="https://github.com/vpj/lab/blob/master/images/dashboard.png?raw=true" width="320" title="Logo">
+  <img style="max-width:100%;" src="https://raw.githubusercontent.com/vpj/lab/master/images/dashboard.png" width="320" title="Logo">
 </p>
 
 The web dashboard helps navigate experiments and multiple runs.
@@ -53,12 +52,12 @@ outputs on the dashboard.
 
 Logger has a simple API to produce pretty console outputs.
 
-<p align="center"><img style="max-width:100%" src="https://github.com/vpj/lab/blob/master/images/loop.gif" /></p>
+<p align="center"><img style="max-width:100%" src="https://github.com/vpj/lab/raw/832758308905ee20ba9841fa80c47c77d7e58fda/images/loop.gif" /></p>
 
 ### Manage configurations and hyper-parameters
 
 You can setup configs/hyper-parameters with functions.
-[🧪lab](https://github.com/vpj/lab) would identify the dependencies and run
+[🧪lab](https://github.com/vpj/lab) would identify the dependencies and run 
 them in topological order.
 
 ```python
@@ -67,7 +66,7 @@ def model(c: Configs):
     return Net().to(c.device)
 ```
 
-You can setup multiple options for configuration functions.
+You can setup multiple options for configuration functions. 
 So you don't have to write a bunch if statements to handle configs.
 
 ```python
@@ -82,11 +81,26 @@ def adam(c: Configs):
 
 ## Getting Started
 
-### Install it via `pip` directly from github.
+### Clone and install
+
+```bash
+git clone git@github.com:vpj/lab.git
+cd lab
+pip install -e .
+```
+
+To update run a git update
+
+```bash
+cd lab
+git pull
+```
+
+<!-- ### Install it via `pip` directly from github.
 
 ```bash
 pip install -e git+git@github.com:vpj/lab.git#egg=lab
-```
+``` -->
 
 ### Create a `.lab.yaml` file.
 An empty file at the root of the project should
@@ -94,7 +108,7 @@ be enough. You can set project level configs for
  'check_repo_dirty' and 'path'
 in the config file.
 
-Lab will store all experiment data in folder `logs/`
+Lab will store all experiment data in folder `logs/` 
 relative to `.lab.yaml` file.
 If `path` is set in `.lab.yaml` then it will be stored in `[path]logs/`
  relative to `.lab.yaml` file.
@@ -221,8 +235,8 @@ with logger.section("Load saved model"):
 ```
 
 
-<pre>Load data<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	2,007.24ms</span>
-Load saved model<span style="color: #E75C58">...[FAIL]</span><span style="color: #208FFB">	1,008.62ms</span>
+<pre>Load data<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	2,008.14ms</span>
+Load saved model<span style="color: #E75C58">...[FAIL]</span><span style="color: #208FFB">	1,010.37ms</span>
 </pre>
 
 
@@ -240,7 +254,7 @@ with logger.section("Train", total_steps=100):
 ```
 
 
-<pre>Train<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	10,641.20ms</span>
+<pre>Train<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	10,581.29ms</span>
 </pre>
 
 
@@ -272,7 +286,7 @@ for data, target in logger.iterate("Test", test_loader):
 ```
 
 
-<pre>Test<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	6,726.97ms</span>
+<pre>Test<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	6,810.48ms</span>
 </pre>
 
 
@@ -283,7 +297,7 @@ for i, (data, target) in logger.enum("Test", test_loader):
 ```
 
 
-<pre>Test<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	6,816.58ms</span>
+<pre>Test<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	6,813.27ms</span>
 </pre>
 
 
@@ -301,7 +315,7 @@ for step in logger.loop(range(0, 400)):
 ```
 
 
-<pre><strong><span style="color: #DDB62B">     400:  </span></strong>  <span style="color: #208FFB">1ms</span><span style="color: #D160C4">  0:00m/ -1:59m  </span></pre>
+<pre><strong><span style="color: #DDB62B">     399:  </span></strong>  <span style="color: #208FFB">1ms</span><span style="color: #D160C4">  0:00m/ -1:59m  </span></pre>
 
 
 #### Global step
@@ -323,7 +337,7 @@ for step in logger.loop(range(0, 400)):
 ```
 
 
-<pre><strong><span style="color: #DDB62B">   2,000:  </span></strong>  <span style="color: #208FFB">1ms</span><span style="color: #D160C4">  0:00m/  0:00m  </span></pre>
+<pre><strong><span style="color: #DDB62B">   2,000:  </span></strong>  <span style="color: #208FFB">1ms</span><span style="color: #D160C4">  0:00m/ -1:59m  </span></pre>
 
 
 ### Log indicators
@@ -358,10 +372,10 @@ for i in range(1, 401):
 ```
 
 
-<pre><strong><span style="color: #DDB62B">     100:  </span></strong> loss: <strong> 59.7000</strong>
-<strong><span style="color: #DDB62B">     200:  </span></strong> loss: <strong> 47.2000</strong>
-<strong><span style="color: #DDB62B">     300:  </span></strong> loss: <strong> 43.3000</strong>
-<strong><span style="color: #DDB62B">     400:  </span></strong> loss: <strong> 46.0000</strong></pre>
+<pre><strong><span style="color: #DDB62B">     100:  </span></strong> loss: <strong> 53.1000</strong>
+<strong><span style="color: #DDB62B">     200:  </span></strong> loss: <strong> 51.3000</strong>
+<strong><span style="color: #DDB62B">     300:  </span></strong> loss: <strong> 56.7000</strong>
+<strong><span style="color: #DDB62B">     400:  </span></strong> loss: <strong> 50.3000</strong></pre>
 
 
 #### Indicator settings
@@ -387,7 +401,7 @@ Both of these will log the means too. And if `is_print` is `True` it will print 
 
 
 ```python
-# queue_size = 10,
+# queue_size = 10, 
 logger.add_indicator(Queue('reward', 10, True))
 # is_print default to False
 logger.add_indicator(Scalar('policy'))
@@ -408,10 +422,10 @@ for i in range(1, 400):
 ```
 
 
-<pre><strong><span style="color: #DDB62B">     100:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 95.5000</strong> value: <strong> 42.2000</strong>
-<strong><span style="color: #DDB62B">     200:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 195.500</strong> value: <strong> 53.2000</strong>
-<strong><span style="color: #DDB62B">     300:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 295.500</strong> value: <strong> 47.9000</strong>
-<strong><span style="color: #DDB62B">     390:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 385.500</strong> value: <strong> 45.1000</strong></pre>
+<pre><strong><span style="color: #DDB62B">     100:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 95.5000</strong> value: <strong> 52.8000</strong>
+<strong><span style="color: #DDB62B">     200:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 195.500</strong> value: <strong> 59.2000</strong>
+<strong><span style="color: #DDB62B">     300:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 295.500</strong> value: <strong> 64.3000</strong>
+<strong><span style="color: #DDB62B">     390:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 385.500</strong> value: <strong> 47.0000</strong></pre>
 
 
 ### Experiment
@@ -441,9 +455,9 @@ exp.start()
 ```
 
 
-<pre><strong><span style="text-decoration: underline">mnist_pytorch</span></strong>: <span style="color: #208FFB">1</span>
+<pre><strong><span style="text-decoration: underline">mnist_pytorch</span></strong>: <span style="color: #208FFB">2</span>
 	<strong><span style="color: #DDB62B">Test</span></strong>
-	[dirty]: <strong><span style="color: #DDB62B">"🧹  readme"</span></strong></pre>
+	[dirty]: <strong><span style="color: #DDB62B">"🐛 multiple colors ansi"</span></strong></pre>
 
 
 You can also start from a previously saved checkpoint. A `run_index` of `-1` means that it will load from the last run.
@@ -506,7 +520,7 @@ Configs classes can be inherited
 ```python
 class Configs(DeviceConfigs):
     model_size: int = 10
-
+        
     model: any = 'cnn_model'
 ```
 
