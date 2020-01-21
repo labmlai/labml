@@ -13,7 +13,7 @@ class ConsoleDestination(Destination):
         if color is None:
             return text
         elif type(color) is list:
-            return "".join(color.ansi()) + f"{text}{ANSI_RESET}"
+            return "".join([c.ansi() for c in color]) + f"{text}{ANSI_RESET}"
         else:
             return f"{color.ansi()}{text}{ANSI_RESET}"
 

@@ -36,9 +36,9 @@ def is_ipynb():
         cfg = get_ipython().config
         if cfg['IPKernelApp'] is None:
             return False
-        
+
         app: Dict = cfg['IPKernelApp']
-        if type(app) == dict and len(app.keys()) > 0:
+        if len(app.keys()) > 0:
             return True
         else:
             return False
