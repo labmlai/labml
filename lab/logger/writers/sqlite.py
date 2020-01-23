@@ -3,7 +3,7 @@ from pathlib import PurePath
 from typing import Dict, Optional
 
 from . import Writer as WriteBase
-from ..indicators import Indicator, Scalar
+from ..indicators import Indicator
 
 
 class Writer(WriteBase):

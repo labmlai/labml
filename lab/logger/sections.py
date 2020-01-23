@@ -193,7 +193,7 @@ class LoopingSection(Section):
 
         current_estimate = ((end_time - self._start_time) /
                             (end_progress - self._start_progress))
-        
+
         if self._last_start_time == self._start_time:
             # print(current_estimate)
             self._last_step_time = current_estimate

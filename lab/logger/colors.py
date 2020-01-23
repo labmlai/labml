@@ -1,7 +1,6 @@
 """
 Console colors
 """
-import warnings
 from enum import Enum
 
 _ANSI_CODES = dict(

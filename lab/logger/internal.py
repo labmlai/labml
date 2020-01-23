@@ -310,7 +310,7 @@ class LoggerInternal:
             count += 1
             spaces = " " * (max_key_len - len(str(k)))
             self.log([(f"{spaces}{k}: ", Text.key),
-                            (str(v), Text.value)])
+                      (str(v), Text.value)])
 
         if is_show_count:
             self.log([

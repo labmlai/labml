@@ -6,7 +6,6 @@ import numpy as np
 import torch.nn
 
 from lab import experiment
-from lab.experiment import experiment_run
 from lab.logger.internal import CheckpointSaver
 
 

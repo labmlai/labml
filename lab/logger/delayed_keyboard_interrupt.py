@@ -1,7 +1,7 @@
 import signal
 
-from .colors import Text
 import lab
+from .colors import Text
 
 
 class DelayedKeyboardInterrupt:

@@ -4,7 +4,6 @@ import time
 from typing import Optional, List, Set, Dict, Union
 
 import git
-import numpy as np
 
 from lab import logger
 from lab.configs import Configs, ConfigProcessor

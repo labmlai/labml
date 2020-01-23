@@ -232,7 +232,8 @@ def get_last_run_checkpoint(experiment_path: PurePath,
                             run_index: int = -1,
                             checkpoint: int = -1,
                             skip_index: Set[int] = None):
-    required_ri, run_index, checkpoint = get_run_checkpoint(experiment_path, run_index, checkpoint, skip_index)
+    required_ri, run_index, checkpoint = get_run_checkpoint(experiment_path, run_index, checkpoint,
+                                                            skip_index)
 
     if run_index is None:
         logger.log("Couldn't find a previous run/checkpoint")
