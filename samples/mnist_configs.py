@@ -9,8 +9,8 @@ from torchvision import datasets, transforms
 
 from lab import logger, configs
 from lab.experiment.pytorch import Experiment
-from lab.logger.util import pytorch as logger_util
 from lab.logger.indicators import Queue, Histogram
+from lab.logger.util import pytorch as logger_util
 
 
 class Net(nn.Module):
