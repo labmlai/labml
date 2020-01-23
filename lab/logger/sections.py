@@ -139,7 +139,7 @@ class OuterSection(Section):
             else:
                 parts.append(("...[FAIL]", Text.danger))
 
-        if self._is_timed:
+        if self._is_timed and self._progress > 0.:
             duration_ms = 1000 * self.get_estimated_time()
             parts.append((f"\t{duration_ms :,.2f}ms",
                           Text.meta))
