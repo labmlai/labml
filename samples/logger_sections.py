@@ -23,7 +23,24 @@ def progress():
             logger.progress(i)
 
 
+def loop_section():
+    for step in logger.loop(range(0, 10)):
+        with logger.section("Step"):
+            time.sleep(0.5)
+        with logger.section("Step2"):
+            time.sleep(0.1)
+        logger.write()
+
+
+def partial_section():
+    for i in range(10):
+        with logger.section("Partial", is_partial=True):
+            time.sleep(1)
+
+
 if __name__ == '__main__':
-    simple_section()
-    unsuccessful_section()
-    progress()
+    # simple_section()
+    # unsuccessful_section()
+    # progress()
+    # partial_section()
+    loop_section()

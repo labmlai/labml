@@ -1,3 +1,4 @@
+import math
 import time
 from typing import Optional, Dict
 
@@ -67,13 +68,14 @@ class Loop:
         now = time.time()
         spent = now - self._start_time
 
-        if self._iter_time != 0:
+        if not math.isclose(self._iter_time, 0.):
             estimate = self._iter_time / (1 - self._beta_pow)
         else:
             estimate = sum([s.get_estimated_time()
                             for s in self.__looping_sections.values()])
 
         total_time = estimate * self.steps + self._init_time
+        total_time = max(total_time, spent)
         remain = total_time - spent
 
         remain /= 60
