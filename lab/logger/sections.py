@@ -170,7 +170,7 @@ class LoopingSection(Section):
         self._time_length = 7
         self._last_end_time = -1.
         self._last_start_time = -1.
-        self._last_step_time = -1.
+        self._last_step_time = 0.
 
     def get_estimated_time(self):
         et = self._estimated_time * self._beta

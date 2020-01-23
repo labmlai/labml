@@ -32,6 +32,14 @@ def loop_section():
         logger.write()
 
 
+def loop_partial_section():
+    for step in logger.loop(range(0, 10)):
+        with logger.section("Step", is_partial=True):
+            time.sleep(0.5)
+            logger.progress((step % 5 + 1) / 5)
+        logger.write()
+
+
 def partial_section():
     for i in range(10):
         with logger.section("Partial", is_partial=True):
@@ -43,4 +51,5 @@ if __name__ == '__main__':
     # unsuccessful_section()
     # progress()
     # partial_section()
-    loop_section()
+    # loop_section()
+    loop_partial_section()
