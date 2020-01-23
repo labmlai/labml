@@ -195,11 +195,9 @@ def _data_loader(is_train, batch_size, dl_args):
 # Multiple configs can be computed from a single function
 @Configs.calc(['train_loader', 'test_loader'])
 def data_loaders(c: Configs):
-    with logger.section("Training data"):
-        train = _data_loader(True, c.batch_size, c.data_loader_args)
+    train = _data_loader(True, c.batch_size, c.data_loader_args)
 
-    with logger.section("Testing data"):
-        test = _data_loader(False, c.test_batch_size, c.data_loader_args)
+    test = _data_loader(False, c.test_batch_size, c.data_loader_args)
 
     return train, test
 
@@ -207,31 +205,27 @@ def data_loaders(c: Configs):
 # Compute multiple results from a single function
 @Configs.calc()
 def model(c: Configs):
-    with logger.section("Create model"):
-        m: Net = Net()
-        m.to(c.device)
-        return m
+    m: Net = Net()
+    m.to(c.device)
+    return m
 
 
 # Multiple options for configs can be provided. Option name is inferred from function name,
 # unless explicitly provided
 @Configs.calc('optimizer')
 def sgd_optimizer(c: Configs):
-    with logger.section("Create optimizer"):
-        return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
+    return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
 
 
 @Configs.calc('optimizer')
 def adam_optimizer(c: Configs):
-    with logger.section("Create optimizer"):
-        return optim.Adam(c.model.parameters(), lr=c.learning_rate)
+    return optim.Adam(c.model.parameters(), lr=c.learning_rate)
 
 
 # Returns nothing
 @Configs.calc()
 def set_seed(c: Configs):
-    with logger.section("Setting seed"):
-        torch.manual_seed(c.seed)
+    torch.manual_seed(c.seed)
 
 
 def main():

@@ -3,6 +3,7 @@ from typing import List, Dict, Type, Set, Optional, \
 from typing import TYPE_CHECKING
 
 from .config_function import ConfigFunction
+from .. import logger
 
 if TYPE_CHECKING:
     from . import Configs
@@ -130,7 +131,14 @@ class Calculator:
         elif type(funcs) == list:
             self.__set_configs(key, [f(self.configs) for f in funcs])
         else:
-            value = funcs(self.configs)
+            s = logger.section(f'Prepare {key}', is_new_line=False)
+            with s:
+                value = funcs(self.configs)
+            if s.get_estimated_time() >= 0.01:
+                logger.new_line()
+            else:
+                logger.log(' ' * 100, is_new_line=False)
+
             if type(funcs.config_names) == str:
                 self.__set_configs(key, value)
             else:
@@ -151,7 +159,11 @@ class Calculator:
             if type(keys) == str:
                 run_order[i] = [keys]
 
-        self.__create_graph()
+        s = logger.section('Calculate config dependencies', is_new_line=False)
+        with s:
+            self.__create_graph()
+        if s.get_estimated_time() >= 0.01:
+            logger.new_line()
 
         self.visited = set()
         self.stack = []
