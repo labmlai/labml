@@ -1,4 +1,4 @@
-import os
+# import os
 from pathlib import PurePath
 from typing import Dict
 
@@ -7,7 +7,11 @@ import tensorflow as tf
 from . import Writer as WriteBase
 from ..indicators import Indicator
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+tf.config.experimental.set_visible_devices([], "GPU")
+
+
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 class Writer(WriteBase):
@@ -43,4 +47,5 @@ class Writer(WriteBase):
 
                 mean_value = ind.get_mean()
                 if mean_value is not None:
-                    tf.summary.scalar(self._parse_key(ind.mean_key), mean_value, step=global_step)
+                    tf.summary.scalar(self._parse_key(ind.mean_key), mean_value,
+                                      step=global_step)
