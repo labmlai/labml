@@ -59,7 +59,8 @@ class Parser:
         for c in classes:
             if _CALCULATORS in c.__dict__:
                 for k, calcs in c.__dict__[_CALCULATORS].items():
-                    assert k in self.types, k
+                    assert k in self.types, \
+                        f"{k} calculator is present but the config declaration is missing"
                     for v in calcs:
                         self.__collect_calculator(k, v)
 

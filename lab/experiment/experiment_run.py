@@ -30,7 +30,8 @@ class RunInfo:
                  commit_message: Optional[str] = None,
                  is_dirty: bool = True,
                  experiment_path: PurePath,
-                 start_step: int = 0):
+                 start_step: int = 0,
+                 notes: str = ''):
         self.index = index
         self.commit = commit
         self.is_dirty = is_dirty
@@ -54,6 +55,7 @@ class RunInfo:
         self.info_path = self.run_path / "run.yaml"
         self.indicators_path = self.run_path / "indicators.yaml"
         self.configs_path = self.run_path / "configs.yaml"
+        self.notes = notes
 
     @classmethod
     def from_dict(cls, experiment_path: PurePath, data: Dict[str, any]):
@@ -77,7 +79,8 @@ class RunInfo:
             commit=self.commit,
             commit_message=self.commit_message,
             is_dirty=self.is_dirty,
-            start_step=self.start_step
+            start_step=self.start_step,
+            notes=self.notes
         )
 
     def pretty_print(self) -> List[str]:
