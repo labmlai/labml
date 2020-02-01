@@ -32,22 +32,10 @@ def add_indicator(indicator: Indicator):
 
 
 def store(*args, **kwargs):
-    """
-    ### Stores a value in the logger.
-
-    This may be added to a queue, a list or stored as
-    a TensorBoard histogram depending on the
-    type of the indicator.
-    """
-
     internal().store(*args, **kwargs)
 
 
 def write():
-    """
-    ### Output the stored log values to screen and TensorBoard summaries.
-    """
-
     internal().write()
 
 

@@ -11,15 +11,19 @@
       "post": [
         "",
         "",
-        "def log_color(parts: typing.List[typing.Union[str, typing.Tuple[str, ANSICode]]], *,",
-        "              new_line=True):",
-        "    \"\"\""
+        "def add_indicator(indicator: Indicator):",
+        "    internal().add_indicator(indicator)",
+        ""
       ],
       "code": [
-        "def log(message, *,",
-        "        color: typing.List[ANSICode] or ANSICode or None = None,",
-        "        new_line=True):",
-        "    internal().log(message, color=color, new_line=new_line)"
+        "def log(message: Union[str, List[Union[str, Tuple[str, StyleCode]]]],",
+        "        color: List[StyleCode] or StyleCode or None = None,",
+        "        *,",
+        "        is_new_line=True):",
+        "    if type(message) == str:",
+        "        internal().log([(message, color)], is_new_line=is_new_line)",
+        "    elif type(message) == list:",
+        "        internal().log(message, is_new_line=is_new_line)"
       ],
       "note": "#### Print a message to the console",
       "collapsed": false,
@@ -27,33 +31,9 @@
     },
     {
       "pre": [
-        "        color: typing.List[ANSICode] or ANSICode or None = None,",
-        "        new_line=True):",
-        "    internal().log(message, color=color, new_line=new_line)",
-        "",
-        ""
-      ],
-      "post": [
-        "",
-        "",
-        "def add_indicator(name: str,",
-        "                  type_: IndicatorType = IndicatorType.scalar,",
-        "                  options: IndicatorOptions = None):"
-      ],
-      "code": [
-        "def log_color(parts: typing.List[typing.Union[str, typing.Tuple[str, ANSICode]]], *,",
-        "              new_line=True):",
-        "    internal().log_color(parts, new_line=new_line)"
-      ],
-      "note": "#### Print a multi-coloured message to the console",
-      "collapsed": false,
-      "codeCollapsed": false
-    },
-    {
-      "pre": [
-        "def log_color(parts: typing.List[typing.Union[str, typing.Tuple[str, ANSICode]]], *,",
-        "              new_line=True):",
-        "    internal().log_color(parts, new_line=new_line)",
+        "        internal().log([(message, color)], is_new_line=is_new_line)",
+        "    elif type(message) == list:",
+        "        internal().log(message, is_new_line=is_new_line)",
         "",
         ""
       ],
@@ -65,12 +45,56 @@
         "    ### Stores a value in the logger."
       ],
       "code": [
-        "def add_indicator(name: str,",
-        "                  type_: IndicatorType = IndicatorType.scalar,",
-        "                  options: IndicatorOptions = None):",
-        "    internal().add_indicator(name, type_, options)"
+        "def add_indicator(indicator: Indicator):",
+        "    internal().add_indicator(indicator)"
       ],
       "note": "#### Setup a log indicator",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "",
+        "def add_indicator(indicator: Indicator):",
+        "    internal().add_indicator(indicator)",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "def write():",
+        "    \"\"\"",
+        "    ### Output the stored log values to screen and TensorBoard summaries."
+      ],
+      "code": [
+        "def store(*args, **kwargs):",
+        "    internal().store(*args, **kwargs)"
+      ],
+      "note": "#### Store values in the logger\n\nThese may be collected to a queue or a list depending on the log indicator configurations.",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "",
+        "def store(*args, **kwargs):",
+        "    internal().store(*args, **kwargs)",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "def new_line():",
+        "    internal().new_line()",
+        ""
+      ],
+      "code": [
+        "def write():",
+        "    internal().write()"
+      ],
+      "note": "#### Output the stored log values to screen, SQLite and TensorBoard",
       "collapsed": false,
       "codeCollapsed": false
     }
