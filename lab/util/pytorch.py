@@ -1,6 +1,7 @@
 import torch
 
 from lab import logger
+from lab.configs import Configs
 from lab.logger.colors import Text
 
 
@@ -15,3 +16,15 @@ def get_device(use_cuda: bool, cuda_device: int):
             logger.log(f"Cuda device index {cuda_device} higher than "
                        f"device count {torch.cuda.device_count()}", Text.warning)
             return torch.device('cuda', torch.cuda.device_count() - 1)
+
+
+def get_modules(configs: Configs):
+    keys = dir(configs)
+
+    modules = {}
+    for k in keys:
+        value = getattr(configs, k)
+        if isinstance(value, torch.nn.Module):
+            modules[k] = value
+
+    return modules

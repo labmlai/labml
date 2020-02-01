@@ -107,6 +107,7 @@ class Parser:
         else:
             if k not in self.options:
                 self.options[k] = OrderedDict()
+            assert v.option_name not in self.options[k], f"Duplicate option for {k}: {v.option_name}"
             self.options[k][v.option_name] = v
 
     def __calculate_missing_values(self):
