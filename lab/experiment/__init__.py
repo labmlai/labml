@@ -32,7 +32,8 @@ class Experiment:
                  name: Optional[str],
                  python_file: Optional[str],
                  comment: Optional[str],
-                 writers: Set[str] = None):
+                 writers: Set[str] = None,
+                 ignore_callers: Set[str] = None):
         """
         ### Create the experiment
 
@@ -48,7 +49,7 @@ class Experiment:
         """
 
         if python_file is None:
-            python_file = self.__get_caller_file()
+            python_file = self.__get_caller_file(ignore_callers)
 
         if python_file.startswith('<ipython'):
             assert is_ipynb()
@@ -107,7 +108,10 @@ class Experiment:
         logger.internal().set_numpy_path(self.run.numpy_path)
 
     @staticmethod
-    def __get_caller_file():
+    def __get_caller_file(ignore_callers: Set[str] = None):
+        if ignore_callers is None:
+            ignore_callers = {}
+
         import inspect
 
         frames: List[inspect.FrameInfo] = inspect.stack()
@@ -116,6 +120,8 @@ class Experiment:
         for f in frames:
             module_path = pathlib.PurePath(f.filename)
             if str(module_path).startswith(str(lab_src)):
+                continue
+            if str(module_path) in ignore_callers:
                 continue
             return str(module_path)
 

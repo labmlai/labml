@@ -94,7 +94,8 @@ class Experiment(experiment.Experiment):
                  name: Optional[str] = None,
                  python_file: Optional[str] = None,
                  comment: Optional[str] = None,
-                 writers: Set[str] = None):
+                 writers: Set[str] = None,
+                 ignore_callers: Set[str] = None):
         """
         ### Create the experiment
 
@@ -112,7 +113,8 @@ class Experiment(experiment.Experiment):
         super().__init__(name=name,
                          python_file=python_file,
                          comment=comment,
-                         writers=writers)
+                         writers=writers,
+                         ignore_callers=ignore_callers)
 
     def _create_checkpoint_saver(self):
         self.__checkpoint_saver = Checkpoint(self.run.checkpoint_path)
