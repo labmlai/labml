@@ -31,52 +31,6 @@
     },
     {
       "pre": [
-        "        internal().log([(message, color)], is_new_line=is_new_line)",
-        "    elif type(message) == list:",
-        "        internal().log(message, is_new_line=is_new_line)",
-        "",
-        ""
-      ],
-      "post": [
-        "",
-        "",
-        "def store(*args, **kwargs):",
-        "    \"\"\"",
-        "    ### Stores a value in the logger."
-      ],
-      "code": [
-        "def add_indicator(indicator: Indicator):",
-        "    internal().add_indicator(indicator)"
-      ],
-      "note": "#### Setup a log indicator",
-      "collapsed": false,
-      "codeCollapsed": false
-    },
-    {
-      "pre": [
-        "",
-        "def add_indicator(indicator: Indicator):",
-        "    internal().add_indicator(indicator)",
-        "",
-        ""
-      ],
-      "post": [
-        "",
-        "",
-        "def write():",
-        "    \"\"\"",
-        "    ### Output the stored log values to screen and TensorBoard summaries."
-      ],
-      "code": [
-        "def store(*args, **kwargs):",
-        "    internal().store(*args, **kwargs)"
-      ],
-      "note": "#### Store values in the logger\n\nThese may be collected to a queue or a list depending on the log indicator configurations.",
-      "collapsed": false,
-      "codeCollapsed": false
-    },
-    {
-      "pre": [
         "",
         "def store(*args, **kwargs):",
         "    internal().store(*args, **kwargs)",
@@ -149,6 +103,52 @@
       "note": "#### Internals\n\nInternals of the logger are hidden",
       "collapsed": true,
       "codeCollapsed": true
+    },
+    {
+      "pre": [
+        "        internal().log([(message, color)], is_new_line=is_new_line)",
+        "    elif type(message) == list:",
+        "        internal().log(message, is_new_line=is_new_line)",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "def store(*args, **kwargs):",
+        "    internal().store(*args, **kwargs)",
+        ""
+      ],
+      "code": [
+        "def add_indicator(indicator: Indicator):",
+        "    internal().add_indicator(indicator)"
+      ],
+      "note": "#### Setup a log indicator",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "",
+        "def add_indicator(indicator: Indicator):",
+        "    internal().add_indicator(indicator)",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "def write():",
+        "    internal().write()",
+        ""
+      ],
+      "code": [
+        "def store(*args, **kwargs):",
+        "    internal().store(*args, **kwargs)"
+      ],
+      "note": "#### Store values in the logger\n\nThese may be collected to a queue or a list depending on the log indicator configurations.",
+      "collapsed": false,
+      "codeCollapsed": false
     }
   ],
   "samples/mnist_loop.py": [
