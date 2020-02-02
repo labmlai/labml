@@ -149,7 +149,7 @@ class ConfigFunction:
         self.func = func
         self.config_names = self.__get_config_names(config_names)
         self.is_append = is_append
-        assert not (self.is_append and len(self.config_names) > 1)
+        assert not (self.is_append and type(self.config_names) != str)
         self.option_name = self.__get_option_name(option_name)
 
         self.params = self.__get_params()

@@ -76,7 +76,7 @@ class ConfigProcessor:
                                      values=self.parser.values,
                                      list_appends=self.parser.list_appends)
 
-    def __call__(self, run_order: Optional[List[Union[List[str], str]]]):
+    def __call__(self, run_order: Optional[List[Union[List[str], str]]] = None):
         self.calculator(run_order)
 
     @staticmethod
