@@ -140,16 +140,11 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     set_seed = None
 
 
-# The config is inferred from the function name
 @Configs.calc()
 def data_loader_args(c: Configs):
     return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}
 
 
-# Get dependencies from parameters.
-# The code looks cleaner, but might cause problems when you want to refactor
-# later.
-# It will be harder to use static analysis tools to find the usage of configs.
 @Configs.calc()
 def device(*, use_cuda, cuda_device):
     from lab.util.pytorch import get_device
@@ -169,7 +164,6 @@ def _data_loader(is_train, batch_size, dl_args):
         batch_size=batch_size, shuffle=True, **dl_args)
 
 
-# Multiple configs can be computed from a single function
 @Configs.calc(['train_loader', 'test_loader'])
 def data_loaders(c: Configs):
     train = _data_loader(True, c.batch_size, c.data_loader_args)
@@ -178,7 +172,6 @@ def data_loaders(c: Configs):
     return train, test
 
 
-# Compute multiple results from a single function
 @Configs.calc()
 def model(c: Configs):
     m: Net = Net()
@@ -186,8 +179,6 @@ def model(c: Configs):
     return m
 
 
-# Multiple options for configs can be provided. Option name is inferred from function name,
-# unless explicitly provided
 @Configs.calc('optimizer')
 def sgd_optimizer(c: Configs):
     return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
