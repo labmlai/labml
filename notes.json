@@ -367,6 +367,35 @@
       "note": "Multiple configs can be computed from a single function",
       "collapsed": false,
       "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "    return m",
+        "",
+        "",
+        "# Multiple options for configs can be provided. Option name is inferred from function name,",
+        "# unless explicitly provided"
+      ],
+      "post": [
+        "",
+        "",
+        "# Returns nothing",
+        "@Configs.calc()",
+        "def set_seed(c: Configs):"
+      ],
+      "code": [
+        "@Configs.calc('optimizer')",
+        "def sgd_optimizer(c: Configs):",
+        "    return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)",
+        "",
+        "",
+        "@Configs.calc('optimizer')",
+        "def adam_optimizer(c: Configs):",
+        "    return optim.Adam(c.model.parameters(), lr=c.learning_rate)"
+      ],
+      "note": "Multiple options for configs can be provided.\nName of the option is inferred from the function name unless explicitly provided.",
+      "collapsed": false,
+      "codeCollapsed": false
     }
   ]
 }
