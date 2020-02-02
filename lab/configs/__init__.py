@@ -44,29 +44,6 @@ class Configs:
         return cls.calc(name, f"_{util.random_string()}", is_append=True)
 
 
-def _get_base_classes(class_: Type[Configs]) -> List[Type[Configs]]:
-    classes = [class_]
-    level = [class_]
-    next_level = []
-
-    while len(level) > 0:
-        for c in level:
-            for b in c.__bases__:
-                if b == object:
-                    continue
-                next_level.append(b)
-        classes += next_level
-        level = next_level
-        next_level = []
-
-    classes.reverse()
-
-    return classes
-
-
-RESERVED = {'calc', 'list'}
-
-
 class ConfigProcessor:
     def __init__(self, configs, values: Dict[str, any] = None):
         self.parser = Parser(configs, values)
