@@ -55,14 +55,10 @@ class MNIST:
             loss.backward()
             self.optimizer.step()
 
-            # Add training loss to the logger.
-            # The logger will queue the values and output the mean
             logger.store(train_loss=loss)
             logger.add_global_step()
 
-            # Print output to the console
             if i % self.train_log_interval == 0:
-                # Output the indicators
                 logger.write()
 
     def _test(self):
@@ -77,7 +73,6 @@ class MNIST:
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
-        # Add test loss and accuracy to logger
         logger.store(test_loss=test_loss / len(self.test_loader.dataset))
         logger.store(accuracy=correct / len(self.test_loader.dataset))
 
@@ -85,11 +80,9 @@ class MNIST:
         if not self.__is_log_parameters:
             return
 
-        # Add histograms with model parameter values and gradients
         logger_util.store_model_indicators(self.model)
 
     def __call__(self):
-        # Training and testing
         logger_util.add_model_indicators(self.model)
 
         logger.add_indicator(Queue("train_loss", 20, True))
@@ -117,15 +110,12 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     batch_size: int = 64
     test_batch_size: int = 1000
 
-    # Reset epochs so that it'll be computed
     use_cuda: float = True
     cuda_device: int = 0
     seed: int = 5
     train_log_interval: int = 10
 
     is_log_parameters: bool = True
-
-    main: MNIST
 
     device: any
 
@@ -138,6 +128,8 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     optimizer: optim.SGD
 
     set_seed = None
+
+    main: MNIST
 
 
 @Configs.calc()
@@ -189,7 +181,6 @@ def adam_optimizer(c: Configs):
     return optim.Adam(c.model.parameters(), lr=c.learning_rate)
 
 
-# Returns nothing
 @Configs.calc()
 def set_seed(c: Configs):
     torch.manual_seed(c.seed)
