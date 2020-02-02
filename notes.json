@@ -97,6 +97,276 @@
       "note": "#### Output the stored log values to screen, SQLite and TensorBoard",
       "collapsed": false,
       "codeCollapsed": false
+    },
+    {
+      "pre": [],
+      "post": [
+        "",
+        "_internal: Optional[_LoggerInternal] = None",
+        "",
+        "",
+        "def internal() -> _LoggerInternal:"
+      ],
+      "code": [
+        "from typing import Union, List, Tuple, Optional, Iterable, Sized",
+        "",
+        "import numpy as np",
+        "",
+        "from .colors import StyleCode",
+        "from .indicators import Indicator",
+        "from .internal import LoggerInternal as _LoggerInternal"
+      ],
+      "note": "#### Imports",
+      "collapsed": false,
+      "codeCollapsed": true
+    },
+    {
+      "pre": [
+        "",
+        "from .colors import StyleCode",
+        "from .indicators import Indicator",
+        "from .internal import LoggerInternal as _LoggerInternal",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "def log(message: Union[str, List[Union[str, Tuple[str, StyleCode]]]],",
+        "        color: List[StyleCode] or StyleCode or None = None,",
+        "        *,"
+      ],
+      "code": [
+        "_internal: Optional[_LoggerInternal] = None",
+        "",
+        "",
+        "def internal() -> _LoggerInternal:",
+        "    global _internal",
+        "    if _internal is None:",
+        "        _internal = _LoggerInternal()",
+        "",
+        "    return _internal"
+      ],
+      "note": "#### Internals\n\nInternals of the logger are hidden",
+      "collapsed": true,
+      "codeCollapsed": true
+    }
+  ],
+  "samples/mnist_loop.py": [
+    {
+      "pre": [
+        "from lab.experiment.pytorch import Experiment",
+        "from lab.logger.indicators import Queue, Histogram",
+        "from lab.logger.util import pytorch as logger_util",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "class MNIST:",
+        "    def __init__(self, c: 'Configs'):",
+        "        self.model = c.model"
+      ],
+      "code": [
+        "class Net(nn.Module):",
+        "    def __init__(self):",
+        "        super().__init__()",
+        "        self.conv1 = nn.Conv2d(1, 20, 5, 1)",
+        "        self.conv2 = nn.Conv2d(20, 50, 5, 1)",
+        "        self.fc1 = nn.Linear(4 * 4 * 50, 500)",
+        "        self.fc2 = nn.Linear(500, 10)",
+        "",
+        "    def forward(self, x):",
+        "        x = F.relu(self.conv1(x))",
+        "        x = F.max_pool2d(x, 2, 2)",
+        "        x = F.relu(self.conv2(x))",
+        "        x = F.max_pool2d(x, 2, 2)",
+        "        x = x.view(-1, 4 * 4 * 50)",
+        "        x = F.relu(self.fc1(x))",
+        "        x = self.fc2(x)",
+        "        return F.log_softmax(x, dim=1)"
+      ],
+      "note": "#### Model",
+      "collapsed": false,
+      "codeCollapsed": true
+    },
+    {
+      "pre": [
+        "            self._train()",
+        "            self._test()",
+        "            self.__log_model_params()",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):",
+        "    epochs: int = 10",
+        ""
+      ],
+      "code": [
+        "class LoaderConfigs(configs.Configs):",
+        "    train_loader: torch.utils.data.DataLoader",
+        "    test_loader: torch.utils.data.DataLoader"
+      ],
+      "note": "#### Data loader configurations\n\nConfigs can be sub-classed",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "class LoaderConfigs(configs.Configs):",
+        "    train_loader: torch.utils.data.DataLoader",
+        "    test_loader: torch.utils.data.DataLoader",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "# The config is inferred from the function name",
+        "@Configs.calc()",
+        "def data_loader_args(c: Configs):"
+      ],
+      "code": [
+        "class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):",
+        "    epochs: int = 10",
+        "",
+        "    loop_step = None",
+        "    loop_count = None",
+        "",
+        "    is_save_models = True",
+        "    batch_size: int = 64",
+        "    test_batch_size: int = 1000",
+        "",
+        "    # Reset epochs so that it'll be computed",
+        "    use_cuda: float = True",
+        "    cuda_device: int = 0",
+        "    seed: int = 5",
+        "    train_log_interval: int = 10",
+        "",
+        "    is_log_parameters: bool = True",
+        "",
+        "    main: MNIST",
+        "",
+        "    device: any",
+        "",
+        "    data_loader_args: Dict",
+        "",
+        "    model: nn.Module",
+        "",
+        "    learning_rate: float = 0.01",
+        "    momentum: float = 0.5",
+        "    optimizer: optim.SGD",
+        "",
+        "    set_seed = None"
+      ],
+      "note": "### Configurations\n\nThis extends `TrainingLoopConfigs` and `LoaderConfigs`",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "    is_save_models = True",
+        "    batch_size: int = 64",
+        "    test_batch_size: int = 1000",
+        "",
+        "    # Reset epochs so that it'll be computed"
+      ],
+      "post": [
+        "",
+        "    is_log_parameters: bool = True",
+        "",
+        "    main: MNIST",
+        ""
+      ],
+      "code": [
+        "    use_cuda: float = True",
+        "    cuda_device: int = 0",
+        "    seed: int = 5",
+        "    train_log_interval: int = 10"
+      ],
+      "note": "Some configurations are set directly in declaration",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "",
+        "    set_seed = None",
+        "",
+        "",
+        "# The config is inferred from the function name"
+      ],
+      "post": [
+        "",
+        "",
+        "# Get dependencies from parameters.",
+        "# The code looks cleaner, but might cause problems when you want to refactor",
+        "# later."
+      ],
+      "code": [
+        "@Configs.calc()",
+        "def data_loader_args(c: Configs):",
+        "    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}"
+      ],
+      "note": "`data_loader_args` configurations are computed based on other configs.\nThe name of the config is taken from the function name.",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "",
+        "# Get dependencies from parameters.",
+        "# The code looks cleaner, but might cause problems when you want to refactor",
+        "# later.",
+        "# It will be harder to use static analysis tools to find the usage of configs."
+      ],
+      "post": [
+        "",
+        "",
+        "def _data_loader(is_train, batch_size, dl_args):",
+        "    return torch.utils.data.DataLoader(",
+        "        datasets.MNIST(str(logger.get_data_path()),"
+      ],
+      "code": [
+        "@Configs.calc()",
+        "def device(*, use_cuda, cuda_device):",
+        "    from lab.util.pytorch import get_device",
+        "",
+        "    return get_device(use_cuda, cuda_device)"
+      ],
+      "note": "Here the function takes in a bunch of configs as **keyword only arguments*, instead of a single `Configs` object.\n\nAlthough the code looks cleaner this is not the advised way because it becomes harder to refactor later. It will be harder to find usages of a config for example.",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "                       ])),",
+        "        batch_size=batch_size, shuffle=True, **dl_args)",
+        "",
+        "",
+        "# Multiple configs can be computed from a single function"
+      ],
+      "post": [
+        "",
+        "",
+        "# Compute multiple results from a single function",
+        "@Configs.calc()",
+        "def model(c: Configs):"
+      ],
+      "code": [
+        "@Configs.calc(['train_loader', 'test_loader'])",
+        "def data_loaders(c: Configs):",
+        "    train = _data_loader(True, c.batch_size, c.data_loader_args)",
+        "    test = _data_loader(False, c.test_batch_size, c.data_loader_args)",
+        "",
+        "    return train, test"
+      ],
+      "note": "Multiple configs can be computed from a single function",
+      "collapsed": false,
+      "codeCollapsed": false
     }
   ]
 }
