@@ -132,12 +132,12 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     main: MNIST
 
 
-@Configs.calc()
+@Configs.calc(Configs.data_loader_args)
 def data_loader_args(c: Configs):
     return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}
 
 
-@Configs.calc()
+@Configs.calc(Configs.device)
 def device(*, use_cuda, cuda_device):
     from lab.util.pytorch import get_device
 
@@ -156,7 +156,7 @@ def _data_loader(is_train, batch_size, dl_args):
         batch_size=batch_size, shuffle=True, **dl_args)
 
 
-@Configs.calc(['train_loader', 'test_loader'])
+@Configs.calc([Configs.train_loader, Configs.test_loader])
 def data_loaders(c: Configs):
     train = _data_loader(True, c.batch_size, c.data_loader_args)
     test = _data_loader(False, c.test_batch_size, c.data_loader_args)
@@ -164,7 +164,7 @@ def data_loaders(c: Configs):
     return train, test
 
 
-@Configs.calc()
+@Configs.calc(Configs.model)
 def model(c: Configs):
     m: Net = Net()
     m.to(c.device)
@@ -176,17 +176,17 @@ def sgd_optimizer(c: Configs):
     return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
 
 
-@Configs.calc('optimizer')
+@Configs.calc(Configs.optimizer)
 def adam_optimizer(c: Configs):
     return optim.Adam(c.model.parameters(), lr=c.learning_rate)
 
 
-@Configs.calc()
+@Configs.calc(Configs.set_seed)
 def set_seed(c: Configs):
     torch.manual_seed(c.seed)
 
 
-@Configs.calc()
+@Configs.calc(Configs.loop_count)
 def loop_count(c: Configs):
     return c.epochs * len(c.train_loader)
 

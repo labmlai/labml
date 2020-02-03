@@ -1,10 +1,12 @@
 from pathlib import PurePath
-from typing import List, Dict, Callable, Type, Optional, \
+from typing import List, Dict, Callable, Optional, \
     Union
 
 from lab import util, logger
+from .config_item import ConfigItem
 from .calculator import Calculator
 from .config_function import ConfigFunction
+from .config_item import ConfigItem
 from .parser import Parser
 from ..logger.colors import Text
 
@@ -15,15 +17,32 @@ _CONFIG_PRINT_LEN = 40
 class Configs:
     _calculators: Dict[str, List[ConfigFunction]] = {}
 
+    def __init_subclass__(cls, **kwargs):
+        configs = {}
+
+        for k, v in cls.__annotations__.items():
+            if not Parser.is_valid(k):
+                continue
+
+            configs[k] = ConfigItem(k, v, cls.__dict__.get(k, None))
+
+        for k, v in cls.__dict__.items():
+            if not Parser.is_valid(k):
+                continue
+
+            configs[k] = ConfigItem(k, cls.__annotations__.get(k, None), v)
+
+        for k, v in configs.items():
+            setattr(cls, k, v)
+
     @classmethod
-    def calc(cls, name: Union[str, List[str]] = None,
+    def calc(cls, name: Union[ConfigItem, str, List[ConfigItem], List[str]] = None,
              option: str = None, *,
              is_append: bool = False):
         if _CALCULATORS not in cls.__dict__:
             cls._calculators = {}
 
         def wrapper(func: Callable):
-
             calc = ConfigFunction(func, config_names=name, option_name=option, is_append=is_append)
             if type(calc.config_names) == str:
                 config_names = [calc.config_names]
