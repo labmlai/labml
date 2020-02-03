@@ -215,57 +215,6 @@
       "codeCollapsed": false
     },
     {
-      "pre": [
-        "    set_seed = None",
-        "",
-        "    main: MNIST",
-        "",
-        ""
-      ],
-      "post": [
-        "",
-        "",
-        "@Configs.calc()",
-        "def device(*, use_cuda, cuda_device):",
-        "    from lab.util.pytorch import get_device"
-      ],
-      "code": [
-        "@Configs.calc()",
-        "def data_loader_args(c: Configs):",
-        "    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}"
-      ],
-      "note": "`data_loader_args` configurations are computed based on other configs.\nThe name of the config is taken from the function name.",
-      "collapsed": false,
-      "codeCollapsed": false
-    },
-    {
-      "pre": [
-        "                           transforms.Normalize((0.1307,), (0.3081,))",
-        "                       ])),",
-        "        batch_size=batch_size, shuffle=True, **dl_args)",
-        "",
-        ""
-      ],
-      "post": [
-        "",
-        "",
-        "@Configs.calc()",
-        "def model(c: Configs):",
-        "    m: Net = Net()"
-      ],
-      "code": [
-        "@Configs.calc(['train_loader', 'test_loader'])",
-        "def data_loaders(c: Configs):",
-        "    train = _data_loader(True, c.batch_size, c.data_loader_args)",
-        "    test = _data_loader(False, c.test_batch_size, c.data_loader_args)",
-        "",
-        "    return train, test"
-      ],
-      "note": "Multiple configs can be computed from a single function",
-      "collapsed": false,
-      "codeCollapsed": false
-    },
-    {
       "pre": [],
       "post": [
         "",
@@ -293,32 +242,6 @@
       "note": "#### Imports",
       "collapsed": false,
       "codeCollapsed": true
-    },
-    {
-      "pre": [
-        "@Configs.calc()",
-        "def data_loader_args(c: Configs):",
-        "    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}",
-        "",
-        ""
-      ],
-      "post": [
-        "",
-        "",
-        "def _data_loader(is_train, batch_size, dl_args):",
-        "    return torch.utils.data.DataLoader(",
-        "        datasets.MNIST(str(logger.get_data_path()),"
-      ],
-      "code": [
-        "@Configs.calc()",
-        "def device(*, use_cuda, cuda_device):",
-        "    from lab.util.pytorch import get_device",
-        "",
-        "    return get_device(use_cuda, cuda_device)"
-      ],
-      "note": "Here the function takes in a bunch of configs as **keyword only arguments*, instead of a single `Configs` object.\n\nAlthough the code looks cleaner this is not the advised way because it becomes harder to refactor later. It will be harder to find usages of a config for example.",
-      "collapsed": false,
-      "codeCollapsed": false
     },
     {
       "pre": [
@@ -361,57 +284,6 @@
         "                logger.write()"
       ],
       "note": "This writes the values stored in the logger to the screen and other destinations",
-      "collapsed": false,
-      "codeCollapsed": false
-    },
-    {
-      "pre": [
-        "class LoaderConfigs(configs.Configs):",
-        "    train_loader: torch.utils.data.DataLoader",
-        "    test_loader: torch.utils.data.DataLoader",
-        "",
-        ""
-      ],
-      "post": [
-        "",
-        "",
-        "@Configs.calc()",
-        "def data_loader_args(c: Configs):",
-        "    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}"
-      ],
-      "code": [
-        "class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):",
-        "    epochs: int = 10",
-        "",
-        "    loop_step = None",
-        "    loop_count = None",
-        "",
-        "    is_save_models = True",
-        "    batch_size: int = 64",
-        "    test_batch_size: int = 1000",
-        "",
-        "    use_cuda: float = True",
-        "    cuda_device: int = 0",
-        "    seed: int = 5",
-        "    train_log_interval: int = 10",
-        "",
-        "    is_log_parameters: bool = True",
-        "",
-        "    device: any",
-        "",
-        "    data_loader_args: Dict",
-        "",
-        "    model: nn.Module",
-        "",
-        "    learning_rate: float = 0.01",
-        "    momentum: float = 0.5",
-        "    optimizer: optim.SGD",
-        "",
-        "    set_seed = None",
-        "",
-        "    main: MNIST"
-      ],
-      "note": "### Configurations\n\nThis extends `TrainingLoopConfigs` and `LoaderConfigs`",
       "collapsed": false,
       "codeCollapsed": false
     },
@@ -461,59 +333,6 @@
         "                            ['set_seed', 'main'])"
       ],
       "note": "We can provide a set of configs to be overridden in a dictionary.\n\nThe third parameter is a list of configs to be evaluated in order. It will try to evaluate `set_seed` as soon as possible and then evaluate `main` and it's dependencies.",
-      "collapsed": false,
-      "codeCollapsed": false
-    },
-    {
-      "pre": [
-        "    m: Net = Net()",
-        "    m.to(c.device)",
-        "    return m",
-        "",
-        ""
-      ],
-      "post": [
-        "",
-        "",
-        "@Configs.calc()",
-        "def set_seed(c: Configs):",
-        "    torch.manual_seed(c.seed)"
-      ],
-      "code": [
-        "@Configs.calc('optimizer')",
-        "def sgd_optimizer(c: Configs):",
-        "    return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)",
-        "",
-        "",
-        "@Configs.calc('optimizer')",
-        "def adam_optimizer(c: Configs):",
-        "    return optim.Adam(c.model.parameters(), lr=c.learning_rate)"
-      ],
-      "note": "Multiple options for configs can be provided.\nName of the option is inferred from the function name unless explicitly provided.",
-      "collapsed": false,
-      "codeCollapsed": false
-    },
-    {
-      "pre": [
-        "@Configs.calc('optimizer')",
-        "def adam_optimizer(c: Configs):",
-        "    return optim.Adam(c.model.parameters(), lr=c.learning_rate)",
-        "",
-        ""
-      ],
-      "post": [
-        "",
-        "",
-        "@Configs.calc()",
-        "def loop_count(c: Configs):",
-        "    return c.epochs * len(c.train_loader)"
-      ],
-      "code": [
-        "@Configs.calc()",
-        "def set_seed(c: Configs):",
-        "    torch.manual_seed(c.seed)"
-      ],
-      "note": "This is actually not a configuration. It sets the seed. Note that the function doesn't return any value.\n\nWhen we run the experiment we can inform the lab to run this as soon as possible. ",
       "collapsed": false,
       "codeCollapsed": false
     },
@@ -605,6 +424,235 @@
         "        logger.add_indicator(Histogram(\"accuracy\", True))"
       ],
       "note": "Setup log indicators",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "class LoaderConfigs(configs.Configs):",
+        "    train_loader: torch.utils.data.DataLoader",
+        "    test_loader: torch.utils.data.DataLoader",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "@Configs.calc(Configs.data_loader_args)",
+        "def data_loader_args(c: Configs):",
+        "    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}"
+      ],
+      "code": [
+        "class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):",
+        "    epochs: int = 10",
+        "",
+        "    loop_step = None",
+        "    loop_count = None",
+        "",
+        "    is_save_models = True",
+        "    batch_size: int = 64",
+        "    test_batch_size: int = 1000",
+        "",
+        "    use_cuda: float = True",
+        "    cuda_device: int = 0",
+        "    seed: int = 5",
+        "    train_log_interval: int = 10",
+        "",
+        "    is_log_parameters: bool = True",
+        "",
+        "    device: any",
+        "",
+        "    data_loader_args: Dict",
+        "",
+        "    model: nn.Module",
+        "",
+        "    learning_rate: float = 0.01",
+        "    momentum: float = 0.5",
+        "    optimizer: optim.SGD",
+        "",
+        "    set_seed = None",
+        "",
+        "    main: MNIST"
+      ],
+      "note": "### Configurations\n\nThis extends `TrainingLoopConfigs` and `LoaderConfigs`",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "    set_seed = None",
+        "",
+        "    main: MNIST",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "@Configs.calc(Configs.device)",
+        "def device(*, use_cuda, cuda_device):",
+        "    from lab.util.pytorch import get_device"
+      ],
+      "code": [
+        "@Configs.calc(Configs.data_loader_args)",
+        "def data_loader_args(c: Configs):",
+        "    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}"
+      ],
+      "note": "`data_loader_args` configurations are computed based on other configs.\nThe name of the config is taken from the function name.",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "@Configs.calc(Configs.data_loader_args)",
+        "def data_loader_args(c: Configs):",
+        "    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "def _data_loader(is_train, batch_size, dl_args):",
+        "    return torch.utils.data.DataLoader(",
+        "        datasets.MNIST(str(logger.get_data_path()),"
+      ],
+      "code": [
+        "@Configs.calc(Configs.device)",
+        "def device(*, use_cuda, cuda_device):",
+        "    from lab.util.pytorch import get_device",
+        "",
+        "    return get_device(use_cuda, cuda_device)"
+      ],
+      "note": "Here the function takes in a bunch of configs as **keyword only arguments*, instead of a single `Configs` object.\n\nAlthough the code looks cleaner this is not the advised way because it becomes harder to refactor later. It will be harder to find usages of a config for example.",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "                           transforms.Normalize((0.1307,), (0.3081,))",
+        "                       ])),",
+        "        batch_size=batch_size, shuffle=True, **dl_args)",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "@Configs.calc(Configs.model)",
+        "def model(c: Configs):",
+        "    m: Net = Net()"
+      ],
+      "code": [
+        "@Configs.calc([Configs.train_loader, Configs.test_loader])",
+        "def data_loaders(c: Configs):",
+        "    train = _data_loader(True, c.batch_size, c.data_loader_args)",
+        "    test = _data_loader(False, c.test_batch_size, c.data_loader_args)",
+        "",
+        "    return train, test"
+      ],
+      "note": "Multiple configs can be computed from a single function",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "    m: Net = Net()",
+        "    m.to(c.device)",
+        "    return m",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "@Configs.calc(Configs.set_seed)",
+        "def set_seed(c: Configs):",
+        "    torch.manual_seed(c.seed)"
+      ],
+      "code": [
+        "@Configs.calc('optimizer')",
+        "def sgd_optimizer(c: Configs):",
+        "    return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)",
+        "",
+        "",
+        "@Configs.calc(Configs.optimizer)",
+        "def adam_optimizer(c: Configs):",
+        "    return optim.Adam(c.model.parameters(), lr=c.learning_rate)"
+      ],
+      "note": "Multiple options for configs can be provided.\nName of the option is inferred from the function name unless explicitly provided.",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "    m: Net = Net()",
+        "    m.to(c.device)",
+        "    return m",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "@Configs.calc(Configs.optimizer)",
+        "def adam_optimizer(c: Configs):",
+        "    return optim.Adam(c.model.parameters(), lr=c.learning_rate)"
+      ],
+      "code": [
+        "@Configs.calc('optimizer')",
+        "def sgd_optimizer(c: Configs):",
+        "    return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)"
+      ],
+      "note": "⚠️ Config name can be passed as a string too. However this is not advised since it doesn't work well with type hints and harder to refractor.",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "@Configs.calc(Configs.optimizer)",
+        "def adam_optimizer(c: Configs):",
+        "    return optim.Adam(c.model.parameters(), lr=c.learning_rate)",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "@Configs.calc(Configs.loop_count)",
+        "def loop_count(c: Configs):",
+        "    return c.epochs * len(c.train_loader)"
+      ],
+      "code": [
+        "@Configs.calc(Configs.set_seed)",
+        "def set_seed(c: Configs):",
+        "    torch.manual_seed(c.seed)"
+      ],
+      "note": "This is actually not a configuration. It sets the seed. Note that the function doesn't return any value.\n\nWhen we run the experiment we can inform the lab to run this as soon as possible. ",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "@Configs.calc(Configs.loop_count)",
+        "def loop_count(c: Configs):",
+        "    return c.epochs * len(c.train_loader)",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "def main():",
+        "    conf = Configs()",
+        "    experiment = Experiment(writers={'sqlite'})"
+      ],
+      "code": [
+        "@Configs.calc()",
+        "def loop_step(c: Configs):",
+        "    return len(c.train_loader)"
+      ],
+      "note": "⚠️ Name of the config can be inferred from the function name. However this is also not advised since it doesn't work well with type hints and static analysis tools.",
       "collapsed": false,
       "codeCollapsed": false
     }
