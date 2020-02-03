@@ -3,6 +3,7 @@ from typing import List, Dict, Type, OrderedDict as OrderedDictType
 from typing import TYPE_CHECKING
 
 from .config_function import ConfigFunction
+from .config_item import ConfigItem
 
 if TYPE_CHECKING:
     from . import Configs
@@ -47,14 +48,15 @@ class Parser:
         self.types = {}
         self.options = {}
         self.list_appends = {}
+        self.config_items = {}
         self.configs = configs
 
         for c in classes:
-            for k, v in c.__annotations__.items():
-                self.__collect_annotation(k, v)
-
+            # for k, v in c.__annotations__.items():
+            #     self.__collect_annotation(k, v)
+            #
             for k, v in c.__dict__.items():
-                self.__collect_value(k, v)
+                self.__collect_config_item(k, v)
 
         for c in classes:
             if _CALCULATORS in c.__dict__:
@@ -85,6 +87,15 @@ class Parser:
 
         return True
 
+    def __collect_config_item(self, k, v: ConfigItem):
+        if not self.is_valid(k):
+            return
+
+        self.values[k] = v.value
+        self.config_items[k] = v
+        if k not in self.types:
+            self.types[k] = v.annotation
+
     def __collect_value(self, k, v):
         if not self.is_valid(k):
             return
@@ -108,7 +119,8 @@ class Parser:
             if k not in self.options:
                 self.options[k] = OrderedDict()
             if v.option_name in self.options[k]:
-                assert v == self.options[k][v.option_name], f"Duplicate option for {k}: {v.option_name}"
+                assert v == self.options[k][
+                    v.option_name], f"Duplicate option for {k}: {v.option_name}"
 
             self.options[k][v.option_name] = v
 
@@ -130,7 +142,7 @@ class Parser:
 
                 self.options[k] = OrderedDict()
                 self.options[k][k] = ConfigFunction(self.types[k],
-                                                    config_names=k,
+                                                    config_names=self.config_items[k],
                                                     option_name=k,
                                                     is_append=False)
                 self.values[k] = k

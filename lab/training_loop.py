@@ -19,7 +19,7 @@ class TrainingLoopConfigs(Configs):
     training_loop: 'TrainingLoop'
 
 
-@TrainingLoopConfigs.calc('training_loop')
+@TrainingLoopConfigs.calc(TrainingLoopConfigs.training_loop)
 def _loop_configs(c: TrainingLoopConfigs):
     return TrainingLoop(loop_count=c.loop_count,
                         loop_step=c.loop_step,

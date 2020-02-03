@@ -4,8 +4,9 @@ import textwrap
 import warnings
 from enum import Enum
 from typing import List, Callable, cast, Set, Union
-
 from typing import TYPE_CHECKING
+
+from .config_item import ConfigItem
 
 if TYPE_CHECKING:
     from . import Configs
@@ -97,7 +98,7 @@ class ConfigFunction:
             return FunctionKind.pass_nothing
         else:
             warnings.warn("Use configs object, because it's easier to refactor, find usage etc",
-                          FutureWarning)
+                          FutureWarning, stacklevel=4)
             assert pos == 0
             return FunctionKind.pass_parameters
 
@@ -116,15 +117,24 @@ class ConfigFunction:
         else:
             return self.func.__name__
 
-    def __get_config_names(self, config_names: Union[str, List[str]]):
+    def __get_config_names(self, config_names: Union[str, ConfigItem, List[ConfigItem], List[str]]):
         if config_names is None:
+            warnings.warn("Use @Config.[name]", FutureWarning, 4)
             return self.func.__name__
         elif type(config_names) == str:
+            warnings.warn("Use @Config.[name] instead of '[name]'", FutureWarning, 4)
             return config_names
+        elif type(config_names) == ConfigItem:
+            return config_names.key
         else:
             assert type(config_names) == list
             assert len(config_names) > 0
-            return config_names
+            if type(config_names[0]) == str:
+                warnings.warn("Use @Config.[name] instead of '[name]'", FutureWarning, 4)
+                return config_names
+            else:
+                assert type(config_names[0]) == ConfigItem
+                return [c.key for c in config_names]
 
     def __get_params(self):
         func_type = type(self.func)
@@ -143,7 +153,7 @@ class ConfigFunction:
             return params
 
     def __init__(self, func, *,
-                 config_names: Union[str, List[str]],
+                 config_names: Union[str, ConfigItem, List[ConfigItem], List[str]],
                  option_name: str,
                  is_append: bool):
         self.func = func
