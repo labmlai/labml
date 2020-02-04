@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import List, Dict, Type, OrderedDict as OrderedDictType
+from typing import List, Dict, Type, OrderedDict as OrderedDictType, Any
 from typing import TYPE_CHECKING
 
 from .config_function import ConfigFunction
@@ -36,6 +36,7 @@ _STANDARD_TYPES = {int, str, bool, Dict, List}
 
 
 class Parser:
+    config_items: Dict[str, ConfigItem]
     options: Dict[str, OrderedDictType[str, ConfigFunction]]
     types: Dict[str, Type]
     values: Dict[str, any]
@@ -91,8 +92,14 @@ class Parser:
         if not self.is_valid(k):
             return
 
-        self.values[k] = v.value
-        self.config_items[k] = v
+        if v.has_value:
+            self.values[k] = v.value
+
+        if k in self.config_items:
+            self.config_items[k].update(v)
+        else:
+            self.config_items[k] = v
+
         if k not in self.types:
             self.types[k] = v.annotation
 

@@ -3,9 +3,9 @@ from typing import List, Dict, Callable, Optional, \
     Union
 
 from lab import util, logger
-from .config_item import ConfigItem
 from .calculator import Calculator
 from .config_function import ConfigFunction
+from .config_item import ConfigItem
 from .config_item import ConfigItem
 from .parser import Parser
 from ..logger.colors import Text
@@ -24,13 +24,17 @@ class Configs:
             if not Parser.is_valid(k):
                 continue
 
-            configs[k] = ConfigItem(k, v, cls.__dict__.get(k, None))
+            configs[k] = ConfigItem(k,
+                                    True, v,
+                                    k in cls.__dict__, cls.__dict__.get(k, None))
 
         for k, v in cls.__dict__.items():
             if not Parser.is_valid(k):
                 continue
 
-            configs[k] = ConfigItem(k, cls.__annotations__.get(k, None), v)
+            configs[k] = ConfigItem(k,
+                                    k in cls.__annotations__, cls.__annotations__.get(k, None),
+                                    True, v)
 
         for k, v in configs.items():
             setattr(cls, k, v)
