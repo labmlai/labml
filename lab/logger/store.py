@@ -32,7 +32,7 @@ class Store:
         ### Add an indicator
         """
 
-        assert indicator.name not in self.indicators
+        assert indicator.name not in self.indicators, f"{indicator.name} already used"
 
         self.indicators[indicator.name] = indicator
 
