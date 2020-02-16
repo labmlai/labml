@@ -460,10 +460,10 @@ exp.start()
 	[dirty]: <strong><span style="color: #DDB62B">"🐛 multiple colors ansi"</span></strong></pre>
 
 
-You can also start from a previously saved checkpoint. A `run_index` of `-1` means that it will load from the last run.
+You can also start from a previously saved checkpoint. A `run_uuid` of `` means that it will load from the last run.
 
 ```python
-exp.start(run_index=-1)
+exp.start(run_uuid='')
 ```
 
 #### Save Checkpoint

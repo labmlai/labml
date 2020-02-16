@@ -19,9 +19,14 @@ def _struct_time_to_date(t: time.struct_time):
 _GLOBAL_STEP = 'global_step'
 
 
+def _generate_uuid() -> str:
+    from uuid import uuid1
+    return uuid1().hex
+
+
 class RunInfo:
     def __init__(self, *,
-                 index: int,
+                 uuid: str,
                  python_file: str,
                  trial_date: str,
                  trial_time: str,
@@ -32,7 +37,7 @@ class RunInfo:
                  experiment_path: PurePath,
                  start_step: int = 0,
                  notes: str = ''):
-        self.index = index
+        self.uuid = uuid
         self.commit = commit
         self.is_dirty = is_dirty
         self.python_file = python_file
@@ -43,7 +48,7 @@ class RunInfo:
         self.start_step = start_step
 
         self.experiment_path = experiment_path
-        self.run_path = experiment_path / str(index)
+        self.run_path = experiment_path / str(uuid)
         self.checkpoint_path = self.run_path / "checkpoints"
         self.numpy_path = self.run_path / "numpy"
 
@@ -71,7 +76,7 @@ class RunInfo:
         ## Convert trial to a dictionary for saving
         """
         return dict(
-            index=self.index,
+            uuid=self.uuid,
             python_file=self.python_file,
             trial_date=self.trial_date,
             trial_time=self.trial_time,
@@ -107,6 +112,16 @@ class RunInfo:
     def __repr__(self):
         return self.__str__()
 
+    def is_after(self, run: 'Run'):
+        if run.trial_date < self.trial_date:
+            return True
+        elif run.trial_date > self.trial_date:
+            return False
+        elif run.trial_time < self.trial_time:
+            return True
+        else:
+            return False
+
 
 class Run(RunInfo):
     """
@@ -128,7 +143,7 @@ class Run(RunInfo):
     diff: Optional[str]
 
     def __init__(self, *,
-                 index: int,
+                 uuid: str,
                  python_file: str,
                  trial_date: str,
                  trial_time: str,
@@ -137,11 +152,12 @@ class Run(RunInfo):
                  commit_message: Optional[str] = None,
                  is_dirty: bool = True,
                  experiment_path: PurePath,
-                 start_step: int = 0):
+                 start_step: int = 0,
+                 notes: str = ''):
         super().__init__(python_file=python_file, trial_date=trial_date, trial_time=trial_time,
-                         comment=comment, index=index, experiment_path=experiment_path,
+                         comment=comment, uuid=uuid, experiment_path=experiment_path,
                          commit=commit, commit_message=commit_message, is_dirty=is_dirty,
-                         start_step=start_step)
+                         start_step=start_step, notes=notes)
 
     @classmethod
     def create(cls, *,
@@ -152,18 +168,10 @@ class Run(RunInfo):
         """
         ## Create a new trial
         """
-        runs = [int(child.name) for child in Path(experiment_path).iterdir()]
-        runs.sort()
-
-        if len(runs) > 0:
-            this_run = runs[-1] + 1
-        else:
-            this_run = 1
-
         return cls(python_file=python_file,
                    trial_date=_struct_time_to_date(trial_time),
                    trial_time=_struct_time_to_time(trial_time),
-                   index=this_run,
+                   uuid=_generate_uuid(),
                    experiment_path=experiment_path,
                    comment=comment)
 
@@ -180,8 +188,8 @@ class Run(RunInfo):
                 f.write(self.diff)
 
 
-def get_checkpoints(experiment_path: PurePath, run_index: int):
-    run_path = experiment_path / str(run_index)
+def get_checkpoints(experiment_path: PurePath, run_uuid: str):
+    run_path = experiment_path / run_uuid
     checkpoint_path = Path(run_path / "checkpoints")
     if not checkpoint_path.exists():
         return {}
@@ -190,70 +198,74 @@ def get_checkpoints(experiment_path: PurePath, run_index: int):
 
 
 def get_runs(experiment_path: PurePath):
-    return {int(child.name) for child in Path(experiment_path).iterdir()}
+    return {child.name for child in Path(experiment_path).iterdir()}
+
+
+def get_last_run(experiment_path: PurePath, runs: Set[str]) -> Run:
+    last: Optional[Run] = None
+    for run_uuid in runs:
+        run_path = experiment_path / run_uuid
+        info_path = run_path / "run.yaml"
+        with open(str(info_path), "r") as file:
+            run = Run.from_dict(experiment_path, util.yaml_load(file.read()))
+            if last is None:
+                last = run
+            elif run.is_after(last):
+                last = run
+
+    return last
 
 
 def get_run_checkpoint(experiment_path: PurePath,
-                       run_index: int = -1, checkpoint: int = -1,
-                       skip_index: Set[int] = None):
-    if skip_index is None:
-        skip_index = {}
+                       run_uuid: Optional[str] = None, checkpoint: int = -1,
+                       skip_uuid: Set[str] = None):
+    if skip_uuid is None:
+        skip_uuid = {}
     runs = get_runs(experiment_path)
-    runs.difference_update(skip_index)
+    runs.difference_update(skip_uuid)
 
     if len(runs) == 0:
-        return None, None, None
+        return None, None
 
-    if run_index < 0:
-        required_ri = np.max(list(runs)) + run_index + 1
+    if run_uuid is None:
+        run_uuid = get_last_run(experiment_path, runs).uuid
+
+    checkpoints = get_checkpoints(experiment_path, run_uuid)
+    if len(checkpoints) == 0:
+        return None, None
+
+    if checkpoint < 0:
+        required_ci = np.max(list(checkpoints)) + checkpoint + 1
     else:
-        required_ri = run_index
+        required_ci = checkpoint
 
-    for ri in range(required_ri, -1, -1):
-        if ri not in runs:
+    for ci in range(required_ci, -1, -1):
+        if ci not in checkpoints:
             continue
 
-        checkpoints = get_checkpoints(experiment_path, ri)
-        if len(checkpoints) == 0:
-            continue
-
-        if checkpoint < 0:
-            required_ci = np.max(list(checkpoints)) + checkpoint + 1
-        else:
-            required_ci = checkpoint
-
-        for ci in range(required_ci, -1, -1):
-            if ci not in checkpoints:
-                continue
-
-            return required_ri, ri, ci
-
-    return required_ri, None, None
+        return run_uuid, ci
 
 
 def get_last_run_checkpoint(experiment_path: PurePath,
-                            run_index: int = -1,
+                            run_uuid: Optional[str] = None,
                             checkpoint: int = -1,
-                            skip_index: Set[int] = None):
-    required_ri, run_index, checkpoint = get_run_checkpoint(experiment_path, run_index, checkpoint,
-                                                            skip_index)
+                            skip_uuid: Set[str] = None):
+    run_uuid, checkpoint = get_run_checkpoint(experiment_path, run_uuid,
+                                              checkpoint, skip_uuid)
 
-    if run_index is None:
+    if run_uuid is None:
         logger.log("Couldn't find a previous run/checkpoint")
         return None, None
-
-    if required_ri > run_index:
-        logger.log(f"Skipped runs [{run_index + 1}...{required_ri}]", Text.warning)
 
     logger.log(["Selected ",
                 ("run", Text.key),
                 " = ",
-                (run_index, Text.value),
+                (run_uuid, Text.value),
                 " ",
                 ("checkpoint", Text.key),
                 " = ",
                 (checkpoint, Text.value)])
 
-    run_path = experiment_path / str(run_index)
+    run_path = experiment_path / str(run_uuid)
     checkpoint_path = run_path / "checkpoints"
     return checkpoint_path / str(checkpoint), checkpoint

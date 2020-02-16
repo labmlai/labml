@@ -139,7 +139,7 @@ class Experiment:
         logger.log([
             (self.name, Text.title),
             ': ',
-            (str(self.run.index), Text.meta)
+            (str(self.run.uuid), Text.meta)
         ])
 
         if self.run.comment != '':
@@ -171,12 +171,12 @@ class Experiment:
         self.configs_processor(run_order)
         logger.new_line()
 
-    def __start_from_checkpoint(self, run_index: int, checkpoint: int):
+    def __start_from_checkpoint(self, run_uuid: Optional[str], checkpoint: int):
         checkpoint_path, global_step = experiment_run.get_last_run_checkpoint(
             self.experiment_path,
-            run_index,
+            run_uuid,
             checkpoint,
-            {self.run.index})
+            {self.run.uuid})
 
         if global_step is None:
             return 0
@@ -187,12 +187,14 @@ class Experiment:
         return global_step
 
     def start(self, *,
-              run_index: Optional[int] = None,
+              run_uuid: Optional[str] = None,
               checkpoint: Optional[int] = None):
-        if run_index is not None:
+        if run_uuid is not None:
             if checkpoint is None:
                 checkpoint = -1
-            global_step = self.__start_from_checkpoint(run_index, checkpoint)
+            if run_uuid == '':
+                run_uuid = None
+            global_step = self.__start_from_checkpoint(run_uuid, checkpoint)
         else:
             global_step = 0
 
