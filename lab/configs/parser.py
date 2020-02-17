@@ -1,5 +1,6 @@
+import warnings
 from collections import OrderedDict
-from typing import List, Dict, Type, OrderedDict as OrderedDictType, Any
+from typing import List, Dict, Type, OrderedDict as OrderedDictType, Any, Set
 from typing import TYPE_CHECKING
 
 from .config_function import ConfigFunction
@@ -28,7 +29,14 @@ def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
 
     classes.reverse()
 
-    return classes
+    unique_classes = []
+    hashes: Set[int] = set()
+    for c in classes:
+        if hash(c) not in hashes:
+            unique_classes.append(c)
+        hashes.add(hash(c))
+
+    return unique_classes
 
 
 RESERVED = {'calc', 'list'}
@@ -126,8 +134,9 @@ class Parser:
             if k not in self.options:
                 self.options[k] = OrderedDict()
             if v.option_name in self.options[k]:
-                assert v == self.options[k][
-                    v.option_name], f"Duplicate option for {k}: {v.option_name}"
+                if v != self.options[k][v.option_name]:
+                    warnings.warn(f"Duplicate option for {k}: {v.option_name}", Warning,
+                                  stacklevel=4)
 
             self.options[k][v.option_name] = v
 
