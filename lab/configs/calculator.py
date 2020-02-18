@@ -126,7 +126,7 @@ class Calculator:
             return
 
         value, funcs = self.__get_property(key)
-        if value is not None:
+        if funcs is None:
             self.__set_configs(key, value)
         elif type(funcs) == list:
             self.__set_configs(key, [f(self.configs) for f in funcs])

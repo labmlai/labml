@@ -1,3 +1,5 @@
+from typing import List
+
 from lab.configs import Configs, ConfigProcessor
 
 
@@ -19,6 +21,8 @@ class Sample(Configs):
     # get from type annotations
     model_obj: SampleModel
 
+    steps: List[any]
+
 
 class SampleChild(Sample):
     def __init__(self, *, test: int):
@@ -30,6 +34,11 @@ class SampleChild(Sample):
 @Sample.calc()
 def input_model(c: Sample):
     return c.workers_count * 2
+
+
+@Sample.calc(Sample.input_model)
+def input_model2(c: Sample):
+    return c.workers_count * 20
 
 
 @Sample.calc('model')
@@ -51,4 +60,6 @@ def model_step(c: Sample):
 configs = Sample()
 
 processor = ConfigProcessor(configs)
-processor.calculate()
+processor()
+
+print(configs.__dict__)

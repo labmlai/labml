@@ -1,6 +1,6 @@
 import warnings
 from collections import OrderedDict
-from typing import List, Dict, Type, OrderedDict as OrderedDictType, Any, Set
+from typing import List, Dict, Type, OrderedDict as OrderedDictType, Set
 from typing import TYPE_CHECKING
 
 from .config_function import ConfigFunction
@@ -142,7 +142,7 @@ class Parser:
 
     def __calculate_missing_values(self):
         for k in self.types:
-            if k in self.values and self.values[k] is not None:
+            if k in self.values:
                 continue
 
             if k in self.list_appends:
