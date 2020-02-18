@@ -290,31 +290,6 @@
     {
       "pre": [
         "",
-        "    is_save_models = True",
-        "    batch_size: int = 64",
-        "    test_batch_size: int = 1000",
-        ""
-      ],
-      "post": [
-        "",
-        "    is_log_parameters: bool = True",
-        "",
-        "    device: any",
-        ""
-      ],
-      "code": [
-        "    use_cuda: float = True",
-        "    cuda_device: int = 0",
-        "    seed: int = 5",
-        "    train_log_interval: int = 10"
-      ],
-      "note": "Some configurations are set directly in declaration",
-      "collapsed": false,
-      "codeCollapsed": false
-    },
-    {
-      "pre": [
-        "",
         "",
         "def main():",
         "    conf = Configs()",
@@ -424,81 +399,6 @@
         "        logger.add_indicator(Histogram(\"accuracy\", True))"
       ],
       "note": "Setup log indicators",
-      "collapsed": false,
-      "codeCollapsed": false
-    },
-    {
-      "pre": [
-        "class LoaderConfigs(configs.Configs):",
-        "    train_loader: torch.utils.data.DataLoader",
-        "    test_loader: torch.utils.data.DataLoader",
-        "",
-        ""
-      ],
-      "post": [
-        "",
-        "",
-        "@Configs.calc(Configs.data_loader_args)",
-        "def data_loader_args(c: Configs):",
-        "    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}"
-      ],
-      "code": [
-        "class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):",
-        "    epochs: int = 10",
-        "",
-        "    loop_step = None",
-        "    loop_count = None",
-        "",
-        "    is_save_models = True",
-        "    batch_size: int = 64",
-        "    test_batch_size: int = 1000",
-        "",
-        "    use_cuda: float = True",
-        "    cuda_device: int = 0",
-        "    seed: int = 5",
-        "    train_log_interval: int = 10",
-        "",
-        "    is_log_parameters: bool = True",
-        "",
-        "    device: any",
-        "",
-        "    data_loader_args: Dict",
-        "",
-        "    model: nn.Module",
-        "",
-        "    learning_rate: float = 0.01",
-        "    momentum: float = 0.5",
-        "    optimizer: optim.SGD",
-        "",
-        "    set_seed = None",
-        "",
-        "    main: MNIST"
-      ],
-      "note": "### Configurations\n\nThis extends `TrainingLoopConfigs` and `LoaderConfigs`",
-      "collapsed": false,
-      "codeCollapsed": false
-    },
-    {
-      "pre": [
-        "    set_seed = None",
-        "",
-        "    main: MNIST",
-        "",
-        ""
-      ],
-      "post": [
-        "",
-        "",
-        "@Configs.calc(Configs.device)",
-        "def device(*, use_cuda, cuda_device):",
-        "    from lab.util.pytorch import get_device"
-      ],
-      "code": [
-        "@Configs.calc(Configs.data_loader_args)",
-        "def data_loader_args(c: Configs):",
-        "    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}"
-      ],
-      "note": "`data_loader_args` configurations are computed based on other configs.\nThe name of the config is taken from the function name.",
       "collapsed": false,
       "codeCollapsed": false
     },
@@ -653,6 +553,106 @@
         "    return len(c.train_loader)"
       ],
       "note": "⚠️ Name of the config can be inferred from the function name. However this is also not advised since it doesn't work well with type hints and static analysis tools.",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "",
+        "    is_save_models = True",
+        "    batch_size: int = 64",
+        "    test_batch_size: int = 1000",
+        ""
+      ],
+      "post": [
+        "",
+        "    is_log_parameters: bool = True",
+        "",
+        "    device: any",
+        ""
+      ],
+      "code": [
+        "    use_cuda: float = True",
+        "    cuda_device: int = 0",
+        "    seed: int = 5",
+        "    train_log_interval: int = 10"
+      ],
+      "note": "Configurations can be set directly in declaration",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "class LoaderConfigs(configs.Configs):",
+        "    train_loader: torch.utils.data.DataLoader",
+        "    test_loader: torch.utils.data.DataLoader",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "@Configs.calc(Configs.data_loader_args)",
+        "def data_loader_args(c: Configs):",
+        "    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}"
+      ],
+      "code": [
+        "class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):",
+        "    epochs: int = 10",
+        "",
+        "    loop_step = 'loop_step'",
+        "    loop_count = 'loop_count'",
+        "",
+        "    is_save_models = True",
+        "    batch_size: int = 64",
+        "    test_batch_size: int = 1000",
+        "",
+        "    use_cuda: float = True",
+        "    cuda_device: int = 0",
+        "    seed: int = 5",
+        "    train_log_interval: int = 10",
+        "",
+        "    is_log_parameters: bool = True",
+        "",
+        "    device: any",
+        "",
+        "    data_loader_args: Dict",
+        "",
+        "    model: nn.Module",
+        "",
+        "    learning_rate: float = 0.01",
+        "    momentum: float = 0.5",
+        "    optimizer: optim.SGD",
+        "",
+        "    set_seed = 'set_seed'",
+        "",
+        "    main: MNIST"
+      ],
+      "note": "### Configurations\n\nThis extends `TrainingLoopConfigs` and `LoaderConfigs`",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "    set_seed = 'set_seed'",
+        "",
+        "    main: MNIST",
+        "",
+        ""
+      ],
+      "post": [
+        "",
+        "",
+        "@Configs.calc(Configs.device)",
+        "def device(*, use_cuda, cuda_device):",
+        "    from lab.util.pytorch import get_device"
+      ],
+      "code": [
+        "@Configs.calc(Configs.data_loader_args)",
+        "def data_loader_args(c: Configs):",
+        "    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}"
+      ],
+      "note": "`data_loader_args` configurations are computed based on other configs.\nThe name of the config is taken from the function name.",
       "collapsed": false,
       "codeCollapsed": false
     }
@@ -866,6 +866,136 @@
         "        logger.internal().save_indicators(self.run.indicators_path)"
       ],
       "note": "## Experiment\n\nEach experiment has major differences in configurations or algorithms.\nA single experiment can have multiple runs with different hyper-parameters.",
+      "collapsed": false,
+      "codeCollapsed": false
+    }
+  ],
+  "samples/logger_sections.py": [
+    {
+      "pre": [
+        "",
+        "from lab import logger",
+        "",
+        "",
+        "def simple_section():"
+      ],
+      "post": [
+        "",
+        "",
+        "def unsuccessful_section():",
+        "    with logger.section(\"Unsuccessful section\"):",
+        "        time.sleep(1)"
+      ],
+      "code": [
+        "    with logger.section(\"Simple section\"):",
+        "        # code to load data",
+        "        time.sleep(2)"
+      ],
+      "note": "Sections let you group code, and outputs the timings to the console.\n\n```\nSimple section...[DONE]\t2,003.33ms\n```",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "        # code to load data",
+        "        time.sleep(2)",
+        "",
+        "",
+        "def unsuccessful_section():"
+      ],
+      "post": [
+        "",
+        "",
+        "def progress():",
+        "    with logger.section(\"Progress\", total_steps=100):",
+        "        for i in range(100):"
+      ],
+      "code": [
+        "    with logger.section(\"Unsuccessful section\"):",
+        "        time.sleep(1)",
+        "        logger.set_successful(False)"
+      ],
+      "note": "You can mark if the section was unsuccessful.\n\n```\nUnsuccessful section...[FAIL]\t1,004.93ms\n```",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "        time.sleep(1)",
+        "        logger.set_successful(False)",
+        "",
+        "",
+        "def progress():"
+      ],
+      "post": [
+        "",
+        "",
+        "def loop_section():",
+        "    for step in logger.loop(range(0, 10)):",
+        "        with logger.section(\"Step\"):"
+      ],
+      "code": [
+        "    with logger.section(\"Progress\", total_steps=100):",
+        "        for i in range(100):",
+        "            time.sleep(0.1)",
+        "            # Multiple training steps in the inner loop",
+        "            logger.progress(i)"
+      ],
+      "note": "Sections can show progress.\n\n```\nProgress    4%\t4,333.51ms\n```",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "            # Multiple training steps in the inner loop",
+        "            logger.progress(i)",
+        "",
+        "",
+        "def loop_section():"
+      ],
+      "post": [
+        "",
+        "",
+        "def loop_partial_section():",
+        "    for step in logger.loop(range(0, 10)):",
+        "        with logger.section(\"Step\", is_partial=True):"
+      ],
+      "code": [
+        "    for step in logger.loop(range(0, 10)):",
+        "        with logger.section(\"Step\"):",
+        "            time.sleep(0.5)",
+        "        with logger.section(\"Step2\"):",
+        "            time.sleep(0.1)",
+        "        logger.write()",
+        "    logger.new_line()"
+      ],
+      "note": "Loop is a monitored iterator that keeps track of timing and manages console output. You can have sections inside a loop.\n\n```\n 9:  Step: 100% 478ms  Step2: 100% 98ms    608ms  0:00m/  0:00m\n```",
+      "collapsed": false,
+      "codeCollapsed": false
+    },
+    {
+      "pre": [
+        "        logger.write()",
+        "    logger.new_line()",
+        "",
+        "",
+        "def loop_partial_section():"
+      ],
+      "post": [
+        "",
+        "",
+        "if __name__ == '__main__':",
+        "    simple_section()",
+        "    unsuccessful_section()"
+      ],
+      "code": [
+        "    for step in logger.loop(range(0, 10)):",
+        "        with logger.section(\"Step\", is_partial=True):",
+        "            time.sleep(0.5)",
+        "            logger.progress((step % 5 + 1) / 5)",
+        "        logger.write()"
+      ],
+      "note": "A partial section can progressively do work inside a loop.\n\n```\n       9:  Step:  80% 2,337ms    503ms  0:00m/  0:00m  \n```",
       "collapsed": false,
       "codeCollapsed": false
     }

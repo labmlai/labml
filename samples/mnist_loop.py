@@ -103,8 +103,8 @@ class LoaderConfigs(configs.Configs):
 class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     epochs: int = 10
 
-    loop_step = None
-    loop_count = None
+    loop_step = 'loop_step'
+    loop_count = 'loop_count'
 
     is_save_models = True
     batch_size: int = 64
@@ -127,7 +127,7 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     momentum: float = 0.5
     optimizer: optim.SGD
 
-    set_seed = None
+    set_seed = 'set_seed'
 
     main: MNIST
 
