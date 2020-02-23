@@ -36,7 +36,8 @@ class RunInfo:
                  is_dirty: bool = True,
                  experiment_path: PurePath,
                  start_step: int = 0,
-                 notes: str = ''):
+                 notes: str = '',
+                 tags: List[str]):
         self.uuid = uuid
         self.commit = commit
         self.is_dirty = is_dirty
@@ -61,6 +62,7 @@ class RunInfo:
         self.indicators_path = self.run_path / "indicators.yaml"
         self.configs_path = self.run_path / "configs.yaml"
         self.notes = notes
+        self.tags = tags
 
     @classmethod
     def from_dict(cls, experiment_path: PurePath, data: Dict[str, any]):
@@ -85,7 +87,8 @@ class RunInfo:
             commit_message=self.commit_message,
             is_dirty=self.is_dirty,
             start_step=self.start_step,
-            notes=self.notes
+            notes=self.notes,
+            tags=self.tags
         )
 
     def pretty_print(self) -> List[str]:
@@ -153,18 +156,20 @@ class Run(RunInfo):
                  is_dirty: bool = True,
                  experiment_path: PurePath,
                  start_step: int = 0,
-                 notes: str = ''):
+                 notes: str = '',
+                 tags: List[str]):
         super().__init__(python_file=python_file, trial_date=trial_date, trial_time=trial_time,
                          comment=comment, uuid=uuid, experiment_path=experiment_path,
                          commit=commit, commit_message=commit_message, is_dirty=is_dirty,
-                         start_step=start_step, notes=notes)
+                         start_step=start_step, notes=notes, tags=tags)
 
     @classmethod
     def create(cls, *,
                experiment_path: PurePath,
                python_file: str,
                trial_time: time.struct_time,
-               comment: str):
+               comment: str,
+               tags: List[str]):
         """
         ## Create a new trial
         """
@@ -173,7 +178,8 @@ class Run(RunInfo):
                    trial_time=_struct_time_to_time(trial_time),
                    uuid=_generate_uuid(),
                    experiment_path=experiment_path,
-                   comment=comment)
+                   comment=comment,
+                   tags=tags)
 
     def save_info(self):
         run_path = Path(self.run_path)

@@ -33,7 +33,8 @@ class Experiment:
                  python_file: Optional[str],
                  comment: Optional[str],
                  writers: Set[str] = None,
-                 ignore_callers: Set[str] = None):
+                 ignore_callers: Set[str] = None,
+                 tags: Optional[Set[str]] = None):
         """
         ### Create the experiment
 
@@ -81,11 +82,15 @@ class Experiment:
         if not experiment_path.exists():
             experiment_path.mkdir(parents=True)
 
+        if tags is None:
+            tags = set(name.split('_'))
+
         self.run = Run.create(
             experiment_path=self.experiment_path,
             python_file=python_file,
             trial_time=time.localtime(),
-            comment=comment)
+            comment=comment,
+            tags=list(tags))
 
         repo = git.Repo(self.lab.path)
 
