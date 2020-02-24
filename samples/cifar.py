@@ -1,5 +1,3 @@
-from typing import Dict
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -16,23 +14,28 @@ from lab.logger.util import pytorch as logger_util
 
 class Net(nn.Module):
     def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5, 1)
-        self.conv2 = nn.Conv2d(20, 50, 5, 1)
-        self.fc1 = nn.Linear(4 * 4 * 50, 500)
-        self.fc2 = nn.Linear(500, 10)
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
 
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.max_pool2d(x, 2, 2)
-        x = F.relu(self.conv2(x))
-        x = F.max_pool2d(x, 2, 2)
-        x = x.view(-1, 4 * 4 * 50)
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = x.view(-1, 16 * 5 * 5)
         x = F.relu(self.fc1(x))
-        return self.fc2(x)
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
 
 
-class MNIST:
+net = Net()
+
+
+class CIFAR:
     def __init__(self, c: 'Configs'):
         self.model = c.model
         self.device = c.device
@@ -102,6 +105,8 @@ class LoaderConfigs(configs.Configs):
 class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     epochs: int = 10
 
+    transforms: any
+
     loop_step = 'loop_step'
     loop_count = 'loop_count'
 
@@ -118,8 +123,6 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
     device: any
 
-    data_loader_args: Dict
-
     model: nn.Module
 
     learning_rate: float = 0.01
@@ -128,12 +131,7 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
     set_seed = 'set_seed'
 
-    main: MNIST
-
-
-@Configs.calc(Configs.data_loader_args)
-def data_loader_args(c: Configs):
-    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}
+    main: CIFAR
 
 
 @Configs.calc(Configs.device)
@@ -143,22 +141,26 @@ def device(*, use_cuda, cuda_device):
     return get_device(use_cuda, cuda_device)
 
 
-def _data_loader(is_train, batch_size, dl_args):
+@Configs.calc(Configs.transforms)
+def cifar_transforms():
+    return transforms.Compose(
+        [transforms.ToTensor(),
+         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+
+
+def _data_loader(is_train, batch_size, trans):
     return torch.utils.data.DataLoader(
-        datasets.MNIST(str(logger.get_data_path()),
-                       train=is_train,
-                       download=True,
-                       transform=transforms.Compose([
-                           transforms.ToTensor(),
-                           transforms.Normalize((0.1307,), (0.3081,))
-                       ])),
-        batch_size=batch_size, shuffle=True, **dl_args)
+        datasets.CIFAR10(str(logger.get_data_path()),
+                         train=is_train,
+                         download=True,
+                         transform=trans),
+        batch_size=batch_size, shuffle=True)
 
 
 @Configs.calc([Configs.train_loader, Configs.test_loader])
 def data_loaders(c: Configs):
-    train = _data_loader(True, c.batch_size, c.data_loader_args)
-    test = _data_loader(False, c.test_batch_size, c.data_loader_args)
+    train = _data_loader(True, c.batch_size, c.transforms)
+    test = _data_loader(False, c.test_batch_size, c.transforms)
 
     return train, test
 
