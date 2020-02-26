@@ -72,7 +72,7 @@ class Calculator:
             return dep
 
         assert key in self.values, f"Cannot compute {key}"
-        assert self.values[key] is not None, f"Cannot compute {key}"
+        # assert self.values[key] is not None, f"Cannot compute {key}"
 
         return set()
 

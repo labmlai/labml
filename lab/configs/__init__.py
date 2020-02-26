@@ -158,6 +158,10 @@ class ConfigProcessor:
             else:
                 parts.append((option, Text.none))
 
+        if value is None and option is None:
+            parts.append(("None", Text.value))
+            parts.append('\t')
+
         if len(other_options) > 0:
             parts.append(('\t[', Text.subtle))
             for i, opt in enumerate(other_options):
