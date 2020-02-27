@@ -64,7 +64,54 @@ def store(*args, **kwargs):
     internal().store(*args, **kwargs)
 
 
+@overload
 def write():
+    ...
+
+
+@overload
+def write(global_step: int):
+    ...
+
+
+@overload
+def write(values: Dict[str, any]):
+    ...
+
+
+@overload
+def write(name: str, value: any):
+    ...
+
+
+@overload
+def write(**kwargs: any):
+    ...
+
+
+@overload
+def write(global_step: int, values: Dict[str, any]):
+    ...
+
+
+@overload
+def write(global_step: int, name: str, value: any):
+    ...
+
+
+@overload
+def write(global_step: int, **kwargs: any):
+    ...
+
+
+def write(*args, **kwargs):
+    if len(args) > 0 and type(args[0]) == int:
+        set_global_step(args[0])
+        args = args[1:]
+
+    if len(args) > 0 or len(kwargs.keys()) > 0:
+        store(*args, **kwargs)
+
     internal().write()
 
 
@@ -72,12 +119,12 @@ def new_line():
     internal().new_line()
 
 
-def set_global_step(global_step: int):
+def set_global_step(global_step: Optional[int]):
     internal().set_global_step(global_step)
 
 
-def add_global_step(global_step: int = 1):
-    internal().add_global_step(global_step)
+def add_global_step(increment_global_step: int = 1):
+    internal().add_global_step(increment_global_step)
 
 
 def get_global_step() -> int:

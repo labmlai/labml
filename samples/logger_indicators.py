@@ -10,9 +10,7 @@ def loop():
 
     logger.add_indicator(Queue("reward", 10, True))
     for i in range(100):
-        logger.add_global_step(1)
-        logger.store(loss=100 / (i + 1), reward=math.pow(2, (i + 1)))
-        logger.write()
+        logger.write(i, loss=100 / (i + 1), reward=math.pow(2, (i + 1)))
         if (i + 1) % 2 == 0:
             logger.new_line()
 

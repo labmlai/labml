@@ -121,20 +121,20 @@ class LoggerInternal:
 
         self.__store.store(*args, **kwargs)
 
-    def set_global_step(self, global_step: int):
+    def set_global_step(self, global_step: Optional[int]):
         self.__global_step = global_step
 
-    def set_start_global_step(self, global_step: int):
+    def set_start_global_step(self, global_step: Optional[int]):
         self.__start_global_step = global_step
 
-    def add_global_step(self, global_step: int = 1):
+    def add_global_step(self, increment_global_step: int = 1):
         if self.__global_step is None:
             if self.__start_global_step is not None:
                 self.__global_step = self.__start_global_step
             else:
                 self.__global_step = 0
 
-        self.__global_step += global_step
+        self.__global_step += increment_global_step
 
     def new_line(self):
         self.__destination.new_line()
