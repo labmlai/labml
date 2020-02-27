@@ -22,14 +22,7 @@ class CheckpointSaver:
 
 
 class LoggerInternal:
-    """
-    ## 🖨 Logger class
-    """
-
     def __init__(self):
-        """
-        ### Initializer
-        """
         self.__store = Store(self)
         self.__writers: List[Writer] = []
 
@@ -56,18 +49,20 @@ class LoggerInternal:
         self.__data_path = data_path
 
     def get_data_path(self) -> PurePath:
-        return self.__data_path
+        if self.__data_path is not None:
+            return self.__data_path
+        else:
+            return PurePath('./data')
 
     def set_numpy_path(self, numpy_path: PurePath):
         self.__numpy_path = numpy_path
 
     def save_numpy(self, name: str, array: np.ndarray):
-        """
-        ## Save a single numpy array
+        if self.__numpy_path is not None:
+            numpy_path = pathlib.Path(self.__numpy_path)
+        else:
+            numpy_path = pathlib.Path('./numpy')
 
-        This is used to save processed data
-        """
-        numpy_path = pathlib.Path(self.__numpy_path)
         if not numpy_path.exists():
             numpy_path.mkdir(parents=True)
         file_name = name + ".npy"
@@ -98,10 +93,6 @@ class LoggerInternal:
 
     def log(self, parts: List[Union[str, Tuple[str, StyleCode]]], *,
             is_new_line=True):
-        """
-        ### Print a message with different colors.
-        """
-
         self.__destination.log(parts, is_new_line=is_new_line)
 
     def add_indicator(self, indicator: Indicator):
@@ -111,14 +102,6 @@ class LoggerInternal:
         self.__store.save_indicators(file)
 
     def store(self, *args, **kwargs):
-        """
-        ### Stores a value in the logger.
-
-        This may be added to a queue, a list or stored as
-        a TensorBoard histogram depending on the
-        type of the indicator.
-        """
-
         self.__store.store(*args, **kwargs)
 
     def set_global_step(self, global_step: Optional[int]):
@@ -146,10 +129,6 @@ class LoggerInternal:
             return False
 
     def write(self):
-        """
-        ### Output the stored log values to screen and TensorBoard summaries.
-        """
-
         global_step = self.global_step
 
         for w in self.__writers:
@@ -295,9 +274,6 @@ class LoggerInternal:
         self.__sections.pop(-1)
 
     def delayed_keyboard_interrupt(self):
-        """
-        ### Create a section with a delayed keyboard interrupt
-        """
         return DelayedKeyboardInterrupt(self)
 
     def _log_key_value(self, items: List[Tuple[any, any]], is_show_count=True):
@@ -319,10 +295,6 @@ class LoggerInternal:
                 " item(s)"])
 
     def info(self, *args, **kwargs):
-        """
-        ### 🎨 Pretty prints a set of values.
-        """
-
         if len(args) == 0:
             self._log_key_value([(k, v) for k, v in kwargs.items()], False)
         elif len(args) == 1:
