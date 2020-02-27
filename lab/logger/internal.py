@@ -121,10 +121,10 @@ class LoggerInternal:
 
         self.__store.store(*args, **kwargs)
 
-    def set_global_step(self, global_step):
+    def set_global_step(self, global_step: int):
         self.__global_step = global_step
 
-    def set_start_global_step(self, global_step):
+    def set_start_global_step(self, global_step: int):
         self.__start_global_step = global_step
 
     def add_global_step(self, global_step: int = 1):

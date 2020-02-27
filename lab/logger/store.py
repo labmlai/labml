@@ -41,10 +41,6 @@ class Store:
         if self.__indicators_file is not None:
             self.save_indicators(self.__indicators_file)
 
-    def _store_list(self, items: List[Dict[str, float]]):
-        for item in items:
-            self.store(**item)
-
     def _store_kv(self, k, v):
         if k not in self.indicators:
             self.__logger.add_indicator(Scalar(k, True))
@@ -69,15 +65,12 @@ class Store:
             self._store_kvs(**kwargs)
         elif len(args) == 1:
             assert not kwargs
-            assert isinstance(args[0], list)
-            self._store_list(args[0])
+            assert isinstance(args[0], dict)
+            self._store_kvs(**args[0])
         elif len(args) == 2:
+            assert not kwargs
             assert isinstance(args[0], str)
-            if isinstance(args[1], list):
-                for v in args[1]:
-                    self._store_kv(args[0], v)
-            else:
-                self._store_kv(args[0], args[1])
+            self._store_kv(args[0], args[1])
 
     def clear(self):
         for k, v in self.indicators.items():

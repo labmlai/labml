@@ -13,16 +13,19 @@ def _to_numpy(value):
     type_ = type(value)
 
     if type_ == float or type_ == int:
-        return value
+        return np.array(value).ravel()
+
+    if type_ == list:
+        return np.array(value).ravel()
 
     if type_ == np.ndarray:
-        return value
+        return value.ravel()
 
     if torch is not None:
         if type_ == torch.nn.parameter.Parameter:
-            return value.data.cpu().numpy()
+            return value.data.cpu().numpy().ravel()
         if type_ == torch.Tensor:
-            return value.data.cpu().numpy()
+            return value.data.cpu().numpy().ravel()
 
     assert False, f"Unknown type {type_}"
 

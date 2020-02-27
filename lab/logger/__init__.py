@@ -1,4 +1,4 @@
-from typing import Union, List, Tuple, Optional, Iterable, Sized
+from typing import Union, List, Tuple, Optional, Iterable, Sized, Dict, overload
 
 import numpy as np
 
@@ -17,6 +17,20 @@ def internal() -> _LoggerInternal:
     return _internal
 
 
+@overload
+def log(message: str, color: Optional[Union[List[StyleCode], StyleCode]] = None,
+        *,
+        is_new_line=True):
+    ...
+
+
+@overload
+def log(messages: List[Union[str, Tuple[str, StyleCode]]],
+        *,
+        is_new_line=True):
+    ...
+
+
 def log(message: Union[str, List[Union[str, Tuple[str, StyleCode]]]],
         color: List[StyleCode] or StyleCode or None = None,
         *,
@@ -31,6 +45,21 @@ def add_indicator(indicator: Indicator):
     internal().add_indicator(indicator)
 
 
+@overload
+def store(values: Dict[str, any]):
+    ...
+
+
+@overload
+def store(name: str, value: any):
+    ...
+
+
+@overload
+def store(**kwargs: any):
+    ...
+
+
 def store(*args, **kwargs):
     internal().store(*args, **kwargs)
 
@@ -43,7 +72,7 @@ def new_line():
     internal().new_line()
 
 
-def set_global_step(global_step):
+def set_global_step(global_step: int):
     internal().set_global_step(global_step)
 
 
@@ -101,6 +130,26 @@ def finish_loop():
 
 def save_checkpoint():
     internal().save_checkpoint()
+
+
+@overload
+def info(items: Dict):
+    ...
+
+
+@overload
+def info(items: List):
+    ...
+
+
+@overload
+def info(*items: any):
+    ...
+
+
+@overload
+def info(**items: any):
+    ...
 
 
 def info(*args, **kwargs):
