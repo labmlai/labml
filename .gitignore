@@ -1,8 +1,8 @@
-data/
+/data
 .ipynb_checkpoints/
 .idea/
 __pycache__/
-logs/
+/logs
 .DS_Store
 temp.ipynb
 .*.swp
