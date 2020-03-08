@@ -38,7 +38,7 @@ logs
 
 ### [🎛 Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
 <p align="center">
-  <img style="max-width:100%;" src="https://raw.githubusercontent.com/vpj/lab/master/images/dashboard.png" width="320" title="Logo">
+  <img style="max-width:100%;" src="https://raw.githubusercontent.com/vpj/lab/master/images/dashboard.png" width="1080" title="Logo">
 </p>
 
 The web dashboard helps navigate experiments and multiple runs.
