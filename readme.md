@@ -11,6 +11,8 @@ This doesn't have any user interface.
 Experiment results are maintained in a folder structure,
 and there is a Python API to access them.
 
+# [Slack workspace for discussions](https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ)
+
 ## Features
 
 ### Organize Experiments
