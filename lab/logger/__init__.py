@@ -166,9 +166,24 @@ def set_successful(is_successful=True):
     internal().set_successful(is_successful)
 
 
+@overload
+def loop(iterator_: int, *,
+         is_print_iteration_time=True):
+    ...
+
+
+@overload
 def loop(iterator_: range, *,
          is_print_iteration_time=True):
-    return internal().loop(iterator_, is_print_iteration_time=is_print_iteration_time)
+    ...
+
+
+def loop(iterator_: Union[range, int], *,
+         is_print_iteration_time=True):
+    if type(iterator_) == int:
+        return internal().loop(range(iterator_), is_print_iteration_time=is_print_iteration_time)
+    else:
+        return internal().loop(iterator_, is_print_iteration_time=is_print_iteration_time)
 
 
 def finish_loop():

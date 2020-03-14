@@ -1,7 +1,7 @@
 import pathlib
 import random
 import string
-from typing import Dict
+from typing import Dict, Set, List
 
 import yaml
 
@@ -44,6 +44,26 @@ def is_ipynb():
             return False
     except NameError:
         return False
+
+
+def get_caller_file(ignore_callers: Set[str] = None):
+    if ignore_callers is None:
+        ignore_callers = {}
+
+    import inspect
+
+    frames: List[inspect.FrameInfo] = inspect.stack()
+    lab_src = pathlib.PurePath(__file__).parent.parent
+
+    for f in frames:
+        module_path = pathlib.PurePath(f.filename)
+        if str(module_path).startswith(str(lab_src)):
+            continue
+        if str(module_path) in ignore_callers:
+            continue
+        return str(module_path)
+
+    return ''
 
 
 if __name__ == '__main__':

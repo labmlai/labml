@@ -12,7 +12,7 @@ from lab.lab import Lab
 from lab.logger.colors import Text
 from lab.logger.internal import CheckpointSaver
 from lab.logger.writers import sqlite, tensorboard
-from lab.util import is_ipynb
+from lab.util import is_ipynb, get_caller_file
 
 
 class Experiment:
@@ -50,7 +50,7 @@ class Experiment:
         """
 
         if python_file is None:
-            python_file = self.__get_caller_file(ignore_callers)
+            python_file = get_caller_file(ignore_callers)
 
         if python_file.startswith('<ipython'):
             assert is_ipynb()
@@ -111,26 +111,6 @@ class Experiment:
             logger.internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
 
         logger.internal().set_numpy_path(self.run.numpy_path)
-
-    @staticmethod
-    def __get_caller_file(ignore_callers: Set[str] = None):
-        if ignore_callers is None:
-            ignore_callers = {}
-
-        import inspect
-
-        frames: List[inspect.FrameInfo] = inspect.stack()
-        lab_src = pathlib.PurePath(__file__).parent.parent
-
-        for f in frames:
-            module_path = pathlib.PurePath(f.filename)
-            if str(module_path).startswith(str(lab_src)):
-                continue
-            if str(module_path) in ignore_callers:
-                continue
-            return str(module_path)
-
-        return ''
 
     def _create_checkpoint_saver(self) -> Optional[CheckpointSaver]:
         return None

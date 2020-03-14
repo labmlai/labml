@@ -14,6 +14,8 @@ from .loop import Loop
 from .sections import Section, OuterSection
 from .store import Store
 from .writers import Writer, ScreenWriter
+from ..lab import Lab
+from ..util import get_caller_file
 
 
 class CheckpointSaver:
@@ -52,7 +54,9 @@ class LoggerInternal:
         if self.__data_path is not None:
             return self.__data_path
         else:
-            return PurePath('./data')
+            python_file = get_caller_file()
+            lab = Lab(python_file)
+            return lab.data_path
 
     def set_numpy_path(self, numpy_path: PurePath):
         self.__numpy_path = numpy_path
