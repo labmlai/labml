@@ -124,7 +124,7 @@ def set_global_step(global_step: Optional[int]):
 
 
 def add_global_step(increment_global_step: int = 1):
-    internal().add_global_step(increment_global_step)
+    internal().add_global_step(int(increment_global_step))
 
 
 def get_global_step() -> int:
