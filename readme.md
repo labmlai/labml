@@ -7,11 +7,10 @@
 This library helps you organize and track
  machine learning experiments.
  
-# [Slack workspace for discussions](https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ)	
-
 [🎛 Dashboard](https://github.com/vpj/lab_dashboard) is the web 
  interface for Lab.
 
+# [Slack workspace for discussions](https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ)	
 
 ## Features
 
