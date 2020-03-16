@@ -48,7 +48,7 @@ class ScreenWriter(Writer):
         decimals = max(1, decimals)
         decimals = min(6, decimals)
 
-        fmt = "{v:8." + str(decimals) + "f}"
+        fmt = "{v:8,." + str(decimals) + "f}"
         if v is None:
             return self.get_empty_string(8, decimals)
         else:
