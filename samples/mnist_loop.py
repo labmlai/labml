@@ -118,8 +118,6 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
     device: any
 
-    data_loader_args: Dict
-
     model: nn.Module
 
     learning_rate: float = 0.01
@@ -131,11 +129,6 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     main: MNIST
 
 
-@Configs.calc(Configs.data_loader_args)
-def data_loader_args(c: Configs):
-    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}
-
-
 @Configs.calc(Configs.device)
 def device(*, use_cuda, cuda_device):
     from lab.util.pytorch import get_device
@@ -143,7 +136,7 @@ def device(*, use_cuda, cuda_device):
     return get_device(use_cuda, cuda_device)
 
 
-def _data_loader(is_train, batch_size, dl_args):
+def _data_loader(is_train, batch_size):
     return torch.utils.data.DataLoader(
         datasets.MNIST(str(logger.get_data_path()),
                        train=is_train,
@@ -152,13 +145,13 @@ def _data_loader(is_train, batch_size, dl_args):
                            transforms.ToTensor(),
                            transforms.Normalize((0.1307,), (0.3081,))
                        ])),
-        batch_size=batch_size, shuffle=True, **dl_args)
+        batch_size=batch_size, shuffle=True)
 
 
 @Configs.calc([Configs.train_loader, Configs.test_loader])
 def data_loaders(c: Configs):
-    train = _data_loader(True, c.batch_size, c.data_loader_args)
-    test = _data_loader(False, c.test_batch_size, c.data_loader_args)
+    train = _data_loader(True, c.batch_size)
+    test = _data_loader(False, c.test_batch_size)
 
     return train, test
 

@@ -150,8 +150,6 @@ class Configs(LoopConfigs, LoaderConfigs):
 
     device: torch.device
 
-    data_loader_args: Dict
-
     model: nn.Module
 
     learning_rate: float = 0.01
@@ -161,12 +159,6 @@ class Configs(LoopConfigs, LoaderConfigs):
     set_seed = None
 
     not_used: bool = 10
-
-
-# The config is inferred from the function name
-@Configs.calc()
-def data_loader_args(c: Configs):
-    return {'num_workers': 1, 'pin_memory': True} if c.device.type == 'cuda' else {}
 
 
 # Get dependencies from parameters.
@@ -180,7 +172,7 @@ def device(*, use_cuda, cuda_device):
     return get_device(use_cuda, cuda_device)
 
 
-def _data_loader(is_train, batch_size, dl_args):
+def _data_loader(is_train, batch_size):
     return torch.utils.data.DataLoader(
         datasets.MNIST(str(logger.get_data_path()),
                        train=is_train,
@@ -189,15 +181,15 @@ def _data_loader(is_train, batch_size, dl_args):
                            transforms.ToTensor(),
                            transforms.Normalize((0.1307,), (0.3081,))
                        ])),
-        batch_size=batch_size, shuffle=True, **dl_args)
+        batch_size=batch_size, shuffle=True)
 
 
 # Multiple configs can be computed from a single function
 @Configs.calc(['train_loader', 'test_loader'])
 def data_loaders(c: Configs):
-    train = _data_loader(True, c.batch_size, c.data_loader_args)
+    train = _data_loader(True, c.batch_size)
 
-    test = _data_loader(False, c.test_batch_size, c.data_loader_args)
+    test = _data_loader(False, c.test_batch_size)
 
     return train, test
 
