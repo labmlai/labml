@@ -20,6 +20,7 @@ class ScreenWriter(Writer):
         self._estimates = {}
         self._beta = 0.9
         self._beta_pow = {}
+        self._last_printed_value = {}
 
     def update_estimate(self, k, v):
         if k not in self._estimates:
@@ -65,13 +66,17 @@ class ScreenWriter(Writer):
 
             parts.append((f" {ind.name}: ", None))
 
-            if ind.is_empty():
-                value = self.get_value_string(ind.name, None)
-            else:
+            if not ind.is_empty():
                 v = ind.get_mean()
                 self.update_estimate(ind.name, v)
                 value = self.get_value_string(ind.name, v)
-
-            parts.append((value, Text.value))
+                self._last_printed_value[ind.name] = value
+                parts.append((value, Text.value))
+            elif ind.name in self._last_printed_value:
+                value = self._last_printed_value[ind.name]
+                parts.append((value, Text.subtle))
+            else:
+                value = self.get_value_string(ind.name, None)
+                parts.append((value, Text.subtle))
 
         return parts
