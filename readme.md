@@ -7,16 +7,17 @@
 This library helps you organize and track
  machine learning experiments.
  
-[🎛 Dashboard](https://github.com/vpj/lab_dashboard) is the web 
- interface for Lab.
+**💬 [Slack workspace for discussions](https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ)**	
 
-# [Slack workspace for discussions](https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ)	
+**🎛 [Dashboard](https://github.com/vpj/lab_dashboard) is the web 
+ interface for Lab.**
+
 
 ## Features
 
 Main features of Lab are:
 * Organizing experiments
-* [🎛 Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
+* [Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
 * Logger
 * Managing configurations and hyper-parameters
 
@@ -31,7 +32,7 @@ This could be  of your training pro
 Maintains logs, summaries and checkpoints of all the experiment runs 
  in a folder structure.
 
-### [🎛 Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
+### [Dashboard](https://github.com/vpj/lab_dashboard) to browse experiments
 <p align="center">
   <img style="max-width:100%;"
    src="https://raw.githubusercontent.com/vpj/lab/master/images/dashboard.png"
@@ -61,7 +62,7 @@ It also comes with a bunch of helper functions that manages
 ### Manage configurations and hyper-parameters
 
 You can setup configs/hyper-parameters with functions.
-[🧪lab](https://github.com/vpj/lab) would identify the dependencies and run 
+[Lab](https://github.com/vpj/lab) would identify the dependencies and run 
 them in topological order.
 
 ```python
@@ -122,7 +123,7 @@ You don't need the `.lab.yaml` file if you only plan on using the logger.
 ### [Samples](https://github.com/vpj/lab/tree/master/samples)
 
 [Samples folder](https://github.com/vpj/lab/tree/master/samples) contains a
- bunch of examples of using 🧪 lab.
+ bunch of examples of using lab.
 
 Here are some [annotated samples](http://blog.varunajayasiri.com/ml/lab3/#samples%2Fmnist_loop.py).
 
@@ -460,7 +461,7 @@ Lab will keep track of experiments if you declare an Experiment. It will keep tr
 from lab.experiment.pytorch import Experiment
 ```
 
-The `name` of the defaults to the calling python filename. However when invoking from a Jupyter Notebook it must be provided because the library cannot find the calling file name. `comment` can be changed later from the [🎛 Dashboard](https://github.com/vpj/lab_dashboard).
+The `name` of the defaults to the calling python filename. However when invoking from a Jupyter Notebook it must be provided because the library cannot find the calling file name. `comment` can be changed later from the [Dashboard](https://github.com/vpj/lab_dashboard).
 
 
 ```python
@@ -494,7 +495,7 @@ exp.start(run_uuid='')
 from lab import configs
 ```
 
-The configs will be stored and in future be adjusted from  [🎛 Dashboard](https://github.com/vpj/lab_dashboard)
+The configs will be stored and in future be adjusted from  [Dashboard](https://github.com/vpj/lab_dashboard)
 
 
 ```python
