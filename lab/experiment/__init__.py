@@ -137,6 +137,14 @@ class Experiment:
             (f"\"{self.run.commit_message.strip()}\"", Text.highlight)
         ])
 
+        if self.run.load_run is not None:
+            logger.log([
+                "\t"
+                "loaded from",
+                ": ",
+                (f"{self.run.load_run}", Text.meta2),
+            ])
+
         # Exit if git repository is dirty
         if self.check_repo_dirty and self.run.is_dirty:
             logger.log([("[FAIL]", Text.danger),
@@ -156,18 +164,18 @@ class Experiment:
         self.configs_processor(run_order)
         logger.new_line()
 
-    def __start_from_checkpoint(self, run_uuid: Optional[str], checkpoint: int):
+    def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):
         checkpoint_path, global_step = experiment_run.get_last_run_checkpoint(
             self.experiment_path,
             run_uuid,
-            checkpoint,
-            {self.run.uuid})
+            checkpoint)
 
         if global_step is None:
             return 0
         else:
             with logger.section("Loading checkpoint"):
                 self._load_checkpoint(checkpoint_path)
+            self.run.load_run = run_uuid
 
         return global_step
 
@@ -177,8 +185,6 @@ class Experiment:
         if run_uuid is not None:
             if checkpoint is None:
                 checkpoint = -1
-            if run_uuid == '':
-                run_uuid = None
             global_step = self.__start_from_checkpoint(run_uuid, checkpoint)
         else:
             global_step = 0

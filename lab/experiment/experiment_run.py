@@ -37,6 +37,7 @@ class RunInfo:
                  experiment_path: PurePath,
                  start_step: int = 0,
                  notes: str = '',
+                 load_run: Optional[str] = None,
                  tags: List[str]):
         self.uuid = uuid
         self.commit = commit
@@ -47,6 +48,8 @@ class RunInfo:
         self.comment = comment
         self.commit_message = commit_message
         self.start_step = start_step
+
+        self.load_run = load_run
 
         self.experiment_path = experiment_path
         self.run_path = experiment_path / str(uuid)
@@ -88,7 +91,8 @@ class RunInfo:
             is_dirty=self.is_dirty,
             start_step=self.start_step,
             notes=self.notes,
-            tags=self.tags
+            tags=self.tags,
+            load_run=self.load_run
         )
 
     def pretty_print(self) -> List[str]:
@@ -104,7 +108,6 @@ class RunInfo:
             f"[{commit_status}]: {self.commit_message}",
             f"start_step: {self.start_step}"
         ]
-
         return res
 
     def __str__(self):
@@ -223,22 +226,10 @@ def get_last_run(experiment_path: PurePath, runs: Set[str]) -> Run:
 
 
 def get_run_checkpoint(experiment_path: PurePath,
-                       run_uuid: Optional[str] = None, checkpoint: int = -1,
-                       skip_uuid: Set[str] = None):
-    if skip_uuid is None:
-        skip_uuid = {}
-    runs = get_runs(experiment_path)
-    runs.difference_update(skip_uuid)
-
-    if len(runs) == 0:
-        return None, None
-
-    if run_uuid is None:
-        run_uuid = get_last_run(experiment_path, runs).uuid
-
+                       run_uuid: str, checkpoint: int = -1):
     checkpoints = get_checkpoints(experiment_path, run_uuid)
     if len(checkpoints) == 0:
-        return None, None
+        return None
 
     if checkpoint < 0:
         required_ci = np.max(list(checkpoints)) + checkpoint + 1
@@ -249,17 +240,16 @@ def get_run_checkpoint(experiment_path: PurePath,
         if ci not in checkpoints:
             continue
 
-        return run_uuid, ci
+        return ci
 
 
 def get_last_run_checkpoint(experiment_path: PurePath,
-                            run_uuid: Optional[str] = None,
-                            checkpoint: int = -1,
-                            skip_uuid: Set[str] = None):
-    run_uuid, checkpoint = get_run_checkpoint(experiment_path, run_uuid,
-                                              checkpoint, skip_uuid)
+                            run_uuid: str,
+                            checkpoint: int = -1):
+    checkpoint = get_run_checkpoint(experiment_path, run_uuid,
+                                    checkpoint)
 
-    if run_uuid is None:
+    if checkpoint is None:
         logger.log("Couldn't find a previous run/checkpoint")
         return None, None
 
