@@ -1,8 +1,9 @@
-import numpy as np
 import torch
+import torch.optim as optim
 import torch.nn as nn
 import torch.utils.data
 from torchvision import datasets, transforms
+import numpy as np
 
 from lab import logger, configs
 from lab import training_loop
@@ -210,8 +211,8 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     generator = 'set_generator'
     discriminator = 'set_discriminator'
 
-    optimizer_G = 'generator_optimizer'
-    optimizer_D = 'discriminator_optimizer'
+    optimizer_G: optim
+    optimizer_D: optim
     lr_G: float = 0.0002
     beta_G: tuple = (0.5, 0.999)
     lr_D: float = 0.0002
@@ -238,12 +239,12 @@ def set_discriminator(c: Configs):
 
 @Configs.calc(Configs.optimizer_G)
 def generator_optimizer(c: Configs):
-    return torch.optim.Adam(c.generator.parameters(), lr=c.lr_G, betas=c.beta_G)
+    return optim.Adam(c.generator.parameters(), lr=c.lr_G, betas=c.beta_G)
 
 
 @Configs.calc(Configs.optimizer_D)
 def discriminator_optimizer(c: Configs):
-    return torch.optim.Adam(c.discriminator.parameters(), lr=c.lr_D, betas=c.beta_D)
+    return optim.Adam(c.discriminator.parameters(), lr=c.lr_D, betas=c.beta_D)
 
 
 @Configs.calc(Configs.set_seed)
