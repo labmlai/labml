@@ -142,8 +142,8 @@ class GAN:
 
     def _train(self, epoch):
         for i, (images, _) in logger.enum("Train", self.train_loader):
-            targets_real = (torch.FloatTensor(images.size(0), 1).uniform_(0.8, 1.0)).to(self.device)
-            targets_fake = (torch.FloatTensor(images.size(0), 1).uniform_(0.0, 0.2)).to(self.device)
+            targets_real = torch.empty(images.size(0), 1, device=self.device).uniform_(0.8, 1.0)
+            targets_fake = torch.empty(images.size(0), 1, device=self.device).uniform_(0.0, 0.2)
 
             images = images.to(self.device)
 
@@ -208,8 +208,8 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
     device: any
 
-    generator = 'set_generator'
-    discriminator = 'set_discriminator'
+    generator: nn.Module
+    discriminator: nn.Module
 
     optimizer_G: optim
     optimizer_D: optim
