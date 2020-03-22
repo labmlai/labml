@@ -106,6 +106,16 @@ class ConfigProcessor:
         if ConfigProcessor.__is_primitive(value):
             return value
         else:
+            return ConfigProcessor.__to_str(value)
+
+    @staticmethod
+    def __to_str(value):
+        if str(value) == ConfigProcessor.__default_repr(value):
+            if value.__class__.__module__ == '__main__':
+                return value.__class__.__name__
+            else:
+                return f"{value.__class__.__module__}.{value.__class__.__name__}"
+        else:
             return str(value)
 
     def save(self, configs_path: PurePath):
@@ -123,6 +133,14 @@ class ConfigProcessor:
 
         with open(str(configs_path), "w") as file:
             file.write(util.yaml_dump(configs))
+
+    @staticmethod
+    def __default_repr(value):
+        return '<%s.%s object at %s>' % (
+            value.__class__.__module__,
+            value.__class__.__name__,
+            hex(id(value))
+        )
 
     @staticmethod
     def __print_config(key, *, value=None, option=None,
@@ -144,7 +162,8 @@ class ConfigProcessor:
             other_options = []
 
         if value is not None:
-            value_str = str(value)
+            value_str = ConfigProcessor.__to_str(value)
+
             value_str = value_str.replace('\n', '')
             if len(value_str) < _CONFIG_PRINT_LEN:
                 parts.append((f"{value_str}", Text.value))

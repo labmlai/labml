@@ -119,9 +119,6 @@ class MNISTLoop:
         self.startup()
         self.loop()
 
-    def __str__(self):
-        return 'MNISTLoop'
-
 
 class LoopConfigs(configs.Configs):
     epochs: int = 10
