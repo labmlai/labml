@@ -40,7 +40,7 @@ class Configs:
             setattr(cls, k, v)
 
     @classmethod
-    def calc(cls, name: Union[ConfigItem, str, List[ConfigItem], List[str]] = None,
+    def calc(cls, name: Union[ConfigItem, List[ConfigItem]] = None,
              option: str = None, *,
              is_append: bool = False):
         if _CALCULATORS not in cls.__dict__:
