@@ -3,6 +3,7 @@ from pathlib import PurePath
 from typing import Dict, Optional
 
 from . import Writer as WriteBase
+from ..artifacts import Artifact
 from ..indicators import Indicator
 
 
@@ -38,7 +39,8 @@ class Writer(WriteBase):
 
     def write(self, *,
               global_step: int,
-              indicators: Dict[str, Indicator]):
+              indicators: Dict[str, Indicator],
+              artifacts: Dict[str, Artifact]):
         self.__connect()
 
         for ind in indicators.values():

@@ -63,6 +63,7 @@ class RunInfo:
 
         self.info_path = self.run_path / "run.yaml"
         self.indicators_path = self.run_path / "indicators.yaml"
+        self.artifacts_path = self.run_path / "artifacts.yaml"
         self.configs_path = self.run_path / "configs.yaml"
         self.notes = notes
         self.tags = tags

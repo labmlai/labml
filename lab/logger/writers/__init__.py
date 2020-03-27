@@ -1,15 +1,19 @@
+from collections import OrderedDict
 from typing import Dict
 
 import numpy as np
 
+from ..artifacts import Artifact
 from ..colors import Text
 from ..indicators import Indicator
+from ... import logger
 
 
 class Writer:
     def write(self, *,
               global_step: int,
-              indicators: Dict[str, Indicator]):
+              indicators: Dict[str, Indicator],
+              artifacts: Dict[str, Artifact]):
         raise NotImplementedError()
 
 
@@ -55,9 +59,12 @@ class ScreenWriter(Writer):
         else:
             return fmt.format(v=v)
 
-    def write(self, *,
-              global_step: int,
-              indicators: Dict[str, Indicator]):
+    @staticmethod
+    def __format_artifact(length: int, value: str):
+        fmt = "{v:>" + str(length + 1) + "}"
+        return fmt.format(v=value)
+
+    def _get_indicator_string(self, indicators: Dict[str, Indicator]):
         parts = []
 
         for ind in indicators.values():
@@ -80,3 +87,65 @@ class ScreenWriter(Writer):
                 parts.append((value, Text.subtle))
 
         return parts
+
+    def _print_artifacts_list(self, table: Dict[str, int], artifacts: Dict[str, Artifact]):
+        order = list(table.keys())
+        if not len(order):
+            return
+
+        keys = {k for name in order for k in artifacts[name].keys()}
+        for k in keys:
+            for name in order:
+                value = artifacts[name].get_string(k, artifacts)
+                logger.log([(name, Text.key),
+                            ": ",
+                            (value, Text.value)])
+
+    def _print_artifacts_table(self, table: Dict[str, int], artifacts: Dict[str, Artifact]):
+        order = list(table.keys())
+        if not len(order):
+            return
+
+        keys = []
+        keys_set = set()
+
+        for name in order:
+            for k in artifacts[name].keys():
+                if k not in keys_set:
+                    keys_set.add(k)
+                    keys.append(k)
+
+        parts = [self.__format_artifact(table[name], name) for name in order]
+        logger.log('|'.join(parts), Text.heading)
+
+        for k in keys:
+            parts = []
+            for name in order:
+                value = artifacts[name].get_string(k, artifacts)
+                parts.append(self.__format_artifact(table[name], value))
+            logger.log('|'.join(parts), Text.value)
+
+    def _print_artifacts(self, artifacts: Dict[str, Artifact]):
+        table = {}
+        for art in artifacts.values():
+            if art.is_empty():
+                continue
+            if not art.is_indexed:
+                art.print_all(artifacts)
+                continue
+
+            table[art.name] = art.get_print_length()
+
+        if sum(table.values()) > 100:
+            self._print_artifacts_list(table, artifacts)
+        else:
+            self._print_artifacts_table(table, artifacts)
+
+    def write(self, *,
+              global_step: int,
+              indicators: Dict[str, Indicator],
+              artifacts: Dict[str, Artifact]):
+
+        self._print_artifacts(artifacts)
+
+        return self._get_indicator_string(indicators)

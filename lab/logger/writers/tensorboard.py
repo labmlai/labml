@@ -5,6 +5,7 @@ from typing import Dict
 import tensorflow as tf
 
 from . import Writer as WriteBase
+from ..artifacts import Artifact
 from ..indicators import Indicator
 
 tf.config.experimental.set_visible_devices([], "GPU")
@@ -33,7 +34,8 @@ class Writer(WriteBase):
 
     def write(self, *,
               global_step: int,
-              indicators: Dict[str, Indicator]):
+              indicators: Dict[str, Indicator],
+              artifacts: Dict[str, Artifact]):
         self.__connect()
 
         with self.__writer.as_default():

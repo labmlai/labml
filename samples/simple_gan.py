@@ -11,6 +11,8 @@ from lab.experiment.pytorch import Experiment
 
 import matplotlib.pyplot as plt
 
+from lab.logger.artifacts import Image, IndexedText
+
 plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 
@@ -149,7 +151,8 @@ class GAN:
 
             self.optimizer_D.zero_grad()
             logits_real = self.discriminator(images)
-            fake_images = self.generator(noise(self.device, self.batch_size, self.noise_dim)).detach()
+            fake_images = self.generator(
+                noise(self.device, self.batch_size, self.noise_dim)).detach()
             logits_fake = self.discriminator(fake_images)
             discriminator_loss = DLoss(logits_real, logits_fake, targets_real, targets_fake)
             discriminator_loss.backward()
@@ -166,20 +169,12 @@ class GAN:
             logger.store(D_Loss=discriminator_loss.item())
             logger.add_global_step()
 
-            if i % self.train_log_interval == 0:
-                logger.write()
-
-        if epoch % 2 == 0:
-            viz_batch = fake_images.data.cpu().numpy()
-            fig = plt.figure(figsize=(8, 10))
-            for i in np.arange(1, 10):
-                ax = fig.add_subplot(3, 3, i)
-                img = viz_batch[i].squeeze()
-                plt.imshow(img)
-            plt.savefig(self.image_directory.format(epoch))
-            plt.show()
+        for j in range(1, 10):
+            img = fake_images[j].squeeze()
+            logger.store('generated', img)
 
     def __call__(self):
+        logger.add_artifact(Image('generated'))
         for i in self.loop:
             self._train(i)
 

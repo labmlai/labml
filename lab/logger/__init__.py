@@ -2,6 +2,7 @@ from typing import Union, List, Tuple, Optional, Iterable, Sized, Dict, overload
 
 import numpy as np
 
+from .artifacts import Artifact
 from .colors import StyleCode
 from .indicators import Indicator
 from .internal import LoggerInternal as _LoggerInternal
@@ -43,6 +44,10 @@ def log(message: Union[str, List[Union[str, Tuple[str, StyleCode]]]],
 
 def add_indicator(indicator: Indicator):
     internal().add_indicator(indicator)
+
+
+def add_artifact(artifact: Artifact):
+    internal().add_artifact(artifact)
 
 
 @overload

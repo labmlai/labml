@@ -202,3 +202,4 @@ class Experiment:
             self.configs_processor.save(self.run.configs_path)
 
         logger.internal().save_indicators(self.run.indicators_path)
+        logger.internal().save_artifacts(self.run.artifacts_path)

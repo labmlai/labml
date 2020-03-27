@@ -5,6 +5,7 @@ from typing import List, Optional, Tuple, Union
 
 import numpy as np
 
+from .artifacts import Artifact
 from .colors import Text, StyleCode
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
 from .destinations.factory import create_destination
@@ -102,8 +103,14 @@ class LoggerInternal:
     def add_indicator(self, indicator: Indicator):
         self.__store.add_indicator(indicator)
 
+    def add_artifact(self, artifact: Artifact):
+        self.__store.add_artifact(artifact)
+
     def save_indicators(self, file: PurePath):
         self.__store.save_indicators(file)
+
+    def save_artifacts(self, file: PurePath):
+        self.__store.save_artifactors(file)
 
     def store(self, *args, **kwargs):
         self.__store.store(*args, **kwargs)
