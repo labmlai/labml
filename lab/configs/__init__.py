@@ -193,6 +193,7 @@ class ConfigProcessor:
 
     def print(self):
         order = self.calculator.topological_order.copy()
+        order.sort()
         added = set(order)
         ignored = set()
 
