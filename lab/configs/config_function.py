@@ -1,4 +1,5 @@
 import ast
+import functools
 import inspect
 import textwrap
 import warnings
@@ -41,18 +42,13 @@ class DependencyParser(ast.NodeVisitor):
         self.visit(parsed)
 
     def visit_Attribute(self, node: ast.Attribute):
-        while not isinstance(node.value, ast.Name):
-            if not isinstance(node.value, ast.Attribute):
-                return
+        if isinstance(node.value, ast.Name):
+            if node.value.id == self.arg_name:
+                self.required.add(node.attr)
+        else:
+            for child in ast.iter_child_nodes(node):
+                self.visit(child)
 
-            node = node.value
-
-        if node.value.id != self.arg_name:
-            return
-
-        self.required.add(node.attr)
-
-    # Only visits if not captured before
     def visit_Name(self, node: ast.Name):
         if node.id == self.arg_name:
             self.is_referenced = True
