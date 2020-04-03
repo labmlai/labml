@@ -15,6 +15,9 @@ def _to_numpy(value):
     if type_ == float or type_ == int:
         return np.array(value).ravel()
 
+    if isinstance(value, np.number):
+        return np.array(value.item()).ravel()
+
     if type_ == list:
         return np.array(value).ravel()
 
