@@ -1,3 +1,7 @@
 gitpython
 pyyaml
 numpy
+torch
+torchvision
+pandas
+matplotlib

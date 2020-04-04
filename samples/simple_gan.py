@@ -3,7 +3,6 @@ import torch.optim as optim
 import torch.nn as nn
 import torch.utils.data
 from torchvision import datasets, transforms
-import numpy as np
 
 from lab import logger, configs
 from lab import training_loop
@@ -11,7 +10,7 @@ from lab.experiment.pytorch import Experiment
 
 import matplotlib.pyplot as plt
 
-from lab.logger.artifacts import Image, IndexedText
+from lab.logger.artifacts import Image
 
 plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
@@ -140,9 +139,7 @@ class GAN:
         self.loop = c.training_loop
         self.__is_log_parameters = c.is_log_parameters
 
-        self.image_directory = c.image_directory
-
-    def _train(self, epoch):
+    def _train(self):
         for i, (images, _) in logger.enum("Train", self.train_loader):
             targets_real = torch.empty(images.size(0), 1, device=self.device).uniform_(0.8, 1.0)
             targets_fake = torch.empty(images.size(0), 1, device=self.device).uniform_(0.0, 0.2)
@@ -175,8 +172,8 @@ class GAN:
 
     def __call__(self):
         logger.add_artifact(Image('generated'))
-        for i in self.loop:
-            self._train(i)
+        for _ in self.loop:
+            self._train()
 
 
 class LoaderConfigs(configs.Configs):
@@ -218,8 +215,6 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     set_seed = 'set_seed'
 
     main: GAN
-
-    image_directory: str = "images/{}.png"
 
 
 @Configs.calc(Configs.generator)
