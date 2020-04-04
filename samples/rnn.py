@@ -12,7 +12,7 @@ from lab import logger, configs
 from lab import training_loop
 from lab.experiment.pytorch import Experiment
 
-from lab.util.pytorch import CustomDataset
+from lab.util.data.pytorch import CsvDataset
 
 
 class DataUtils:
@@ -164,9 +164,9 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
 @Configs.calc(Configs.encoder)
 def set_encoder(c: Configs):
-    encoder =  EncoderRNN().to(c.device)
+    encoder = EncoderRNN().to(c.device)
 
-    return  encoder.double()
+    return encoder.double()
 
 
 @Configs.calc(Configs.optimizer)
@@ -197,12 +197,11 @@ def device(*, use_cuda, cuda_device):
 
 
 def _custom_dataset(is_train):
-    return CustomDataset.from_csv(file_path='data/liverpool-ion-switching/train.csv',
-                                  transform=object,
-                                  train=is_train,
-                                  test_size=0.1,
-                                  x_cols=['signal'],
-                                  y_cols=['open_channels'])
+    return CsvDataset(file_path='data/liverpool-ion-switching/train.csv',
+                      train=is_train,
+                      test_fraction=0.1,
+                      x_cols=['signal'],
+                      y_cols=['open_channels'])
 
 
 def _data_loader(is_train, batch_size):
