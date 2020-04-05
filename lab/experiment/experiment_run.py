@@ -103,13 +103,12 @@ class RunInfo:
 
         # Trial information
         commit_status = "[dirty]" if self.is_dirty else "[clean]"
-        res = [
-            f"{self.trial_date} {self.trial_time}",
-            self.comment,
-            f"[{commit_status}]: {self.commit_message}",
-            f"start_step: {self.start_step}"
-        ]
-        return res
+        return [
+                f"{self.trial_date} {self.trial_time}",
+                self.comment,
+                f"[{commit_status}]: {self.commit_message}",
+                f"start_step: {self.start_step}"
+            ]
 
     def __str__(self):
         return f"{self.__class__.__name__}(comment=\"{self.comment}\"," \
@@ -120,14 +119,11 @@ class RunInfo:
         return self.__str__()
 
     def is_after(self, run: 'Run'):
-        if run.trial_date < self.trial_date:
-            return True
-        elif run.trial_date > self.trial_date:
-            return False
-        elif run.trial_time < self.trial_time:
-            return True
-        else:
-            return False
+        return (
+            run.trial_date < self.trial_date
+            or run.trial_date <= self.trial_date
+            and run.trial_time < self.trial_time
+        )
 
 
 class Run(RunInfo):

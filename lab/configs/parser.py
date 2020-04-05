@@ -17,7 +17,7 @@ def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
     level = [class_]
     next_level = []
 
-    while len(level) > 0:
+    while level:
         for c in level:
             for b in c.__bases__:
                 if b == object:
@@ -91,10 +91,7 @@ class Parser:
         if key.startswith('_'):
             return False
 
-        if key in RESERVED:
-            return False
-
-        return True
+        return key not in RESERVED
 
     def __collect_config_item(self, k, v: ConfigItem):
         if not self.is_valid(k):
@@ -133,10 +130,12 @@ class Parser:
         else:
             if k not in self.options:
                 self.options[k] = OrderedDict()
-            if v.option_name in self.options[k]:
-                if v != self.options[k][v.option_name]:
-                    warnings.warn(f"Overriding option for {k}: {v.option_name}", Warning,
-                                  stacklevel=5)
+            if (
+                v.option_name in self.options[k]
+                and v != self.options[k][v.option_name]
+            ):
+                warnings.warn(f"Overriding option for {k}: {v.option_name}", Warning,
+                              stacklevel=5)
 
             self.options[k][v.option_name] = v
 

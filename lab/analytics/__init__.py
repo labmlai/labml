@@ -30,7 +30,7 @@ def get_run_info(experiment_name: str, run_uuid: str):
 class Dir:
     def __init__(self, options):
         self.__options = {k.replace('.', '_'): v for k, v in options.items()}
-        self.__list = [k for k in self.__options.keys()]
+        self.__list = [k for k in self.__options]
 
     def __dir__(self):
         return self.__list
@@ -90,7 +90,7 @@ class Analytics:
                 results.append(self.summarize(merged))
                 merged = []
             merged.append(e)
-        if len(merged) > 0:
+        if merged:
             results.append(self.summarize(merged))
 
         return np.array(results)

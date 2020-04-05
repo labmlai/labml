@@ -77,10 +77,7 @@ class TrainingLoop:
         if global_step - self.__loop_step < 0:
             return False
 
-        if global_step // interval > (global_step - self.__loop_step) // interval:
-            return True
-        else:
-            return False
+        return global_step // interval > (global_step - self.__loop_step) // interval
 
     def __next__(self):
         if self.__signal_received is not None:

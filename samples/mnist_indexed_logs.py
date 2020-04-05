@@ -70,8 +70,8 @@ class MNIST:
         self.model.eval()
         test_loss = 0
         correct = 0
-        idx = 0
         with torch.no_grad():
+            idx = 0
             for data, target in logger.iterate("Test", self.test_loader):
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)

@@ -24,7 +24,7 @@ def progress():
 
 
 def loop_section():
-    for step in logger.loop(range(0, 10)):
+    for step in logger.loop(range(10)):
         with logger.section("Step"):
             time.sleep(0.5)
         with logger.section("Step2"):
@@ -34,7 +34,7 @@ def loop_section():
 
 
 def loop_partial_section():
-    for step in logger.loop(range(0, 10)):
+    for step in logger.loop(range(10)):
         with logger.section("Step", is_partial=True):
             time.sleep(0.5)
             logger.progress((step % 5 + 1) / 5)

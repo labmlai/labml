@@ -134,10 +134,7 @@ class LoggerInternal:
         self.__destination.new_line()
 
     def __is_looping(self):
-        if self.__loop is not None and self.__loop.is_started:
-            return True
-        else:
-            return False
+        return bool(self.__loop is not None and self.__loop.is_started)
 
     def write(self):
         global_step = self.global_step

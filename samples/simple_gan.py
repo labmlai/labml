@@ -28,8 +28,7 @@ def noise(device, bs, dim):
     A PyTorch Tensor containing Gaussian noise with shape [bs, dim]
     """
 
-    out = (torch.randn((bs, dim))).to(device)
-    return out
+    return (torch.randn((bs, dim))).to(device)
 
 
 bce_loss = nn.BCEWithLogitsLoss()
@@ -46,8 +45,7 @@ def DLoss(logits_real, logits_fake, targets_real, targets_fake):
     d1 = bce_loss(logits_real, targets_real)
     d2 = bce_loss(logits_fake, targets_fake)
 
-    total_loss = d1 + d2
-    return total_loss
+    return d1 + d2
 
 
 def GLoss(logits_fake, targets_real):
@@ -60,9 +58,7 @@ def GLoss(logits_fake, targets_real):
     Thus, the gradients estimated with the above loss corresponds to generator producing fake images that
     fool the discriminator.
     """
-    g_loss = bce_loss(logits_fake, targets_real)
-
-    return g_loss
+    return bce_loss(logits_fake, targets_real)
 
 
 class Generator(nn.Module):
@@ -115,9 +111,7 @@ class Discriminator(nn.Module):
             self.leaky_relu,
             self.layer3,
         )
-        y = layers(x)
-
-        return y
+        return layers(x)
 
 
 class GAN:

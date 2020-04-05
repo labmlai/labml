@@ -97,7 +97,7 @@ class MNISTLoop:
 
     def loop(self):
         # Loop through the monitored iterator
-        for epoch in logger.loop(range(0, self.__epochs)):
+        for epoch in logger.loop(range(self.__epochs)):
             self._train()
             self._test()
 

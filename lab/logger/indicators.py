@@ -12,7 +12,7 @@ except ImportError:
 def _to_numpy(value):
     type_ = type(value)
 
-    if type_ == float or type_ == int:
+    if type_ in [float, int]:
         return np.array(value).ravel()
 
     if isinstance(value, np.number):

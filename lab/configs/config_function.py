@@ -30,8 +30,7 @@ class DependencyParser(ast.NodeVisitor):
             param: inspect.Parameter = params[list(params.keys())[0]]
             source = inspect.getsource(func)
 
-        assert (param.kind == param.POSITIONAL_ONLY or
-                param.kind == param.POSITIONAL_OR_KEYWORD)
+        assert param.kind in [param.POSITIONAL_ONLY, param.POSITIONAL_OR_KEYWORD]
 
         self.arg_name = param.name
 
@@ -164,13 +163,13 @@ class ConfigFunction:
         self.dependencies = self.__get_dependencies()
 
     def __call__(self, configs: 'Configs'):
-        if self.kind == FunctionKind.pass_configs:
-            if len(self.params) == 1:
-                return self.func(configs)
-            else:
-                return self.func()
-        elif self.kind == FunctionKind.pass_parameters:
+        if self.kind == FunctionKind.pass_configs and len(self.params) == 1:
+            return self.func(configs)
+        elif (
+            self.kind == FunctionKind.pass_configs
+            or self.kind != FunctionKind.pass_parameters
+        ):
+            return self.func()
+        else:
             kwargs = {p.name: configs.__getattribute__(p.name) for p in self.params}
             return self.func(**kwargs)
-        else:
-            return self.func()

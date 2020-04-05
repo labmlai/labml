@@ -151,7 +151,7 @@ def _test():
                     print("")
             print("")
 
-    for i in range(0, 128):
+    for i in range(128):
         print(f"\33[{i}m{i :03d}\33[0m ", end='')
         if (i + 1) % 10 == 0:
             print("")

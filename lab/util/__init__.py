@@ -38,10 +38,7 @@ def is_ipynb():
             return False
 
         app: Dict = cfg['IPKernelApp']
-        if len(app.keys()) > 0:
-            return True
-        else:
-            return False
+        return len(app.keys()) > 0
     except NameError:
         return False
 

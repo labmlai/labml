@@ -74,10 +74,7 @@ class Section:
         if self._is_silent:
             return False
 
-        if math.floor(self._progress * 100) != math.floor(old_progress * 100):
-            return True
-        else:
-            return False
+        return math.floor(self._progress * 100) != math.floor(old_progress * 100)
 
     @property
     def is_parented(self):

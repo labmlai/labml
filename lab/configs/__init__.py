@@ -93,13 +93,14 @@ class ConfigProcessor:
         if type(value) == bool:
             return True
 
-        if type(value) == list and all([ConfigProcessor.__is_primitive(v) for v in value]):
+        if type(value) == list and all(
+            ConfigProcessor.__is_primitive(v) for v in value
+        ):
             return True
 
-        if type(value) == dict and all([ConfigProcessor.__is_primitive(v) for v in value.values()]):
-            return True
-
-        return False
+        return type(value) == dict and all(
+            ConfigProcessor.__is_primitive(v) for v in value.values()
+        )
 
     @staticmethod
     def __to_yaml(value):

@@ -27,11 +27,7 @@ class ConsoleDestination(Destination):
                 tuple_parts.append(p)
         coded = [self.__ansi_code(text, color) for text, color in tuple_parts]
 
-        if is_new_line:
-            end_char = '\n'
-        else:
-            end_char = ''
-
+        end_char = '\n' if is_new_line else ''
         text = "".join(coded)
 
         print("\r" + text, end=end_char, flush=True)
