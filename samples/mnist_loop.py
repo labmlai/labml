@@ -1,5 +1,3 @@
-from typing import Dict
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -109,7 +107,7 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     batch_size: int = 64
     test_batch_size: int = 1000
 
-    use_cuda: float = True
+    use_cuda: bool = True
     cuda_device: int = 0
     seed: int = 5
     train_log_interval: int = 10
@@ -130,10 +128,10 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
 
 @Configs.calc(Configs.device)
-def device(*, use_cuda, cuda_device):
+def device(c: Configs):
     from lab.util.pytorch import get_device
 
-    return get_device(use_cuda, cuda_device)
+    return get_device(c.use_cuda, c.cuda_device)
 
 
 def _data_loader(is_train, batch_size):
@@ -163,7 +161,7 @@ def model(c: Configs):
     return m
 
 
-@Configs.calc('optimizer')
+@Configs.calc(Configs.optimizer)
 def sgd_optimizer(c: Configs):
     return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
 
@@ -183,7 +181,7 @@ def loop_count(c: Configs):
     return c.epochs * len(c.train_loader)
 
 
-@Configs.calc()
+@Configs.calc(Configs.loop_step)
 def loop_step(c: Configs):
     return len(c.train_loader)
 

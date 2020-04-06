@@ -1,5 +1,3 @@
-from typing import Dict
-
 import numpy as np
 import torch
 import torch.nn as nn
@@ -126,15 +124,15 @@ class LoaderConfigs(configs.Configs):
 class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     epochs: int = 10
 
-    loop_step = None
-    loop_count = None
+    loop_step = 'loop_step'
+    loop_count = 'loop_count'
 
     is_save_models = True
     batch_size: int = 64
     test_batch_size: int = 1000
 
     # Reset epochs so that it'll be computed
-    use_cuda: float = True
+    use_cuda: bool = True
     cuda_device: int = 0
     seed: int = 5
     train_log_interval: int = 10
@@ -151,18 +149,14 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     momentum: float = 0.5
     optimizer: optim.SGD
 
-    set_seed = None
+    set_seed = 'set_seed'
 
 
-# Get dependencies from parameters.
-# The code looks cleaner, but might cause problems when you want to refactor
-# later.
-# It will be harder to use static analysis tools to find the usage of configs.
-@Configs.calc()
-def device(*, use_cuda, cuda_device):
+@Configs.calc(Configs.device)
+def device(c: Configs):
     from lab.util.pytorch import get_device
 
-    return get_device(use_cuda, cuda_device)
+    return get_device(c.use_cuda, c.cuda_device)
 
 
 def _data_loader(is_train, batch_size):
@@ -177,8 +171,7 @@ def _data_loader(is_train, batch_size):
         batch_size=batch_size, shuffle=True)
 
 
-# Multiple configs can be computed from a single function
-@Configs.calc(['train_loader', 'test_loader'])
+@Configs.calc([Configs.train_loader, Configs.test_loader])
 def data_loaders(c: Configs):
     train = _data_loader(True, c.batch_size)
     test = _data_loader(False, c.test_batch_size)
@@ -186,38 +179,34 @@ def data_loaders(c: Configs):
     return train, test
 
 
-# Compute multiple results from a single function
-@Configs.calc()
+@Configs.calc(Configs.model)
 def model(c: Configs):
     m: Net = Net()
     m.to(c.device)
     return m
 
 
-# Multiple options for configs can be provided. Option name is inferred from function name,
-# unless explicitly provided
-@Configs.calc('optimizer')
+@Configs.calc(Configs.optimizer)
 def sgd_optimizer(c: Configs):
     return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
 
 
-@Configs.calc('optimizer')
+@Configs.calc(Configs.optimizer)
 def adam_optimizer(c: Configs):
     return optim.Adam(c.model.parameters(), lr=c.learning_rate)
 
 
-# Returns nothing
-@Configs.calc()
+@Configs.calc(Configs.set_seed)
 def set_seed(c: Configs):
     torch.manual_seed(c.seed)
 
 
-@Configs.calc()
+@Configs.calc(Configs.loop_count)
 def loop_count(c: Configs):
     return c.epochs * len(c.train_loader)
 
 
-@Configs.calc()
+@Configs.calc(Configs.loop_step)
 def loop_step(c: Configs):
     return len(c.train_loader)
 

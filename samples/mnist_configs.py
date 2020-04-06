@@ -1,5 +1,3 @@
-from typing import Dict
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -158,15 +156,11 @@ class Configs(LoopConfigs, LoaderConfigs):
     not_used: bool = 10
 
 
-# Get dependencies from parameters.
-# The code looks cleaner, but might cause problems when you want to refactor
-# later.
-# It will be harder to use static analysis tools to find the usage of configs.
-@Configs.calc()
-def device(*, use_cuda, cuda_device):
+@Configs.calc(Configs.device)
+def device(c: Configs):
     from lab.util.pytorch import get_device
 
-    return get_device(use_cuda, cuda_device)
+    return get_device(c.use_cuda, c.cuda_device)
 
 
 def _data_loader(is_train, batch_size):
@@ -181,8 +175,7 @@ def _data_loader(is_train, batch_size):
         batch_size=batch_size, shuffle=True)
 
 
-# Multiple configs can be computed from a single function
-@Configs.calc(['train_loader', 'test_loader'])
+@Configs.calc([Configs.train_loader, Configs.test_loader])
 def data_loaders(c: Configs):
     train = _data_loader(True, c.batch_size)
 
@@ -191,28 +184,24 @@ def data_loaders(c: Configs):
     return train, test
 
 
-# Compute multiple results from a single function
-@Configs.calc()
+@Configs.calc(Configs.model)
 def model(c: Configs):
     m: Net = Net()
     m.to(c.device)
     return m
 
 
-# Multiple options for configs can be provided. Option name is inferred from function name,
-# unless explicitly provided
-@Configs.calc('optimizer')
+@Configs.calc(Configs.optimizer)
 def sgd_optimizer(c: Configs):
     return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
 
 
-@Configs.calc('optimizer')
+@Configs.calc(Configs.optimizer)
 def adam_optimizer(c: Configs):
     return optim.Adam(c.model.parameters(), lr=c.learning_rate)
 
 
-# Returns nothing
-@Configs.calc()
+@Configs.calc(Configs.set_seed)
 def set_seed(c: Configs):
     torch.manual_seed(c.seed)
 
