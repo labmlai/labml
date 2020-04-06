@@ -28,3 +28,4 @@ def get_modules(configs: Configs):
             modules[k] = value
 
     return modules
+
