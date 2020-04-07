@@ -1,6 +1,9 @@
-# Kaggle Competition https://www.kaggle.com/c/liverpool-ion-switching/overview
-# download data from the above line provided
+"""
+Kaggle Competition https://www.kaggle.com/c/liverpool-ion-switching/overview
+download the data from the above line provided
+"""
 
+import pandas as pd
 import torch
 import torch.optim as optim
 import torch.nn as nn
@@ -103,7 +106,7 @@ class RNN:
         targets = []
         with torch.no_grad():
             for input_tensors, target_tensors in logger.iterate("Test", self.test_loader):
-                encoder_hidden = self.encoder.init_hidden(self.device)
+                encoder_hidden = self.encoder.init_hidden(self.device).double()
 
                 test_loss = 0
                 for (input_tensor, target_tensor) in zip(input_tensors, target_tensors):
@@ -120,10 +123,30 @@ class RNN:
             logger.store(test_loss=test_loss / len(self.test_loader.dataset))
             logger.store(accuracy=macro_f1)
 
+    def _create_submission(self):
+        df = pd.DataFrame(columns=['time', 'open_channels'])
+        data = pd.read_csv('data/liverpool-ion-switching/test.csv')
+
+        with torch.no_grad():
+            encoder_hidden = self.encoder.init_hidden(self.device).double()
+            for idx, row in data.iterrows():
+                input_tensor = torch.tensor([row['signal']], dtype=torch.float64)
+                encoder_output, encoder_hidden = self.encoder(input_tensor, encoder_hidden)
+
+                pred = int(encoder_output.item())
+                data = pd.DataFrame({"time": row['time'],
+                                     "open_channels": pred},
+                                    index=[idx])
+                df = df.append(data)
+
+        df.to_csv('data/liverpool-ion-switching/submission.csv', sep=',', index=False)
+
     def __call__(self):
         for _ in self.loop:
             self._train()
             self._test()
+        self._create_submission()
+        print('done')
 
 
 class LoaderConfigs(configs.Configs):
@@ -132,14 +155,14 @@ class LoaderConfigs(configs.Configs):
 
 
 class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
-    epochs: int = 10
+    epochs: int = 100
 
     loop_step = 'loop_step'
     loop_count = 'loop_count'
 
     is_save_models = True
-    batch_size: int = 500
-    test_batch_size: int = 50
+    batch_size: int = 50000
+    test_batch_size: int = 50000
 
     use_cuda: float = True
     cuda_device: int = 0
@@ -218,7 +241,7 @@ def data_loaders(c: Configs):
 
 def main():
     conf = Configs()
-    experiment = Experiment(writers={'sqlite', 'tensor_board'})
+    experiment = Experiment(writers={'sqlite', 'tensorboard'})
     experiment.calc_configs(conf,
                             {},
                             run_order=['set_seed', 'main'])

@@ -16,10 +16,10 @@ class BaseDataset(Dataset):
 
 class CsvDataset(BaseDataset):
     def __init__(self, file_path: str, y_cols: List, x_cols: List, train: bool = True,
-                 transform: Callable = lambda: None, test_fraction: float = 0.0):
+                 transform: Callable = lambda: None, test_fraction: float = 0.0, nrows: int = None):
         self.__dict__.update(**vars())
 
-        self.data = pd.read_csv(file_path)
+        self.data = pd.read_csv(**{'filepath_or_buffer': file_path, 'nrows': nrows})
 
         data_length = len(self.data)
 
