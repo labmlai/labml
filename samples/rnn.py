@@ -24,11 +24,7 @@ class DataUtils:
 
     @staticmethod
     def pairs(inputs: list, outputs: list):
-        pairs = []
-        for input, output in zip(inputs, outputs):
-            pairs.append((input, output))
-
-        return pairs
+        return [(input, output) for input, output in zip(inputs, outputs)]
 
     def _to_tensor(self, input: float):
         return torch.tensor(input, dtype=torch.long, device=self.device).view(-1, 1)
@@ -102,9 +98,9 @@ class RNN:
     def _test(self):
         self.encoder.eval()
 
-        preds = []
-        targets = []
         with torch.no_grad():
+            preds = []
+            targets = []
             for input_tensors, target_tensors in logger.iterate("Test", self.test_loader):
                 encoder_hidden = self.encoder.init_hidden(self.device).double()
 
