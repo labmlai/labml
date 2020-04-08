@@ -48,11 +48,11 @@ class EncoderRNN(nn.Module):
         self.gru = nn.GRU(embed_size, hidden_size)
         self.out = nn.Linear(hidden_size, 1)
 
-    def forward(self, input, hidden):
-        layer1 = self.layer1(input.view(1, -1).unsqueeze(1))
+    def forward(self, x, hidden):
+        layer1 = self.layer1(x)
         output, hidden = self.gru(layer1, hidden)
 
-        output = self.out(output).view(-1)
+        output = self.out(output)
 
         return output, hidden
 
@@ -79,46 +79,44 @@ class RNN:
         self.__is_log_parameters = c.is_log_parameters
 
     def _train(self):
-        for i, (input_tensors, target_tensors) in logger.enum("Train", self.train_loader):
-            encoder_hidden = self.encoder.init_hidden(self.device).double()
+        for i, (input_tensor, target_tensor) in logger.enum("Train", self.train_loader):
+            encoder_hidden = self.encoder.init_hidden(self.device).double().to(self.device)
+
+            input_tensor = input_tensor.to(self.device).unsqueeze(1)
+            target_tensor = target_tensor.to(self.device).unsqueeze(1)
 
             self.optimizer.zero_grad()
+            encoder_output, encoder_hidden = self.encoder(input_tensor, encoder_hidden)
 
-            train_loss: torch.Tensor = 0
-            for input_tensor, target_tensor in zip(input_tensors, target_tensors):
-                encoder_output, encoder_hidden = self.encoder(input_tensor, encoder_hidden)
-
-                train_loss += self.loss(encoder_output, target_tensor)
+            train_loss = self.loss(encoder_output, target_tensor)
 
             train_loss.backward()
             self.optimizer.step()
 
             logger.store(loss=train_loss.item())
             logger.add_global_step()
+            logger.write()
 
     def _test(self):
         self.encoder.eval()
 
-        preds = []
-        targets = []
         with torch.no_grad():
-            for input_tensors, target_tensors in logger.iterate("Test", self.test_loader):
-                encoder_hidden = self.encoder.init_hidden(self.device)
+            for input_tensor, target_tensor in logger.iterate("Test", self.test_loader):
+                encoder_hidden = self.encoder.init_hidden(self.device).double().to(self.device)
 
-                test_loss = 0
-                for (input_tensor, target_tensor) in zip(input_tensors, target_tensors):
-                    encoder_output, encoder_hidden = self.encoder(input_tensor, encoder_hidden)
+                input_tensor = input_tensor.to(self.device).unsqueeze(1)
+                target_tensor = target_tensor.to(self.device).unsqueeze(1)
 
-                    test_loss += self.loss(encoder_output, target_tensor)
-                    pred = int(encoder_output.item())
+                encoder_output, encoder_hidden = self.encoder(input_tensor, encoder_hidden)
 
-                    preds.append(pred)
-                    targets.append(target_tensor.item())
+                test_loss = self.loss(encoder_output, target_tensor)
+                macro_f1 = f1_score(y_true=target_tensor.cpu().detach().numpy().ravel(),
+                                    y_pred=encoder_output.cpu().detach().to(torch.int32).numpy().ravel(),
+                                    average='macro')
 
-            macro_f1 = f1_score(y_true=targets, y_pred=preds, average='macro')
-
-            logger.store(test_loss=test_loss / len(self.test_loader.dataset))
+            logger.store(test_loss=test_loss)
             logger.store(accuracy=macro_f1)
+            logger.write()
 
     def __call__(self):
         for _ in self.loop:
@@ -132,7 +130,7 @@ class LoaderConfigs(configs.Configs):
 
 
 class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
-    epochs: int = 10
+    epochs: int = 1000
 
     loop_step = 'loop_step'
     loop_count = 'loop_count'
@@ -197,7 +195,7 @@ def device(*, use_cuda, cuda_device):
 
 
 def _custom_dataset(is_train):
-    return CsvDataset(file_path='data/liverpool-ion-switching/train.csv',
+    return CsvDataset(file_path=f'{logger.get_data_path()}/liverpool-ion-switching/train.csv',
                       train=is_train,
                       test_fraction=0.1,
                       x_cols=['signal'],
@@ -205,7 +203,8 @@ def _custom_dataset(is_train):
 
 
 def _data_loader(is_train, batch_size):
-    return torch.utils.data.DataLoader(_custom_dataset(is_train), batch_size=batch_size, drop_last=True)
+    return torch.utils.data.DataLoader(_custom_dataset(is_train), batch_size=batch_size,
+                                       drop_last=True)
 
 
 @Configs.calc([Configs.train_loader, Configs.test_loader])
