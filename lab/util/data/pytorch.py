@@ -1,11 +1,12 @@
 import pandas as pd
+import torch
 
 from typing import Callable, List
 
-from torch.utils.data import Dataset
+from torch.utils.data import TensorDataset
 
 
-class BaseDataset(Dataset):
+class BaseDataset(TensorDataset):
     data: pd
     y_cols: List
     x_cols: List
@@ -16,10 +17,10 @@ class BaseDataset(Dataset):
 
 class CsvDataset(BaseDataset):
     def __init__(self, file_path: str, y_cols: List, x_cols: List, train: bool = True,
-                 transform: Callable = lambda: None, test_fraction: float = 0.0):
+                 transform: Callable = lambda: None, test_fraction: float = 0.0, nrows: int = None):
         self.__dict__.update(**vars())
 
-        self.data = pd.read_csv(file_path)
+        self.data = pd.read_csv(**{'filepath_or_buffer': file_path, 'nrows': nrows})
 
         data_length = len(self.data)
 
@@ -29,16 +30,9 @@ class CsvDataset(BaseDataset):
         self.train_data = self.data.iloc[0:self.train_size]
         self.test_data = self.data.iloc[self.train_size:]
 
-    def __len__(self):
-        if self.train:
-            return self.train_size
+        if train:
+            x, y = torch.tensor(self.train_data[self.x_cols].values), torch.tensor(self.train_data[self.y_cols].values)
         else:
-            return self.test_size
+            x, y = torch.tensor(self.test_data[self.x_cols].values), torch.tensor(self.test_data[self.y_cols].values)
 
-    def __getitem__(self, index):
-        if self.train:
-            x, y = self.train_data.iloc[index][self.x_cols].values, self.train_data.iloc[index][self.y_cols].values
-        else:
-            x, y = self.test_data.iloc[index][self.y_cols].values, self.test_data.iloc[index][self.y_cols].values
-
-        return x, y
+        super(CsvDataset, self).__init__(x, y)
