@@ -5,7 +5,7 @@ from typing import Dict
 import tensorflow as tf
 
 from . import Writer as WriteBase
-from ..artifacts import Artifact
+from ..artifacts import Artifact, Image
 from ..indicators import Indicator
 
 tf.config.experimental.set_visible_devices([], "GPU")
@@ -51,3 +51,13 @@ class Writer(WriteBase):
                 if mean_value is not None:
                     tf.summary.scalar(self._parse_key(ind.mean_key), mean_value,
                                       step=global_step)
+            for art in artifacts.values():
+                if art.is_empty():
+                    continue
+
+                if type(art) == Image:
+                    # Expecting NxCxHxW images in pytorch tensors normalized in [0, 1]
+                    for key in art.keys():
+                        img = art.get_value(key)
+                        img = img.cpu().permute(0, 2, 3, 1).numpy()
+                        tf.summary.image(self._parse_key(art.name), img, step=global_step)

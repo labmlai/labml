@@ -102,23 +102,26 @@ class _Collection(Artifact, ABC):
     def keys(self):
         return self._values.keys()
 
+    def get_value(self, key: str):
+        return self._values[key]
 
 class Image(_Collection):
     def get_print_length(self) -> Optional[int]:
         return None
 
     def print_all(self, others: Dict[str, Artifact]):
-        images = [_to_numpy(v) for v in self._values.values()]
-        cols = 3
-        fig: plt.Figure
-        fig, axs = plt.subplots((len(images) + cols - 1) // cols, cols,
-                                sharex='all', sharey='all',
-                                figsize=(8, 10))
-        fig.suptitle(self.name)
-        for i, img in enumerate(images):
-            ax: plt.Axes = axs[i // cols, i % cols]
-            ax.imshow(img)
-        plt.show()
+        if self.is_print:
+            images = [_to_numpy(v) for v in self._values.values()]
+            cols = 3
+            fig: plt.Figure
+            fig, axs = plt.subplots((len(images) + cols - 1) // cols, cols,
+                                    sharex='all', sharey='all',
+                                    figsize=(8, 10))
+            fig.suptitle(self.name)
+            for i, img in enumerate(images):
+                ax: plt.Axes = axs[i // cols, i % cols]
+                ax.imshow(img)
+            plt.show()
 
 
 class Text(_Collection):
@@ -126,9 +129,10 @@ class Text(_Collection):
         return None
 
     def print_all(self, others: Dict[str, Artifact]):
-        logger.log(self.name, TextStyle.heading)
-        for t in self._values.values():
-            logger.log(t, TextStyle.value)
+        if self.is_print:
+            logger.log(self.name, TextStyle.heading)
+            for t in self._values.values():
+                logger.log(t, TextStyle.value)
 
 
 class IndexedText(_Collection):
