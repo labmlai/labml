@@ -120,7 +120,7 @@ class MNISTLoop:
 
 class LoopConfigs(configs.Configs):
     epochs: int = 10
-    is_save_models: bool = False
+    is_save_models: bool = True
     is_log_parameters: bool = True
     log_new_line_interval: int = 1
 

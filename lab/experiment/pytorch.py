@@ -10,17 +10,23 @@ from lab.logger.internal import CheckpointSaver
 
 
 class Checkpoint(CheckpointSaver):
-    __models: Dict[str, torch.nn.Module]
+    _models: Dict[str, torch.nn.Module]
 
     def __init__(self, path: pathlib.PurePath):
         self.path = path
-        self.__models = {}
+        self._models = {}
 
     def add_models(self, models: Dict[str, torch.nn.Module]):
         """
         ## Set variable for saving and loading
         """
-        self.__models.update(models)
+        self._models.update(models)
+
+    def save_model(self,
+                   name: str,
+                   model: torch.nn.Module,
+                   checkpoint_path: pathlib.Path) -> any:
+        raise NotImplementedError()
 
     def save(self, global_step):
         """
@@ -37,20 +43,19 @@ class Checkpoint(CheckpointSaver):
         checkpoint_path.mkdir()
 
         files = {}
-        for name, model in self.__models.items():
-             state = model.state_dict()
-             file_name = f"{name}.pth"
-             files[name] = file_name
-             torch.save(state, str(checkpoint_path / file_name))
+        for name, model in self._models.items():
+            files[name] = self.save_model(name, model, checkpoint_path)
 
         # Save header
         with open(str(checkpoint_path / "info.json"), "w") as f:
             f.write(json.dumps(files))
 
-        # Delete old checkpoints
-        # for c in checkpoints_path.iterdir():
-        #     if c.name != checkpoint_path.name:
-        #         util.rm_tree(c)
+    def load_model(self,
+                   name: str,
+                   model: torch.nn.Module,
+                   checkpoint_path: pathlib.Path,
+                   info: any):
+        raise NotImplementedError()
 
     def load(self, checkpoint_path):
         """
@@ -60,14 +65,70 @@ class Checkpoint(CheckpointSaver):
         with open(str(checkpoint_path / "info.json"), "r") as f:
             files = json.loads(f.readline())
 
-        # Load each variable
-        for name, model in self.__models.items():
-            file_name = files[name]
-            state = torch.load(str(checkpoint_path / file_name))
-
-            model.load_state_dict(state)
+        # Load each model
+        for name, model in self._models.items():
+            self.load_model(name, model, checkpoint_path, files[name])
 
         return True
+
+
+class NumpyCheckpoint(Checkpoint):
+    """
+    Deprecated: left for backward compatibility only
+    Remove around August 2020
+    """
+
+    def save_model(self,
+                   name: str,
+                   model: torch.nn.Module,
+                   checkpoint_path: pathlib.Path) -> any:
+        state: Dict[str, torch.Tensor] = model.state_dict()
+        files = {}
+        for key, tensor in state.items():
+            if key == "_metadata":
+                continue
+
+            file_name = f"{name}_{key}.npy"
+            files[key] = file_name
+
+            np.save(str(checkpoint_path / file_name), tensor.cpu().numpy())
+
+        return files
+
+    def load_model(self,
+                   name: str,
+                   model: torch.nn.Module,
+                   checkpoint_path: pathlib.Path,
+                   info: any):
+        state: Dict[str, torch.Tensor] = model.state_dict()
+        for key, tensor in state.items():
+            file_name = info[key]
+            saved = np.load(str(checkpoint_path / file_name))
+            saved = torch.from_numpy(saved).to(tensor.device)
+            state[key] = saved
+
+        model.load_state_dict(state)
+
+
+class PyTorchCheckpoint(Checkpoint):
+    def save_model(self,
+                   name: str,
+                   model: torch.nn.Module,
+                   checkpoint_path: pathlib.Path) -> any:
+        state = model.state_dict()
+        file_name = f"{name}.pth"
+        torch.save(state, str(checkpoint_path / file_name))
+        return file_name
+
+    def load_model(self,
+                   name: str,
+                   model: torch.nn.Module,
+                   checkpoint_path: pathlib.Path,
+                   info: any):
+        file_name: str = info
+        state = torch.load(str(checkpoint_path / file_name))
+
+        model.load_state_dict(state)
 
 
 class Experiment(experiment.Experiment):
@@ -109,7 +170,7 @@ class Experiment(experiment.Experiment):
                          tags=tags)
 
     def _create_checkpoint_saver(self):
-        self.__checkpoint_saver = Checkpoint(self.run.checkpoint_path)
+        self.__checkpoint_saver = PyTorchCheckpoint(self.run.checkpoint_path)
         return self.__checkpoint_saver
 
     def add_models(self, models: Dict[str, torch.nn.Module]):
