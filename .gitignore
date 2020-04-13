@@ -3,6 +3,7 @@
 .idea/
 __pycache__/
 /logs
+/analytics
 .DS_Store
 temp.ipynb
 .*.swp
