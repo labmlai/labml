@@ -38,16 +38,10 @@ class Checkpoint(CheckpointSaver):
 
         files = {}
         for name, model in self.__models.items():
-            state: Dict[str, torch.Tensor] = model.state_dict()
-            files[name] = {}
-            for key, tensor in state.items():
-                if key == "_metadata":
-                    continue
-
-                file_name = f"{name}_{key}.npy"
-                files[name][key] = file_name
-
-                np.save(str(checkpoint_path / file_name), tensor.cpu().numpy())
+             state = model.state_dict()
+             file_name = f"{name}.pth"
+             files[name] = file_name
+             torch.save(state, str(checkpoint_path / file_name))
 
         # Save header
         with open(str(checkpoint_path / "info.json"), "w") as f:
@@ -68,12 +62,8 @@ class Checkpoint(CheckpointSaver):
 
         # Load each variable
         for name, model in self.__models.items():
-            state: Dict[str, torch.Tensor] = model.state_dict()
-            for key, tensor in state.items():
-                file_name = files[name][key]
-                saved = np.load(str(checkpoint_path / file_name))
-                saved = torch.from_numpy(saved).to(tensor.device)
-                state[key] = saved
+            file_name = files[name]
+            state = torch.load(str(checkpoint_path / file_name))
 
             model.load_state_dict(state)
 
