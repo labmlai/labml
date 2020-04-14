@@ -296,8 +296,11 @@ class LoggerInternal:
         for k, v in items:
             count += 1
             spaces = " " * (max_key_len - len(str(k)))
+            s = str(v)
+            if len(s) > 80:
+                s = f"{s[:80]} ..."
             self.log([(f"{spaces}{k}: ", Text.key),
-                      (str(v), Text.value)])
+                      (s, Text.value)])
 
         if is_show_count:
             self.log([
