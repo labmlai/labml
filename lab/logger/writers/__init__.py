@@ -128,6 +128,8 @@ class ScreenWriter(Writer):
     def _print_artifacts(self, artifacts: Dict[str, Artifact]):
         table = {}
         for art in artifacts.values():
+            if not art.is_print:
+                continue
             if art.is_empty():
                 continue
             if not art.is_indexed:

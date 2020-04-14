@@ -1,14 +1,13 @@
 from abc import ABC
 from collections import OrderedDict
-from typing import Dict, Optional, List, Any, OrderedDict as OrderedDictType
+from typing import Dict, Optional, Any, OrderedDict as OrderedDictType
+from uuid import uuid1
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from lab import logger
 from lab.logger.colors import Text as TextStyle
-from uuid import uuid1
-
 
 try:
     import torch
@@ -72,6 +71,9 @@ class Artifact:
     def keys(self):
         raise NotImplementedError()
 
+    def get_value(self, key: str):
+        return None
+
     def collect_value(self, key: Optional[str], value):
         if key is None:
             if type(value) == tuple and len(value) == 2:
@@ -101,6 +103,9 @@ class _Collection(Artifact, ABC):
 
     def keys(self):
         return self._values.keys()
+
+    def get_value(self, key: str):
+        return self._values[key]
 
 
 class Image(_Collection):
