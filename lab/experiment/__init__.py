@@ -102,6 +102,8 @@ class Experiment:
         checkpoint_saver = self._create_checkpoint_saver()
         logger.internal().set_checkpoint_saver(checkpoint_saver)
 
+        logger.internal().reset_writers()
+
         if writers is None:
             writers = {'sqlite', 'tensorboard'}
 
@@ -162,6 +164,11 @@ class Experiment:
             configs_dict = {}
         self.configs_processor = ConfigProcessor(configs, configs_dict)
         self.configs_processor(run_order)
+
+        # May be we should write these in `start`
+        if configs_dict:
+            logger.internal().write_h_parameters(configs_dict)
+
         logger.new_line()
 
     def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):

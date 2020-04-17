@@ -16,6 +16,9 @@ class Writer:
               artifacts: Dict[str, Artifact]):
         raise NotImplementedError()
 
+    def write_h_parameters(self, hparams: Dict[str, any]):
+        pass
+
 
 class ScreenWriter(Writer):
     def __init__(self):

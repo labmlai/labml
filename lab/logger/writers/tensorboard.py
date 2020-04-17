@@ -3,6 +3,7 @@ from pathlib import PurePath
 from typing import Dict
 
 import tensorflow as tf
+from tensorboard.plugins.hparams import api as hp
 
 from . import Writer as WriteBase
 from ..artifacts import Artifact, Image
@@ -31,6 +32,12 @@ class Writer(WriteBase):
     @staticmethod
     def _parse_key(key: str):
         return key.replace('.', '/')
+
+    def write_h_parameters(self, hparams: Dict[str, any]):
+        self.__connect()
+
+        with self.__writer.as_default():
+            hp.hparams(hparams)
 
     def write(self, *,
               global_step: int,

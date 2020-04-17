@@ -8,16 +8,16 @@ from torchvision import datasets, transforms
 from lab import logger, configs
 from lab import training_loop
 from lab.experiment.pytorch import Experiment
-from lab.logger.indicators import Queue, Histogram
-from lab.logger.util import pytorch as logger_util
 
 
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, conv1_kernal, conv2_kernal):
         super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5, 1)
-        self.conv2 = nn.Conv2d(20, 50, 5, 1)
-        self.fc1 = nn.Linear(4 * 4 * 50, 500)
+        self.size = (28 - conv1_kernal - 2 * conv2_kernal + 3) // 4
+
+        self.conv1 = nn.Conv2d(1, 20, conv1_kernal, 1)
+        self.conv2 = nn.Conv2d(20, 50, conv2_kernal, 1)
+        self.fc1 = nn.Linear(self.size * self.size * 50, 500)
         self.fc2 = nn.Linear(500, 10)
 
     def forward(self, x):
@@ -25,7 +25,7 @@ class Net(nn.Module):
         x = F.max_pool2d(x, 2, 2)
         x = F.relu(self.conv2(x))
         x = F.max_pool2d(x, 2, 2)
-        x = x.view(-1, 4 * 4 * 50)
+        x = x.view(-1, self.size * self.size * 50)
         x = F.relu(self.fc1(x))
         return self.fc2(x)
 
@@ -73,23 +73,10 @@ class MNIST:
         logger.store(test_loss=test_loss / len(self.test_loader.dataset))
         logger.store(accuracy=correct / len(self.test_loader.dataset))
 
-    def __log_model_params(self):
-        if not self.__is_log_parameters:
-            return
-
-        logger_util.store_model_indicators(self.model)
-
     def __call__(self):
-        logger_util.add_model_indicators(self.model)
-
-        logger.add_indicator(Queue("train_loss", 20, True))
-        logger.add_indicator(Histogram("test_loss", True))
-        logger.add_indicator(Histogram("accuracy", True))
-
         for _ in self.loop:
             self._train()
             self._test()
-            self.__log_model_params()
 
 
 class LoaderConfigs(configs.Configs):
@@ -98,7 +85,7 @@ class LoaderConfigs(configs.Configs):
 
 
 class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
-    epochs: int = 10
+    epochs: int = 1
 
     loop_step = 'loop_step'
     loop_count = 'loop_count'
@@ -121,6 +108,9 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     learning_rate: float = 0.01
     momentum: float = 0.5
     optimizer: optim.SGD
+
+    conv1_kernal: int
+    conv2_kernal: int
 
     set_seed = 'set_seed'
 
@@ -156,7 +146,7 @@ def data_loaders(c: Configs):
 
 @Configs.calc(Configs.model)
 def model(c: Configs):
-    m: Net = Net()
+    m: Net = Net(c.conv1_kernal, c.conv2_kernal)
     m.to(c.device)
     return m
 
@@ -186,15 +176,34 @@ def loop_step(c: Configs):
     return len(c.train_loader)
 
 
-def main():
+def run(run_name: str, hparams: dict):
+    logger.set_global_step(0)
+
     conf = Configs()
-    experiment = Experiment(writers={'sqlite', 'tensorboard'})
+    experiment = Experiment(name=run_name, writers={'sqlite', 'tensorboard'})
     experiment.calc_configs(conf,
-                            {'optimizer': 'adam_optimizer'},
+                            hparams,
                             ['set_seed', 'main'])
     experiment.add_models(dict(model=conf.model))
     experiment.start()
+
     conf.main()
+
+
+def main():
+    session_num = 1
+    for conv1_kernal in [3, 5]:
+        for conv2_kernal in [3, 5]:
+            hparams = {
+                'conv1_kernal': conv1_kernal,
+                'conv2_kernal': conv2_kernal,
+            }
+
+            run_name = "mnist_run-%d" % session_num
+
+            run(run_name, hparams)
+
+            session_num += 1
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 import pathlib
 import typing
 from pathlib import PurePath
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, Dict
 
 import numpy as np
 
@@ -96,6 +96,10 @@ class LoggerInternal:
     def add_writer(self, writer: Writer):
         self.__writers.append(writer)
 
+    def reset_writers(self):
+        self.__writers = []
+        self.__writers.append(self.__screen_writer)
+
     def log(self, parts: List[Union[str, Tuple[str, StyleCode]]], *,
             is_new_line=True):
         self.__destination.log(parts, is_new_line=is_new_line)
@@ -138,6 +142,10 @@ class LoggerInternal:
             return True
         else:
             return False
+
+    def write_h_parameters(self, hparams: Dict[str, any]):
+        for w in self.__writers:
+            w.write_h_parameters(hparams)
 
     def write(self):
         global_step = self.global_step
