@@ -6,6 +6,7 @@ from typing import List, Optional, Tuple, Union
 import numpy as np
 
 from .artifacts import Artifact
+from .hparameters import HParameter
 from .colors import Text, StyleCode
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
 from .destinations.factory import create_destination
@@ -102,6 +103,9 @@ class LoggerInternal:
 
     def add_indicator(self, indicator: Indicator):
         self.__store.add_indicator(indicator)
+
+    def add_h_parameter(self, h_parameter: HParameter):
+        self.__store.add_h_parameter(h_parameter)
 
     def add_artifact(self, artifact: Artifact):
         self.__store.add_artifact(artifact)

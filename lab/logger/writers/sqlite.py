@@ -5,6 +5,7 @@ from typing import Dict, Optional
 from . import Writer as WriteBase
 from ..artifacts import Artifact
 from ..indicators import Indicator
+from ..hparameters import HParameter
 
 
 class Writer(WriteBase):
@@ -40,7 +41,8 @@ class Writer(WriteBase):
     def write(self, *,
               global_step: int,
               indicators: Dict[str, Indicator],
-              artifacts: Dict[str, Artifact]):
+              artifacts: Dict[str, Artifact],
+              h_parameters: Dict[str, HParameter]):
         self.__connect()
 
         for ind in indicators.values():

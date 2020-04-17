@@ -3,10 +3,12 @@ from pathlib import PurePath
 from typing import Dict
 
 import tensorflow as tf
+from tensorboard.plugins.hparams import api as hp
 
 from . import Writer as WriteBase
 from ..artifacts import Artifact, Image
 from ..indicators import Indicator
+from ..hparameters import HParameter
 
 tf.config.experimental.set_visible_devices([], "GPU")
 
@@ -35,10 +37,17 @@ class Writer(WriteBase):
     def write(self, *,
               global_step: int,
               indicators: Dict[str, Indicator],
-              artifacts: Dict[str, Artifact]):
+              artifacts: Dict[str, Artifact],
+              h_parameters: Dict[str, HParameter]):
         self.__connect()
 
         with self.__writer.as_default():
+            for h_param in h_parameters.values():
+                if h_param.is_empty():
+                    continue
+
+                hp.hparams(h_param.get_value())
+
             for ind in indicators.values():
                 if ind.is_empty():
                     continue

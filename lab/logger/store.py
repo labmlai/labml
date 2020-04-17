@@ -4,6 +4,7 @@ from typing import Dict, List, Any
 from lab import util
 from lab.logger import internal
 from .artifacts import Artifact
+from .hparameters import HParameter
 from .indicators import Indicator, Scalar
 from .writers import Writer
 
@@ -21,6 +22,7 @@ class Store:
         self.__logger = logger
         self.indicators = {}
         self.artifacts = {}
+        self.h_parameters = {}
         self.__indicators_file = None
         self.__artifacts_file = None
 
@@ -58,14 +60,21 @@ class Store:
         if self.__artifacts_file is not None:
             self.save_artifactors(self.__artifacts_file)
 
+    def add_h_parameter(self, h_parameter: HParameter):
+        self.__assert_name(h_parameter.name)
+        self.h_parameters[h_parameter.name] = h_parameter
+        h_parameter.clear()
+
     def _store_kv(self, k, v):
-        if k not in self.indicators and k not in self.artifacts:
+        if k not in self.indicators and k not in self.artifacts and k not in self.h_parameters:
             self.__logger.add_indicator(Scalar(k, True))
 
         if k in self.artifacts:
             self.artifacts[k].collect_value(None, v)
-        else:
+        elif k in self.indicators:
             self.indicators[k].collect_value(v)
+        else:
+            self.h_parameters[k].collect_value(v)
 
     def _store_kvs(self, **kwargs):
         for k, v in kwargs.items():
@@ -97,8 +106,11 @@ class Store:
             v.clear()
         for k, v in self.artifacts.items():
             v.clear()
+        for k, v in self.h_parameters.items():
+            v.clear()
 
     def write(self, writer: Writer, global_step):
         return writer.write(global_step=global_step,
                             indicators=self.indicators,
-                            artifacts=self.artifacts)
+                            artifacts=self.artifacts,
+                            h_parameters=self.h_parameters)

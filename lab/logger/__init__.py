@@ -3,6 +3,7 @@ from typing import Union, List, Tuple, Optional, Iterable, Sized, Dict, overload
 import numpy as np
 
 from .artifacts import Artifact
+from .hparameters import HParameter
 from .colors import StyleCode
 from .indicators import Indicator
 from .internal import LoggerInternal as _LoggerInternal
@@ -48,6 +49,10 @@ def add_indicator(indicator: Indicator):
 
 def add_artifact(artifact: Artifact):
     internal().add_artifact(artifact)
+
+
+def add_h_parameter(h_parameter: HParameter):
+    internal().add_h_parameter(h_parameter)
 
 
 @overload
