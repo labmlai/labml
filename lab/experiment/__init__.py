@@ -34,8 +34,7 @@ class Experiment:
                  comment: Optional[str],
                  writers: Set[str] = None,
                  ignore_callers: Set[str] = None,
-                 tags: Optional[Set[str]] = None,
-                 reset_writers: Optional[bool]):
+                 tags: Optional[Set[str]] = None):
         """
         ### Create the experiment
 
@@ -103,8 +102,7 @@ class Experiment:
         checkpoint_saver = self._create_checkpoint_saver()
         logger.internal().set_checkpoint_saver(checkpoint_saver)
 
-        if reset_writers:
-            logger.internal().reset_writers()
+        logger.internal().reset_writers()
 
         if writers is None:
             writers = {'sqlite', 'tensorboard'}
@@ -167,6 +165,7 @@ class Experiment:
         self.configs_processor = ConfigProcessor(configs, configs_dict)
         self.configs_processor(run_order)
 
+        # May be we should write these in `start`
         if configs_dict:
             logger.internal().write_h_parameters(configs_dict)
 

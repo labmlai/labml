@@ -98,6 +98,7 @@ class LoggerInternal:
 
     def reset_writers(self):
         self.__writers = []
+        self.__writers.append(self.__screen_writer)
 
     def log(self, parts: List[Union[str, Tuple[str, StyleCode]]], *,
             is_new_line=True):

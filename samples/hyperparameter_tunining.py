@@ -180,7 +180,7 @@ def run(run_name: str, hparams: dict):
     logger.set_global_step(0)
 
     conf = Configs()
-    experiment = Experiment(name=run_name, writers={'sqlite', 'tensorboard'}, reset_writers=True)
+    experiment = Experiment(name=run_name, writers={'sqlite', 'tensorboard'})
     experiment.calc_configs(conf,
                             hparams,
                             ['set_seed', 'main'])
