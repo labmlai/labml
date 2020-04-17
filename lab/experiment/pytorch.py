@@ -147,7 +147,8 @@ class Experiment(experiment.Experiment):
                  comment: Optional[str] = None,
                  writers: Set[str] = None,
                  ignore_callers: Set[str] = None,
-                 tags: Optional[Set[str]] = None):
+                 tags: Optional[Set[str]] = None,
+                 reset_writers: bool = False):
         """
         ### Create the experiment
 
@@ -167,7 +168,8 @@ class Experiment(experiment.Experiment):
                          comment=comment,
                          writers=writers,
                          ignore_callers=ignore_callers,
-                         tags=tags)
+                         tags=tags,
+                         reset_writers=reset_writers)
 
     def _create_checkpoint_saver(self):
         self.__checkpoint_saver = PyTorchCheckpoint(self.run.checkpoint_path)

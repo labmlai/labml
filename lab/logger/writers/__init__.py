@@ -4,7 +4,6 @@ from typing import Dict
 import numpy as np
 
 from ..artifacts import Artifact
-from ..hparameters import HParameter
 from ..colors import Text
 from ..indicators import Indicator
 from ... import logger
@@ -14,9 +13,11 @@ class Writer:
     def write(self, *,
               global_step: int,
               indicators: Dict[str, Indicator],
-              artifacts: Dict[str, Artifact],
-              h_parameters: Dict[str, HParameter]):
+              artifacts: Dict[str, Artifact]):
         raise NotImplementedError()
+
+    def write_h_parameters(self, hparams: Dict[str, any]):
+        pass
 
 
 class ScreenWriter(Writer):
@@ -148,8 +149,7 @@ class ScreenWriter(Writer):
     def write(self, *,
               global_step: int,
               indicators: Dict[str, Indicator],
-              artifacts: Dict[str, Artifact],
-              h_parameters: Dict[str, HParameter]):
+              artifacts: Dict[str, Artifact]):
 
         self._print_artifacts(artifacts)
 

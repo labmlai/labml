@@ -188,7 +188,7 @@ def loop_step(c: Configs):
 
 def main():
     conf = Configs()
-    experiment = Experiment(writers={'sqlite'})
+    experiment = Experiment(writers={'sqlite', 'tensorboard'})
     experiment.calc_configs(conf,
                             {'optimizer': 'adam_optimizer'},
                             ['set_seed', 'main'])

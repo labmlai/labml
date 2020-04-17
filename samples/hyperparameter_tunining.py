@@ -8,7 +8,6 @@ from torchvision import datasets, transforms
 from lab import logger, configs
 from lab import training_loop
 from lab.experiment.pytorch import Experiment
-from lab.logger.hparameters import HParameter
 
 
 class Net(nn.Module):
@@ -181,22 +180,17 @@ def run(run_name: str, hparams: dict):
     logger.set_global_step(0)
 
     conf = Configs()
-    experiment = Experiment(name=run_name, writers={'sqlite', 'tensorboard'})
+    experiment = Experiment(name=run_name, writers={'sqlite', 'tensorboard'}, reset_writers=True)
     experiment.calc_configs(conf,
                             hparams,
                             ['set_seed', 'main'])
     experiment.add_models(dict(model=conf.model))
     experiment.start()
 
-    logger.store(**{'hparams': hparams})
-    logger.write()
-
     conf.main()
 
 
 def main():
-    logger.add_h_parameter(HParameter('hparams', True))
-
     session_num = 1
     for conv1_kernal in [3, 5]:
         for conv2_kernal in [3, 5]:
@@ -205,7 +199,7 @@ def main():
                 'conv2_kernal': conv2_kernal,
             }
 
-            run_name = "run-%d" % session_num
+            run_name = "mnist_run-%d" % session_num
 
             run(run_name, hparams)
 

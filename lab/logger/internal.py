@@ -1,12 +1,11 @@
 import pathlib
 import typing
 from pathlib import PurePath
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, Dict
 
 import numpy as np
 
 from .artifacts import Artifact
-from .hparameters import HParameter
 from .colors import Text, StyleCode
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
 from .destinations.factory import create_destination
@@ -97,15 +96,15 @@ class LoggerInternal:
     def add_writer(self, writer: Writer):
         self.__writers.append(writer)
 
+    def reset_writers(self):
+        self.__writers = []
+
     def log(self, parts: List[Union[str, Tuple[str, StyleCode]]], *,
             is_new_line=True):
         self.__destination.log(parts, is_new_line=is_new_line)
 
     def add_indicator(self, indicator: Indicator):
         self.__store.add_indicator(indicator)
-
-    def add_h_parameter(self, h_parameter: HParameter):
-        self.__store.add_h_parameter(h_parameter)
 
     def add_artifact(self, artifact: Artifact):
         self.__store.add_artifact(artifact)
@@ -142,6 +141,10 @@ class LoggerInternal:
             return True
         else:
             return False
+
+    def write_h_parameters(self, hparams: Dict[str, any]):
+        for w in self.__writers:
+            w.write_h_parameters(hparams)
 
     def write(self):
         global_step = self.global_step

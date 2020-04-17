@@ -8,7 +8,6 @@ from tensorboard.plugins.hparams import api as hp
 from . import Writer as WriteBase
 from ..artifacts import Artifact, Image
 from ..indicators import Indicator
-from ..hparameters import HParameter
 
 tf.config.experimental.set_visible_devices([], "GPU")
 
@@ -34,20 +33,19 @@ class Writer(WriteBase):
     def _parse_key(key: str):
         return key.replace('.', '/')
 
-    def write(self, *,
-              global_step: int,
-              indicators: Dict[str, Indicator],
-              artifacts: Dict[str, Artifact],
-              h_parameters: Dict[str, HParameter]):
+    def write_h_parameters(self, hparams: Dict[str, any]):
         self.__connect()
 
         with self.__writer.as_default():
-            for h_param in h_parameters.values():
-                if h_param.is_empty():
-                    continue
+            hp.hparams(hparams)
 
-                hp.hparams(h_param.get_value())
+    def write(self, *,
+              global_step: int,
+              indicators: Dict[str, Indicator],
+              artifacts: Dict[str, Artifact]):
+        self.__connect()
 
+        with self.__writer.as_default():
             for ind in indicators.values():
                 if ind.is_empty():
                     continue
