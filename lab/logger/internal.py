@@ -97,8 +97,7 @@ class LoggerInternal:
         self.__writers.append(writer)
 
     def reset_writers(self):
-        self.__writers = []
-        self.__writers.append(self.__screen_writer)
+        self.__writers = [self.__screen_writer]
 
     def log(self, parts: List[Union[str, Tuple[str, StyleCode]]], *,
             is_new_line=True):
@@ -138,10 +137,7 @@ class LoggerInternal:
         self.__destination.new_line()
 
     def __is_looping(self):
-        if self.__loop is not None and self.__loop.is_started:
-            return True
-        else:
-            return False
+        return bool(self.__loop is not None and self.__loop.is_started)
 
     def write_h_parameters(self, hparams: Dict[str, any]):
         for w in self.__writers:

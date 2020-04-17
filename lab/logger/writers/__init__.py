@@ -47,11 +47,7 @@ class ScreenWriter(Writer):
             return self.get_empty_string(8, 2)
 
         estimate = self._estimates[k] / (1 - self._beta_pow[k])
-        if abs(estimate) < 1e-9:
-            lg = 0
-        else:
-            lg = int(np.ceil(np.log10(estimate))) + 1
-
+        lg = 0 if abs(estimate) < 1e-09 else int(np.ceil(np.log10(estimate))) + 1
         decimals = 7 - lg
         decimals = max(1, decimals)
         decimals = min(6, decimals)
