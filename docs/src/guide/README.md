@@ -1,0 +1,1 @@
+This short tutorial covers most of the usage patterns. We still don't have a proper documentation, but the source code of the project is quite clean and I assume you can dive into it if you need more details.
