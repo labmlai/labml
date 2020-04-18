@@ -4,3 +4,6 @@ language = "en"
 multilingual = false
 src = "src"
 title = "Lab"
+
+[build]
+build-dir = "../docs"

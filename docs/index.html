@@ -1,0 +1,274 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Introduction - Lab</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="guide/index.html"><strong aria-hidden="true">3.</strong> Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="guide/logger.html"><strong aria-hidden="true">3.1.</strong> Logger</a></li><li class="chapter-item expanded "><a href="guide/sections.html"><strong aria-hidden="true">3.2.</strong> Sections</a></li><li class="chapter-item expanded "><a href="guide/iterator_enumerator.html"><strong aria-hidden="true">3.3.</strong> Iterator &amp; Enumerator</a></li><li class="chapter-item expanded "><a href="guide/loop.html"><strong aria-hidden="true">3.4.</strong> Loop</a></li><li class="chapter-item expanded "><a href="guide/log_indicators.html"><strong aria-hidden="true">3.5.</strong> Log Indicators</a></li><li class="chapter-item expanded "><a href="guide/experiment.html"><strong aria-hidden="true">3.6.</strong> Experiment</a></li><li class="chapter-item expanded "><a href="guide/configs.html"><strong aria-hidden="true">3.7.</strong> Configurations &amp; Hyper-parameters</a></li></ol></li><li class="chapter-item expanded "><a href="samples/index.html"><strong aria-hidden="true">4.</strong> Samples</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Lab</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <p align="center">
+  <img src="https://github.com/vpj/lab/raw/832758308905ee20ba9841fa80c47c77d7e58fda/images/logo.png?raw=true" width="100" title="Logo">
+</p>
+<h1><a class="header" href="#a-hrefhttpsgithubcomvpjlablab-30a" id="a-hrefhttpsgithubcomvpjlablab-30a"><a href="https://github.com/vpj/lab">Lab 3.0</a></a></h1>
+<p>This library helps you organize and track
+machine learning experiments.</p>
+<p><strong>💬 <a href="https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ">Slack workspace for discussions</a></strong>	</p>
+<p><strong>🎛 <a href="https://github.com/vpj/lab_dashboard">Dashboard</a> is the web 
+interface for Lab.</strong></p>
+<h2><a class="header" href="#features" id="features">Features</a></h2>
+<p>Main features of Lab are:</p>
+<ul>
+<li>Organizing experiments</li>
+<li><a href="https://github.com/vpj/lab_dashboard">Dashboard</a> to browse experiments</li>
+<li>Logger</li>
+<li>Managing configurations and hyper-parameters</li>
+</ul>
+<h3><a class="header" href="#organizing-experiments" id="organizing-experiments">Organizing Experiments</a></h3>
+<p>Lab keeps track of all the model training statistics.
+It keeps them in a SQLite database and also pushes them to Tensorboard.
+It also organizes the checkpoints and any other artifacts you wish to save.
+All of these could be accessed with the Python API and also stored
+in a human friendly folder structure.
+This could be  of your training pro
+Maintains logs, summaries and checkpoints of all the experiment runs 
+in a folder structure.</p>
+<h3><a class="header" href="#a-hrefhttpsgithubcomvpjlab_dashboarddashboarda-to-browse-experiments" id="a-hrefhttpsgithubcomvpjlab_dashboarddashboarda-to-browse-experiments"><a href="https://github.com/vpj/lab_dashboard">Dashboard</a> to browse experiments</a></h3>
+<p align="center">
+  <img style="max-width:100%;"
+   src="https://raw.githubusercontent.com/vpj/lab/master/images/dashboard.png"
+   width="1024" title="Dashboard Screenshot">
+</p>
+<p>The web dashboard helps navigate experiments and multiple runs.
+You can checkout the configs and a summary of performance.
+You can launch TensorBoard directly from there.</p>
+<p><em>Eventually, we want to let you edit configs and run new experiments and analyse
+outputs on the dashboard.</em></p>
+<h3><a class="header" href="#logger" id="logger">Logger</a></h3>
+<p>Logger has a simple API to produce pretty console outputs.</p>
+<p>It also comes with a bunch of helper functions that manages
+iterators and loops.</p>
+<p align="center">
+ <img style="max-width:100%" 
+   src="https://raw.githubusercontent.com/vpj/lab/master/images/loop.gif"
+  />
+</p>
+<h3><a class="header" href="#manage-configurations-and-hyper-parameters" id="manage-configurations-and-hyper-parameters">Manage configurations and hyper-parameters</a></h3>
+<p>You can setup configs/hyper-parameters with functions.
+<a href="https://github.com/vpj/lab">Lab</a> would identify the dependencies and run 
+them in topological order.</p>
+<pre><code class="language-python">@Configs.calc()
+def model(c: Configs):
+    return Net().to(c.device)
+</code></pre>
+<p>You can setup multiple options for configuration functions. 
+So you don't have to write a bunch if statements to handle configs.</p>
+<pre><code class="language-python">@Configs.calc(Configs.optimizer)
+def sgd(c: Configs):
+    return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
+
+@Configs.calc(Configs.optimizer)
+def adam(c: Configs):
+    return optim.Adam(c.model.parameters())
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+                            <a rel="next" href="getting_started.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+                    <a rel="next" href="getting_started.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
