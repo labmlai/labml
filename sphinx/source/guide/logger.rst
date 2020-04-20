@@ -91,6 +91,6 @@ You can pretty print python objects with :meth:`info`.
 
 .. raw:: html
 
-    <pre><span style="color: #60C6C8"> name: </span><strong>Name</strong>
+    <pre><span style="color: #60C6C8">name: </span><strong>Name</strong>
     <span style="color: #60C6C8">price: </span><strong>22</strong>
     Total <span style="color: #208FFB">2</span> item(s)</pre>
