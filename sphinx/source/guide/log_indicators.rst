@@ -33,7 +33,7 @@ Console output line is replaced until ``new_line`` is called.
         time.sleep(0.02)
 
 
-.. code-block:: python
+.. raw:: html
 
     <pre><strong><span style="color: #DDB62B">     100:  </span></strong> loss: <strong> 42.8000</strong>
     <strong><span style="color: #DDB62B">     200:  </span></strong> loss: <strong> 39.0000</strong>
@@ -93,7 +93,7 @@ Settings ``is_print`` to ``True`` will print the mean value of histogram to cons
             logger.new_line()
 
 
-.. code-block:: python
+.. raw:: html
 
     <pre><strong><span style="color: #DDB62B">     100:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 95.5000</strong> value: <strong> 40.5000</strong>
     <strong><span style="color: #DDB62B">     200:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 195.500</strong> value: <strong> 53.4000</strong>

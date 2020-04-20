@@ -100,6 +100,8 @@ html_logo = '_static/img/lab-logo.png'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+master_doc = 'index'
+
 
 # Called automatically by Sphinx, making this `conf.py` an "extension".
 def setup(app):
