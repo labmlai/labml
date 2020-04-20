@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Logger &mdash; Lab 3.0 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="https://blog.varunajasasiri.com/labguide/logger.html"/>
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/katex-math.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Logger" href="../api/logger/logger.html" />
+    <link rel="prev" title="PyTorch documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/lab-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Logger</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#logging-with-colors">Logging with colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logging-debug-info">Logging debug info</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Python API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/logger/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/logger/colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/logger/artifacts.html">Artifacts</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Lab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Logger</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/guide/logger.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="logger">
+<h1>Logger<a class="headerlink" href="#logger" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lab</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">lab.logger.colors</span> <span class="kn">import</span> <span class="n">Text</span><span class="p">,</span> <span class="n">Color</span>
+</pre></div>
+</div>
+<p>You can log to the screen with <a class="reference internal" href="../api/logger/logger.html#lab.logger.log" title="lab.logger.log"><code class="xref py py-meth docutils literal notranslate"><span class="pre">log()</span></code></a>.</p>
+<div class="section" id="logging-with-colors">
+<h2>Logging with colors<a class="headerlink" href="#logging-with-colors" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Colors are missing when views on github&quot;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">highlight</span><span class="p">)</span>
+</pre></div>
+</div>
+<pre><strong><span style="color: #DDB62B">Colors are missing when views on github</span></strong></pre><p>You can use predefined styles</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">([</span>
+    <span class="p">(</span><span class="s1">&#39;Styles &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">heading</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Danger &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">danger</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Warning &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">warning</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Meta &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">meta</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Key &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">key</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Meta2 &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">meta2</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Title &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">title</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Heading &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">heading</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Value &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Highlight &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">highlight</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Subtle&#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">subtle</span><span class="p">)</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<pre><span style="text-decoration: underline">Styles </span><span style="color: #E75C58">Danger </span><span style="color: #DDB62B">Warning </span><span style="color: #208FFB">Meta </span><span style="color: #60C6C8">Key </span><span style="color: #D160C4">Meta2 </span><strong><span style="text-decoration: underline">Title </span></strong><span style="text-decoration: underline">Heading </span><strong>Value </strong><strong><span style="color: #DDB62B">Highlight </span></strong><span style="color: #C5C1B4">Subtle</span></pre><p>Or, specify colors</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">([</span>
+    <span class="p">(</span><span class="s1">&#39;Colors &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">heading</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Red &#39;</span><span class="p">,</span> <span class="n">Color</span><span class="o">.</span><span class="n">red</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Black &#39;</span><span class="p">,</span> <span class="n">Color</span><span class="o">.</span><span class="n">black</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Blue &#39;</span><span class="p">,</span> <span class="n">Color</span><span class="o">.</span><span class="n">blue</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Cyan &#39;</span><span class="p">,</span> <span class="n">Color</span><span class="o">.</span><span class="n">cyan</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Green &#39;</span><span class="p">,</span> <span class="n">Color</span><span class="o">.</span><span class="n">green</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Orange &#39;</span><span class="p">,</span> <span class="n">Color</span><span class="o">.</span><span class="n">orange</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Purple Heading &#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">Color</span><span class="o">.</span><span class="n">purple</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">heading</span><span class="p">]),</span>
+    <span class="p">(</span><span class="s1">&#39;White&#39;</span><span class="p">,</span> <span class="n">Color</span><span class="o">.</span><span class="n">white</span><span class="p">),</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<pre><span style="text-decoration: underline">Colors </span><span style="color: #E75C58">Red </span><span style="color: #3E424D">Black </span><span style="color: #208FFB">Blue </span><span style="color: #60C6C8">Cyan </span><span style="color: #00A250">Green </span><span style="color: #DDB62B">Orange </span><span style="color: #D160C4"><span style="text-decoration: underline">Purple Heading </span></span><span style="color: #C5C1B4">White</span></pre></div>
+<div class="section" id="logging-debug-info">
+<h2>Logging debug info<a class="headerlink" href="#logging-debug-info" title="Permalink to this headline">¶</a></h2>
+<p>You can pretty print python objects with <code class="xref py py-meth docutils literal notranslate"><span class="pre">info()</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<pre><span style="color: #60C6C8">a: </span><strong>2</strong>
+<span style="color: #60C6C8">b: </span><strong>1</strong></pre><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mi">22</span><span class="p">))</span>
+</pre></div>
+</div>
+<pre><span style="color: #60C6C8"> name: </span><strong>Name</strong>
+<span style="color: #60C6C8">price: </span><strong>22</strong>
+Total <span style="color: #208FFB">2</span> item(s)</pre></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../api/logger/logger.html" class="btn btn-neutral float-right" title="Logger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="PyTorch documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lab contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

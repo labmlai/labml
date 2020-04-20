@@ -19,11 +19,21 @@ def internal() -> _LoggerInternal:
 
 
 @overload
-def log(message: str, color: Optional[Union[List[StyleCode], StyleCode]] = None,
+def log(message: str, *, is_new_line=True):
+    ...
+
+
+@overload
+def log(message: str, color: StyleCode,
         *,
         is_new_line=True):
     ...
 
+@overload
+def log(message: str, colors: List[StyleCode],
+        *,
+        is_new_line=True):
+    ...
 
 @overload
 def log(messages: List[Union[str, Tuple[str, StyleCode]]],
@@ -36,6 +46,39 @@ def log(message: Union[str, List[Union[str, Tuple[str, StyleCode]]]],
         color: List[StyleCode] or StyleCode or None = None,
         *,
         is_new_line=True):
+    r"""
+    This has multiple overloads
+
+    .. function:: log(message: str, *, is_new_line=True)
+        :noindex:
+
+    .. function:: log(message: str, color: StyleCode, *, is_new_line=True)
+        :noindex:
+
+    .. function:: log(message: str, colors: List[StyleCode], *, is_new_line=True)
+        :noindex:
+
+    .. function:: log(messages: List[Union[str, Tuple[str, StyleCode]]], *, is_new_line=True)
+        :noindex:
+
+    Arguments:
+        message (str): string to be printed
+        color (StyleCode): color/style of the message
+        colors (List[StyleCode]): list of colors/styles for the message
+        messages (List[Union[str, Tuple[str, StyleCode]]]): a list of messages.
+            Each element should be either a string or a tuple of string and styles.
+
+    Keyword Arguments:
+        is_new_line (bool): whether to print a new line at the end
+
+    Example::
+
+        >>> logger.log("test")
+        >>> torch.set_default_dtype(torch.float64)
+        >>> torch.tensor([1.2, 3]).dtype           # a new floating point tensor
+        torch.float64
+
+    """
     if type(message) == str:
         internal().log([(message, color)], is_new_line=is_new_line)
     elif type(message) == list:
@@ -47,6 +90,11 @@ def add_indicator(indicator: Indicator):
 
 
 def add_artifact(artifact: Artifact):
+    r"""
+    Arguments:
+        artifact (Artifact): artifact
+
+    """
     internal().add_artifact(artifact)
 
 
@@ -221,7 +269,7 @@ def info(**items: any):
 
 def info(*args, **kwargs):
     """
-    ### 🎨 Pretty prints a set of values.
+    🎨 Pretty prints a set of values.
     """
 
     internal().info(*args, **kwargs)
@@ -233,8 +281,7 @@ def get_data_path():
 
 def save_numpy(name: str, array: np.ndarray):
     """
-    ## Save a single numpy array
-
+    Save a single numpy array.
     This is used to save processed data
     """
     internal().save_numpy(name, array)
