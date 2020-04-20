@@ -8,6 +8,11 @@ Lab documentation
    :caption: Guide
 
    guide/logger
+   guide/sections
+   guide/iterator_enumerator
+   guide/loop
+   guide/log_indicators
+   guide/experiment
    guide/configs
 
 .. toctree::

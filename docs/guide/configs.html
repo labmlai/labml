@@ -1,0 +1,287 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Configs &mdash; Lab 3.0 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="https://blog.varunajasasiri.com/labguide/configs.html"/>
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/katex-math.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Logger" href="../api/logger/logger.html" />
+    <link rel="prev" title="Experiment" href="experiment.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/lab-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="logger.html#logging-with-colors">Logging with colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logger.html#logging-debug-info">Logging debug info</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections.html">Sections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="iterator_enumerator.html">Iterators and Enumerators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loop.html">Loop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="log_indicators.html">Log indicators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="log_indicators.html#indicator-settings">Indicator settings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">Experiment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Python API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/logger/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/logger/colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/logger/artifacts.html">Artifacts</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Lab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Configs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/guide/configs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="configs">
+<h1>Configs<a class="headerlink" href="#configs" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lab</span> <span class="kn">import</span> <span class="n">configs</span>
+</pre></div>
+</div>
+<p>The configs will be stored and in future be adjusted
+from  <a class="reference external" href="https://github.com/vpj/lab_dashboard">Dashboard</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DeviceConfigs</span><span class="p">(</span><span class="n">configs</span><span class="o">.</span><span class="n">Configs</span><span class="p">):</span>
+    <span class="n">use_cuda</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">cuda_device</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">device</span><span class="p">:</span> <span class="nb">any</span>
+</pre></div>
+</div>
+<p>Some configs can be calculated</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="nd">@DeviceConfigs</span><span class="o">.</span><span class="n">calc</span><span class="p">(</span><span class="n">DeviceConfigs</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cuda</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">DeviceConfigs</span><span class="p">):</span>
+    <span class="n">is_cuda</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">use_cuda</span> <span class="ow">and</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_cuda</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">cuda_device</span> <span class="o">&lt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">device_count</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{c.cuda_device}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cuda device index </span><span class="si">{c.cuda_device}</span><span class="s2"> higher than &quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot;device count {torch.cuda.device_count()}&quot;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">warning</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:{torch.cuda.device_count() - 1}&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Configs classes can be inherited. This can be used to separate configs into module and it is quite neat when you want to inherit entire experiment setups and make a few modifications.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Configs</span><span class="p">(</span><span class="n">DeviceConfigs</span><span class="p">):</span>
+    <span class="n">model_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="n">model</span><span class="p">:</span> <span class="nb">any</span> <span class="o">=</span> <span class="s1">&#39;cnn_model&#39;</span>
+</pre></div>
+</div>
+<p>You can specify multiple config calculator functions. The function given by the string for respective attribute will be picked.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@Configs</span><span class="o">.</span><span class="n">calc</span><span class="p">(</span><span class="n">Configs</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cnn_model</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Configs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">model_size</span> <span class="o">*</span> <span class="mi">10</span>
+
+<span class="nd">@Configs</span><span class="o">.</span><span class="n">calc</span><span class="p">(</span><span class="n">Configs</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">lstm_model</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Configs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">model_size</span> <span class="o">*</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>The experiment will calculate the configs.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">conf</span> <span class="o">=</span> <span class="n">Configs</span><span class="p">()</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="s1">&#39;lstm_model&#39;</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;test_configs&#39;</span><span class="p">)</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">calc_configs</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">span</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;color: #60C6C8&quot;</span><span class="o">&gt;</span><span class="n">model</span><span class="p">:</span> <span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;</span><span class="n">strong</span><span class="o">&gt;</span><span class="mi">20</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../api/logger/logger.html" class="btn btn-neutral float-right" title="Logger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="experiment.html" class="btn btn-neutral float-left" title="Experiment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lab contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
