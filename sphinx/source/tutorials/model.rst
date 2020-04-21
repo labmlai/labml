@@ -34,7 +34,7 @@ We'll build the following CNN model in this tutorial.
 
     <p align="center">
       <img style="max-width:100%;"
-       src="_static/img/cnn.png"
+       src="../_static/img/cnn.png"
        width="1024" title="CNN">
     </p>
 
