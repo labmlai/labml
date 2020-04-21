@@ -72,12 +72,7 @@ def log(message: Union[str, List[Union[str, Tuple[str, StyleCode]]]],
         is_new_line (bool): whether to print a new line at the end
 
     Example::
-
         >>> logger.log("test")
-        >>> torch.set_default_dtype(torch.float64)
-        >>> torch.tensor([1.2, 3]).dtype           # a new floating point tensor
-        torch.float64
-
     """
     if type(message) == str:
         internal().log([(message, color)], is_new_line=is_new_line)

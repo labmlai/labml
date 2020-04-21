@@ -27,7 +27,7 @@ Lab documentation
    :maxdepth: 1
    :caption: Python API
 
-   api/logger/logger
-   api/logger/colors
-   api/logger/artifacts
+   api/logger
+   api/analytics
+
 

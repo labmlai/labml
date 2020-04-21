@@ -1,5 +1,6 @@
 Logger
 ======
+
 .. automodule:: lab.logger
 
 .. autofunction:: log
@@ -39,3 +40,17 @@ Logger
 .. autofunction:: get_data_path
 
 .. autofunction:: save_numpy
+
+Colors
+------
+
+.. automodule:: lab.logger.colors
+
+.. autoclass:: StyleCode
+
+Artifacts
+---------
+
+.. automodule:: lab.logger.artifacts
+
+.. autoclass:: Artifact
