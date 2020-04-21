@@ -5,6 +5,14 @@ Lab documentation
 
 .. toctree::
    :maxdepth: 1
+   :caption: Introduction
+
+   introduction/lab
+   introduction/getting_started
+
+
+.. toctree::
+   :maxdepth: 1
    :caption: Guide
 
    guide/logger
