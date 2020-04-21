@@ -165,10 +165,6 @@ class Experiment:
         self.configs_processor = ConfigProcessor(configs, configs_dict)
         self.configs_processor(run_order)
 
-        # May be we should write these in `start`
-        if configs_dict:
-            logger.internal().write_h_parameters(configs_dict)
-
         logger.new_line()
 
     def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):
@@ -210,3 +206,5 @@ class Experiment:
 
         logger.internal().save_indicators(self.run.indicators_path)
         logger.internal().save_artifacts(self.run.artifacts_path)
+        logger.internal().write_h_parameters(self.configs_processor.get_hyperparams())
+

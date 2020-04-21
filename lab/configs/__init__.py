@@ -13,6 +13,7 @@ from ..logger.colors import Text
 
 _CALCULATORS = '_calculators'
 _EVALUATORS = '_evaluators'
+_HYPERPARAMS = '_hyperparams'
 _CONFIG_PRINT_LEN = 40
 
 
@@ -119,6 +120,14 @@ class Configs:
     def list(cls, name: str = None):
         return cls.calc(name, f"_{util.random_string()}", is_append=True)
 
+    @classmethod
+    def set_hyperparams(cls, *args: ConfigItem, is_hyperparam=True):
+        if _HYPERPARAMS not in cls.__dict__:
+            cls._hyperparams = {}
+
+        for h in args:
+            cls._hyperparams[h.key] = is_hyperparam
+
 
 class ConfigProcessor:
     def __init__(self, configs, values: Dict[str, any] = None):
@@ -182,7 +191,9 @@ class ConfigProcessor:
                 'value': self.__to_yaml(self.parser.values.get(k, None)),
                 'order': orders.get(k, -1),
                 'options': list(self.parser.options.get(k, {}).keys()),
-                'computed': self.__to_yaml(getattr(self.calculator.configs, k, None))
+                'computed': self.__to_yaml(getattr(self.calculator.configs, k, None)),
+                'is_hyperparam': self.parser.hyperparams.get(k, None),
+                'is_explicitly_specified': (k in self.parser.explicitly_specified)
             }
 
         with open(str(configs_path), "w") as file:
@@ -196,8 +207,22 @@ class ConfigProcessor:
             hex(id(value))
         )
 
-    @staticmethod
-    def __print_config(key, *, value=None, option=None,
+    def get_hyperparams(self):
+        order = self.calculator.topological_order.copy()
+
+        hyperparams = {}
+        for key in order:
+            if (self.parser.hyperparams.get(key, False) or
+                    key in self.parser.explicitly_specified):
+                value = getattr(self.calculator.configs, key, None)
+                if key in self.parser.options:
+                    value = self.parser.values[key]
+
+                hyperparams[key] = value
+
+        return hyperparams
+
+    def __print_config(self, key, *, value=None, option=None,
                        other_options=None, is_ignored=False, is_list=False):
         parts = ['\t']
 
@@ -205,7 +230,10 @@ class ConfigProcessor:
             parts.append((key, Text.subtle))
             return parts
 
-        parts.append((key, Text.key))
+        if self.parser.hyperparams.get(key, False) or key in self.parser.explicitly_specified:
+            parts.append((key, [Text.key, Text.highlight]))
+        else:
+            parts.append((key, Text.key))
 
         if is_list:
             parts.append(('[]', Text.subtle))

@@ -176,11 +176,11 @@ def loop_step(c: Configs):
     return len(c.train_loader)
 
 
-def run(run_name: str, hparams: dict):
+def run(hparams: dict):
     logger.set_global_step(0)
 
     conf = Configs()
-    experiment = Experiment(name=run_name, writers={'sqlite', 'tensorboard'})
+    experiment = Experiment(name='mnist_hyperparam_tuning', writers={'sqlite', 'tensorboard'})
     experiment.calc_configs(conf,
                             hparams,
                             ['set_seed', 'main'])
@@ -191,7 +191,6 @@ def run(run_name: str, hparams: dict):
 
 
 def main():
-    session_num = 1
     for conv1_kernal in [3, 5]:
         for conv2_kernal in [3, 5]:
             hparams = {
@@ -199,11 +198,7 @@ def main():
                 'conv2_kernal': conv2_kernal,
             }
 
-            run_name = "mnist_run-%d" % session_num
-
-            run(run_name, hparams)
-
-            session_num += 1
+            run(hparams)
 
 
 if __name__ == '__main__':

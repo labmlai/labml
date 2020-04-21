@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 _CALCULATORS = '_calculators'
 _EVALUATORS = '_evaluators'
+_HYPERPARAMS = '_hyperparams'
 
 
 def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
@@ -40,7 +41,7 @@ def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
     return unique_classes
 
 
-RESERVED = {'calc', 'list'}
+RESERVED = {'calc', 'list', 'set_hyperparams'}
 _STANDARD_TYPES = {int, str, bool, Dict, List}
 
 
@@ -51,6 +52,8 @@ class Parser:
     types: Dict[str, Type]
     values: Dict[str, any]
     list_appends: Dict[str, List[ConfigFunction]]
+    explicitly_specified: Set[str]
+    hyperparams: Dict[str, bool]
 
     def __init__(self, configs: 'Configs', values: Dict[str, any] = None):
         classes = _get_base_classes(type(configs))
@@ -62,6 +65,8 @@ class Parser:
         self.list_appends = {}
         self.config_items = {}
         self.configs = configs
+        self.explicitly_specified = set()
+        self.hyperparams = {}
 
         for c in classes:
             # for k, v in c.__annotations__.items():
@@ -85,6 +90,11 @@ class Parser:
                 for k, evals in c.__dict__[_EVALUATORS].items():
                     for v in evals:
                         self.__collect_evaluator(k, v)
+
+        for c in classes:
+            if _HYPERPARAMS in c.__dict__:
+                for k, is_hyperparam in c.__dict__[_HYPERPARAMS].items():
+                    self.hyperparams[k] = is_hyperparam
 
         for k, v in configs.__dict__.items():
             assert k in self.types
@@ -125,6 +135,8 @@ class Parser:
     def __collect_value(self, k, v):
         if not self.is_valid(k):
             return
+
+        self.explicitly_specified.add(k)
 
         self.values[k] = v
         if k not in self.types:
