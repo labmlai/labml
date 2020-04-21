@@ -19,12 +19,6 @@ help:
 %: Makefile
 	PYTHONPATH="${PYTHONPATH}:../" $(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-prod:
-	PYTHONPATH="${PYTHONPATH}:../" $(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-	rm -rf ../docs
-	cp -r $(BUILDDIR)/html ../docs
-	cp nojekyll ../docs/.nojekyll
-
 clean:
 	@echo "Removing everything under 'build'.."
 	@rm -rf $(BUILDDIR)/html/ $(BUILDDIR)/doctrees
