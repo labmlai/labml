@@ -25,6 +25,16 @@ Lab documentation
 
 .. toctree::
    :maxdepth: 1
+   :caption: Tutorials
+
+   tutorials/model
+   tutorials/configs
+   tutorials/training
+   tutorials/experiment
+   tutorials/tuning
+
+.. toctree::
+   :maxdepth: 1
    :caption: Python API
 
    api/logger
