@@ -88,7 +88,24 @@
               
             
             
-              <p class="caption"><span class="caption-text">Guide</span></p>
+              <p class="caption"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/lab.html">Lab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/lab.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/lab.html#organizing-experiments">Organizing Experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/lab.html#dashboard-to-browse-experiments">Dashboard to Browse Experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/lab.html#logger">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/lab.html#manage-configurations-and-hyper-parameters">Manage configurations and hyper-parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/lab.html#id3">Slack workspace for discussions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/getting_started.html#lab">Lab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/getting_started.html#lab-dashboard">Lab Dashboard</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="logger.html#logging-with-colors">Logging with colors</a></li>
@@ -201,13 +218,10 @@ Console output line is replaced until <code class="docutils literal notranslate"
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.02</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">strong</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;color: #DDB62B&quot;</span><span class="o">&gt;</span>     <span class="mi">100</span><span class="p">:</span>  <span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">loss</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">42.8000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;color: #DDB62B&quot;</span><span class="o">&gt;</span>     <span class="mi">200</span><span class="p">:</span>  <span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">loss</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">39.0000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;color: #DDB62B&quot;</span><span class="o">&gt;</span>     <span class="mi">300</span><span class="p">:</span>  <span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">loss</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">39.7000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;color: #DDB62B&quot;</span><span class="o">&gt;</span>     <span class="mi">400</span><span class="p">:</span>  <span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">loss</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">53.6000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<div class="section" id="indicator-settings">
+<pre><strong><span style="color: #DDB62B">     100:  </span></strong> loss: <strong> 42.8000</strong>
+<strong><span style="color: #DDB62B">     200:  </span></strong> loss: <strong> 39.0000</strong>
+<strong><span style="color: #DDB62B">     300:  </span></strong> loss: <strong> 39.7000</strong>
+<strong><span style="color: #DDB62B">     400:  </span></strong> loss: <strong> 53.6000</strong></pre><div class="section" id="indicator-settings">
 <h2>Indicator settings<a class="headerlink" href="#indicator-settings" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lab.logger.indicators</span> <span class="kn">import</span> <span class="n">Queue</span><span class="p">,</span> <span class="n">Scalar</span><span class="p">,</span> <span class="n">Histogram</span>
 
@@ -244,13 +258,10 @@ Both of these will log the means too. And if <code class="docutils literal notra
         <span class="n">logger</span><span class="o">.</span><span class="n">new_line</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">strong</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;color: #DDB62B&quot;</span><span class="o">&gt;</span>     <span class="mi">100</span><span class="p">:</span>  <span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">loss</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">1.00000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">reward</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">95.5000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">value</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">40.5000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;color: #DDB62B&quot;</span><span class="o">&gt;</span>     <span class="mi">200</span><span class="p">:</span>  <span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">loss</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">1.00000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">reward</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">195.500</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">value</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">53.4000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;color: #DDB62B&quot;</span><span class="o">&gt;</span>     <span class="mi">300</span><span class="p">:</span>  <span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">loss</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">1.00000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">reward</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">295.500</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">value</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">60.3000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;color: #DDB62B&quot;</span><span class="o">&gt;</span>     <span class="mi">390</span><span class="p">:</span>  <span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">loss</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">1.00000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">reward</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">385.500</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span> <span class="n">value</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span> <span class="mf">45.0000</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-</div>
+<pre><strong><span style="color: #DDB62B">     100:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 95.5000</strong> value: <strong> 40.5000</strong>
+<strong><span style="color: #DDB62B">     200:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 195.500</strong> value: <strong> 53.4000</strong>
+<strong><span style="color: #DDB62B">     300:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 295.500</strong> value: <strong> 60.3000</strong>
+<strong><span style="color: #DDB62B">     390:  </span></strong> loss: <strong> 1.00000</strong> reward: <strong> 385.500</strong> value: <strong> 45.0000</strong></pre></div>
 </div>
 
 
