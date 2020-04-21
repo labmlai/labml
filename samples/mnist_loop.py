@@ -5,7 +5,7 @@ import torch.optim as optim
 import torch.utils.data
 from torchvision import datasets, transforms
 
-from lab import logger, configs
+from lab import logger
 from lab import training_loop
 from lab.experiment.pytorch import Experiment
 from lab.logger.indicators import Queue, Histogram
@@ -30,74 +30,7 @@ class Net(nn.Module):
         return self.fc2(x)
 
 
-class MNIST:
-    def __init__(self, c: 'Configs'):
-        self.model = c.model
-        self.device = c.device
-        self.train_loader = c.train_loader
-        self.test_loader = c.test_loader
-        self.optimizer = c.optimizer
-        self.train_log_interval = c.train_log_interval
-        self.loop = c.training_loop
-        self.__is_log_parameters = c.is_log_parameters
-
-    def _train(self):
-        self.model.train()
-        for i, (data, target) in logger.enum("Train", self.train_loader):
-            data, target = data.to(self.device), target.to(self.device)
-
-            self.optimizer.zero_grad()
-            output = self.model(data)
-            loss = F.cross_entropy(output, target)
-            loss.backward()
-            self.optimizer.step()
-
-            logger.store(train_loss=loss)
-            logger.add_global_step()
-
-            if i % self.train_log_interval == 0:
-                logger.write()
-
-    def _test(self):
-        self.model.eval()
-        test_loss = 0
-        correct = 0
-        with torch.no_grad():
-            for data, target in logger.iterate("Test", self.test_loader):
-                data, target = data.to(self.device), target.to(self.device)
-                output = self.model(data)
-                test_loss += F.cross_entropy(output, target, reduction='sum').item()
-                pred = output.argmax(dim=1, keepdim=True)
-                correct += pred.eq(target.view_as(pred)).sum().item()
-
-        logger.store(test_loss=test_loss / len(self.test_loader.dataset))
-        logger.store(accuracy=correct / len(self.test_loader.dataset))
-
-    def __log_model_params(self):
-        if not self.__is_log_parameters:
-            return
-
-        logger_util.store_model_indicators(self.model)
-
-    def __call__(self):
-        logger_util.add_model_indicators(self.model)
-
-        logger.add_indicator(Queue("train_loss", 20, True))
-        logger.add_indicator(Histogram("test_loss", True))
-        logger.add_indicator(Histogram("accuracy", True))
-
-        for _ in self.loop:
-            self._train()
-            self._test()
-            self.__log_model_params()
-
-
-class LoaderConfigs(configs.Configs):
-    train_loader: torch.utils.data.DataLoader
-    test_loader: torch.utils.data.DataLoader
-
-
-class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
+class Configs(training_loop.TrainingLoopConfigs):
     epochs: int = 10
 
     loop_step = 'loop_step'
@@ -116,6 +49,9 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
     device: any
 
+    train_loader: torch.utils.data.DataLoader
+    test_loader: torch.utils.data.DataLoader
+
     model: nn.Module
 
     learning_rate: float = 0.01
@@ -124,7 +60,50 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
     set_seed = 'set_seed'
 
-    main: MNIST
+    def train(self):
+        self.model.train()
+        for i, (data, target) in logger.enum("Train", self.train_loader):
+            data, target = data.to(self.device), target.to(self.device)
+
+            self.optimizer.zero_grad()
+            output = self.model(data)
+            loss = F.cross_entropy(output, target)
+            loss.backward()
+            self.optimizer.step()
+
+            logger.store(train_loss=loss)
+            logger.add_global_step()
+
+            if i % self.train_log_interval == 0:
+                logger.write()
+
+    def test(self):
+        self.model.eval()
+        test_loss = 0
+        correct = 0
+        with torch.no_grad():
+            for data, target in logger.iterate("Test", self.test_loader):
+                data, target = data.to(self.device), target.to(self.device)
+                output = self.model(data)
+                test_loss += F.cross_entropy(output, target, reduction='sum').item()
+                pred = output.argmax(dim=1, keepdim=True)
+                correct += pred.eq(target.view_as(pred)).sum().item()
+
+        logger.store(test_loss=test_loss / len(self.test_loader.dataset))
+        logger.store(accuracy=correct / len(self.test_loader.dataset))
+
+    def run(self):
+        logger_util.add_model_indicators(self.model)
+
+        logger.add_indicator(Queue("train_loss", 20, True))
+        logger.add_indicator(Histogram("test_loss", True))
+        logger.add_indicator(Histogram("accuracy", True))
+
+        for _ in self.training_loop:
+            self.train()
+            self.test()
+            if self.is_log_parameters:
+                logger_util.store_model_indicators(self.model)
 
 
 @Configs.calc(Configs.device)
@@ -191,10 +170,10 @@ def main():
     experiment = Experiment(writers={'sqlite', 'tensorboard'})
     experiment.calc_configs(conf,
                             {'optimizer': 'adam_optimizer'},
-                            ['set_seed', 'main'])
+                            ['set_seed', 'run'])
     experiment.add_models(dict(model=conf.model))
     experiment.start()
-    conf.main()
+    conf.run()
 
 
 if __name__ == '__main__':

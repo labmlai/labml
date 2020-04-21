@@ -38,6 +38,7 @@ class DependencyParser(ast.NodeVisitor):
         self.required = set()
         self.is_referenced = False
 
+        source = textwrap.dedent(source)
         parsed = ast.parse(source)
         self.visit(parsed)
 
@@ -118,7 +119,8 @@ class ConfigFunction:
             warnings.warn("Use @Config.[name]", FutureWarning, 4)
             return self.func.__name__
         elif type(config_names) == str:
-            warnings.warn("Use @Config.[name] instead of '[name]'", FutureWarning, 4)
+            if self.check_string_names:
+                warnings.warn("Use @Config.[name] instead of '[name]'", FutureWarning, 4)
             return config_names
         elif type(config_names) == ConfigItem:
             return config_names.key
@@ -151,8 +153,10 @@ class ConfigFunction:
     def __init__(self, func, *,
                  config_names: Union[str, ConfigItem, List[ConfigItem], List[str]],
                  option_name: str,
-                 is_append: bool):
+                 is_append: bool,
+                 check_string_names: bool = True):
         self.func = func
+        self.check_string_names = check_string_names
         self.config_names = self.__get_config_names(config_names)
         self.is_append = is_append
         assert not (self.is_append and type(self.config_names) != str)

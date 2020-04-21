@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from typing import List, Dict, Type, Set, Optional, \
     OrderedDict as OrderedDictType, Union, Any, Tuple
 from typing import TYPE_CHECKING
@@ -6,10 +7,11 @@ from .config_function import ConfigFunction
 from .. import logger
 
 if TYPE_CHECKING:
-    from . import Configs
+    from . import Configs, ConfigFunction
 
 
 class Calculator:
+    evals: Dict[str, OrderedDictType[str, ConfigFunction]]
     options: Dict[str, OrderedDictType[str, ConfigFunction]]
     types: Dict[str, Type]
     values: Dict[str, any]
@@ -27,9 +29,11 @@ class Calculator:
     def __init__(self, *,
                  configs: 'Configs',
                  options: Dict[str, OrderedDictType[str, ConfigFunction]],
+                 evals: Dict[str, OrderedDictType[str, ConfigFunction]],
                  types: Dict[str, Type],
                  values: Dict[str, any],
                  list_appends: Dict[str, List[ConfigFunction]]):
+        self.evals = evals
         self.configs = configs
         self.options = options
         self.types = types
@@ -71,6 +75,14 @@ class Calculator:
 
             return dep
 
+        if key in self.evals:
+            value = self.values.get(key, None)
+            if not value:
+                value = 'default'
+            if value not in self.evals[key]:
+                return set()
+            return self.evals[key][value].dependencies
+
         assert key in self.values, f"Cannot compute {key}"
         # assert self.values[key] is not None, f"Cannot compute {key}"
 
@@ -79,6 +91,8 @@ class Calculator:
     def __create_graph(self):
         self.dependencies = {}
         for k in self.types:
+            self.dependencies[k] = self.__get_dependencies(k)
+        for k in self.evals:
             self.dependencies[k] = self.__get_dependencies(k)
 
     def __add_to_topological_order(self, key):
@@ -123,6 +137,9 @@ class Calculator:
 
     def __compute(self, key):
         if key in self.is_computed:
+            return
+
+        if key in self.evals:
             return
 
         value, funcs = self.__get_property(key)

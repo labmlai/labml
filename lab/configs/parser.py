@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from . import Configs
 
 _CALCULATORS = '_calculators'
+_EVALUATORS = '_evaluators'
 
 
 def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
@@ -46,6 +47,7 @@ _STANDARD_TYPES = {int, str, bool, Dict, List}
 class Parser:
     config_items: Dict[str, ConfigItem]
     options: Dict[str, OrderedDictType[str, ConfigFunction]]
+    evals: Dict[str, OrderedDictType[str, ConfigFunction]]
     types: Dict[str, Type]
     values: Dict[str, any]
     list_appends: Dict[str, List[ConfigFunction]]
@@ -56,6 +58,7 @@ class Parser:
         self.values = {}
         self.types = {}
         self.options = {}
+        self.evals = {}
         self.list_appends = {}
         self.config_items = {}
         self.configs = configs
@@ -65,6 +68,8 @@ class Parser:
             #     self.__collect_annotation(k, v)
             #
             for k, v in c.__dict__.items():
+                if _EVALUATORS in c.__dict__ and k in c.__dict__[_EVALUATORS]:
+                    continue
                 self.__collect_config_item(k, v)
 
         for c in classes:
@@ -74,6 +79,12 @@ class Parser:
                         f"{k} calculator is present but the config declaration is missing"
                     for v in calcs:
                         self.__collect_calculator(k, v)
+
+        for c in classes:
+            if _EVALUATORS in c.__dict__:
+                for k, evals in c.__dict__[_EVALUATORS].items():
+                    for v in evals:
+                        self.__collect_evaluator(k, v)
 
         for k, v in configs.__dict__.items():
             assert k in self.types
@@ -139,6 +150,14 @@ class Parser:
                                   stacklevel=5)
 
             self.options[k][v.option_name] = v
+
+    def __collect_evaluator(self, k, v: ConfigFunction):
+        assert not v.is_append
+
+        if k not in self.evals:
+            self.evals[k] = OrderedDict()
+
+        self.evals[k][v.option_name] = v
 
     def __calculate_missing_values(self):
         for k in self.types:
