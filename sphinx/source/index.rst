@@ -37,5 +37,6 @@ Lab documentation
    api/configs
    api/experiment
    api/analytics
+   api/training_loop
 
 
