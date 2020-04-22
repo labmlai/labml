@@ -75,6 +75,10 @@ _HTML_STYLES = dict(
 
 
 class StyleCode(Enum):
+    r"""
+    This is the base class for different style enumerations
+    """
+
     def ansi(self):
         if self.value is None:
             return f"\33[{_ANSI_CODES['normal']}m"
@@ -107,6 +111,10 @@ class StyleCode(Enum):
 
 
 class Style(StyleCode):
+    r"""
+    Output styles
+    """
+
     none = None
     normal = 'normal'
     bold = 'bold'
@@ -115,6 +123,10 @@ class Style(StyleCode):
 
 
 class Color(StyleCode):
+    r"""
+    Output colors
+    """
+
     none = None
     black = 'black'
     red = 'red'
@@ -127,6 +139,10 @@ class Color(StyleCode):
 
 
 class Text(StyleCode):
+    r"""
+    Standard styles we use in lab
+    """
+
     none = None
     danger = Color.red.value
     success = Color.green.value

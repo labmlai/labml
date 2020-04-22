@@ -36,7 +36,15 @@ def _to_numpy(value):
     assert False, f"Unknown type {type_}"
 
 
-class Artifact:
+class Artifact(ABC):
+    r"""
+    This is the abstract base class for different types of artifacts
+
+    Arguments:
+        name (str): name of the artifact
+        is_print (bool): whether to print to screen
+    """
+
     def __init__(self, *, name: str, is_print: bool):
         self.is_print = is_print
         self.name = name
@@ -109,6 +117,14 @@ class _Collection(Artifact, ABC):
 
 
 class Image(_Collection):
+    r"""
+    Image artifact
+
+    Arguments:
+        name (str): name of the artifact
+        is_print (bool): whether to show the image on screen
+    """
+
     def get_print_length(self) -> Optional[int]:
         return None
 
@@ -127,6 +143,14 @@ class Image(_Collection):
 
 
 class Text(_Collection):
+    r"""
+    Text artifact
+
+    Arguments:
+        name (str): name of the artifact
+        is_print (bool): whether to print the text to screen
+    """
+
     def get_print_length(self) -> Optional[int]:
         return None
 
@@ -137,6 +161,14 @@ class Text(_Collection):
 
 
 class IndexedText(_Collection):
+    r"""
+    Indexed text artifact
+
+    Arguments:
+        name (str): name of the artifact
+        is_print (bool): whether to print the text to screen
+    """
+
     def __init__(self, name: str, title: Optional[str] = None, is_print=False):
         super().__init__(name=name, is_print=is_print)
         self._title = title
