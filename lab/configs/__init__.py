@@ -218,6 +218,9 @@ class ConfigProcessor:
                 if key in self.parser.options:
                     value = self.parser.values[key]
 
+                if type(value) not in {int, float, str}:
+                    value = ConfigProcessor.__to_str(value)
+
                 hyperparams[key] = value
 
         return hyperparams
