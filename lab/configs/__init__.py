@@ -33,6 +33,10 @@ def _is_class_method(func: Callable):
 
 
 class Configs:
+    r"""
+    You should sub-class this class to create your own configurations
+    """
+
     _calculators: Dict[str, List[ConfigFunction]] = {}
     _evaluators: Dict[str, List[ConfigFunction]] = {}
 
@@ -109,6 +113,17 @@ class Configs:
     def calc(cls, name: Union[ConfigItem, List[ConfigItem]] = None,
              option: str = None, *,
              is_append: bool = False):
+        r"""
+        Use this as a decorator to register configuration options.
+
+        Arguments:
+            name: the configuration item or a list of items.
+                If it is a list of items the function should return
+                tuple.
+            option (str, optional): name of the option.
+                If not provided it will be derived from the
+                function name.
+        """
         def wrapper(func: Callable):
             cls._add_config_function(func, name, option, is_append=is_append)
 
@@ -122,6 +137,14 @@ class Configs:
 
     @classmethod
     def set_hyperparams(cls, *args: ConfigItem, is_hyperparam=True):
+        r"""
+        Identifies configuration as (or not) hyper-parameters
+
+        Arguments:
+            *args: list of configurations
+            is_hyperparam (bool, optional): whether the provided configuration
+                items are hyper-parameters. Defaults to ``True``.
+        """
         if _HYPERPARAMS not in cls.__dict__:
             cls._hyperparams = {}
 
