@@ -6,6 +6,11 @@ from .colors import Text
 
 
 class Section:
+    r"""
+        Note:
+            You should use :meth:`lab.logger.section` to create sections
+    """
+
     def __init__(self, *,
                  logger: 'internal.LoggerInternal',
                  name: str,
@@ -32,7 +37,7 @@ class Section:
 
         self.is_successful = True
 
-    def get_estimated_time(self):
+    def get_estimated_time(self) -> float:
         raise NotImplementedError()
 
     def __enter__(self):

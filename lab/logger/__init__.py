@@ -81,6 +81,12 @@ def log(message: Union[str, List[Union[str, Tuple[str, StyleCode]]]],
 
 
 def add_indicator(indicator: Indicator):
+    r"""
+    Arguments:
+        indicator (Indicator): indicator
+
+    """
+
     internal().add_indicator(indicator)
 
 

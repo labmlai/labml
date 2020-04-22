@@ -178,7 +178,7 @@ class LoggerInternal:
                         is_silent=is_silent,
                         is_timed=is_timed,
                         total_steps=total_steps,
-                        is_enumarate=False)
+                        is_enumerate=False)
 
     def enum(self, name, iterable: typing.Sized, *,
              is_silent: bool = False,
@@ -189,7 +189,7 @@ class LoggerInternal:
                         is_silent=is_silent,
                         is_timed=is_timed,
                         total_steps=None,
-                        is_enumarate=True)
+                        is_enumerate=True)
 
     def section(self, name, *,
                 is_silent: bool = False,

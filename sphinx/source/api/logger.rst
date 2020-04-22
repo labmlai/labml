@@ -96,6 +96,8 @@ Iterators and Enumerators
 
     .. autoclass:: Iterator
 
+        .. automethod:: get_estimated_time
+
 Sections
 --------
 

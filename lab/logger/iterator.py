@@ -2,9 +2,19 @@ import typing
 from typing import Optional, Iterable
 
 from lab.logger import internal
+from lab.logger.sections import Section
 
 
 class Iterator:
+    r"""
+        Note:
+            You should use :meth:`lab.logger.iterate`
+            or :meth:`lab.logger.enum` to create iterators
+            and enumerators.
+    """
+
+    _section: Optional[Section]
+
     def __init__(self, *,
                  logger: 'internal.LoggerInternal',
                  name: str,
@@ -12,8 +22,8 @@ class Iterator:
                  is_silent: bool,
                  is_timed: bool,
                  total_steps: Optional[int],
-                 is_enumarate: bool):
-        if is_enumarate:
+                 is_enumerate: bool):
+        if is_enumerate:
             total_steps = len(iterable)
             iterable = enumerate(iterable)
         if type(iterable) is int:
@@ -32,6 +42,12 @@ class Iterator:
         self._is_silent = is_silent
         self._is_timed = is_timed
         self._counter = -1
+
+    def get_estimated_time(self) -> float:
+        if self._section:
+            return self._section.get_estimated_time()
+        else:
+            return 0
 
     def __iter__(self):
         self._section = self._logger.section(
