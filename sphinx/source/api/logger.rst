@@ -97,6 +97,10 @@ Sections
 
     .. autoclass:: Section
 
+        .. automethod:: get_estimated_time
+
+        .. automethod:: progress
+
 Utils
 -----
 
