@@ -27,11 +27,7 @@ Lab documentation
    :maxdepth: 1
    :caption: Tutorials
 
-   tutorials/model
-   tutorials/configs
-   tutorials/training
-   tutorials/experiment
-   tutorials/tuning
+   tutorials/mnist_classification
 
 .. toctree::
    :maxdepth: 1
