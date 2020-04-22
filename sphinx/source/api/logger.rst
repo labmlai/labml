@@ -35,6 +35,8 @@ Logger
 
     .. autofunction:: finish_loop
 
+    .. autofunction:: save_checkpoint
+
     .. autofunction:: info
 
     .. autofunction:: get_data_path

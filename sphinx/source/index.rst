@@ -38,6 +38,7 @@ Lab documentation
    :caption: Python API
 
    api/logger
+   api/experiment
    api/analytics
 
 

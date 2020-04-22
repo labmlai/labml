@@ -16,12 +16,21 @@ from lab.util import is_ipynb, get_caller_file
 
 
 class Experiment:
-    """
-    ## Experiment
-
+    r"""
     Each experiment has different configurations or algorithms.
-    An experiment can have multiple trials.
+    An experiment can have multiple runs.
+
+    Keyword Arguments:
+        name (str, optional): name of the experiment
+        python_file (str, optional): path of the Python file that
+            created the experiment
+        comment (str, optional): a short description of the experiment
+        writers (Set[str], optional): list of writers to write stat to
+        ignore_callers: (Set[str], optional): list of files to ignore when
+            automatically determining ``python_file``
+        tags (Set[str], optional): Set of tags for experiment
     """
+
     run: Run
     configs_processor: Optional[ConfigProcessor]
 
@@ -35,20 +44,6 @@ class Experiment:
                  writers: Set[str] = None,
                  ignore_callers: Set[str] = None,
                  tags: Optional[Set[str]] = None):
-        """
-        ### Create the experiment
-
-        :param name: name of the experiment
-        :param python_file: `__file__` that invokes this. This is stored in
-         the experiments list.
-        :param comment: a short description of the experiment
-
-        The experiments log keeps track of `python_file`, `name`, `comment` as
-         well as the git commit.
-
-        Experiment maintains the locations of checkpoints, logs, etc.
-        """
-
         if python_file is None:
             python_file = get_caller_file(ignore_callers)
 
@@ -119,7 +114,7 @@ class Experiment:
 
     def __print_info_and_check_repo(self):
         """
-        ## 🖨 Print the experiment info and check git repo status
+        🖨 Print the experiment info and check git repo status
         """
 
         logger.new_line()
@@ -160,6 +155,17 @@ class Experiment:
                      configs: Optional[Configs],
                      configs_dict: Dict[str, any] = None,
                      run_order: Optional[List[Union[List[str], str]]] = None):
+        r"""
+        Calculate configurations
+
+        Arguments:
+            configs (Configs, optional): configurations object
+            configs_dict (Dict[str, any], optional): a dictionary of
+                configs to be overridden
+            run_order (List[Union[str, List[str]]], optional): list of
+                configs to be calculated and the order in which they should be
+                calculated. If ``None`` all configs will be calculated.
+        """
         if configs_dict is None:
             configs_dict = {}
         self.configs_processor = ConfigProcessor(configs, configs_dict)
@@ -185,6 +191,15 @@ class Experiment:
     def start(self, *,
               run_uuid: Optional[str] = None,
               checkpoint: Optional[int] = None):
+        r"""
+        Start the experiment.
+
+        Keyword Arguments:
+            run_uuid (str, optional): if provided the experiment will start from
+                a saved state in the run with UUID ``run_uuid``
+            checkpoint (str, optional): if provided the experiment will start from
+                given checkpoint. Otherwise it will start from the last checkpoint.
+        """
         if run_uuid is not None:
             if checkpoint is None:
                 checkpoint = -1

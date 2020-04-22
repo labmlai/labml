@@ -132,11 +132,9 @@ class PyTorchCheckpoint(Checkpoint):
 
 
 class Experiment(experiment.Experiment):
-    """
-    ## Experiment
-
-    Each experiment has different configurations or algorithms.
-    An experiment can have multiple trials.
+    r"""
+    Concrete implementation of :class:`lab.experiment.Experiment` for PyTorch
+    experiments
     """
 
     __checkpoint_saver: Checkpoint
@@ -148,19 +146,6 @@ class Experiment(experiment.Experiment):
                  writers: Set[str] = None,
                  ignore_callers: Set[str] = None,
                  tags: Optional[Set[str]] = None):
-        """
-        ### Create the experiment
-
-        :param name: name of the experiment
-        :param python_file: `__file__` that invokes this. This is stored in
-         the experiments list.
-        :param comment: a short description of the experiment
-
-        The experiments log keeps track of `python_file`, `name`, `comment` as
-         well as the git commit.
-
-        Experiment maintains the locations of checkpoints, logs, etc.
-        """
 
         super().__init__(name=name,
                          python_file=python_file,
@@ -175,8 +160,15 @@ class Experiment(experiment.Experiment):
 
     def add_models(self, models: Dict[str, torch.nn.Module]):
         """
-        ## Set variable for saving and loading
+        Set variables for saving and loading
+
+        Arguments:
+            models (Dict[str, torch.nn.Module]): a dictionary of torch modules
+                used in the experiment. These will be saved with :func:`lab.logger.save_checkpoint`
+                and loaded with :meth:`lab.experiment.Experiment.start`.
+
         """
+
         self.__checkpoint_saver.add_models(models)
 
     def _load_checkpoint(self, checkpoint_path: pathlib.PurePath):
