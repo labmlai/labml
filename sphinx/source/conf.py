@@ -77,6 +77,7 @@ autodoc_inherit_docstrings = False
 # html_theme = 'alabaster'
 # import pytorch_sphinx_theme
 import sphinx_rtd_theme
+
 # html_theme = 'pytorch_sphinx_theme'
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
@@ -87,6 +88,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 html_theme_options = {
     # 'pytorch_project': '',
+    'analytics_id': 'UA-164228270-1',
     'canonical_url': 'https://blog.varunajasasiri.com/lab',
     'collapse_navigation': False,
     'display_version': True,

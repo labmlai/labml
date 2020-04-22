@@ -46,6 +46,7 @@ We have utilised the Lab `logger.enum` to iterate thorough the dataset. Moreover
 In the following code snippet, We are logging `train_loss` in each iteration. Lab `logger.store` method stores values (as Sclars by default) of each metric for each iteration. `logger.write()` writes each stored metric (this can be called in a predefined log interval) and then free up the memory.
 
 .. code-block:: python
+
     self.optimizer.step()
 
     logger.store(train_loss=loss)
