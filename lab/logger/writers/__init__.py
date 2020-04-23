@@ -50,7 +50,7 @@ class ScreenWriter(Writer):
         if abs(estimate) < 1e-9:
             lg = 0
         else:
-            lg = int(np.ceil(np.log10(estimate))) + 1
+            lg = int(np.ceil(np.log10(abs(estimate)))) + 1
 
         decimals = 7 - lg
         decimals = max(1, decimals)
