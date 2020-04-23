@@ -1,13 +1,13 @@
 MNIST Classification
 ********************
 
-Model
-=====
-
-This tutorial will describe and guide you to add lab features to your machine learning project. We will be using `MNSIT <http://yann.lecun.com/exdb/mnist/>`_  dataset and simple
+This tutorial'll help and guide you to add lab features to your machine learning project. We'll be using `MNSIT <http://yann.lecun.com/exdb/mnist/>`_  dataset and simple
 `convolutional neural network (CNN) <https://en.wikipedia.org/wiki/Convolutional_neural_network/>`_ to build our model.
 
 You can find the complete code by following this `link <https://github.com/vpj/lab/blob/master/samples/mnist_loop.py/>`_.
+
+Model
+=====
 
 In this section, we'll build a simple CNN model using PyTorch to classify MNIST images into 10 classes.
 
@@ -115,13 +115,15 @@ Next, we'll define our optimization algorithm. In this case, we'll be using `Ada
         def sgd_optimizer(c: Configs):
             return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
 
-We can specify the device as follows.
+We can specify the ``device`` using :py:func:`lab.util.pytorch.get_device`.
 
 .. code-block:: python
 
-    @Configs.calc(Configs.optimizer)
-    def sgd_optimizer(c: Configs):
-        return optim.SGD(c.model.parameters(), lr=c.learning_rate, momentum=c.momentum)
+    @Configs.calc(Configs.device)
+    def device(c: Configs):
+        from lab.util.pytorch import get_device
+
+        return get_device(c.use_cuda, c.cuda_device)
 
 
 Data Loaders
@@ -156,7 +158,7 @@ We have created the ``LoaderConfigs`` class by inheriting :py:class:`lab.configs
         epochs: int = 10
 
 
-This can be used to separate configs into modules and it is quite neat when you want to inherit entire experiment setups and make a few modifications.
+This can be used to separate ``configs`` into modules and it is quite neat when you want to inherit entire experiment setups and make a few modifications.
 
 Training Loop Configs
 ---------------------
@@ -189,7 +191,7 @@ In this section, We'll describe about model training.
 Passing Configs
 ---------------
 
-First, we define a separate class named ``MNIST`` for model training, and then pass the configs that we defined in the previous section.
+First, we define a separate class named ``MNIST`` for model training, and then pass the ``configs`` that we defined in the previous section.
 
 .. code-block:: python
 
@@ -224,7 +226,7 @@ Let's add training iterations as a separate method.
         logger.add_global_step()
 
 
-We have utilised the :py:func:`lab.logger.enum` to iterate thorough the dataset. Moreover, we call the :py:func:`lab.logger.add_global_step` inside the ``iterator`` to increase the number of ``global step by one``. Furthermore, you may need to log metrics to track your model performance in each iteration.
+We have utilised the :py:func:`lab.logger.enum` to iterate thorough the dataset. Moreover, we call the :py:func:`lab.logger.add_global_step` inside the ``iterator`` to increment the number of ``global step by one``. Furthermore, you may need to log metrics to track your model performance in each iteration.
 
 In the following code snippet, We are logging ``train_loss`` in each iteration. :py:func:`lab.logger.store` method stores values (as ``Sclars`` by default) of each metric for each iteration. :py:func:`lab.logger.write` writes each stored metric (this can be called in a predefined log interval) and then free up the memory.
 
@@ -270,7 +272,7 @@ If you need to log model indicators such as biases, weights and gradient values 
 Logging Indicators
 ------------------
 
-Without specifying, :py:func:`lab.logger.store` store metric values as Scalars. However, if you need to store a metric value as a  :py:class:`lab.logger.indicators.Histogram` or :py:class:`lab.logger.indicators.Queue`, you need to provide the type beforehand. Let's define the type of our ``train_loss`` metric as a :py:class:`lab.logger.indicators.Histogram`.
+Without specifying, :py:func:`lab.logger.store` store metric values as ``Scalars``. However, if you need to store a metric value as a  :py:class:`lab.logger.indicators.Histogram` or :py:class:`lab.logger.indicators.Queue`, you need to provide the type beforehand. Let's define the type of our ``train_loss`` metric as a :py:class:`lab.logger.indicators.Histogram`.
 
 
 .. code-block:: python
@@ -302,7 +304,7 @@ As the final step, you need to start and run the experiment. Lab provides a conv
     if __name__ == '__main__':
         main()
 
-Note that in the above code snippet, We have declared an :py:class:`lab.experiment.pytorch.Experiment` and passed the writers, in this case, ``sqlite`` and ``tensorboard``. By default Lab'll writes every log to the console. Moreover, you can pass the order of calculating configs by passing a list of the order in :py:func:`lab.experiment.Experiment.calc_configs`.
+Note that in the above code snippet, We have declared an :py:class:`lab.experiment.pytorch.Experiment` and passed the ``writers``, in this case, ``sqlite`` and ``tensorboard``. By default Lab'll writes every log to the console. Moreover, you can pass the order of calculating ``configs`` by passing a list of the order in :py:func:`lab.experiment.Experiment.calc_configs`.
 
 Hyper-parameter Tuning
 ======================

@@ -38,5 +38,5 @@ Lab documentation
    api/experiment
    api/analytics
    api/training_loop
-
+   api/utils
 
