@@ -70,7 +70,7 @@ Model Configs
 =============
 
 Lab makes it easier to separate configs from the model implementation and allows you to maintain a clean and reusable code.
-We'll first define the *Configs Class* with a few config parameters. This class should be inherited from :py:class:`lab.configs.Configs` class.
+We'll first define the ``Configs Class`` with a few config parameters. This class should be inherited from :py:class:`lab.configs.Configs` class.
 
 Configs Class
 -------------
@@ -92,12 +92,12 @@ Configs Class
         use_cuda: bool = True
         cuda_device: int = 0
 
-Here, we have defined our training and test `batch_sizes`, the number of `epochs` and the `learning_rate`. Note that we have only defined the type of `optimizer`, `model` and the `device`.
+Here, we have defined our training and test ``batch_sizes``, the number of ``epochs`` and the ``learning_rate``. Note that we have only defined the type of ``optimizer``, ``model`` and the ``device``.
 
 Adding Configs
 --------------
 
-We'll define our `model function` as below and use :py:func:`lab.configs.Configs.calc` to modify it. We'll be using the model that is implemented in the previous section. With the :py:func:`lab.configs.Configs.calc` decorator, Lab identifies and add to the *Configs* in run time.
+We'll define our ``model function`` as below and use :py:func:`lab.configs.Configs.calc` to modify it. We'll be using the model that is implemented in the previous section. With the :py:func:`lab.configs.Configs.calc` decorator, Lab identifies and add to the ``Configs`` in run time.
 
 .. code-block:: python
 
@@ -127,7 +127,7 @@ We can specify the device as follows.
 Data Loaders
 ------------
 
-Define the `data_loader` method as follows. Here, we utilise the `torch DataLoader <https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader>`_, and `MNIST <https://pytorch.org/docs/stable/torchvision/datasets.html#mnist>`_ dataset from PyTorch.
+Define the ``data_loader`` method as follows. Here, we utilise the `torch DataLoader <https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader>`_, and `MNIST <https://pytorch.org/docs/stable/torchvision/datasets.html#mnist>`_ dataset from PyTorch.
 
 .. code-block:: python
 
@@ -148,7 +148,7 @@ Define the `data_loader` method as follows. Here, we utilise the `torch DataLoad
         train_loader: torch.utils.data.DataLoader
         test_loader: torch.utils.data.DataLoader
 
-We have created the `LoaderConfigs` class by inheriting :py:class:`lab.configs.Configs`. Therefore, your main *Configs* class now can be inherited from `LoaderConfigs`.
+We have created the ``LoaderConfigs`` class by inheriting :py:class:`lab.configs.Configs`. Therefore, your main ``Configs`` class now can be inherited from ``LoaderConfigs``.
 
 .. code-block:: python
 
@@ -161,7 +161,7 @@ This can be used to separate configs into modules and it is quite neat when you 
 Training Loop Configs
 ---------------------
 
-You can inherit your `Configs` class from py:class:`lab.training_loop.TrainingLoopConfigs` and change few related configs accordingly.
+You can inherit your ``Configs`` class from :py:class:`lab.training_loop.TrainingLoopConfigs` and change few related configs accordingly.
 
 .. code-block:: python
 
@@ -189,7 +189,7 @@ In this section, We'll describe about model training.
 Passing Configs
 ---------------
 
-First, we define a separate class named `MNIST` for model training, and then pass the configs that we defined in the previous section.
+First, we define a separate class named ``MNIST`` for model training, and then pass the configs that we defined in the previous section.
 
 .. code-block:: python
 
@@ -224,9 +224,9 @@ Let's add training iterations as a separate method.
         logger.add_global_step()
 
 
-We have utilised the :py:func:`lab.logger.enum` to iterate thorough the dataset. Moreover, we call the :py:func:`lab.logger.add_global_step` inside the *iterator* to increase the number of *global step by one*. Furthermore, you may need to log metrics to track your model performance in each iteration.
+We have utilised the :py:func:`lab.logger.enum` to iterate thorough the dataset. Moreover, we call the :py:func:`lab.logger.add_global_step` inside the ``iterator`` to increase the number of ``global step by one``. Furthermore, you may need to log metrics to track your model performance in each iteration.
 
-In the following code snippet, We are logging `train_loss` in each iteration. :py:func:`lab.logger.store` method stores values (as Sclars by default) of each metric for each iteration. :py:func:`lab.logger.write` writes each stored metric (this can be called in a predefined log interval) and then free up the memory.
+In the following code snippet, We are logging ``train_loss`` in each iteration. :py:func:`lab.logger.store` method stores values (as ``Sclars`` by default) of each metric for each iteration. :py:func:`lab.logger.write` writes each stored metric (this can be called in a predefined log interval) and then free up the memory.
 
 .. code-block:: python
 
@@ -242,7 +242,7 @@ In the following code snippet, We are logging `train_loss` in each iteration. :p
 Training Loop
 -------------
 
-Next, we need to go through a few iterations of the entire dataset (few epochs). For this purpose, we can utilise :py:func:`lab.logger.loop` method as follows. Note that configuration of the `training_loop` was discussed in the previous section.
+Next, we need to go through a few iterations of the entire dataset (few epochs). For this purpose, we can utilise :py:func:`lab.logger.loop` method as follows. Note that configuration of the ``training_loop`` was discussed in the previous section.
 
 .. code-block:: python
 
@@ -254,7 +254,7 @@ Next, we need to go through a few iterations of the entire dataset (few epochs).
             self._test()
             self.__log_model_params()
 
-In the above code snippet, we make use of the python magic method ` __call__`.
+In the above code snippet, we make use of the python magic method ``__call__``.
 
 Logging Model Indicators
 ------------------------
@@ -270,7 +270,7 @@ If you need to log model indicators such as biases, weights and gradient values 
 Logging Indicators
 ------------------
 
-Without specifying, :py:func:`lab.logger.store` store metric values as Scalars. However, if you need to store a metric value as a  :py:class:`lab.logger.indicators.Histogram` or :py:class:`lab.logger.indicators.Queue`, you need to provide the type beforehand. Let's define the type of our `train_loss` metric as a :py:class:`lab.logger.indicators.Histogram`.
+Without specifying, :py:func:`lab.logger.store` store metric values as Scalars. However, if you need to store a metric value as a  :py:class:`lab.logger.indicators.Histogram` or :py:class:`lab.logger.indicators.Queue`, you need to provide the type beforehand. Let's define the type of our ``train_loss`` metric as a :py:class:`lab.logger.indicators.Histogram`.
 
 
 .. code-block:: python
@@ -302,7 +302,7 @@ As the final step, you need to start and run the experiment. Lab provides a conv
     if __name__ == '__main__':
         main()
 
-Note that in the above code snippet, We have declared an :py:class:`lab.experiment.pytorch.Experiment` and passed the writers, in this case, `sqlite` and `tensorboard`. By default Lab'll writes every log to the console. Moreover, you can pass the order of calculating configs by passing a list of the order in :py:func:`lab.experiment.Experiment.calc_configs`.
+Note that in the above code snippet, We have declared an :py:class:`lab.experiment.pytorch.Experiment` and passed the writers, in this case, ``sqlite`` and ``tensorboard``. By default Lab'll writes every log to the console. Moreover, you can pass the order of calculating configs by passing a list of the order in :py:func:`lab.experiment.Experiment.calc_configs`.
 
 Hyper-parameter Tuning
 ======================
