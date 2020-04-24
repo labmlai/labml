@@ -3,15 +3,14 @@
 Sections
 ========
 
-Sections let you monitor time taken for
-different tasks and also helps *keep the code clean*
-by separating different blocks of code.
-
+Sections let you monitor time taken for different tasks and also helps
+*keep the code clean* by separating different blocks of code.
 
 .. code-block:: python
 
     import time
-
+    
+    from lab import logger
 
 .. code-block:: python
 
@@ -20,11 +19,11 @@ by separating different blocks of code.
         time.sleep(2)
 
 
+
 .. raw:: html
 
-    <pre>Load data<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	2,005.04ms</span>
+    <pre>Load data<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	2,004.50ms</span>
     </pre>
-
 
 
 .. code-block:: python
@@ -34,14 +33,14 @@ by separating different blocks of code.
         logger.set_successful(False)
 
 
+
 .. raw:: html
 
-    <pre>Load saved model<span style="color: #E75C58">...[FAIL]</span><span style="color: #208FFB">	1,008.86ms</span>
+    <pre>Load saved model<span style="color: #E75C58">...[FAIL]</span><span style="color: #208FFB">	1,010.32ms</span>
     </pre>
 
 
 You can also show progress while a section is running
-
 
 .. code-block:: python
 
@@ -52,7 +51,9 @@ You can also show progress while a section is running
             logger.progress(i)
 
 
+
 .. raw:: html
 
-    <pre>Train<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	10,600.04ms</span>
+    <pre>Train<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	10,570.79ms</span>
     </pre>
+
