@@ -5,26 +5,25 @@ Configs
 
 .. code-block:: python
 
-    from lab import configs
+    import torch
+    
+    from lab import configs, logger
+    from lab.experiment.pytorch import Experiment
 
-The configs will be stored and in future be adjusted
-from  `Dashboard <https://github.com/vpj/lab_dashboard>`_.
-
+The configs will be stored and in future be adjusted from
+`Dashboard <https://github.com/vpj/lab_dashboard>`__
 
 .. code-block:: python
 
     class DeviceConfigs(configs.Configs):
         use_cuda: bool = True
         cuda_device: int = 0
-
+    
         device: any
 
 Some configs can be calculated
 
-
 .. code-block:: python
-
-    import torch
 
     @DeviceConfigs.calc(DeviceConfigs.device)
     def cuda(c: DeviceConfigs):
@@ -39,31 +38,31 @@ Some configs can be calculated
                            f"device count {torch.cuda.device_count()}", Text.warning)
                 return torch.device(f"cuda:{torch.cuda.device_count() - 1}")
 
-Configs classes can be inherited. This can be used to separate configs into module and it is quite neat when you want to inherit entire experiment setups and make a few modifications. 
-
+Configs classes can be inherited. This can be used to separate configs
+into module and it is quite neat when you want to inherit entire
+experiment setups and make a few modifications.
 
 .. code-block:: python
 
     class Configs(DeviceConfigs):
         model_size: int = 10
-
+            
         model: any = 'cnn_model'
 
-You can specify multiple config calculator functions. The function given by the string for respective attribute will be picked.
-
+You can specify multiple config calculator functions. The function given
+by the string for respective attribute will be picked.
 
 .. code-block:: python
 
     @Configs.calc(Configs.model)
     def cnn_model(c: Configs):
         return c.model_size * 10
-
+    
     @Configs.calc(Configs.model)
     def lstm_model(c: Configs):
         return c.model_size * 2
 
 The experiment will calculate the configs.
-
 
 .. code-block:: python
 
@@ -74,6 +73,27 @@ The experiment will calculate the configs.
     logger.info(model=conf.model)
 
 
+
+.. raw:: html
+
+    <pre>                                                                                                    
+    <span style="color: #60C6C8">model: </span><strong>20</strong></pre>
+
+
 .. code-block:: python
 
-    <span style="color: #60C6C8">model: </span><strong>20</strong></pre>
+    experiment.start()
+
+
+
+.. raw:: html
+
+    <pre><strong><span style="text-decoration: underline">test_configs</span></strong>: <span style="color: #208FFB">1882a5ea85f411ea8e74acde48001122</span>
+    	[dirty]: <strong><span style="color: #DDB62B">"🐛 experiment without configs"</span></strong>
+    <span style="text-decoration: underline">Configs:</span>
+    	<span style="color: #60C6C8">cuda_device</span><span style="color: #C5C1B4"> = </span><strong>0</strong>	
+    	<span style="color: #60C6C8">device</span><span style="color: #C5C1B4"> = </span><strong>cpu</strong>	<span style="color: #C5C1B4">cuda</span>
+    	<span style="color: #60C6C8"><strong><span style="color: #DDB62B">model</span></strong></span><span style="color: #C5C1B4"> = </span><strong>20</strong>	lstm_model<span style="color: #C5C1B4">	[</span>cnn_model<span style="color: #C5C1B4">]</span>
+    	<span style="color: #60C6C8">model_size</span><span style="color: #C5C1B4"> = </span><strong>10</strong>	
+    	<span style="color: #60C6C8">use_cuda</span><span style="color: #C5C1B4"> = </span><strong>True</strong>	</pre>
+
