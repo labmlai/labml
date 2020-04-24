@@ -5,18 +5,21 @@ Iterators and Enumerators
 
 .. currentmodule:: lab.logger
 
-You can use :meth:`iterate` and :meth:`enum` with any iterable object.
-In this example we use a PyTorch ``DataLoader``.
-
+You can use :meth:`iterate` and :meth:`enum` with any iterable
+object. In this example we use a PyTorch ``DataLoader``.
 
 .. code-block:: python
 
     # Create a data loader for illustration
+    import time
+    
     import torch
     from torchvision import datasets, transforms
-
+    
+    from lab import logger
+    
     test_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('./data',
+            datasets.MNIST(logger.get_data_path(),
                            train=False,
                            download=True,
                            transform=transforms.Compose([
@@ -25,18 +28,17 @@ In this example we use a PyTorch ``DataLoader``.
                            ])),
             batch_size=32, shuffle=True)
 
-
 .. code-block:: python
 
     for data, target in logger.iterate("Test", test_loader):
         time.sleep(0.01)
 
 
+
 .. raw:: html
 
-    <pre>Test<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	6,618.08ms</span>
+    <pre>Test<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	6,757.82ms</span>
     </pre>
-
 
 
 .. code-block:: python
@@ -45,7 +47,9 @@ In this example we use a PyTorch ``DataLoader``.
         time.sleep(0.01)
 
 
+
 .. raw:: html
 
-    <pre>Test<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	6,662.78ms</span>
+    <pre>Test<span style="color: #00A250">...[DONE]</span><span style="color: #208FFB">	6,772.50ms</span>
     </pre>
+
