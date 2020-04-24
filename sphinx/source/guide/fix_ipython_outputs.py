@@ -28,11 +28,11 @@ def fix_file(path: Path):
      \n``\.\.\s          # Start of current module
      (?P<type>[^:]*)     # Type of reference
      ::\s                # colon
-     (?P<name>[^']*)     # Name of the reference
+     (?P<name>[^`]*)     # Name of the reference
      ``                  # End
     """, re.VERBOSE)
 
-    code = pat.sub(r'.. \g<type>:: \g<name>', code)
+    code = pat.sub(r'\n.. \g<type>:: \g<name>', code)
 
     pat = re.compile(r"""
      ^``\.\.\s           # Start of current module
