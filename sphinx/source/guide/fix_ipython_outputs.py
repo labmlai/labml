@@ -34,6 +34,14 @@ def fix_file(path: Path):
 
     code = pat.sub(r'.. \g<type>:: \g<name>', code)
 
+    pat = re.compile(r"""
+     ^``\.\.\s           # Start of current module
+     (?P<name>[^:]*)    # Type of reference
+     :``                 # colon
+    """, re.VERBOSE)
+
+    code = pat.sub(r'.. \g<name>:', code)
+
     with open(str(path), 'w') as f:
         f.write(code)
 
