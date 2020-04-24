@@ -221,5 +221,6 @@ class Experiment:
 
         logger.internal().save_indicators(self.run.indicators_path)
         logger.internal().save_artifacts(self.run.artifacts_path)
-        logger.internal().write_h_parameters(self.configs_processor.get_hyperparams())
+        if self.configs_processor:
+            logger.internal().write_h_parameters(self.configs_processor.get_hyperparams())
 
