@@ -1,5 +1,5 @@
-Getting Started
-===============
+Installation & Setup
+====================
 
 
 Lab

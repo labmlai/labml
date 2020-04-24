@@ -92,10 +92,10 @@ html_theme_options = {
     'canonical_url': 'https://blog.varunajasasiri.com/lab',
     'collapse_navigation': False,
     'display_version': True,
-    'logo_only': True,
+    # 'logo_only': True,
 }
 
-html_logo = '_static/img/lab-logo.png'
+# html_logo = '_static/img/lab-logo.png'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
