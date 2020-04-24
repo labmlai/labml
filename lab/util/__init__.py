@@ -1,3 +1,4 @@
+import os
 import pathlib
 import random
 import string
@@ -61,9 +62,11 @@ def get_caller_file(ignore_callers: Set[str] = None):
             continue
         if str(module_path) in ignore_callers:
             continue
+        if str(module_path).startswith('<ipython'):
+            break
         return str(module_path)
 
-    return ''
+    return os.path.abspath('')
 
 
 if __name__ == '__main__':
