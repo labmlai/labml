@@ -265,7 +265,7 @@ If you need to log model indicators such as biases, weights and gradient values 
 
 .. code-block:: python
 
-   def run(self):
+   def __call__(self):
        logger_util.add_model_indicators(self.model)
 
 
@@ -290,16 +290,17 @@ As the final step, you need to start and run the experiment. Lab provides a conv
 
 .. code-block:: python
 
-    def main():
+    def run():
         conf = Configs()
         experiment = Experiment(writers={'sqlite', 'tensorboard'})
         experiment.calc_configs(conf,
-                                {'optimizer': 'adam_optimizer'},
                                 ['set_seed', 'run'])
         experiment.add_models(dict(model=conf.model))
         experiment.start()
         conf.main()
 
+    def main():
+        run()
 
     if __name__ == '__main__':
         main()
@@ -308,6 +309,75 @@ Note that in the above code snippet, We have declared an :py:class:`lab.experime
 
 Hyper-parameter Tuning
 ======================
+
+For any machine learning model, it's paramount important to find out the best set of ``hyperparameters`` that improves the model metrics. Usually, this is done experimentally and iteratively. Lab provides a nice way to separate your ``hyperparameters`` and browse via lab-dashboard.
+
+Let's find out the best set of ``kernel_sizes`` for our model. In order to do that, we first need to change the model implementation as below.
+
+.. code-block:: python
+
+    class Net(nn.Module):
+        def __init__(self, conv1_kernal, conv2_kernal):
+            super().__init__()
+            self.size = (28 - conv1_kernal - 2 * conv2_kernal + 3) // 4
+
+            self.conv1 = nn.Conv2d(1, 20, conv1_kernal, 1)
+            self.conv2 = nn.Conv2d(20, 50, conv2_kernal, 1)
+            self.fc1 = nn.Linear(self.size * self.size * 50, 500)
+            self.fc2 = nn.Linear(500, 10)
+
+        def forward(self, x):
+            x = F.relu(self.conv1(x))
+            x = F.max_pool2d(x, 2, 2)
+            x = F.relu(self.conv2(x))
+            x = F.max_pool2d(x, 2, 2)
+            x = x.view(-1, self.size * self.size * 50)
+            x = F.relu(self.fc1(x))
+            return self.fc2(x)
+
+
+    class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
+        conv1_kernal: int
+        conv2_kernal: int
+
+    @Configs.calc(Configs.model)
+    def model(c: Configs):
+        m: Net = Net(c.conv1_kernal, c.conv2_kernal)
+        m.to(c.device)
+        return m
+
+
+It's important to note that ``input_size`` of ``fc1`` is changing based on the ``kernel_sizes`` of two convolutions.
+
+Moreover, you can run a simple grid search as below.
+
+.. code-block:: python
+
+   def run(hparams: dict):
+    logger.set_global_step(0)
+
+    conf = Configs()
+    experiment = Experiment(name='mnist_hyperparam_tuning', writers={'sqlite', 'tensorboard'})
+    experiment.calc_configs(conf,
+                            hparams,
+                            ['set_seed', 'main'])
+    experiment.add_models(dict(model=conf.model))
+    experiment.start()
+
+    conf.main()
+
+
+    def main():
+        for conv1_kernal in [3, 5]:
+            for conv2_kernal in [3, 5]:
+                hparams = {
+                    'conv1_kernal': conv1_kernal,
+                    'conv2_kernal': conv2_kernal,
+                }
+
+                run(hparams)
+
+Lab, by default identifies the parameters that passes to :py:func:`lab.experiment.Experiment.calc_configs` as ``hyperparameters`` and treat them accordingly.
 
 Analytics
 =========
