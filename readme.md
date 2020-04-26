@@ -2,7 +2,9 @@
   <img src="https://github.com/vpj/lab/raw/832758308905ee20ba9841fa80c47c77d7e58fda/images/logo.png?raw=true" width="100" title="Logo">
 </p>
 
-# [Lab 3.0](https://github.com/vpj/lab)
+# [🚧 Lab 0.4.0](https://github.com/vpj/lab)
+
+**This branch is in active development and chaning API. Please use [branch 0.3.0](https://github.com/lab-ml/lab/tree/3.0), for previous stable version.**
 
 This library helps you organize and track
  machine learning experiments.
