@@ -8,7 +8,7 @@ def iterate(name, iterable: Union[Iterable, Sized, int],
             is_silent: bool = False,
             is_timed: bool = True):
     return _internal().iterate(name, iterable, total_steps, is_silent=is_silent,
-                              is_timed=is_timed)
+                               is_timed=is_timed)
 
 
 def enum(name, iterable: Sized, *,
@@ -24,10 +24,10 @@ def section(name, *,
             is_new_line: bool = True,
             total_steps: float = 1.0):
     return _internal().section(name, is_silent=is_silent,
-                              is_timed=is_timed,
-                              is_partial=is_partial,
-                              total_steps=total_steps,
-                              is_new_line=is_new_line)
+                               is_timed=is_timed,
+                               is_partial=is_partial,
+                               total_steps=total_steps,
+                               is_new_line=is_new_line)
 
 
 def progress(steps: float):
@@ -36,4 +36,3 @@ def progress(steps: float):
 
 def fail():
     _internal().set_successful(False)
-

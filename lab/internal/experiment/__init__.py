@@ -50,9 +50,9 @@ class Experiment:
                  name: Optional[str],
                  python_file: Optional[str],
                  comment: Optional[str],
-                 writers: Set[str] = None,
-                 ignore_callers: Set[str] = None,
-                 tags: Optional[Set[str]] = None):
+                 writers: Set[str],
+                 ignore_callers: Set[str],
+                 tags: Optional[Set[str]]):
         if python_file is None:
             python_file = get_caller_file(ignore_callers)
 
@@ -162,17 +162,6 @@ class Experiment:
                      configs: Optional[Configs],
                      configs_dict: Dict[str, any] = None,
                      run_order: Optional[List[Union[List[str], str]]] = None):
-        r"""
-        Calculate configurations
-
-        Arguments:
-            configs (Configs, optional): configurations object
-            configs_dict (Dict[str, any], optional): a dictionary of
-                configs to be overridden
-            run_order (List[Union[str, List[str]]], optional): list of
-                configs to be calculated and the order in which they should be
-                calculated. If ``None`` all configs will be calculated.
-        """
         if configs_dict is None:
             configs_dict = {}
         self.configs_processor = ConfigProcessor(configs, configs_dict)
@@ -198,15 +187,6 @@ class Experiment:
     def start(self, *,
               run_uuid: Optional[str] = None,
               checkpoint: Optional[int] = None):
-        r"""
-        Start the experiment.
-
-        Keyword Arguments:
-            run_uuid (str, optional): if provided the experiment will start from
-                a saved state in the run with UUID ``run_uuid``
-            checkpoint (str, optional): if provided the experiment will start from
-                given checkpoint. Otherwise it will start from the last checkpoint.
-        """
         if run_uuid is not None:
             if checkpoint is None:
                 checkpoint = -1
@@ -247,9 +227,9 @@ def create_experiment(*,
                       name: Optional[str],
                       python_file: Optional[str],
                       comment: Optional[str],
-                      writers: Set[str] = None,
-                      ignore_callers: Set[str] = None,
-                      tags: Optional[Set[str]] = None):
+                      writers: Set[str],
+                      ignore_callers: Set[str],
+                      tags: Optional[Set[str]]):
     global _internal
 
     assert _internal is None

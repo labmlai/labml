@@ -131,15 +131,6 @@ class PyTorchCheckpoint(Checkpoint):
 
 
 def add_models(models: Dict[str, torch.nn.Module]):
-    """
-    Set variables for saving and loading
-
-    Arguments:
-        models (Dict[str, torch.nn.Module]): a dictionary of torch modules
-            used in the experiment. These will be saved with :func:`lab.logger.save_checkpoint`
-            and loaded with :meth:`lab.experiment.Experiment.start`.
-
-    """
     exp = experiment_singleton()
     if exp.checkpoint_saver is None:
         exp.checkpoint_saver = PyTorchCheckpoint(exp.run.checkpoint_path)
