@@ -3,7 +3,7 @@ from pathlib import PurePath
 from typing import Optional, List, Union, Tuple, Dict
 
 from .artifacts import Artifact
-from .colors import StyleCode
+from lab.internal.util.colors import StyleCode
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
 from .destinations.factory import create_destination
 from .indicators import Indicator

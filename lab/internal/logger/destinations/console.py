@@ -1,6 +1,6 @@
 from typing import List, Union, Tuple
 
-from lab.internal.logger.colors import StyleCode, ANSI_RESET
+from lab.internal.util.colors import StyleCode, ANSI_RESET
 from lab.internal.logger.destinations import Destination
 
 
