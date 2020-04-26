@@ -1,6 +1,6 @@
 from typing import Union, List, Tuple, Optional, overload, Dict
 
-from lab._internal.logger import internal as _internal, StyleCode
+from lab.internal.logger.colors import StyleCode
 
 
 class Style(StyleCode):
@@ -113,6 +113,8 @@ def log(message: Optional[Union[str, List[Union[str, Tuple[str, StyleCode]]]]] =
     Example::
         >>> logger.log("test")
     """
+    from lab.internal.logger import logger_singleton as _internal
+
     if message is None:
         assert is_new_line == True
         _internal().log('', is_new_line=True)
@@ -146,5 +148,7 @@ def inspect(*args, **kwargs):
     """
     🎨 Pretty prints a set of values.
     """
+
+    from lab.internal.logger import logger_singleton as _internal
 
     _internal().info(*args, **kwargs)

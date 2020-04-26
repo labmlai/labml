@@ -1,6 +1,6 @@
 from typing import List, Union, Tuple
 
-from lab._internal.logger import StyleCode
+from lab.internal.logger.colors import StyleCode
 
 
 class Destination:

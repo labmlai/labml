@@ -2,8 +2,8 @@ import typing
 from typing import Optional, Iterable, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from lab._internal.logger.internal import LoggerInternal
-from lab._internal.logger.sections import Section
+    from lab.internal.logger import Logger
+from lab.internal.logger.sections import Section
 
 
 class Iterator:
@@ -17,7 +17,7 @@ class Iterator:
     _section: Optional[Section]
 
     def __init__(self, *,
-                 logger: 'LoggerInternal',
+                 logger: 'Logger',
                  name: str,
                  iterable: typing.Union[Iterable, typing.Sized, int],
                  is_silent: bool,

@@ -6,14 +6,21 @@ from typing import Optional, List, Set, Dict, Union
 import git
 
 from lab import logger, monit
-from lab._internal.configs import Configs, ConfigProcessor
-from lab._internal.experiment.experiment_run import Run
-from lab._internal.lab import internal_lab
-from lab._internal.logger import internal as logger_internal
-from lab._internal.logger.internal import CheckpointSaver
-from lab._internal.logger.writers import sqlite, tensorboard
-from lab._internal.util import is_ipynb, get_caller_file
+from lab.internal.configs import Configs, ConfigProcessor
+from lab.internal.experiment.experiment_run import Run
+from lab.internal.lab import lab_singleton
+from lab.internal.logger import logger_singleton as logger_internal
+from lab.internal.logger.writers import sqlite, tensorboard
+from lab.internal.util import is_ipynb, get_caller_file
 from lab.logger import Text
+
+
+class CheckpointSaver:
+    def save(self, global_step):
+        raise NotImplementedError()
+
+    def load(self, checkpoint_path):
+        raise NotImplementedError()
 
 
 class Experiment:
@@ -37,6 +44,7 @@ class Experiment:
 
     # whether not to start the experiment if there are uncommitted changes.
     check_repo_dirty: bool
+    checkpoint_saver: CheckpointSaver
 
     def __init__(self, *,
                  name: Optional[str],
@@ -54,10 +62,10 @@ class Experiment:
                 raise ValueError("You must specify python_file or experiment name"
                                  " when creating an experiment from a python notebook.")
 
-            internal_lab().set_path(os.getcwd())
+            lab_singleton().set_path(os.getcwd())
             python_file = 'notebook.ipynb'
         else:
-            internal_lab().set_path(python_file)
+            lab_singleton().set_path(python_file)
 
             if name is None:
                 file_path = pathlib.PurePath(python_file)
@@ -67,9 +75,9 @@ class Experiment:
             comment = ''
 
         self.name = name
-        self.experiment_path = internal_lab().experiments / name
+        self.experiment_path = lab_singleton().experiments / name
 
-        self.check_repo_dirty = internal_lab().check_repo_dirty
+        self.check_repo_dirty = lab_singleton().check_repo_dirty
 
         self.configs_processor = None
 
@@ -87,15 +95,12 @@ class Experiment:
             comment=comment,
             tags=list(tags))
 
-        repo = git.Repo(internal_lab().path)
+        repo = git.Repo(lab_singleton().path)
 
         self.run.commit = repo.head.commit.hexsha
         self.run.commit_message = repo.head.commit.message.strip()
         self.run.is_dirty = repo.is_dirty()
         self.run.diff = repo.git.diff()
-
-        checkpoint_saver = self._create_checkpoint_saver()
-        logger_internal().set_checkpoint_saver(checkpoint_saver)
 
         logger_internal().reset_writers()
 
@@ -107,10 +112,7 @@ class Experiment:
         if 'tensorboard' in writers:
             logger_internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
 
-        logger_internal().set_numpy_path(self.run.numpy_path)
-
-    def _create_checkpoint_saver(self) -> Optional[CheckpointSaver]:
-        return None
+        self.checkpoint_saver = None
 
     def __print_info_and_check_repo(self):
         """
@@ -149,7 +151,12 @@ class Experiment:
             exit(1)
 
     def _load_checkpoint(self, checkpoint_path: pathlib.PurePath):
-        raise NotImplementedError()
+        if self.checkpoint_saver is not None:
+            self.checkpoint_saver.load(checkpoint_path)
+
+    def save_checkpoint(self):
+        if self.checkpoint_saver is not None:
+            self.checkpoint_saver.save(logger_internal().global_step)
 
     def calc_configs(self,
                      configs: Optional[Configs],
@@ -223,3 +230,33 @@ class Experiment:
         logger_internal().save_artifacts(self.run.artifacts_path)
         if self.configs_processor:
             logger_internal().write_h_parameters(self.configs_processor.get_hyperparams())
+
+
+_internal: Optional[Experiment] = None
+
+
+def experiment_singleton() -> Experiment:
+    global _internal
+
+    assert _internal is not None
+
+    return _internal
+
+
+def create_experiment(*,
+                      name: Optional[str],
+                      python_file: Optional[str],
+                      comment: Optional[str],
+                      writers: Set[str] = None,
+                      ignore_callers: Set[str] = None,
+                      tags: Optional[Set[str]] = None):
+    global _internal
+
+    assert _internal is None
+
+    _internal = Experiment(name=name,
+                           python_file=python_file,
+                           comment=comment,
+                           writers=writers,
+                           ignore_callers=ignore_callers,
+                           tags=tags)

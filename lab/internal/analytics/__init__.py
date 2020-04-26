@@ -1,6 +1,6 @@
 import lab
-from lab._internal import util
-from lab._internal.experiment import experiment_run
+from lab.internal import util
+from lab.internal.experiment import experiment_run
 
 
 class Dir:

@@ -2,20 +2,17 @@
 # download data from the above line provided
 
 import numpy as np
-
 import torch
-import torch.optim as optim
 import torch.nn as nn
+import torch.optim as optim
 import torch.utils.data
-
 from sklearn.metrics import f1_score
 
 import lab
-from lab import tracker, loop, monit
-from lab._internal import configs, training_loop
-from lab._internal.experiment.pytorch import Experiment
-from lab._internal.logger.util import pytorch as logger_util
-
+from lab import tracker, loop, monit, experiment
+from lab.configs import BaseConfigs
+from lab.helpers import training_loop
+from lab.utils import pytorch as pytorch_utils
 from lab.utils.data.pytorch import CsvDataset
 
 
@@ -117,10 +114,10 @@ class RNN:
         if not self.__is_log_parameters:
             return
 
-        logger_util.store_model_indicators(self.encoder)
+        pytorch_utils.store_model_indicators(self.encoder)
 
     def __call__(self):
-        logger_util.add_model_indicators(self.encoder)
+        pytorch_utils.add_model_indicators(self.encoder)
 
         for _ in self.loop:
             self._train()
@@ -128,7 +125,7 @@ class RNN:
             self.__log_model_params()
 
 
-class LoaderConfigs(configs.Configs):
+class LoaderConfigs(BaseConfigs):
     train_loader: torch.utils.data.DataLoader
     test_loader: torch.utils.data.DataLoader
 
@@ -221,10 +218,10 @@ def data_loaders(c: Configs):
 
 def main():
     conf = Configs()
-    experiment = Experiment(writers={'sqlite', 'tensorboard'})
-    experiment.calc_configs(conf,
-                            {},
-                            run_order=['set_seed', 'main'])
+    experiment.create(writers={'sqlite', 'tensorboard'})
+    experiment.calculate_configs(conf,
+                                 {},
+                                 run_order=['set_seed', 'main'])
     experiment.start()
     conf.main()
 

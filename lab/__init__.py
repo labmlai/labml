@@ -1,6 +1,6 @@
 from pathlib import PurePath
 
-from lab._internal.lab import internal_lab as _internal
+from lab.internal.lab import lab_singleton as _internal
 
 
 def get_data_path() -> PurePath:

@@ -1,6 +1,6 @@
 from typing import Union, Optional, Iterable, Sized
 
-from lab._internal.logger import internal as _internal
+from lab.internal.logger import logger_singleton as _internal
 
 
 def iterate(name, iterable: Union[Iterable, Sized, int],

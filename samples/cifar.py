@@ -6,10 +6,10 @@ import torch.utils.data
 from torchvision import datasets, transforms
 
 import lab
-from lab import tracker, monit, loop
-from lab._internal import configs, training_loop
-from lab._internal.experiment.pytorch import Experiment
-from lab._internal.logger.util import pytorch as logger_util
+from lab import tracker, monit, loop, experiment
+from lab.configs import BaseConfigs
+from lab.helpers import training_loop
+from lab.utils import pytorch as pytorch_utils
 
 
 class Net(nn.Module):
@@ -82,10 +82,10 @@ class CIFAR:
         if not self.__is_log_parameters:
             return
 
-        logger_util.store_model_indicators(self.model)
+        pytorch_utils.store_model_indicators(self.model)
 
     def __call__(self):
-        logger_util.add_model_indicators(self.model)
+        pytorch_utils.add_model_indicators(self.model)
 
         tracker.set_queue("train_loss", 20, True)
         tracker.set_histogram("test_loss", True)
@@ -97,7 +97,7 @@ class CIFAR:
             self.__log_model_params()
 
 
-class LoaderConfigs(configs.Configs):
+class LoaderConfigs(BaseConfigs):
     train_loader: torch.utils.data.DataLoader
     test_loader: torch.utils.data.DataLoader
 
@@ -199,11 +199,11 @@ def loop_step(c: Configs):
 
 def main():
     conf = Configs()
-    experiment = Experiment(writers={'sqlite'})
-    experiment.calc_configs(conf,
-                            {'optimizer': 'adam_optimizer'},
-                            ['set_seed', 'main'])
-    experiment.add_models(dict(model=conf.model))
+    experiment.create(writers={'sqlite'})
+    experiment.calculate_configs(conf,
+                                 {'optimizer': 'adam_optimizer'},
+                                 ['set_seed', 'main'])
+    experiment.add_pytorch_models(dict(model=conf.model))
     experiment.start()
     conf.main()
 

@@ -1,6 +1,6 @@
 from typing import Union, Optional, overload
 
-from lab._internal.logger import internal as _internal
+from lab.internal.logger import logger_singleton as _internal
 
 
 def set_global_step(global_step: Optional[int]):

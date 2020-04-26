@@ -6,10 +6,9 @@ import torch.utils.data
 from torchvision import datasets, transforms
 
 import lab
-from lab import tracker, monit, loop
-from lab._internal import training_loop
-from lab._internal.experiment.pytorch import Experiment
-from lab._internal.logger.util import pytorch as logger_util
+from lab import tracker, monit, loop, experiment
+from lab.helpers import training_loop
+from lab.utils import pytorch as pytorch_utils
 
 
 class Net(nn.Module):
@@ -93,7 +92,7 @@ class Configs(training_loop.TrainingLoopConfigs):
         tracker.add(accuracy=correct / len(self.test_loader.dataset))
 
     def run(self):
-        logger_util.add_model_indicators(self.model)
+        pytorch_utils.add_model_indicators(self.model)
 
         tracker.set_queue("train_loss", 20, True)
         tracker.set_histogram("test_loss", True)
@@ -103,7 +102,7 @@ class Configs(training_loop.TrainingLoopConfigs):
             self.train()
             self.test()
             if self.is_log_parameters:
-                logger_util.store_model_indicators(self.model)
+                pytorch_utils.store_model_indicators(self.model)
 
 
 @Configs.calc(Configs.device)
@@ -167,11 +166,11 @@ def loop_step(c: Configs):
 
 def main():
     conf = Configs()
-    experiment = Experiment(writers={'sqlite', 'tensorboard'})
-    experiment.calc_configs(conf,
+    experiment.create(writers={'sqlite', 'tensorboard'})
+    experiment.calculate_configs(conf,
                             {'optimizer': 'adam_optimizer'},
                             ['set_seed', 'run'])
-    experiment.add_models(dict(model=conf.model))
+    experiment.add_pytorch_models(dict(model=conf.model))
     experiment.start()
     conf.run()
 

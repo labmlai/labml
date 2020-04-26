@@ -2,7 +2,7 @@ from pathlib import PurePath
 from typing import Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .internal import LoggerInternal
+    from . import Logger
 from .. import util
 from .artifacts import Artifact
 from .indicators import Indicator, Scalar
@@ -13,7 +13,7 @@ class Store:
     artifacts: Dict[str, Artifact]
     indicators: Dict[str, Indicator]
 
-    def __init__(self, logger: 'LoggerInternal'):
+    def __init__(self, logger: 'Logger'):
         self.values = {}
         # self.queues = {}
         # self.histograms = {}

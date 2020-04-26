@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from ...logger import Text
 
 if TYPE_CHECKING:
-    from .internal import LoggerInternal
+    from . import Logger
 
 
 class Section:
@@ -15,7 +15,7 @@ class Section:
     """
 
     def __init__(self, *,
-                 logger: 'LoggerInternal',
+                 logger: 'Logger',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,
@@ -97,7 +97,7 @@ class Section:
 
 class OuterSection(Section):
     def __init__(self, *,
-                 logger: 'LoggerInternal',
+                 logger: 'Logger',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,
@@ -160,7 +160,7 @@ class OuterSection(Section):
 
 class LoopingSection(Section):
     def __init__(self, *,
-                 logger: 'LoggerInternal',
+                 logger: 'Logger',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,

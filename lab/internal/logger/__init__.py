@@ -1,9 +1,6 @@
-import pathlib
 import typing
 from pathlib import PurePath
-from typing import List, Optional, Tuple, Union, Dict
-
-import numpy as np
+from typing import Optional, List, Union, Tuple, Dict
 
 from .artifacts import Artifact
 from .colors import StyleCode
@@ -18,12 +15,7 @@ from .writers import Writer, ScreenWriter
 from ...logger import Text
 
 
-class CheckpointSaver:
-    def save(self, global_step):
-        raise NotImplementedError()
-
-
-class LoggerInternal:
+class Logger:
     def __init__(self):
         self.__store = Store(self)
         self.__writers: List[Writer] = []
@@ -36,33 +28,11 @@ class LoggerInternal:
         self.__screen_writer = ScreenWriter()
         self.__writers.append(self.__screen_writer)
 
-        self.__checkpoint_saver: Optional[CheckpointSaver] = None
-
         self.__start_global_step: Optional[int] = None
         self.__global_step: Optional[int] = None
         self.__last_global_step: Optional[int] = None
 
-        self.__data_path = None
-        self.__numpy_path = None
-
         self.__destination = create_destination()
-
-    def set_numpy_path(self, numpy_path: PurePath):
-        self.__numpy_path = numpy_path
-
-    def save_numpy(self, name: str, array: np.ndarray):
-        if self.__numpy_path is not None:
-            numpy_path = pathlib.Path(self.__numpy_path)
-        else:
-            numpy_path = pathlib.Path('./numpy')
-
-        if not numpy_path.exists():
-            numpy_path.mkdir(parents=True)
-        file_name = name + ".npy"
-        np.save(str(numpy_path / file_name), array)
-
-    def set_checkpoint_saver(self, saver: CheckpointSaver):
-        self.__checkpoint_saver = saver
 
     @property
     def global_step(self) -> int:
@@ -149,12 +119,6 @@ class LoggerInternal:
         else:
             parts += self.__indicators_print
             self.log(parts, is_new_line=False)
-
-    def save_checkpoint(self):
-        if self.__checkpoint_saver is None:
-            return
-
-        self.__checkpoint_saver.save(self.global_step)
 
     def iterate(self, name, iterable: Union[typing.Iterable, typing.Sized, int],
                 total_steps: Optional[int] = None, *,
@@ -317,3 +281,14 @@ class LoggerInternal:
         else:
             assert len(kwargs.keys()) == 0
             self._log_key_value([(i, v) for i, v in enumerate(args)], False)
+
+
+_internal: Optional[Logger] = None
+
+
+def logger_singleton() -> Logger:
+    global _internal
+    if _internal is None:
+        _internal = Logger()
+
+    return _internal

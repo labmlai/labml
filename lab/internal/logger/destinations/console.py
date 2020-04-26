@@ -1,7 +1,7 @@
 from typing import List, Union, Tuple
 
-from lab._internal.logger.colors import StyleCode, ANSI_RESET
-from lab._internal.logger.destinations import Destination
+from lab.internal.logger.colors import StyleCode, ANSI_RESET
+from lab.internal.logger.destinations import Destination
 
 
 class ConsoleDestination(Destination):

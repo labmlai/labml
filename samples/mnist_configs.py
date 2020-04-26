@@ -7,9 +7,8 @@ from torchvision import datasets, transforms
 
 import lab
 from lab import monit, tracker, loop, experiment, logger
-from lab._internal import configs
-from lab._internal.experiment.pytorch import Experiment
-from lab._internal.logger.util import pytorch as logger_util
+from lab.configs import BaseConfigs
+from lab.utils import pytorch as pytorch_utils
 
 
 class Net(nn.Module):
@@ -45,7 +44,7 @@ class MNISTLoop:
         self.__log_new_line_interval = c.log_new_line_interval
 
     def startup(self):
-        logger_util.add_model_indicators(self.model)
+        pytorch_utils.add_model_indicators(self.model)
 
         tracker.set_queue("train_loss", 20, True)
         tracker.set_histogram("test_loss", True)
@@ -92,7 +91,7 @@ class MNISTLoop:
             return
 
         # Add histograms with model parameter values and gradients
-        logger_util.store_model_indicators(self.model)
+        pytorch_utils.store_model_indicators(self.model)
 
     def loop(self):
         # Loop through the monitored iterator
@@ -119,14 +118,14 @@ class MNISTLoop:
         self.loop()
 
 
-class LoopConfigs(configs.Configs):
+class LoopConfigs(BaseConfigs):
     epochs: int = 10
     is_save_models: bool = True
     is_log_parameters: bool = True
     log_new_line_interval: int = 1
 
 
-class LoaderConfigs(configs.Configs):
+class LoaderConfigs(BaseConfigs):
     train_loader: torch.utils.data.DataLoader
     test_loader: torch.utils.data.DataLoader
 
@@ -209,11 +208,12 @@ def set_seed(c: Configs):
 
 def main():
     conf = Configs()
-    experiment = Experiment(writers={'sqlite'})
-    experiment.calc_configs(conf,
-                            {'optimizer': 'sgd_optimizer'},
-                            ['set_seed', 'loop'])
-    experiment.add_models(dict(model=conf.model))
+    experiment.create(writers={'sqlite'})
+    conf.optimizer = 'sgd_optimizer'
+    experiment.calculate_configs(conf,
+                                 None,
+                                 ['set_seed', 'loop'])
+    experiment.add_pytorch_models(dict(model=conf.model))
     experiment.start()
     conf.loop()
 

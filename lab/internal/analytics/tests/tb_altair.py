@@ -1,4 +1,4 @@
-from lab._internal.analytics import Analyzer
+from lab.internal.analytics import Analyzer
 
 
 def _test_tensorboard(analyzer: Analyzer):

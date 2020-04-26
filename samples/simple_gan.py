@@ -6,9 +6,9 @@ import torch.utils.data
 from torchvision import datasets, transforms
 
 import lab
-from lab import tracker, loop, monit
-from lab._internal import configs, training_loop
-from lab._internal.experiment.pytorch import Experiment
+from lab import tracker, loop, monit, experiment
+from lab.configs import BaseConfigs
+from lab.helpers import training_loop
 
 plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
@@ -174,7 +174,7 @@ class GAN:
             self._train()
 
 
-class LoaderConfigs(configs.Configs):
+class LoaderConfigs(BaseConfigs):
     train_loader: torch.utils.data.DataLoader
     test_loader: torch.utils.data.DataLoader
 
@@ -279,10 +279,10 @@ def data_loaders(c: Configs):
 
 def main():
     conf = Configs()
-    experiment = Experiment(writers={'sqlite'})
-    experiment.calc_configs(conf,
-                            {},
-                            run_order=['set_seed', 'main'])
+    experiment.create(writers={'sqlite'})
+    experiment.calculate_configs(conf,
+                                 {},
+                                 run_order=['set_seed', 'main'])
     experiment.start()
     conf.main()
 

@@ -1,8 +1,8 @@
 from pathlib import PurePath, Path
 from typing import List, Optional
 
-from lab._internal import util
-from lab._internal.util import get_caller_file
+from lab.internal import util
+from lab.internal.util import get_caller_file
 
 _CONFIG_FILE_NAME = '.lab.yaml'
 
@@ -106,7 +106,7 @@ class Lab:
 _internal: Optional[Lab] = None
 
 
-def internal_lab() -> Lab:
+def lab_singleton() -> Lab:
     global _internal
     if _internal is None:
         _internal = Lab()

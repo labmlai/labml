@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from lab._internal.analytics import Analyzer
+from lab.internal.analytics import Analyzer
 
 sns.set_context('notebook')
 sns.set_style('white')

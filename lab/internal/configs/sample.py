@@ -1,6 +1,6 @@
 from typing import List
 
-from lab._internal.configs import Configs, ConfigProcessor
+from lab.internal.configs import Configs, ConfigProcessor
 
 
 class SampleModel:

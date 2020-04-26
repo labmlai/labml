@@ -2,8 +2,8 @@ from typing import List, Union, Tuple, Callable
 
 from IPython.core.display import display, HTML
 
-from lab._internal.logger import StyleCode
-from lab._internal.logger.destinations import Destination
+from lab.internal.logger import StyleCode
+from lab.internal.logger.destinations import Destination
 
 get_ipython: Callable
 

@@ -1,12 +1,11 @@
 import json
 import pathlib
-from typing import Optional, Dict, Set
+from typing import Dict
 
 import numpy as np
 import torch.nn
 
-from lab._internal import experiment
-from lab._internal.logger.internal import CheckpointSaver
+from . import CheckpointSaver, experiment_singleton
 
 
 class Checkpoint(CheckpointSaver):
@@ -131,45 +130,18 @@ class PyTorchCheckpoint(Checkpoint):
         model.load_state_dict(state)
 
 
-class Experiment(experiment.Experiment):
-    r"""
-    Concrete implementation of :class:`lab.experiment.Experiment` for PyTorch
-    experiments
+def add_models(models: Dict[str, torch.nn.Module]):
     """
+    Set variables for saving and loading
 
-    __checkpoint_saver: Checkpoint
+    Arguments:
+        models (Dict[str, torch.nn.Module]): a dictionary of torch modules
+            used in the experiment. These will be saved with :func:`lab.logger.save_checkpoint`
+            and loaded with :meth:`lab.experiment.Experiment.start`.
 
-    def __init__(self, *,
-                 name: Optional[str] = None,
-                 python_file: Optional[str] = None,
-                 comment: Optional[str] = None,
-                 writers: Set[str] = None,
-                 ignore_callers: Set[str] = None,
-                 tags: Optional[Set[str]] = None):
+    """
+    exp = experiment_singleton()
+    if exp.checkpoint_saver is None:
+        exp.checkpoint_saver = PyTorchCheckpoint(exp.run.checkpoint_path)
 
-        super().__init__(name=name,
-                         python_file=python_file,
-                         comment=comment,
-                         writers=writers,
-                         ignore_callers=ignore_callers,
-                         tags=tags)
-
-    def _create_checkpoint_saver(self):
-        self.__checkpoint_saver = PyTorchCheckpoint(self.run.checkpoint_path)
-        return self.__checkpoint_saver
-
-    def add_models(self, models: Dict[str, torch.nn.Module]):
-        """
-        Set variables for saving and loading
-
-        Arguments:
-            models (Dict[str, torch.nn.Module]): a dictionary of torch modules
-                used in the experiment. These will be saved with :func:`lab.logger.save_checkpoint`
-                and loaded with :meth:`lab.experiment.Experiment.start`.
-
-        """
-
-        self.__checkpoint_saver.add_models(models)
-
-    def _load_checkpoint(self, checkpoint_path: pathlib.PurePath):
-        self.__checkpoint_saver.load(checkpoint_path)
+    exp.checkpoint_saver.add_models(models)

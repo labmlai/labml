@@ -2,7 +2,7 @@ import signal
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from lab._internal.logger.internal import LoggerInternal
+    from lab.internal.logger import Logger
 
 from lab.logger import Text
 
@@ -12,7 +12,7 @@ class DelayedKeyboardInterrupt:
     ### Capture `KeyboardInterrupt` and fire it later
     """
 
-    def __init__(self, logger: 'LoggerInternal'):
+    def __init__(self, logger: 'Logger'):
         self.signal_received = None
         self.logger = logger
 

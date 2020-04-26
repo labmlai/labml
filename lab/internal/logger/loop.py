@@ -2,16 +2,16 @@ import math
 import time
 from typing import Optional, Dict, TYPE_CHECKING
 
-from lab._internal.logger.sections import LoopingSection
+from lab.internal.logger.sections import LoopingSection
 from ...logger import Text
 
 if TYPE_CHECKING:
-    from .internal import LoggerInternal
+    from . import Logger
 
 
 class Loop:
     def __init__(self, iterator: range, *,
-                 logger: 'LoggerInternal',
+                 logger: 'Logger',
                  is_print_iteration_time: bool):
         """
         Creates an iterator with a range `iterator`.

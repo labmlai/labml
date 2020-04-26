@@ -1,40 +1,40 @@
 from typing import Dict, overload, Optional
 
-from lab._internal.logger import internal as _internal
+from lab.internal.logger import logger_singleton as _internal
 
 
 def set_queue(name: str, queue_size=10, is_print=False):
-    from lab._internal.logger.indicators import Queue
+    from lab.internal.logger.indicators import Queue
     _internal().add_indicator(Queue(name, queue_size, is_print))
 
 
 def set_histogram(name: str, is_print=False):
-    from lab._internal.logger.indicators import Histogram
+    from lab.internal.logger.indicators import Histogram
     _internal().add_indicator(Histogram(name, is_print))
 
 
 def set_scalar(name: str, is_print=False):
-    from lab._internal.logger.indicators import Scalar
+    from lab.internal.logger.indicators import Scalar
     _internal().add_indicator(Scalar(name, is_print))
 
 
 def set_indexed_scalar(name: str):
-    from lab._internal.logger.indicators import IndexedScalar
+    from lab.internal.logger.indicators import IndexedScalar
     _internal().add_indicator(IndexedScalar(name))
 
 
 def set_image(name: str, is_print=False):
-    from lab._internal.logger.artifacts import Image
+    from lab.internal.logger.artifacts import Image
     _internal().add_artifact(Image(name, is_print))
 
 
 def set_text(name: str, is_print=False):
-    from lab._internal.logger.artifacts import Text
+    from lab.internal.logger.artifacts import Text
     _internal().add_artifact(Text(name, is_print))
 
 
 def set_indexed_text(name: str, title: Optional[str] = None, is_print=False):
-    from lab._internal.logger.artifacts import IndexedText
+    from lab.internal.logger.artifacts import IndexedText
     _internal().add_artifact(IndexedText(name, title, is_print))
 
 

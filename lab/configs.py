@@ -1,5 +1,5 @@
-from lab._internal.configs import Configs as _Configs
+from lab.internal.configs import Configs as _Configs
 
 
-class Configs(_Configs):
+class BaseConfigs(_Configs):
     pass

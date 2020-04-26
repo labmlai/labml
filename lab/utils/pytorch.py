@@ -1,7 +1,7 @@
 import torch
 
 from lab import logger, tracker
-from lab.configs import Configs
+from lab.configs import BaseConfigs
 from lab.logger import Text
 
 
@@ -32,7 +32,7 @@ def get_device(use_cuda: bool, cuda_device: int):
             return torch.device('cuda', torch.cuda.device_count() - 1)
 
 
-def get_modules(configs: Configs):
+def get_modules(configs: BaseConfigs):
     keys = dir(configs)
 
     modules = {}
