@@ -6,11 +6,11 @@ import torch.optim as optim
 import torch.utils.data
 from torchvision import datasets, transforms
 
-from lab import logger, configs
-from lab import training_loop
-from lab.experiment.pytorch import Experiment
-from lab.logger.indicators import Queue, Histogram, IndexedScalar
-from lab.logger.util import pytorch as logger_util
+import lab
+from lab import tracker, monit, loop
+from lab._internal import configs, logger, training_loop
+from lab._internal.experiment.pytorch import Experiment
+from lab._internal.logger.util import pytorch as logger_util
 
 
 class Net(nn.Module):
@@ -45,7 +45,7 @@ class MNIST:
 
     def _train(self):
         self.model.train()
-        for i, (data, target) in logger.enum("Train", self.train_loader):
+        for i, (data, target) in monit.enum("Train", self.train_loader):
             data, target = data.to(self.device), target.to(self.device)
 
             self.optimizer.zero_grad()
@@ -56,13 +56,13 @@ class MNIST:
 
             # Add training loss to the logger.
             # The logger will queue the values and output the mean
-            logger.store(train_loss=loss)
-            logger.add_global_step()
+            tracker.add(train_loss=loss)
+            loop.add_global_step()
 
             # Print output to the console
             if i % self.train_log_interval == 0:
                 # Output the indicators
-                logger.write()
+                tracker.save()
 
     def _test(self):
         self.model.eval()
@@ -70,25 +70,25 @@ class MNIST:
         correct = 0
         idx = 0
         with torch.no_grad():
-            for data, target in logger.iterate("Test", self.test_loader):
+            for data, target in monit.iterate("Test", self.test_loader):
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
                 loss = F.nll_loss(output, target, reduction='none')
                 indexes = [idx + i for i in range(self.test_loader.batch_size)]
                 values = list(loss.cpu().numpy())
-                logger.store('test_sample_loss', (indexes, values))
+                tracker.add('test_sample_loss', (indexes, values))
 
                 test_loss += float(np.sum(loss.cpu().numpy()))
                 pred = output.argmax(dim=1, keepdim=True)
                 values = list(pred.cpu().numpy())
-                logger.store('test_sample_pred', (indexes, values))
+                tracker.add('test_sample_pred', (indexes, values))
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
                 idx += self.test_loader.batch_size
 
         # Add test loss and accuracy to logger
-        logger.store(test_loss=test_loss / len(self.test_loader.dataset))
-        logger.store(accuracy=correct / len(self.test_loader.dataset))
+        tracker.add(test_loss=test_loss / len(self.test_loader.dataset))
+        tracker.add(accuracy=correct / len(self.test_loader.dataset))
 
     def __log_model_params(self):
         if not self.__is_log_parameters:
@@ -101,11 +101,11 @@ class MNIST:
         # Training and testing
         logger_util.add_model_indicators(self.model)
 
-        logger.add_indicator(Queue("train_loss", 20, True))
-        logger.add_indicator(Histogram("test_loss", True))
-        logger.add_indicator(Histogram("accuracy", True))
-        logger.add_indicator(IndexedScalar('test_sample_loss'))
-        logger.add_indicator(IndexedScalar('test_sample_pred'))
+        tracker.set_queue("train_loss", 20, True)
+        tracker.set_histogram("test_loss", True)
+        tracker.set_histogram("accuracy", True)
+        tracker.set_indexed_scalar('test_sample_loss')
+        tracker.set_indexed_scalar('test_sample_pred')
 
         test_data = np.array([d[0].numpy() for d in self.test_loader.dataset])
         logger.save_numpy("test_data", test_data)
@@ -154,14 +154,14 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
 @Configs.calc(Configs.device)
 def device(c: Configs):
-    from lab.util.pytorch import get_device
+    from lab.utils.pytorch import get_device
 
     return get_device(c.use_cuda, c.cuda_device)
 
 
 def _data_loader(is_train, batch_size):
     return torch.utils.data.DataLoader(
-        datasets.MNIST(str(logger.get_data_path()),
+        datasets.MNIST(str(lab.get_data_path()),
                        train=is_train,
                        download=True,
                        transform=transforms.Compose([

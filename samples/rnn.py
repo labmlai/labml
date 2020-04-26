@@ -10,12 +10,13 @@ import torch.utils.data
 
 from sklearn.metrics import f1_score
 
-from lab import logger, configs
-from lab import training_loop
-from lab.experiment.pytorch import Experiment
-from lab.logger.util import pytorch as logger_util
+import lab
+from lab import tracker, loop, monit
+from lab._internal import configs, training_loop
+from lab._internal.experiment.pytorch import Experiment
+from lab._internal.logger.util import pytorch as logger_util
 
-from lab.util.data.pytorch import CsvDataset
+from lab.utils.data.pytorch import CsvDataset
 
 
 class EncoderRNN(nn.Module):
@@ -44,7 +45,8 @@ class EncoderRNN(nn.Module):
         return output, hidden
 
     def init_hidden(self, device):
-        return torch.zeros(self.n_layers * self.n_directions, self.batch_size, self.hidden_size, device=device)
+        return torch.zeros(self.n_layers * self.n_directions, self.batch_size, self.hidden_size,
+                           device=device)
 
 
 class RNN:
@@ -66,7 +68,7 @@ class RNN:
         self.__is_log_parameters = c.is_log_parameters
 
     def _train(self):
-        for i, (input_tensor, target_tensor) in logger.enum("Train", self.train_loader):
+        for i, (input_tensor, target_tensor) in monit.enum("Train", self.train_loader):
             encoder_hidden = self.encoder.init_hidden(self.device).double().to(self.device)
 
             input_tensor = input_tensor.to(self.device).unsqueeze(1)
@@ -80,9 +82,9 @@ class RNN:
             train_loss.backward()
             self.optimizer.step()
 
-            logger.store(loss=train_loss.item())
-            logger.add_global_step()
-            logger.write()
+            tracker.add(loss=train_loss.item())
+            loop.add_global_step()
+            tracker.save()
 
     def _test(self):
         self.encoder.eval()
@@ -90,7 +92,7 @@ class RNN:
         with torch.no_grad():
             macro_f1s = []
             test_losses = []
-            for input_tensor, target_tensor in logger.iterate("Test", self.test_loader):
+            for input_tensor, target_tensor in monit.iterate("Test", self.test_loader):
                 encoder_hidden = self.encoder.init_hidden(self.device).double().to(self.device)
 
                 input_tensor = input_tensor.to(self.device).unsqueeze(1)
@@ -101,15 +103,15 @@ class RNN:
                 test_loss = self.loss(encoder_output, target_tensor)
 
                 macro_f1 = f1_score(y_true=target_tensor.cpu().detach().numpy().ravel(),
-                                    y_pred=encoder_output.cpu().detach().to(torch.int32).numpy().ravel(),
+                                    y_pred=encoder_output.cpu().detach().to(
+                                        torch.int32).numpy().ravel(),
                                     average='macro')
 
                 test_losses.append(test_loss)
                 macro_f1s.append(macro_f1)
 
-            logger.store(test_loss=np.mean(test_losses))
-            logger.store(accuracy=np.mean(macro_f1s))
-            logger.write()
+            tracker.save(test_loss=np.mean(test_losses),
+                         accuracy=np.mean(macro_f1s))
 
     def __log_model_params(self):
         if not self.__is_log_parameters:
@@ -191,13 +193,13 @@ def loop_step(c: Configs):
 
 @Configs.calc(Configs.device)
 def device(*, use_cuda, cuda_device):
-    from lab.util.pytorch import get_device
+    from lab.utils.pytorch import get_device
 
     return get_device(use_cuda, cuda_device)
 
 
 def _custom_dataset(is_train):
-    return CsvDataset(file_path=f'{logger.get_data_path()}/liverpool-ion-switching/train.csv',
+    return CsvDataset(file_path=f'{lab.get_data_path()}/liverpool-ion-switching/train.csv',
                       train=is_train,
                       test_fraction=0.1,
                       x_cols=['signal'],

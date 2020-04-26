@@ -5,10 +5,11 @@ import torch.optim as optim
 import torch.utils.data
 from torchvision import datasets, transforms
 
-from lab import logger, configs
-from lab.experiment.pytorch import Experiment
-from lab.logger.indicators import Queue, Histogram
-from lab.logger.util import pytorch as logger_util
+import lab
+from lab import monit, tracker, loop, experiment, logger
+from lab._internal import configs
+from lab._internal.experiment.pytorch import Experiment
+from lab._internal.logger.util import pytorch as logger_util
 
 
 class Net(nn.Module):
@@ -46,13 +47,13 @@ class MNISTLoop:
     def startup(self):
         logger_util.add_model_indicators(self.model)
 
-        logger.add_indicator(Queue("train_loss", 20, True))
-        logger.add_indicator(Histogram("test_loss", True))
-        logger.add_indicator(Histogram("accuracy", True))
+        tracker.set_queue("train_loss", 20, True)
+        tracker.set_histogram("test_loss", True)
+        tracker.set_histogram("accuracy", True)
 
     def _train(self):
         self.model.train()
-        for i, (data, target) in logger.enum("Train", self.train_loader):
+        for i, (data, target) in monit.enum("Train", self.train_loader):
             data, target = data.to(self.device), target.to(self.device)
             self.optimizer.zero_grad()
             output = self.model(data)
@@ -62,20 +63,20 @@ class MNISTLoop:
 
             # Add training loss to the logger.
             # The logger will queue the values and output the mean
-            logger.store(train_loss=loss)
-            logger.add_global_step()
+            tracker.add(train_loss=loss)
+            loop.add_global_step()
 
             # Print output to the console
             if i % self.log_interval == 0:
                 # Output the indicators
-                logger.write()
+                tracker.save()
 
     def _test(self):
         self.model.eval()
         test_loss = 0
         correct = 0
         with torch.no_grad():
-            for data, target in logger.iterate("Test", self.test_loader):
+            for data, target in monit.iterate("Test", self.test_loader):
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
                 test_loss += F.nll_loss(output, target, reduction='sum').item()
@@ -83,8 +84,8 @@ class MNISTLoop:
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
         # Add test loss and accuracy to logger
-        logger.store(test_loss=test_loss / len(self.test_loader.dataset))
-        logger.store(accuracy=correct / len(self.test_loader.dataset))
+        tracker.add(test_loss=test_loss / len(self.test_loader.dataset))
+        tracker.add(accuracy=correct / len(self.test_loader.dataset))
 
     def __log_model_params(self):
         if not self.__is_log_parameters:
@@ -95,23 +96,23 @@ class MNISTLoop:
 
     def loop(self):
         # Loop through the monitored iterator
-        for epoch in logger.loop(range(0, self.__epochs)):
+        for epoch in loop.loop(range(0, self.__epochs)):
             self._train()
             self._test()
 
             self.__log_model_params()
 
             # Clear line and output to console
-            logger.write()
+            tracker.save()
 
             # Clear line and go to the next line;
             # that is, we add a new line to the output
             # at the end of each epoch
             if (epoch + 1) % self.__log_new_line_interval == 0:
-                logger.new_line()
+                logger.log()
 
             if self.__is_save_models:
-                logger.save_checkpoint()
+                experiment.save_checkpoint()
 
     def __call__(self):
         self.startup()
@@ -158,14 +159,14 @@ class Configs(LoopConfigs, LoaderConfigs):
 
 @Configs.calc(Configs.device)
 def device(c: Configs):
-    from lab.util.pytorch import get_device
+    from lab.utils.pytorch import get_device
 
     return get_device(c.use_cuda, c.cuda_device)
 
 
 def _data_loader(is_train, batch_size):
     return torch.utils.data.DataLoader(
-        datasets.MNIST(str(logger.get_data_path()),
+        datasets.MNIST(str(lab.get_data_path()),
                        train=is_train,
                        download=True,
                        transform=transforms.Compose([

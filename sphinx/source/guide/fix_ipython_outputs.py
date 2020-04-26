@@ -1,9 +1,9 @@
 import re
 from pathlib import Path
 
-from lab import logger
-from lab.lab import Lab
-from lab.logger.colors import Text
+from lab import logger, monit
+from lab._internal.lab import Lab
+from lab.logger import Text
 
 
 def fix_file(path: Path):
@@ -51,7 +51,7 @@ def fix_folder(path: Path):
 
     for f in path.iterdir():
         if f.suffix == '.rst':
-            with logger.section(str(f.name)):
+            with monit.section(str(f.name)):
                 fix_file(f)
 
 

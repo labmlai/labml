@@ -5,11 +5,11 @@ import torch.optim as optim
 import torch.utils.data
 from torchvision import datasets, transforms
 
-from lab import logger, configs
-from lab import training_loop
-from lab.experiment.pytorch import Experiment
-from lab.logger.indicators import Queue, Histogram
-from lab.logger.util import pytorch as logger_util
+import lab
+from lab import tracker, monit, loop
+from lab._internal import configs, training_loop
+from lab._internal.experiment.pytorch import Experiment
+from lab._internal.logger.util import pytorch as logger_util
 
 
 class Net(nn.Module):
@@ -48,7 +48,7 @@ class CIFAR:
 
     def _train(self):
         self.model.train()
-        for i, (data, target) in logger.enum("Train", self.train_loader):
+        for i, (data, target) in monit.enum("Train", self.train_loader):
             data, target = data.to(self.device), target.to(self.device)
 
             self.optimizer.zero_grad()
@@ -57,26 +57,26 @@ class CIFAR:
             loss.backward()
             self.optimizer.step()
 
-            logger.store(train_loss=loss)
-            logger.add_global_step()
+            tracker.add(train_loss=loss)
+            loop.add_global_step()
 
             if i % self.train_log_interval == 0:
-                logger.write()
+                tracker.save()
 
     def _test(self):
         self.model.eval()
         test_loss = 0
         correct = 0
         with torch.no_grad():
-            for data, target in logger.iterate("Test", self.test_loader):
+            for data, target in monit.iterate("Test", self.test_loader):
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
                 test_loss += F.cross_entropy(output, target, reduction='sum').item()
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
-        logger.store(test_loss=test_loss / len(self.test_loader.dataset))
-        logger.store(accuracy=correct / len(self.test_loader.dataset))
+        tracker.add(test_loss=test_loss / len(self.test_loader.dataset))
+        tracker.add(accuracy=correct / len(self.test_loader.dataset))
 
     def __log_model_params(self):
         if not self.__is_log_parameters:
@@ -87,9 +87,9 @@ class CIFAR:
     def __call__(self):
         logger_util.add_model_indicators(self.model)
 
-        logger.add_indicator(Queue("train_loss", 20, True))
-        logger.add_indicator(Histogram("test_loss", True))
-        logger.add_indicator(Histogram("accuracy", True))
+        tracker.set_queue("train_loss", 20, True)
+        tracker.set_histogram("test_loss", True)
+        tracker.set_histogram("accuracy", True)
 
         for _ in self.loop:
             self._train()
@@ -136,7 +136,7 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
 
 @Configs.calc(Configs.device)
 def device(*, use_cuda, cuda_device):
-    from lab.util.pytorch import get_device
+    from lab.utils.pytorch import get_device
 
     return get_device(use_cuda, cuda_device)
 
@@ -150,7 +150,7 @@ def cifar_transforms():
 
 def _data_loader(is_train, batch_size, trans):
     return torch.utils.data.DataLoader(
-        datasets.CIFAR10(str(logger.get_data_path()),
+        datasets.CIFAR10(str(lab.get_data_path()),
                          train=is_train,
                          download=True,
                          transform=trans),

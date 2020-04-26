@@ -1,5 +1,5 @@
 from lab import logger
-from lab.logger.colors import Text, Color
+from lab.logger import Text, Color
 
 logger.log("Colors are missing when views on github", Text.highlight)
 

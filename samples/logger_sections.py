@@ -1,44 +1,44 @@
 import time
 
-from lab import logger
+from lab import loop, monit, tracker, logger
 
 
 def simple_section():
-    with logger.section("Simple section"):
+    with monit.section("Simple section"):
         # code to load data
         time.sleep(2)
 
 
 def unsuccessful_section():
-    with logger.section("Unsuccessful section"):
+    with monit.section("Unsuccessful section"):
         time.sleep(1)
-        logger.set_successful(False)
+        monit.fail()
 
 
 def progress():
-    with logger.section("Progress", total_steps=100):
+    with monit.section("Progress", total_steps=100):
         for i in range(100):
             time.sleep(0.1)
             # Multiple training steps in the inner loop
-            logger.progress(i)
+            monit.progress(i)
 
 
 def loop_section():
-    for step in logger.loop(range(0, 10)):
-        with logger.section("Step"):
+    for step in loop.loop(range(0, 10)):
+        with monit.section("Step"):
             time.sleep(0.5)
-        with logger.section("Step2"):
+        with monit.section("Step2"):
             time.sleep(0.1)
-        logger.write()
-    logger.new_line()
+        tracker.save()
+    logger.log()
 
 
 def loop_partial_section():
-    for step in logger.loop(range(0, 10)):
-        with logger.section("Step", is_partial=True):
+    for step in loop.loop(range(0, 10)):
+        with monit.section("Step", is_partial=True):
             time.sleep(0.5)
-            logger.progress((step % 5 + 1) / 5)
-        logger.write()
+            monit.progress((step % 5 + 1) / 5)
+        tracker.save()
 
 
 if __name__ == '__main__':

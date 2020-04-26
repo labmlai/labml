@@ -1,19 +1,18 @@
 import math
 import time
 
-from lab import logger
-from lab.logger.indicators import Queue
+from lab import logger, tracker
 
 
 def loop():
-    logger.info(a=2, b=1)
+    logger.inspect(a=2, b=1)
 
-    logger.add_indicator(Queue("reward", 10, True))
+    tracker.set_queue("reward", 10, True)
     for i in range(100):
-        logger.write(i, loss=100 / (i + 1), reward=math.pow(2, (i + 1)))
+        tracker.save(i, loss=100 / (i + 1), reward=math.pow(2, (i + 1)))
         if (i + 1) % 2 == 0:
-            logger.write(valid=i ** 10)
-            logger.new_line()
+            tracker.save(valid=i ** 10)
+            logger.log()
 
         time.sleep(0.3)
 

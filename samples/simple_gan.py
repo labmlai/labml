@@ -1,16 +1,14 @@
+import matplotlib.pyplot as plt
 import torch
-import torch.optim as optim
 import torch.nn as nn
+import torch.optim as optim
 import torch.utils.data
 from torchvision import datasets, transforms
 
-from lab import logger, configs
-from lab import training_loop
-from lab.experiment.pytorch import Experiment
-
-import matplotlib.pyplot as plt
-
-from lab.logger.artifacts import Image
+import lab
+from lab import tracker, loop, monit
+from lab._internal import configs, training_loop
+from lab._internal.experiment.pytorch import Experiment
 
 plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
@@ -140,7 +138,7 @@ class GAN:
         self.__is_log_parameters = c.is_log_parameters
 
     def _train(self):
-        for i, (images, _) in logger.enum("Train", self.train_loader):
+        for i, (images, _) in monit.enum("Train", self.train_loader):
             targets_real = torch.empty(images.size(0), 1, device=self.device).uniform_(0.8, 1.0)
             targets_fake = torch.empty(images.size(0), 1, device=self.device).uniform_(0.0, 0.2)
 
@@ -162,16 +160,16 @@ class GAN:
             generator_loss.backward()
             self.optimizer_G.step()
 
-            logger.store(G_Loss=generator_loss.item())
-            logger.store(D_Loss=discriminator_loss.item())
-            logger.add_global_step()
+            tracker.add(G_Loss=generator_loss.item())
+            tracker.add(D_Loss=discriminator_loss.item())
+            loop.add_global_step()
 
         for j in range(1, 10):
             img = fake_images[j].squeeze()
-            logger.store('generated', img)
+            tracker.add('generated', img)
 
     def __call__(self):
-        logger.add_artifact(Image('generated'))
+        tracker.set_image('generated')
         for _ in self.loop:
             self._train()
 
@@ -254,14 +252,14 @@ def loop_step(c: Configs):
 
 @Configs.calc(Configs.device)
 def device(*, use_cuda, cuda_device):
-    from lab.util.pytorch import get_device
+    from lab.utils.pytorch import get_device
 
     return get_device(use_cuda, cuda_device)
 
 
 def _data_loader(is_train, batch_size):
     return torch.utils.data.DataLoader(
-        datasets.MNIST(str(logger.get_data_path()),
+        datasets.MNIST(str(lab.get_data_path()),
                        train=is_train,
                        download=True,
                        transform=transforms.Compose([
