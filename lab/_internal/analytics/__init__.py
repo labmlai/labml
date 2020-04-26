@@ -1,8 +1,6 @@
-import os
-
+import lab
 from lab._internal import util
 from lab._internal.experiment import experiment_run
-from lab._internal.lab import Lab
 
 
 class Dir:
@@ -55,13 +53,8 @@ class Analyzer:
             self.indicators = util.yaml_load(f.read())
 
     @staticmethod
-    def __get_lab():
-        return Lab(os.getcwd())
-
-    @staticmethod
     def __get_run_info(experiment_name: str, run_uuid: str):
-        lab = Analyzer.__get_lab()
-        experiment_path = lab.experiments / experiment_name
+        experiment_path = lab.get_experiments_path() / experiment_name
 
         run_path = experiment_path / run_uuid
         run_info_path = run_path / 'run.yaml'

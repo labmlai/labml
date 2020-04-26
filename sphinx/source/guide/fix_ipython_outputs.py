@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 
 from lab import logger, monit
-from lab._internal.lab import Lab
+from lab._internal.lab import internal_lab
 from lab.logger import Text
 
 
@@ -56,7 +56,7 @@ def fix_folder(path: Path):
 
 
 if __name__ == '__main__':
-    lab = Lab(__file__)
-    guide = Path(lab.path) / 'sphinx' / 'source' / 'guide'
+    internal_lab().set_path(__file__)
+    guide = Path(internal_lab().path) / 'sphinx' / 'source' / 'guide'
 
     fix_folder(guide)

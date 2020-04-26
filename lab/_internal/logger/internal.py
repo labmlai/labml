@@ -15,8 +15,6 @@ from .loop import Loop
 from .sections import Section, OuterSection
 from .store import Store
 from .writers import Writer, ScreenWriter
-from ..lab import Lab
-from ..util import get_caller_file
 from ...logger import Text
 
 
@@ -48,17 +46,6 @@ class LoggerInternal:
         self.__numpy_path = None
 
         self.__destination = create_destination()
-
-    def set_data_path(self, data_path: PurePath):
-        self.__data_path = data_path
-
-    def get_data_path(self) -> PurePath:
-        if self.__data_path is not None:
-            return self.__data_path
-        else:
-            python_file = get_caller_file()
-            lab = Lab(python_file)
-            return lab.data_path
 
     def set_numpy_path(self, numpy_path: PurePath):
         self.__numpy_path = numpy_path

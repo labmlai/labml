@@ -8,7 +8,7 @@ import git
 from lab import logger, monit
 from lab._internal.configs import Configs, ConfigProcessor
 from lab._internal.experiment.experiment_run import Run
-from lab._internal.lab import Lab
+from lab._internal.lab import internal_lab
 from lab._internal.logger import internal as logger_internal
 from lab._internal.logger.internal import CheckpointSaver
 from lab._internal.logger.writers import sqlite, tensorboard
@@ -53,24 +53,23 @@ class Experiment:
             if name is None:
                 raise ValueError("You must specify python_file or experiment name"
                                  " when creating an experiment from a python notebook.")
-            self.lab = Lab(os.getcwd())
+
+            internal_lab().set_path(os.getcwd())
             python_file = 'notebook.ipynb'
         else:
-            self.lab = Lab(python_file)
+            internal_lab().set_path(python_file)
 
             if name is None:
                 file_path = pathlib.PurePath(python_file)
                 name = file_path.stem
 
-        logger_internal().set_data_path(self.lab.data_path)
-
         if comment is None:
             comment = ''
 
         self.name = name
-        self.experiment_path = self.lab.experiments / name
+        self.experiment_path = internal_lab().experiments / name
 
-        self.check_repo_dirty = self.lab.check_repo_dirty
+        self.check_repo_dirty = internal_lab().check_repo_dirty
 
         self.configs_processor = None
 
@@ -88,7 +87,7 @@ class Experiment:
             comment=comment,
             tags=list(tags))
 
-        repo = git.Repo(self.lab.path)
+        repo = git.Repo(internal_lab().path)
 
         self.run.commit = repo.head.commit.hexsha
         self.run.commit_message = repo.head.commit.message.strip()

@@ -1,7 +1,8 @@
 from pathlib import PurePath, Path
-from typing import List
+from typing import List, Optional
 
 from lab._internal import util
+from lab._internal.util import get_caller_file
 
 _CONFIG_FILE_NAME = '.lab.yaml'
 
@@ -13,7 +14,16 @@ class Lab:
     Lab contains the lab specific properties.
     """
 
-    def __init__(self, path: str):
+    def __init__(self):
+        self.path = None
+        self.check_repo_dirty = None
+        self.data_path = None
+        self.experiments = None
+
+        python_file = get_caller_file()
+        self.set_path(python_file)
+
+    def set_path(self, path: str):
         configs = self.__get_config_files(path)
 
         if len(configs) == 0:
@@ -91,3 +101,14 @@ class Lab:
         """
         experiments_path = Path(self.experiments)
         return [child for child in experiments_path.iterdir()]
+
+
+_internal: Optional[Lab] = None
+
+
+def internal_lab() -> Lab:
+    global _internal
+    if _internal is None:
+        _internal = Lab()
+
+    return _internal
