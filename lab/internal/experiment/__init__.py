@@ -11,7 +11,8 @@ from lab.internal.experiment.experiment_run import Run
 from lab.internal.lab import lab_singleton
 from lab.internal.logger import logger_singleton as logger_internal
 from lab.internal.logger.writers import sqlite, tensorboard
-from lab.internal.util import is_ipynb, get_caller_file
+from lab.internal.util import is_ipynb
+from lab.utils import get_caller_file
 from lab.logger import Text
 
 

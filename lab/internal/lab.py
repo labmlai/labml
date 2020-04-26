@@ -2,7 +2,7 @@ from pathlib import PurePath, Path
 from typing import List, Optional
 
 from lab.internal import util
-from lab.internal.util import get_caller_file
+from lab.utils import get_caller_file
 
 _CONFIG_FILE_NAME = '.lab.yaml'
 
