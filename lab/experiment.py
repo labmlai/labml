@@ -1,13 +1,14 @@
+from pathlib import Path
 from typing import Optional, Set, Dict, List, Union
 
 import numpy as np
 import torch
 
+from lab.configs import BaseConfigs
 from lab.internal.experiment import \
     create_experiment as _create_experiment, \
     experiment_singleton as _experiment_singleton
 from lab.internal.experiment.pytorch import add_models as _add_models
-from lab.configs import BaseConfigs
 
 
 def save_checkpoint():
@@ -100,7 +101,7 @@ def save_numpy(name: str, array: np.ndarray):
     Save a single numpy array.
     This is used to save processed data
     """
-    numpy_path = _experiment_singleton().run.numpy_path
+    numpy_path = Path(_experiment_singleton().run.numpy_path)
 
     if not numpy_path.exists():
         numpy_path.mkdir(parents=True)

@@ -8,7 +8,8 @@ from torchvision import datasets, transforms
 import lab
 from lab import tracker, loop, monit, experiment
 from lab.configs import BaseConfigs
-from lab.helpers import training_loop
+from lab.helpers.pytorch.device import DeviceConfigs
+from lab.helpers.training_loop import TrainingLoopConfigs
 
 plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
@@ -179,7 +180,7 @@ class LoaderConfigs(BaseConfigs):
     test_loader: torch.utils.data.DataLoader
 
 
-class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
+class Configs(DeviceConfigs, TrainingLoopConfigs, LoaderConfigs):
     epochs: int = 50
 
     loop_step = 'loop_step'
@@ -189,14 +190,10 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     batch_size: int = 128
     test_batch_size: int = 128
 
-    use_cuda: float = True
-    cuda_device: int = 0
     seed: int = 5
     train_log_interval: int = 10
 
     is_log_parameters: bool = True
-
-    device: any
 
     generator: nn.Module
     discriminator: nn.Module
@@ -248,13 +245,6 @@ def loop_count(c: Configs):
 @Configs.calc(Configs.loop_step)
 def loop_step(c: Configs):
     return len(c.train_loader)
-
-
-@Configs.calc(Configs.device)
-def device(*, use_cuda, cuda_device):
-    from lab.utils.pytorch import get_device
-
-    return get_device(use_cuda, cuda_device)
 
 
 def _data_loader(is_train, batch_size):

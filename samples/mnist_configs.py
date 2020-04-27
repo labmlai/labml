@@ -8,6 +8,7 @@ from torchvision import datasets, transforms
 import lab
 from lab import monit, tracker, loop, experiment, logger
 from lab.configs import BaseConfigs
+from lab.logger import Text
 from lab.utils import pytorch as pytorch_utils
 
 
@@ -158,9 +159,16 @@ class Configs(LoopConfigs, LoaderConfigs):
 
 @Configs.calc(Configs.device)
 def device(c: Configs):
-    from lab.utils.pytorch import get_device
-
-    return get_device(c.use_cuda, c.cuda_device)
+    is_cuda = c.use_cuda and torch.cuda.is_available()
+    if not is_cuda:
+        return torch.device('cpu')
+    else:
+        if c.cuda_device < torch.cuda.device_count():
+            return torch.device('cuda', c.cuda_device)
+        else:
+            logger.log(f"Cuda device index {c.cuda_device} higher than "
+                       f"device count {torch.cuda.device_count()}", Text.warning)
+            return torch.device('cuda', torch.cuda.device_count() - 1)
 
 
 def _data_loader(is_train, batch_size):

@@ -9,7 +9,8 @@ from torchvision import datasets, transforms
 import lab
 from lab import tracker, monit, loop, experiment
 from lab.configs import BaseConfigs
-from lab.helpers import training_loop
+from lab.helpers.pytorch.device import DeviceConfigs
+from lab.helpers.training_loop import TrainingLoopConfigs
 from lab.utils import pytorch as pytorch_utils
 
 
@@ -121,7 +122,7 @@ class LoaderConfigs(BaseConfigs):
     test_loader: torch.utils.data.DataLoader
 
 
-class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
+class Configs(DeviceConfigs, TrainingLoopConfigs, LoaderConfigs):
     epochs: int = 10
 
     loop_step = 'loop_step'
@@ -132,16 +133,12 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     test_batch_size: int = 1000
 
     # Reset epochs so that it'll be computed
-    use_cuda: bool = True
-    cuda_device: int = 0
     seed: int = 5
     train_log_interval: int = 10
 
     is_log_parameters: bool = True
 
     main: MNIST
-
-    device: any
 
     model: nn.Module
 
@@ -150,13 +147,6 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     optimizer: optim.SGD
 
     set_seed = 'set_seed'
-
-
-@Configs.calc(Configs.device)
-def device(c: Configs):
-    from lab.utils.pytorch import get_device
-
-    return get_device(c.use_cuda, c.cuda_device)
 
 
 def _data_loader(is_train, batch_size):

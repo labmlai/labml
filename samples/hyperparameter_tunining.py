@@ -7,8 +7,9 @@ from torchvision import datasets, transforms
 
 import lab
 from lab import monit, tracker, loop, experiment
-from lab.helpers import training_loop
 from lab.configs import BaseConfigs
+from lab.helpers.pytorch.device import DeviceConfigs
+from lab.helpers.training_loop import TrainingLoopConfigs
 
 
 class Net(nn.Module):
@@ -85,7 +86,7 @@ class LoaderConfigs(BaseConfigs):
     test_loader: torch.utils.data.DataLoader
 
 
-class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
+class Configs(DeviceConfigs, TrainingLoopConfigs, LoaderConfigs):
     epochs: int = 1
 
     loop_step = 'loop_step'
@@ -95,14 +96,10 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     batch_size: int = 64
     test_batch_size: int = 1000
 
-    use_cuda: bool = True
-    cuda_device: int = 0
     seed: int = 5
     train_log_interval: int = 10
 
     is_log_parameters: bool = True
-
-    device: any
 
     model: nn.Module
 
@@ -116,13 +113,6 @@ class Configs(training_loop.TrainingLoopConfigs, LoaderConfigs):
     set_seed = 'set_seed'
 
     main: MNIST
-
-
-@Configs.calc(Configs.device)
-def device(c: Configs):
-    from lab.utils.pytorch import get_device
-
-    return get_device(c.use_cuda, c.cuda_device)
 
 
 def _data_loader(is_train, batch_size):
