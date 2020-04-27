@@ -257,7 +257,10 @@ class ConfigProcessor:
             parts.append((key, Text.subtle))
             return parts
 
-        if self.parser.hyperparams.get(key, False) or key in self.parser.explicitly_specified:
+        is_hyperparam = self.parser.hyperparams.get(key, None)
+        if is_hyperparam is None:
+            is_hyperparam = key in self.parser.explicitly_specified
+        if is_hyperparam:
             parts.append((key, [Text.key, Text.highlight]))
         else:
             parts.append((key, Text.key))
