@@ -1,20 +1,16 @@
 import inspect
 from pathlib import PurePath
-from typing import List, Dict, Callable, Optional, \
-    Union
+from typing import List, Dict, Callable, Optional, Union
 
 from .. import util
 from .calculator import Calculator
 from .config_function import ConfigFunction
 from .config_item import ConfigItem
 from .config_item import ConfigItem
-from .parser import Parser
+from .parser import Parser, PropertyKeys
 from ... import logger
 from ...logger import Text
 
-_CALCULATORS = '_calculators'
-_EVALUATORS = '_evaluators'
-_HYPERPARAMS = '_hyperparams'
 _CONFIG_PRINT_LEN = 40
 
 
@@ -78,7 +74,7 @@ class Configs:
                              option: str, *,
                              is_append: bool
                              ):
-        if _CALCULATORS not in cls.__dict__:
+        if PropertyKeys.calculators not in cls.__dict__:
             cls._calculators = {}
 
         calc = ConfigFunction(func, config_names=name, option_name=option, is_append=is_append)
@@ -97,7 +93,7 @@ class Configs:
                            func: Callable,
                            name: str,
                            option: str):
-        if _EVALUATORS not in cls.__dict__:
+        if PropertyKeys.evaluators not in cls.__dict__:
             cls._evaluators = {}
 
         calc = ConfigFunction(func,
@@ -125,6 +121,7 @@ class Configs:
                 If not provided it will be derived from the
                 function name.
         """
+
         def wrapper(func: Callable):
             cls._add_config_function(func, name, option, is_append=is_append)
 
@@ -146,7 +143,7 @@ class Configs:
             is_hyperparam (bool, optional): whether the provided configuration
                 items are hyper-parameters. Defaults to ``True``.
         """
-        if _HYPERPARAMS not in cls.__dict__:
+        if PropertyKeys.hyperparams not in cls.__dict__:
             cls._hyperparams = {}
 
         for h in args:

@@ -1,5 +1,6 @@
 import warnings
 from collections import OrderedDict
+from enum import Enum
 from typing import List, Dict, Type, OrderedDict as OrderedDictType, Set
 from typing import TYPE_CHECKING
 
@@ -9,9 +10,11 @@ from .config_item import ConfigItem
 if TYPE_CHECKING:
     from . import Configs
 
-_CALCULATORS = '_calculators'
-_EVALUATORS = '_evaluators'
-_HYPERPARAMS = '_hyperparams'
+
+class PropertyKeys(Enum):
+    calculators = '_calculators'
+    evaluators = '_evaluators'
+    hyperparams = '_hyperparams'
 
 
 def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
@@ -73,27 +76,28 @@ class Parser:
             #     self.__collect_annotation(k, v)
             #
             for k, v in c.__dict__.items():
-                if _EVALUATORS in c.__dict__ and k in c.__dict__[_EVALUATORS]:
+                if (PropertyKeys.evaluators in c.__dict__ and
+                        k in c.__dict__[PropertyKeys.evaluators]):
                     continue
                 self.__collect_config_item(k, v)
 
         for c in classes:
-            if _CALCULATORS in c.__dict__:
-                for k, calcs in c.__dict__[_CALCULATORS].items():
+            if PropertyKeys.calculators in c.__dict__:
+                for k, calcs in c.__dict__[PropertyKeys.calculators].items():
                     assert k in self.types, \
                         f"{k} calculator is present but the config declaration is missing"
                     for v in calcs:
                         self.__collect_calculator(k, v)
 
         for c in classes:
-            if _EVALUATORS in c.__dict__:
-                for k, evals in c.__dict__[_EVALUATORS].items():
+            if PropertyKeys.evaluators in c.__dict__:
+                for k, evals in c.__dict__[PropertyKeys.evaluators].items():
                     for v in evals:
                         self.__collect_evaluator(k, v)
 
         for c in classes:
-            if _HYPERPARAMS in c.__dict__:
-                for k, is_hyperparam in c.__dict__[_HYPERPARAMS].items():
+            if PropertyKeys.hyperparams in c.__dict__:
+                for k, is_hyperparam in c.__dict__[PropertyKeys.hyperparams].items():
                     self.hyperparams[k] = is_hyperparam
 
         for k, v in configs.__dict__.items():
