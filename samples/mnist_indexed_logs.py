@@ -204,8 +204,9 @@ def loop_step(c: Configs):
 def main():
     conf = Configs()
     experiment.create(writers={'sqlite'})
+    conf.optimizer = 'adam_optimizer'
     experiment.calculate_configs(conf,
-                                 {'optimizer': 'sgd_optimizer'},
+                                 {},
                                  ['set_seed', 'main'])
     experiment.add_pytorch_models(dict(model=conf.model))
     experiment.start()
