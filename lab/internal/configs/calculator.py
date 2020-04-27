@@ -32,7 +32,9 @@ class Calculator:
                  evals: Dict[str, OrderedDictType[str, ConfigFunction]],
                  types: Dict[str, Type],
                  values: Dict[str, any],
-                 list_appends: Dict[str, List[ConfigFunction]]):
+                 list_appends: Dict[str, List[ConfigFunction]],
+                 aggregate_parent: Dict[str, str]):
+        self.aggregate_parent = aggregate_parent
         self.evals = evals
         self.configs = configs
         self.options = options
@@ -166,6 +168,15 @@ class Calculator:
         for k in self.topological_order:
             if k not in self.is_computed:
                 self.__compute(k)
+
+        parents = set()
+        for k in self.topological_order:
+            if k in self.aggregate_parent:
+                parent = self.aggregate_parent[k]
+                if parent not in self.is_computed:
+                    parents.add(parent)
+
+        self.topological_order = list(parents) + self.topological_order
 
     def __call__(self, run_order: Optional[List[Union[List[str], str]]]):
         if run_order is None:

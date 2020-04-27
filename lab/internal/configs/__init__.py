@@ -1,6 +1,6 @@
 import inspect
 from pathlib import PurePath
-from typing import List, Dict, Callable, Optional, Union
+from typing import List, Dict, Callable, Optional, Union, Tuple
 
 from .. import util
 from .calculator import Calculator
@@ -149,6 +149,29 @@ class Configs:
         for h in args:
             cls._hyperparams[h.key] = is_hyperparam
 
+    @classmethod
+    def aggregate(cls, name: Union[ConfigItem, any], option: str,
+                  *args: Tuple[Union[ConfigItem, any], str]):
+        r"""
+        Aggregate configs
+
+        Arguments:
+            name: name of the aggregate
+            option: aggregate option
+            *args: list of options
+        """
+
+        assert args
+
+        if PropertyKeys.aggregates not in cls.__dict__:
+            cls._aggregates = {}
+
+        if name.key not in cls._aggregates:
+            cls._aggregates[name.key] = {}
+
+        pairs = {p[0].key: p[1] for p in args}
+        cls._aggregates[name.key][option] = pairs
+
 
 class ConfigProcessor:
     def __init__(self, configs, values: Dict[str, any] = None):
@@ -158,7 +181,8 @@ class ConfigProcessor:
                                      evals=self.parser.evals,
                                      types=self.parser.types,
                                      values=self.parser.values,
-                                     list_appends=self.parser.list_appends)
+                                     list_appends=self.parser.list_appends,
+                                     aggregate_parent=self.parser.aggregate_parent)
 
     def __call__(self, run_order: Optional[List[Union[List[str], str]]] = None):
         self.calculator(run_order)
@@ -341,5 +365,4 @@ class ConfigProcessor:
 
             logger.log(parts)
 
-        # TODO: use log()
-        logger.log('')
+        logger.log()

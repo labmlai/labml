@@ -10,11 +10,15 @@ from .config_item import ConfigItem
 if TYPE_CHECKING:
     from . import Configs
 
+RESERVED = {'calc', 'list', 'set_hyperparams', 'aggregate'}
+_STANDARD_TYPES = {int, str, bool, Dict, List}
 
-class PropertyKeys(Enum):
+
+class PropertyKeys:
     calculators = '_calculators'
     evaluators = '_evaluators'
     hyperparams = '_hyperparams'
+    aggregates = '_aggregates'
 
 
 def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
@@ -44,10 +48,6 @@ def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
     return unique_classes
 
 
-RESERVED = {'calc', 'list', 'set_hyperparams'}
-_STANDARD_TYPES = {int, str, bool, Dict, List}
-
-
 class Parser:
     config_items: Dict[str, ConfigItem]
     options: Dict[str, OrderedDictType[str, ConfigFunction]]
@@ -57,6 +57,8 @@ class Parser:
     list_appends: Dict[str, List[ConfigFunction]]
     explicitly_specified: Set[str]
     hyperparams: Dict[str, bool]
+    aggregates: Dict[str, Dict[str, Dict[str, str]]]
+    aggregate_parent: Dict[str, str]
 
     def __init__(self, configs: 'Configs', values: Dict[str, any] = None):
         classes = _get_base_classes(type(configs))
@@ -70,6 +72,8 @@ class Parser:
         self.configs = configs
         self.explicitly_specified = set()
         self.hyperparams = {}
+        self.aggregates = {}
+        self.aggregate_parent = {}
 
         for c in classes:
             # for k, v in c.__annotations__.items():
@@ -83,22 +87,27 @@ class Parser:
 
         for c in classes:
             if PropertyKeys.calculators in c.__dict__:
-                for k, calcs in c.__dict__[PropertyKeys.calculators].items():
+                for k, calculators in c.__dict__[PropertyKeys.calculators].items():
                     assert k in self.types, \
                         f"{k} calculator is present but the config declaration is missing"
-                    for v in calcs:
+                    for v in calculators:
                         self.__collect_calculator(k, v)
 
         for c in classes:
             if PropertyKeys.evaluators in c.__dict__:
-                for k, evals in c.__dict__[PropertyKeys.evaluators].items():
-                    for v in evals:
+                for k, evaluators in c.__dict__[PropertyKeys.evaluators].items():
+                    for v in evaluators:
                         self.__collect_evaluator(k, v)
 
         for c in classes:
             if PropertyKeys.hyperparams in c.__dict__:
                 for k, is_hyperparam in c.__dict__[PropertyKeys.hyperparams].items():
                     self.hyperparams[k] = is_hyperparam
+
+        for c in classes:
+            if PropertyKeys.aggregates in c.__dict__:
+                for k, aggregates in c.__dict__[PropertyKeys.aggregates].items():
+                    self.aggregates[k] = aggregates
 
         for k, v in configs.__dict__.items():
             assert k in self.types
@@ -109,6 +118,7 @@ class Parser:
                 assert k in self.types
                 self.__collect_value(k, v)
 
+        self.__calculate_aggregates()
         self.__calculate_missing_values()
 
     @staticmethod
@@ -200,3 +210,28 @@ class Parser:
                 continue
 
             assert k in self.values, f"Cannot compute {k}"
+
+    def __calculate_aggregates(self):
+        queue = []
+        for k in self.aggregates:
+            if k not in self.values or self.values[k] not in self.aggregates[k]:
+                continue
+
+            queue.append(k)
+
+        while queue:
+            k = queue.pop()
+            assert k in self.values
+            option = self.values[k]
+            assert option in self.aggregates[k]
+            pairs = self.aggregates[k][option]
+
+            for name, opt in pairs.items():
+                if name in self.values and self.values[name] != '__none__':
+                    continue
+
+                self.aggregate_parent[name] = k
+                self.values[name] = opt
+
+                if name in self.aggregates and opt in self.aggregates[name]:
+                    queue.append(name)
