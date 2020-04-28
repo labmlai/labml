@@ -5,6 +5,8 @@ Logger
 
     .. autofunction:: log
 
+    .. autofunction:: inspect
+
     .. autoclass:: Text
         :members:
         :undoc-members:

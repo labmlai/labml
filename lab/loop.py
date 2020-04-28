@@ -29,6 +29,16 @@ def loop(iterator_: range, *,
 
 def loop(iterator_: Union[range, int], *,
          is_print_iteration_time=True):
+    """
+        This has multiple overloads
+
+        .. function:: loop(iterator_: range, *,is_print_iteration_time=True)
+            :noindex:
+
+        .. function:: loop(iterator_: int, *,is_print_iteration_time=True)
+            :noindex:
+        """
+
     if type(iterator_) == int:
         return _internal().loop(range(iterator_), is_print_iteration_time=is_print_iteration_time)
     else:

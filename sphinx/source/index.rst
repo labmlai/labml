@@ -25,13 +25,14 @@
    :maxdepth: 1
    :caption: Python API
 
-   api/logger
    api/configs
    api/experiment
-   api/analytics
+   api/logger
    api/monit
    api/tracker
    api/loop
    api/utils
    api/helpers
+   api/analytics
+
 
