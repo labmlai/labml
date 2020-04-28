@@ -98,6 +98,17 @@ class _Collection(Indicator):
         super().__init__(name=name, is_print=is_print)
         self._values = []
 
+    def _merge(self):
+        if len(self._values) == 0:
+            return []
+        elif len(self._values) == 1:
+            return self._values[0]
+        else:
+            merged = np.concatenate(self._values, axis=0)
+            self._values = [merged]
+
+            return merged
+
     def collect_value(self, value):
         self._values.append(_to_numpy(value))
 
@@ -108,10 +119,10 @@ class _Collection(Indicator):
         return len(self._values) == 0
 
     def get_mean(self) -> float:
-        return float(np.mean(self._values))
+        return float(np.mean(self._merge()))
 
     def get_histogram(self):
-        return self._values
+        return self._merge()
 
 
 class Histogram(_Collection):
