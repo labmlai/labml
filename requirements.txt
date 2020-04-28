@@ -5,3 +5,4 @@ torch
 torchvision
 pandas
 matplotlib
+joblib

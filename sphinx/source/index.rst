@@ -29,6 +29,9 @@
    api/configs
    api/experiment
    api/analytics
-   api/training_loop
+   api/monit
+   api/tracker
+   api/loop
    api/utils
+   api/helpers
 

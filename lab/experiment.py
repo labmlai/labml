@@ -8,7 +8,8 @@ from lab.configs import BaseConfigs
 from lab.internal.experiment import \
     create_experiment as _create_experiment, \
     experiment_singleton as _experiment_singleton
-from lab.internal.experiment.pytorch import add_models as _add_models
+from lab.internal.experiment.pytorch import add_models as _add__pytorch_models
+from lab.internal.experiment.sklearn import add_models as _add__sklearn_models
 
 
 def save_checkpoint():
@@ -54,7 +55,20 @@ def add_pytorch_models(models: Dict[str, torch.nn.Module]):
             and loaded with :meth:`lab.experiment.Experiment.start`.
 
     """
-    _add_models(models)
+    _add__pytorch_models(models)
+
+
+def add_sklearn_models(models: Dict[str, torch.nn.Module]):
+    """
+    Set variables for saving and loading
+
+    Arguments:
+        models (Dict[str, torch.nn.Module]): a dictionary of torch modules
+            used in the experiment. These will be saved with :func:`lab.logger.save_checkpoint`
+            and loaded with :meth:`lab.experiment.Experiment.start`.
+
+    """
+    _add__sklearn_models(models)
 
 
 def calculate_configs(

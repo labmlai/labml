@@ -3,7 +3,7 @@ Configs
 
 .. automodule:: lab.configs
 
-    .. autoclass:: Configs
+    .. autoclass:: BaseConfigs
 
         .. automethod:: calc
 
