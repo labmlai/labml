@@ -159,8 +159,8 @@ def main():
     experiment.create(writers={'sqlite', 'tensorboard'})
     conf.optimizer = 'adam_optimizer'
     experiment.calculate_configs(conf,
-                            {},
-                            ['set_seed', 'run'])
+                                 {},
+                                 ['set_seed', 'run'])
     experiment.add_pytorch_models(dict(model=conf.model))
     experiment.start()
     conf.run()
