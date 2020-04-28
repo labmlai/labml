@@ -3,17 +3,19 @@ Experiment
 
 .. automodule:: lab.experiment
 
-    .. autoclass:: Experiment
+     .. autofunction:: create
 
-        .. automethod:: calc_configs
+     .. autofunction:: add_pytorch_models
 
-        .. automethod:: start
+     .. autofunction:: add_sklearn_models
 
-PyTorch Experiment
-------------------
+     .. autofunction:: calculate_configs
 
-.. automodule:: lab.experiment.pytorch
+     .. autofunction:: start
 
-    .. autoclass:: Experiment
+     .. autofunction:: load
 
-        .. automethod:: add_models
+     .. autofunction:: save_checkpoint
+
+     .. autofunction:: save_numpy
+

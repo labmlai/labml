@@ -1,12 +1,15 @@
 Utils
 =========
 
-.. automodule:: lab.util.pytorch
+.. automodule:: lab.utils.pytorch
 
-    .. autofunction:: get_device
+    .. autofunction:: add_model_indicators
+
+    .. autofunction:: store_model_indicators
 
     .. autofunction:: get_modules
 
-.. automodule:: lab.util.data.pytorch
+
+.. automodule:: lab.utils.data.pytorch
 
     .. autoclass:: CsvDataset
