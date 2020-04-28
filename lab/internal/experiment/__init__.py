@@ -297,11 +297,9 @@ def create_experiment(*,
                       tags: Optional[Set[str]]):
     global _internal
 
-    if not _internal:
-        _internal = Experiment(name=name,
-                               python_file=python_file,
-                               comment=comment,
-                               writers=writers,
-                               ignore_callers=ignore_callers,
-                               tags=tags)
-
+    _internal = Experiment(name=name,
+                           python_file=python_file,
+                           comment=comment,
+                           writers=writers,
+                           ignore_callers=ignore_callers,
+                           tags=tags)
