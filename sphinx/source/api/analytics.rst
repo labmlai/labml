@@ -1,13 +1,13 @@
-Analytics
-=========
+Analytics [Experimental]
+========================
 
-.. automodule:: lab.analytics
+.. automodule:: lab.internal.analytics
 
     .. autoclass:: Analyzer
 
         .. automethod:: get_indicators
 
-.. automodule:: lab.analytics.altair.tb
+.. automodule:: lab.internal.analytics.altair.tb
 
     .. autoclass:: AltairTensorBoardAnalytics
 
