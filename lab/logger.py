@@ -146,7 +146,18 @@ def inspect(**items: any):
 
 def inspect(*args, **kwargs):
     """
-    🎨 Pretty prints a set of values.
+    Pretty prints a set of values.
+
+    This has multiple overloads
+
+    .. function:: inspect(items: Dict)
+        :noindex:
+
+    .. function:: inspect(items: List)
+        :noindex:
+
+    .. function:: inspect(*items: any)
+        :noindex:
     """
 
     from lab.internal.logger import logger_singleton as _internal

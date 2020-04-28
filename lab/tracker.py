@@ -54,6 +54,18 @@ def add(**kwargs: any):
 
 
 def add(*args, **kwargs):
+    """
+        This has multiple overloads
+
+        .. function:: add(values: Dict[str, any])
+            :noindex:
+
+        .. function:: add(name: str, value: any)
+            :noindex:
+
+        .. function:: add(**kwargs: any)
+            :noindex:
+        """
     _internal().store(*args, **kwargs)
 
 
@@ -98,6 +110,33 @@ def save(global_step: int, **kwargs: any):
 
 
 def save(*args, **kwargs):
+    """
+            This has multiple overloads
+
+            .. function:: save()
+                :noindex:
+
+            .. function:: save(global_step: int)
+                :noindex:
+
+            .. function:: save(values: Dict[str, any])
+                :noindex:
+
+            .. function:: save(name: str, value: any)
+                :noindex:
+
+            .. function:: save(**kwargs: any)
+                :noindex:
+
+            .. function:: save(global_step: int, values: Dict[str, any])
+                :noindex:
+
+            .. function:: save(global_step: int, name: str, value: any)
+                :noindex:
+
+            .. function:: save(global_step: int, **kwargs: any)
+                :noindex:
+            """
     if len(args) > 0 and type(args[0]) == int:
         _internal().set_global_step(args[0])
         args = args[1:]
