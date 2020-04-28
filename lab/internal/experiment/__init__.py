@@ -298,7 +298,6 @@ def create_experiment(*,
     global _internal
 
     if not _internal:
-
         _internal = Experiment(name=name,
                                python_file=python_file,
                                comment=comment,
