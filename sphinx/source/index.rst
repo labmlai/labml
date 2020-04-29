@@ -1,4 +1,4 @@
-:github_url: https://github.com/vpj/lab
+:github_url: https://github.com/lab-ml/lab
 
 .. include:: lab.rst
 
@@ -8,12 +8,12 @@
 
    guide/installation_setup
    guide/logger
-   guide/sections
-   guide/iterator_enumerator
-   guide/loop
-   guide/log_indicators
-   guide/experiment
+   guide/monitor
    guide/configs
+   guide/loop
+   guide/tracker
+   guide/experiment
+
 
 .. toctree::
    :maxdepth: 1

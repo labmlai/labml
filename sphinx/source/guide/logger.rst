@@ -1,18 +1,20 @@
+
 Logger
 ======
-.. currentmodule:: lab.logger
 
-.. code-block:: python
+.. currentmodule::`lab.logger`
+
+.. code:: ipython3
 
     from lab import logger
-    from lab.logger.colors import Text, Color
+    from lab.logger import Text, Color
 
-You can log to the screen with :meth:`log`.
+You can log to the screen with :func:`log`.
 
 Logging with colors
 -------------------
 
-.. code-block:: python
+.. code:: ipython3
 
     logger.log("Colors are missing when views on github", Text.highlight)
 
@@ -25,7 +27,7 @@ Logging with colors
 
 You can use predifined styles
 
-.. code-block:: python
+.. code:: ipython3
 
     logger.log([
         ('Styles ', Text.heading),
@@ -50,7 +52,7 @@ You can use predifined styles
 
 Or, specify colors
 
-.. code-block:: python
+.. code:: ipython3
 
     logger.log([
         ('Colors ', Text.heading),
@@ -74,11 +76,11 @@ Or, specify colors
 Logging debug info
 ------------------
 
-You can pretty print python objects with :meth:`info`.
+You can pretty print python objects with :func:`inspect`.
 
-.. code-block:: python
+.. code:: ipython3
 
-    logger.info(a=2, b=1)
+    logger.inspect(a=2, b=1)
 
 
 
@@ -88,9 +90,9 @@ You can pretty print python objects with :meth:`info`.
     <span style="color: #60C6C8">b: </span><strong>1</strong></pre>
 
 
-.. code-block:: python
+.. code:: ipython3
 
-    logger.info(dict(name='Name', price=22))
+    logger.inspect(dict(name='Name', price=22))
 
 
 

@@ -11,7 +11,7 @@ Lab
 
 .. code-block:: bash
 
-    git clone git@github.com:vpj/lab.git
+    git clone git@github.com:lab-ml/lab.git
     cd lab
     pip install -e .
 
@@ -40,7 +40,7 @@ Lab Dashboard
 
 .. code-block:: bash
 
-  git clone git@github.com:vpj/lab_dashboard.git
+  git clone git@github.com:lab-ml/dashboard.git
   cd lab_dashboard
   git submodule init
   git submodule update

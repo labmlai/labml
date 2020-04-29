@@ -297,8 +297,6 @@ def create_experiment(*,
                       tags: Optional[Set[str]]):
     global _internal
 
-    assert _internal is None
-
     _internal = Experiment(name=name,
                            python_file=python_file,
                            comment=comment,

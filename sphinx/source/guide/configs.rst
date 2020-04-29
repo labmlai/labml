@@ -1,21 +1,22 @@
+
 Configs
 =======
 
-.. currentmodule:: lab.configs
+.. currentmodule::`lab.configs`
 
-.. code-block:: python
+.. code:: ipython3
 
     import torch
     
-    from lab import configs, logger
-    from lab.experiment.pytorch import Experiment
+    from lab import tracker, monit, loop, experiment, logger
+    from lab.configs import BaseConfigs
 
 The configs will be stored and in future be adjusted from
 `Dashboard <https://github.com/vpj/lab_dashboard>`__
 
-.. code-block:: python
+.. code:: ipython3
 
-    class DeviceConfigs(configs.Configs):
+    class DeviceConfigs(BaseConfigs):
         use_cuda: bool = True
         cuda_device: int = 0
     
@@ -23,7 +24,7 @@ The configs will be stored and in future be adjusted from
 
 Some configs can be calculated
 
-.. code-block:: python
+.. code:: ipython3
 
     @DeviceConfigs.calc(DeviceConfigs.device)
     def cuda(c: DeviceConfigs):
@@ -42,7 +43,7 @@ Configs classes can be inherited. This can be used to separate configs
 into module and it is quite neat when you want to inherit entire
 experiment setups and make a few modifications.
 
-.. code-block:: python
+.. code:: ipython3
 
     class Configs(DeviceConfigs):
         model_size: int = 10
@@ -52,7 +53,7 @@ experiment setups and make a few modifications.
 You can specify multiple config calculator functions. The function given
 by the string for respective attribute will be picked.
 
-.. code-block:: python
+.. code:: ipython3
 
     @Configs.calc(Configs.model)
     def cnn_model(c: Configs):
@@ -64,13 +65,13 @@ by the string for respective attribute will be picked.
 
 The experiment will calculate the configs.
 
-.. code-block:: python
+.. code:: ipython3
 
     conf = Configs()
     conf.model = 'lstm_model'
-    experiment = Experiment(name='test_configs')
-    experiment.calc_configs(conf)
-    logger.info(model=conf.model)
+    experiment.create(name='test_configs')
+    experiment.calculate_configs(conf)
+    logger.inspect(model=conf.model)
 
 
 
@@ -80,7 +81,7 @@ The experiment will calculate the configs.
     <span style="color: #60C6C8">model: </span><strong>20</strong></pre>
 
 
-.. code-block:: python
+.. code:: ipython3
 
     experiment.start()
 
@@ -88,12 +89,15 @@ The experiment will calculate the configs.
 
 .. raw:: html
 
-    <pre><strong><span style="text-decoration: underline">test_configs</span></strong>: <span style="color: #208FFB">1882a5ea85f411ea8e74acde48001122</span>
-    	[dirty]: <strong><span style="color: #DDB62B">"🐛 experiment without configs"</span></strong>
+    <pre>
+    <strong><span style="text-decoration: underline">test_configs</span></strong>: <span style="color: #208FFB">f7dce148895e11ea944cacde48001122</span>
+    	[dirty]: <strong><span style="color: #DDB62B">"lint fixed"</span></strong>
     <span style="text-decoration: underline">Configs:</span>
     	<span style="color: #60C6C8">cuda_device</span><span style="color: #C5C1B4"> = </span><strong>0</strong>	
     	<span style="color: #60C6C8">device</span><span style="color: #C5C1B4"> = </span><strong>cpu</strong>	<span style="color: #C5C1B4">cuda</span>
     	<span style="color: #60C6C8"><strong><span style="color: #DDB62B">model</span></strong></span><span style="color: #C5C1B4"> = </span><strong>20</strong>	lstm_model<span style="color: #C5C1B4">	[</span>cnn_model<span style="color: #C5C1B4">]</span>
     	<span style="color: #60C6C8">model_size</span><span style="color: #C5C1B4"> = </span><strong>10</strong>	
-    	<span style="color: #60C6C8">use_cuda</span><span style="color: #C5C1B4"> = </span><strong>True</strong>	</pre>
+    	<span style="color: #60C6C8">use_cuda</span><span style="color: #C5C1B4"> = </span><strong>True</strong>	
+    </pre>
+
 

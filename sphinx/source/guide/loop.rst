@@ -1,23 +1,23 @@
 Loop
 ====
 
-.. currentmodule:: lab.logger
+.. currentmodule::`lab.loop``
 
-This can be used for the training loop. The :meth:`loop` keeps track
+This can be used for the training loop. The :func:`loop` keeps track
 of the time taken and time remaining for the loop. You can use
-:ref:`guide_sections`, :ref:`guide_iterators_enumerators` within
-loop.
+:ref:`guide_monitor` within loop.
 
-:meth:`write` outputs the current status along with global step.
+:func:`lab.tracker.save` outputs the current status along with global
+step.
 
-.. code-block:: python
+.. code:: ipython3
 
-    from lab import logger
+    from lab import loop, tracker
 
-.. code-block:: python
+.. code:: ipython3
 
-    for step in logger.loop(range(0, 400)):
-        logger.write()
+    for step in loop.loop(range(0, 400)):
+        tracker.save()
 
 
 
@@ -30,21 +30,22 @@ The global step is used for logging to the screen, TensorBoard and when
 logging analytics to SQLite. You can manually set the global step. Here
 we will reset it.
 
-.. code-block:: python
+.. code:: ipython3
 
-    logger.set_global_step(0)
+    loop.set_global_step(0)
 
 You can manually increment global step too.
 
-.. code-block:: python
+.. code:: ipython3
 
-    for step in logger.loop(range(0, 400)):
-        logger.add_global_step(5)
-        logger.write()
+    for step in loop.loop(range(0, 400)):
+        loop.add_global_step(5)
+        tracker.save()
 
 
 
 .. raw:: html
 
     <pre><strong><span style="color: #DDB62B">   2,000:  </span></strong>  <span style="color: #208FFB">1ms</span><span style="color: #D160C4">  0:00m/  0:00m  </span></pre>
+
 
