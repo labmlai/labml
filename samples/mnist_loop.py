@@ -3,10 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data
-from torchvision import datasets, transforms
 
-import lab
 from lab import tracker, monit, loop, experiment
+from lab.helpers.pytorch.datasets.mnist import MNISTConfigs
 from lab.helpers.pytorch.device import DeviceConfigs
 from lab.helpers.training_loop import TrainingLoopConfigs
 from lab.utils import pytorch as pytorch_utils
@@ -30,23 +29,18 @@ class Net(nn.Module):
         return self.fc2(x)
 
 
-class Configs(DeviceConfigs, TrainingLoopConfigs):
+class Configs(MNISTConfigs, DeviceConfigs, TrainingLoopConfigs):
     epochs: int = 10
 
     loop_step = 'loop_step'
     loop_count = 'loop_count'
 
     is_save_models = True
-    batch_size: int = 64
-    test_batch_size: int = 1000
 
     seed: int = 5
     train_log_interval: int = 10
 
     is_log_parameters: bool = True
-
-    train_loader: torch.utils.data.DataLoader
-    test_loader: torch.utils.data.DataLoader
 
     model: nn.Module
 
@@ -78,15 +72,15 @@ class Configs(DeviceConfigs, TrainingLoopConfigs):
         test_loss = 0
         correct = 0
         with torch.no_grad():
-            for data, target in monit.iterate("Test", self.test_loader):
+            for data, target in monit.iterate("Test", self.valid_loader):
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
                 test_loss += F.cross_entropy(output, target, reduction='sum').item()
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
-        tracker.add(test_loss=test_loss / len(self.test_loader.dataset))
-        tracker.add(accuracy=correct / len(self.test_loader.dataset))
+        tracker.add(test_loss=test_loss / len(self.valid_dataset))
+        tracker.add(accuracy=correct / len(self.valid_dataset))
 
     def run(self):
         pytorch_utils.add_model_indicators(self.model)
@@ -100,26 +94,6 @@ class Configs(DeviceConfigs, TrainingLoopConfigs):
             self.test()
             if self.is_log_parameters:
                 pytorch_utils.store_model_indicators(self.model)
-
-
-def _data_loader(is_train, batch_size):
-    return torch.utils.data.DataLoader(
-        datasets.MNIST(str(lab.get_data_path()),
-                       train=is_train,
-                       download=True,
-                       transform=transforms.Compose([
-                           transforms.ToTensor(),
-                           transforms.Normalize((0.1307,), (0.3081,))
-                       ])),
-        batch_size=batch_size, shuffle=True)
-
-
-@Configs.calc([Configs.train_loader, Configs.test_loader])
-def data_loaders(c: Configs):
-    train = _data_loader(True, c.batch_size)
-    test = _data_loader(False, c.test_batch_size)
-
-    return train, test
 
 
 @Configs.calc(Configs.model)
