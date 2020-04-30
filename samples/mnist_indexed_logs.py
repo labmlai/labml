@@ -39,7 +39,6 @@ class Configs(MNISTConfigs, DeviceConfigs, TrainingLoopConfigs):
 
     is_save_models = True
 
-    # Reset epochs so that it'll be computed
     seed: int = 5
     train_log_interval: int = 10
 

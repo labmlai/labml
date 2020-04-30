@@ -1,5 +1,5 @@
 # Kaggle Competition https://www.kaggle.com/c/liverpool-ion-switching/overview
-# download data from the above line provided
+# download data from the above link provided
 
 import numpy as np
 import torch
