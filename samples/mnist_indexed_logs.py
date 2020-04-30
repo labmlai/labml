@@ -4,11 +4,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data
-from torchvision import datasets, transforms
 
-import lab
 from lab import tracker, monit, loop, experiment
-from lab.configs import BaseConfigs
+from lab.helpers.pytorch.datasets.mnist import MNISTConfigs
 from lab.helpers.pytorch.device import DeviceConfigs
 from lab.helpers.training_loop import TrainingLoopConfigs
 from lab.utils import pytorch as pytorch_utils
@@ -33,18 +31,29 @@ class Net(nn.Module):
         return F.log_softmax(x, dim=1)
 
 
-class MNIST:
-    def __init__(self, c: 'Configs'):
-        self.model = c.model
-        self.device = c.device
-        self.train_loader = c.train_loader
-        self.test_loader = c.test_loader
-        self.optimizer = c.optimizer
-        self.train_log_interval = c.train_log_interval
-        self.loop = c.training_loop
-        self.__is_log_parameters = c.is_log_parameters
+class Configs(MNISTConfigs, DeviceConfigs, TrainingLoopConfigs):
+    epochs: int = 10
 
-    def _train(self):
+    loop_step = 'loop_step'
+    loop_count = 'loop_count'
+
+    is_save_models = True
+
+    # Reset epochs so that it'll be computed
+    seed: int = 5
+    train_log_interval: int = 10
+
+    is_log_parameters: bool = True
+
+    model: nn.Module
+
+    learning_rate: float = 0.01
+    momentum: float = 0.5
+    optimizer: optim.SGD
+
+    set_seed = 'set_seed'
+
+    def train(self):
         self.model.train()
         for i, (data, target) in monit.enum("Train", self.train_loader):
             data, target = data.to(self.device), target.to(self.device)
@@ -65,18 +74,18 @@ class MNIST:
                 # Output the indicators
                 tracker.save()
 
-    def _test(self):
+    def valid(self):
         self.model.eval()
         test_loss = 0
         correct = 0
         idx = 0
         with torch.no_grad():
-            for data, target in monit.iterate("Test", self.test_loader):
+            for data, target in monit.iterate("Test", self.valid_loader):
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
                 loss = F.nll_loss(output, target, reduction='none')
-                indexes = [idx + i for i in range(self.test_loader.batch_size)]
                 values = list(loss.cpu().numpy())
+                indexes = [idx + i for i in range(len(values))]
                 tracker.add('test_sample_loss', (indexes, values))
 
                 test_loss += float(np.sum(loss.cpu().numpy()))
@@ -85,20 +94,13 @@ class MNIST:
                 tracker.add('test_sample_pred', (indexes, values))
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
-                idx += self.test_loader.batch_size
+                idx += len(values)
 
         # Add test loss and accuracy to logger
-        tracker.add(test_loss=test_loss / len(self.test_loader.dataset))
-        tracker.add(accuracy=correct / len(self.test_loader.dataset))
+        tracker.add(test_loss=test_loss / len(self.valid_dataset))
+        tracker.add(accuracy=correct / len(self.valid_dataset))
 
-    def __log_model_params(self):
-        if not self.__is_log_parameters:
-            return
-
-        # Add histograms with model parameter values and gradients
-        pytorch_utils.store_model_indicators(self.model)
-
-    def __call__(self):
+    def run(self):
         # Training and testing
         pytorch_utils.add_model_indicators(self.model)
 
@@ -108,65 +110,14 @@ class MNIST:
         tracker.set_indexed_scalar('test_sample_loss')
         tracker.set_indexed_scalar('test_sample_pred')
 
-        test_data = np.array([d[0].numpy() for d in self.test_loader.dataset])
+        test_data = np.array([d[0].numpy() for d in self.valid_dataset])
         experiment.save_numpy("test_data", test_data)
 
-        for _ in self.loop:
-            self._train()
-            self._test()
-            self.__log_model_params()
-
-
-class LoaderConfigs(BaseConfigs):
-    train_loader: torch.utils.data.DataLoader
-    test_loader: torch.utils.data.DataLoader
-
-
-class Configs(DeviceConfigs, TrainingLoopConfigs, LoaderConfigs):
-    epochs: int = 10
-
-    loop_step = 'loop_step'
-    loop_count = 'loop_count'
-
-    is_save_models = True
-    batch_size: int = 64
-    test_batch_size: int = 1000
-
-    # Reset epochs so that it'll be computed
-    seed: int = 5
-    train_log_interval: int = 10
-
-    is_log_parameters: bool = True
-
-    main: MNIST
-
-    model: nn.Module
-
-    learning_rate: float = 0.01
-    momentum: float = 0.5
-    optimizer: optim.SGD
-
-    set_seed = 'set_seed'
-
-
-def _data_loader(is_train, batch_size):
-    return torch.utils.data.DataLoader(
-        datasets.MNIST(str(lab.get_data_path()),
-                       train=is_train,
-                       download=True,
-                       transform=transforms.Compose([
-                           transforms.ToTensor(),
-                           transforms.Normalize((0.1307,), (0.3081,))
-                       ])),
-        batch_size=batch_size, shuffle=True)
-
-
-@Configs.calc([Configs.train_loader, Configs.test_loader])
-def data_loaders(c: Configs):
-    train = _data_loader(True, c.batch_size)
-    test = _data_loader(False, c.test_batch_size)
-
-    return train, test
+        for _ in self.training_loop:
+            self.train()
+            self.valid()
+            if self.is_log_parameters:
+                pytorch_utils.store_model_indicators(self.model)
 
 
 @Configs.calc(Configs.model)
@@ -207,10 +158,10 @@ def main():
     conf.optimizer = 'adam_optimizer'
     experiment.calculate_configs(conf,
                                  {},
-                                 ['set_seed', 'main'])
+                                 ['set_seed', 'run'])
     experiment.add_pytorch_models(dict(model=conf.model))
     experiment.start()
-    conf.main()
+    conf.run()
 
 
 if __name__ == '__main__':
