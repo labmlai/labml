@@ -1,5 +1,9 @@
-Analytics [Experimental]
-========================
+Analytics
+=========
+
+.. warning::
+
+    This is still experimental and the api will change frequently.
 
 .. automodule:: lab.internal.analytics
 
