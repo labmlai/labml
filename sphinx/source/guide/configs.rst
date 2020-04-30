@@ -1,10 +1,9 @@
-
 Configs
 =======
 
-.. currentmodule::`lab.configs`
+.. currentmodule:: lab.configs
 
-.. code:: ipython3
+.. code-block:: python
 
     import torch
     
@@ -14,7 +13,7 @@ Configs
 The configs will be stored and in future be adjusted from
 `Dashboard <https://github.com/vpj/lab_dashboard>`__
 
-.. code:: ipython3
+.. code-block:: python
 
     class DeviceConfigs(BaseConfigs):
         use_cuda: bool = True
@@ -24,7 +23,7 @@ The configs will be stored and in future be adjusted from
 
 Some configs can be calculated
 
-.. code:: ipython3
+.. code-block:: python
 
     @DeviceConfigs.calc(DeviceConfigs.device)
     def cuda(c: DeviceConfigs):
@@ -43,7 +42,7 @@ Configs classes can be inherited. This can be used to separate configs
 into module and it is quite neat when you want to inherit entire
 experiment setups and make a few modifications.
 
-.. code:: ipython3
+.. code-block:: python
 
     class Configs(DeviceConfigs):
         model_size: int = 10
@@ -53,7 +52,7 @@ experiment setups and make a few modifications.
 You can specify multiple config calculator functions. The function given
 by the string for respective attribute will be picked.
 
-.. code:: ipython3
+.. code-block:: python
 
     @Configs.calc(Configs.model)
     def cnn_model(c: Configs):
@@ -65,7 +64,7 @@ by the string for respective attribute will be picked.
 
 The experiment will calculate the configs.
 
-.. code:: ipython3
+.. code-block:: python
 
     conf = Configs()
     conf.model = 'lstm_model'
@@ -81,7 +80,7 @@ The experiment will calculate the configs.
     <span style="color: #60C6C8">model: </span><strong>20</strong></pre>
 
 
-.. code:: ipython3
+.. code-block:: python
 
     experiment.start()
 

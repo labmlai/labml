@@ -1,12 +1,17 @@
-Monitor
-=========================
+.. _guide_monitor:
 
-.. currentmodule::`lab.monit`
+Monitor
+=======
+
+.. currentmodule:: lab.monit
+
+Iterators & Enumerators
+-----------------------
 
 You can use :func:`iterate` and :func:`enum` with any iterable
 object. In this example we use a PyTorch ``DataLoader``.
 
-.. code:: ipython3
+.. code-block:: python
 
     # Create a data loader for illustration
     import time
@@ -27,7 +32,7 @@ object. In this example we use a PyTorch ``DataLoader``.
                            ])),
             batch_size=32, shuffle=True)
 
-.. code:: ipython3
+.. code-block:: python
 
     for data, target in monit.iterate("Test", test_loader):
         time.sleep(0.01)
@@ -40,7 +45,7 @@ object. In this example we use a PyTorch ``DataLoader``.
     </pre>
 
 
-.. code:: ipython3
+.. code-block:: python
 
     for i, (data, target) in monit.enum("Test", test_loader):
         time.sleep(0.01)
@@ -54,12 +59,12 @@ object. In this example we use a PyTorch ``DataLoader``.
 
 
 Sections
-========
+--------
 
 Sections let you monitor time taken for different tasks and also helps
 keep the code clean by separating different blocks of code.
 
-.. code:: ipython3
+.. code-block:: python
 
     with monit.section("Load data"):
         # code to load data
@@ -73,7 +78,7 @@ keep the code clean by separating different blocks of code.
     </pre>
 
 
-.. code:: ipython3
+.. code-block:: python
 
     with monit.section("Load saved model"):
         time.sleep(1)
@@ -89,7 +94,7 @@ keep the code clean by separating different blocks of code.
 
 You can also show progress while a section is running
 
-.. code:: ipython3
+.. code-block:: python
 
     with monit.section("Train", total_steps=100):
         for i in range(100):

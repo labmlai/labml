@@ -1,7 +1,7 @@
 Loop
 ====
 
-.. currentmodule::`lab.loop``
+.. currentmodule:: lab.loop
 
 This can be used for the training loop. The :func:`loop` keeps track
 of the time taken and time remaining for the loop. You can use
@@ -10,11 +10,11 @@ of the time taken and time remaining for the loop. You can use
 :func:`lab.tracker.save` outputs the current status along with global
 step.
 
-.. code:: ipython3
+.. code-block:: python
 
     from lab import loop, tracker
 
-.. code:: ipython3
+.. code-block:: python
 
     for step in loop.loop(range(0, 400)):
         tracker.save()
@@ -30,13 +30,13 @@ The global step is used for logging to the screen, TensorBoard and when
 logging analytics to SQLite. You can manually set the global step. Here
 we will reset it.
 
-.. code:: ipython3
+.. code-block:: python
 
     loop.set_global_step(0)
 
 You can manually increment global step too.
 
-.. code:: ipython3
+.. code-block:: python
 
     for step in loop.loop(range(0, 400)):
         loop.add_global_step(5)

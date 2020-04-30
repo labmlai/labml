@@ -1,11 +1,10 @@
-
 Experiment
 ==========
 
 Lab will keep track of experiments if you declare an Experiment. It will
 keep track of logs, code diffs, git commits, etc.
 
-.. code:: ipython3
+.. code-block:: python
 
     from lab import experiment
 
@@ -14,7 +13,7 @@ when invoking from a Jupyter Notebook it must be provided because the
 library cannot find the calling file name. ``comment`` can be changed
 later from the `Dashboard <https://github.com/vpj/lab_dashboard>`__.
 
-.. code:: ipython3
+.. code-block:: python
 
     experiment.create(name="mnist_pytorch",
                      comment="Test")
@@ -22,7 +21,7 @@ later from the `Dashboard <https://github.com/vpj/lab_dashboard>`__.
 Starting an experiments creates folders, stores the experiment meta
 data, git commits, and source diffs.
 
-.. code:: ipython3
+.. code-block:: python
 
     experiment.start()
 

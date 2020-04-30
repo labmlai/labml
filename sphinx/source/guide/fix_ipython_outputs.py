@@ -9,10 +9,12 @@ def fix_file(path: Path):
     with open(str(path), 'r') as f:
         code = f.read()
 
+    # Change code blocks
     code = re.sub(r'\n.. code:: ipython3\n',
                   r'\n.. code-block:: python\n',
                   code)
 
+    # Change references
     pat = re.compile(r"""
      ``:                 # Start of a reference
      (?P<type>[^:]*)     # Type of reference
@@ -23,6 +25,7 @@ def fix_file(path: Path):
 
     code = pat.sub(r':\g<type>:`\g<name>`', code)
 
+    # Change directives such as current module
     pat = re.compile(r"""
      \n``\.\.\s          # Start of current module
      (?P<type>[^:]*)     # Type of reference
@@ -31,6 +34,7 @@ def fix_file(path: Path):
      ``                  # End
     """, re.VERBOSE)
 
+    # Change links
     code = pat.sub(r'\n.. \g<type>:: \g<name>', code)
 
     pat = re.compile(r"""
