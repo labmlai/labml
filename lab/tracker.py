@@ -164,4 +164,4 @@ def save(*args, **kwargs):
 
 
 def namespace(name: str):
-    _internal().store_namespace(name)
+    return _internal().store_namespace(name)

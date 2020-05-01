@@ -69,11 +69,16 @@ class Indicator:
     def copy(self, key: str):
         raise NotImplementedError()
 
+    def equals(self, value: any) -> bool:
+        if type(value) != type(self):
+            return False
+        return value.name == self.name and value.is_print == self.is_print
+
 
 class Queue(Indicator):
     def __init__(self, name: str, queue_size=10, is_print=False):
         super().__init__(name=name, is_print=is_print)
-        self._queue_size = queue_size
+        self.queue_size = queue_size
         self._values = deque(maxlen=queue_size)
 
     def collect_value(self, value):
@@ -98,7 +103,12 @@ class Queue(Indicator):
         return f'{self.name}.mean'
 
     def copy(self, key: str):
-        return Queue(key, queue_size=self._queue_size, is_print=self.is_print)
+        return Queue(key, queue_size=self.queue_size, is_print=self.is_print)
+
+    def equals(self, value: any) -> bool:
+        if not super().equals(value):
+            return False
+        return value.queue_size == self.queue_size
 
 
 class _Collection(Indicator, ABC):

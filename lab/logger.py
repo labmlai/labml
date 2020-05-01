@@ -121,7 +121,7 @@ def log(message: Optional[Union[str, List[Union[str, Tuple[str, StyleCode]]]]] =
     if type(message) == str:
         _internal().log([(message, color)], is_new_line=is_new_line)
     elif type(message) == list:
-        _internal().log([message], is_new_line=is_new_line)
+        _internal().log(message, is_new_line=is_new_line)
 
 
 @overload

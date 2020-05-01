@@ -95,6 +95,11 @@ class Artifact(ABC):
     def copy(self, key: str):
         raise NotImplementedError()
 
+    def equals(self, value: any) -> bool:
+        if type(value) != type(self):
+            return False
+        return value.name == self.name and value.is_print == self.is_print
+
 
 class _Collection(Artifact, ABC):
     _values: OrderedDictType[str, Any]
@@ -147,6 +152,11 @@ class Image(_Collection):
     def copy(self, key: str):
         return Image(key, is_print=self.is_print)
 
+    def equals(self, value: any) -> bool:
+        if not isinstance(value, Image):
+            return False
+        return value.name == self.name and value.is_print == self.is_print
+
 
 class Text(_Collection):
     r"""
@@ -168,6 +178,11 @@ class Text(_Collection):
     def copy(self, key: str):
         return Text(key, is_print=self.is_print)
 
+    def equals(self, value: any) -> bool:
+        if not isinstance(value, Text):
+            return False
+        return value.name == self.name and value.is_print == self.is_print
+
 
 class IndexedText(_Collection):
     r"""
@@ -180,7 +195,7 @@ class IndexedText(_Collection):
 
     def __init__(self, name: str, title: Optional[str] = None, is_print=False):
         super().__init__(name=name, is_print=is_print)
-        self._title = title
+        self.title = title
 
     @_Collection.is_indexed.getter
     def is_indexed(self) -> bool:
@@ -193,4 +208,9 @@ class IndexedText(_Collection):
         return self._values[key]
 
     def copy(self, key: str):
-        return IndexedText(key, title=self._title, is_print=self.is_print)
+        return IndexedText(key, title=self.title, is_print=self.is_print)
+
+    def equals(self, value: any) -> bool:
+        if not super().equals(value):
+            return False
+        return value.title == self.title

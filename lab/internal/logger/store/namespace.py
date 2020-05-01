@@ -9,7 +9,7 @@ class Namespace:
                  store: 'Store',
                  name: str):
         self._store = store
-        self._name = name
+        self.name = name
 
     def __enter__(self):
         self._store.namespace_enter(self)
