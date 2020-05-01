@@ -81,6 +81,3 @@ class IpynbDestination(Destination):
         # print(len(self.__cell_lines), self.__cell_lines[-1], is_new_line)
         if is_new_line:
             self.__cell_lines.append('')
-
-    def new_line(self):
-        self.__cell_lines.append('')

@@ -2,10 +2,10 @@ import typing
 from pathlib import PurePath
 from typing import Optional, List, Union, Tuple, Dict
 
-from lab.internal.util.colors import StyleCode
 from lab.internal.logger.store.artifacts import Artifact
-from .destinations.factory import create_destination
 from lab.internal.logger.store.indicators import Indicator
+from lab.internal.util.colors import StyleCode
+from .destinations.factory import create_destination
 from .inspect import Inspect
 from .iterator import Iterator
 from .loop import Loop
@@ -96,9 +96,6 @@ class Logger:
                 self.__global_step = 0
 
         self.__global_step += increment_global_step
-
-    def new_line(self):
-        self.__destination.new_line()
 
     def __is_looping(self):
         if self.__loop is not None and self.__loop.is_started:
@@ -217,7 +214,7 @@ class Logger:
 
         if len(self.__sections) > 1 and not self.__sections[-2].is_parented:
             self.__sections[-2].make_parent()
-            self.new_line()
+            self.log([])
 
         self.__log_line()
 

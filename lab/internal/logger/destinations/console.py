@@ -35,6 +35,3 @@ class ConsoleDestination(Destination):
         text = "".join(coded)
 
         print("\r" + text, end=end_char, flush=True)
-
-    def new_line(self):
-        print()

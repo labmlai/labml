@@ -3,8 +3,9 @@ from typing import Dict
 
 from .artifacts import Artifact
 from .indicators import Indicator, Scalar
-from .writers import Writer
-from .. import util
+from .namespace import Namespace
+from ..writers import Writer
+from ... import util
 
 
 class Store:
@@ -16,24 +17,37 @@ class Store:
         self.artifacts = {}
         self.__indicators_file = None
         self.__artifacts_file = None
+        self.namespaces = []
 
     def save_indicators(self, file: PurePath):
         self.__indicators_file = file
 
-        indicators = {k: ind.to_dict() for k, ind in self.indicators.items()}
+        data = {k: ind.to_dict() for k, ind in self.indicators.items()}
         with open(str(file), "w") as file:
-            file.write(util.yaml_dump(indicators))
+            file.write(util.yaml_dump(data))
 
     def save_artifacts(self, file: PurePath):
         self.__artifacts_file = file
 
-        artifacts = {k: art.to_dict() for k, art in self.artifacts.items()}
+        data = {k: art.to_dict() for k, art in self.artifacts.items()}
         with open(str(file), "w") as file:
-            file.write(util.yaml_dump(artifacts))
+            file.write(util.yaml_dump(data))
 
     def __assert_name(self, name: str):
         assert name not in self.indicators, f"{name} already used"
         assert name not in self.artifacts, f"{name} already used"
+
+    def namespace_enter(self, ns: Namespace):
+        self.namespaces.append(ns)
+
+    def namespace_exit(self, ns: Namespace):
+        if len(self.namespaces) == 0:
+            raise RuntimeError("Impossible")
+
+        if ns is not self.namespaces[-1]:
+            raise RuntimeError("Impossible")
+
+        self.namespaces.pop(-1)
 
     def add_indicator(self, indicator: Indicator):
         self.__assert_name(indicator.name)
@@ -51,7 +65,7 @@ class Store:
         if self.__artifacts_file is not None:
             self.save_artifacts(self.__artifacts_file)
 
-    def _store_kv(self, k, v):
+    def _store_kv(self, k: str, v):
         if k not in self.indicators and k not in self.artifacts:
             self.add_indicator(Scalar(k, True))
 

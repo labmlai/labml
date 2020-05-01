@@ -232,7 +232,7 @@ class Experiment:
         self.configs_processor = ConfigProcessor(configs, configs_dict)
         self.configs_processor(run_order)
 
-        logger_internal().new_line()
+        logger.log()
 
     def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):
         checkpoint_path, global_step = experiment_run.get_last_run_checkpoint(
