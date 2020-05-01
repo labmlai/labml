@@ -1,3 +1,4 @@
+from abc import ABC
 from collections import deque
 from typing import Dict, Optional
 
@@ -65,10 +66,14 @@ class Indicator:
     def get_index_mean(self):
         return None, None
 
+    def copy(self, key: str):
+        raise NotImplementedError()
+
 
 class Queue(Indicator):
     def __init__(self, name: str, queue_size=10, is_print=False):
         super().__init__(name=name, is_print=is_print)
+        self._queue_size = queue_size
         self._values = deque(maxlen=queue_size)
 
     def collect_value(self, value):
@@ -92,8 +97,11 @@ class Queue(Indicator):
     def mean_key(self):
         return f'{self.name}.mean'
 
+    def copy(self, key: str):
+        return Queue(key, queue_size=self._queue_size, is_print=self.is_print)
 
-class _Collection(Indicator):
+
+class _Collection(Indicator, ABC):
     def __init__(self, name: str, is_print=False):
         super().__init__(name=name, is_print=is_print)
         self._values = []
@@ -130,13 +138,19 @@ class Histogram(_Collection):
     def mean_key(self):
         return f'{self.name}.mean'
 
+    def copy(self, key: str):
+        return Histogram(key, is_print=self.is_print)
+
 
 class Scalar(_Collection):
     def get_histogram(self):
         return None
 
+    def copy(self, key: str):
+        return Scalar(key, is_print=self.is_print)
 
-class _IndexedCollection(Indicator):
+
+class _IndexedCollection(Indicator, ABC):
     def __init__(self, name: str):
         super().__init__(name=name, is_print=False)
         self._values = []
@@ -187,3 +201,6 @@ class _IndexedCollection(Indicator):
 class IndexedScalar(_IndexedCollection):
     def get_histogram(self):
         return None
+
+    def copy(self, key: str):
+        return IndexedScalar(key)

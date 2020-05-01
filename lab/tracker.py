@@ -38,6 +38,11 @@ def set_indexed_text(name: str, title: Optional[str] = None, is_print=False):
     _internal().add_artifact(IndexedText(name, title, is_print))
 
 
+def _add_dict(values: Dict[str, any]):
+    for k, v in values.items():
+        _internal().store(k, v)
+
+
 @overload
 def add(values: Dict[str, any]):
     ...
@@ -55,18 +60,29 @@ def add(**kwargs: any):
 
 def add(*args, **kwargs):
     """
-        This has multiple overloads
+    This has multiple overloads
 
-        .. function:: add(values: Dict[str, any])
-            :noindex:
+    .. function:: add(values: Dict[str, any])
+        :noindex:
 
-        .. function:: add(name: str, value: any)
-            :noindex:
+    .. function:: add(name: str, value: any)
+        :noindex:
 
-        .. function:: add(**kwargs: any)
-            :noindex:
-        """
-    _internal().store(*args, **kwargs)
+    .. function:: add(**kwargs: any)
+        :noindex:
+    """
+    assert len(args) <= 2
+
+    if len(args) == 0:
+        _add_dict(kwargs)
+    elif len(args) == 1:
+        assert not kwargs
+        assert isinstance(args[0], dict)
+        _add_dict(**args[0])
+    elif len(args) == 2:
+        assert not kwargs
+        assert isinstance(args[0], str)
+        _internal().store(args[0], args[1])
 
 
 @overload
@@ -110,33 +126,33 @@ def save(global_step: int, **kwargs: any):
 
 
 def save(*args, **kwargs):
+    r"""
+    This has multiple overloads
+
+    .. function:: save()
+        :noindex:
+
+    .. function:: save(global_step: int)
+        :noindex:
+
+    .. function:: save(values: Dict[str, any])
+        :noindex:
+
+    .. function:: save(name: str, value: any)
+        :noindex:
+
+    .. function:: save(**kwargs: any)
+        :noindex:
+
+    .. function:: save(global_step: int, values: Dict[str, any])
+        :noindex:
+
+    .. function:: save(global_step: int, name: str, value: any)
+        :noindex:
+
+    .. function:: save(global_step: int, **kwargs: any)
+        :noindex:
     """
-            This has multiple overloads
-
-            .. function:: save()
-                :noindex:
-
-            .. function:: save(global_step: int)
-                :noindex:
-
-            .. function:: save(values: Dict[str, any])
-                :noindex:
-
-            .. function:: save(name: str, value: any)
-                :noindex:
-
-            .. function:: save(**kwargs: any)
-                :noindex:
-
-            .. function:: save(global_step: int, values: Dict[str, any])
-                :noindex:
-
-            .. function:: save(global_step: int, name: str, value: any)
-                :noindex:
-
-            .. function:: save(global_step: int, **kwargs: any)
-                :noindex:
-            """
     if len(args) > 0 and type(args[0]) == int:
         _internal().set_global_step(args[0])
         args = args[1:]
@@ -145,3 +161,7 @@ def save(*args, **kwargs):
         add(*args, **kwargs)
 
     _internal().write()
+
+
+def namespace(name: str):
+    _internal().store_namespace(name)

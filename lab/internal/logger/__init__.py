@@ -79,8 +79,11 @@ class Logger:
     def save_artifacts(self, file: PurePath):
         self.__store.save_artifacts(file)
 
-    def store(self, *args, **kwargs):
-        self.__store.store(*args, **kwargs)
+    def store(self, key: str, value: any):
+        self.__store.store(key, value)
+
+    def store_namespace(self, name: str):
+        return self.__store.create_namespace(name)
 
     def set_global_step(self, global_step: Optional[int]):
         self.__global_step = global_step

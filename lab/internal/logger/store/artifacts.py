@@ -92,6 +92,9 @@ class Artifact(ABC):
 
         self._collect_value(key, value)
 
+    def copy(self, key: str):
+        raise NotImplementedError()
+
 
 class _Collection(Artifact, ABC):
     _values: OrderedDictType[str, Any]
@@ -141,6 +144,9 @@ class Image(_Collection):
             ax.imshow(img)
         plt.show()
 
+    def copy(self, key: str):
+        return Image(key, is_print=self.is_print)
+
 
 class Text(_Collection):
     r"""
@@ -158,6 +164,9 @@ class Text(_Collection):
         logger.log(self.name, TextStyle.heading)
         for t in self._values.values():
             logger.log(t, TextStyle.value)
+
+    def copy(self, key: str):
+        return Text(key, is_print=self.is_print)
 
 
 class IndexedText(_Collection):
@@ -182,3 +191,6 @@ class IndexedText(_Collection):
 
     def get_string(self, key: str, others: Dict[str, Artifact]) -> Optional[str]:
         return self._values[key]
+
+    def copy(self, key: str):
+        return IndexedText(key, title=self._title, is_print=self.is_print)
