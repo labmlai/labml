@@ -4,8 +4,8 @@ import numpy as np
 
 from lab import logger
 from lab.logger import Text
-from ..artifacts import Artifact
-from ..indicators import Indicator
+from lab.internal.logger.store.artifacts import Artifact
+from lab.internal.logger.store.indicators import Indicator
 
 
 class Writer:

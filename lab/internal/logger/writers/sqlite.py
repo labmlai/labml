@@ -3,8 +3,8 @@ from pathlib import PurePath
 from typing import Dict, Optional
 
 from . import Writer as WriteBase
-from ..artifacts import Artifact
-from ..indicators import Indicator
+from lab.internal.logger.store.artifacts import Artifact
+from lab.internal.logger.store.indicators import Indicator
 
 
 class Writer(WriteBase):

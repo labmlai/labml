@@ -6,8 +6,8 @@ import tensorflow as tf
 from tensorboard.plugins.hparams import api as hp
 
 from . import Writer as WriteBase
-from ..artifacts import Artifact, Image
-from ..indicators import Indicator
+from lab.internal.logger.store.artifacts import Artifact, Image
+from lab.internal.logger.store.indicators import Indicator
 
 tf.config.experimental.set_visible_devices([], "GPU")
 
