@@ -29,3 +29,5 @@ if __name__ == '__main__':
         ('Purple Heading\n', [Color.purple, Text.heading]),
         ('White\n', Color.white),
     ])
+
+    logger.inspect({'a': 10, 'b': 4})

@@ -2,11 +2,12 @@ import typing
 from pathlib import PurePath
 from typing import Optional, List, Union, Tuple, Dict
 
-from .artifacts import Artifact
 from lab.internal.util.colors import StyleCode
+from .artifacts import Artifact
 from .delayed_keyboard_interrupt import DelayedKeyboardInterrupt
 from .destinations.factory import create_destination
 from .indicators import Indicator
+from .inspect import Inspect
 from .iterator import Iterator
 from .loop import Loop
 from .sections import Section, OuterSection
@@ -16,8 +17,12 @@ from ...logger import Text
 
 
 class Logger:
+    """
+    This handles the interactions among sections, loop and store
+    """
+
     def __init__(self):
-        self.__store = Store(self)
+        self.__store = Store()
         self.__writers: List[Writer] = []
 
         self.__loop: Optional[Loop] = None
@@ -33,6 +38,7 @@ class Logger:
         self.__last_global_step: Optional[int] = None
 
         self.__destination = create_destination()
+        self.__inspect = Inspect(self)
 
     @property
     def global_step(self) -> int:
@@ -72,7 +78,7 @@ class Logger:
         self.__store.save_indicators(file)
 
     def save_artifacts(self, file: PurePath):
-        self.__store.save_artifactors(file)
+        self.__store.save_artifacts(file)
 
     def store(self, *args, **kwargs):
         self.__store.store(*args, **kwargs)
@@ -244,43 +250,8 @@ class Logger:
         self.__log_line()
         self.__sections.pop(-1)
 
-    def delayed_keyboard_interrupt(self):
-        return DelayedKeyboardInterrupt(self)
-
-    def _log_key_value(self, items: List[Tuple[any, any]], is_show_count=True):
-        max_key_len = 0
-        for k, v in items:
-            max_key_len = max(max_key_len, len(str(k)))
-
-        count = 0
-        for k, v in items:
-            count += 1
-            spaces = " " * (max_key_len - len(str(k)))
-            s = str(v)
-            if len(s) > 80:
-                s = f"{s[:80]} ..."
-            self.log([(f"{spaces}{k}: ", Text.key),
-                      (s, Text.value)])
-
-        if is_show_count:
-            self.log([
-                "Total ",
-                (str(count), Text.meta),
-                " item(s)"])
-
     def info(self, *args, **kwargs):
-        if len(args) == 0:
-            self._log_key_value([(k, v) for k, v in kwargs.items()], False)
-        elif len(args) == 1:
-            assert len(kwargs.keys()) == 0
-            arg = args[0]
-            if type(arg) == list:
-                self._log_key_value([(i, v) for i, v in enumerate(arg)])
-            elif type(arg) == dict:
-                self._log_key_value([(k, v) for k, v in arg.items()])
-        else:
-            assert len(kwargs.keys()) == 0
-            self._log_key_value([(i, v) for i, v in enumerate(args)], False)
+        self.__inspect.info(*args, **kwargs)
 
 
 _internal: Optional[Logger] = None

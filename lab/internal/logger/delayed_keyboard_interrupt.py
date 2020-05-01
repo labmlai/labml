@@ -1,9 +1,6 @@
 import signal
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from lab.internal.logger import Logger
-
+from lab import logger
 from lab.logger import Text
 
 
@@ -12,9 +9,8 @@ class DelayedKeyboardInterrupt:
     ### Capture `KeyboardInterrupt` and fire it later
     """
 
-    def __init__(self, logger: 'Logger'):
+    def __init__(self):
         self.signal_received = None
-        self.logger = logger
 
     def __enter__(self):
         self.signal_received = None
@@ -29,8 +25,8 @@ class DelayedKeyboardInterrupt:
 
         # Store the interrupt signal for later
         self.signal_received = (sig, frame)
-        self.logger.log([('\nSIGINT received. Delaying KeyboardInterrupt.',
-                          Text.danger)])
+        logger.log([('\nSIGINT received. Delaying KeyboardInterrupt.',
+                     Text.danger)])
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Reset handler

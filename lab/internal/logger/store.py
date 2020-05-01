@@ -1,25 +1,17 @@
 from pathlib import PurePath
-from typing import Dict, TYPE_CHECKING
+from typing import Dict
 
-if TYPE_CHECKING:
-    from . import Logger
-from .. import util
 from .artifacts import Artifact
 from .indicators import Indicator, Scalar
 from .writers import Writer
+from .. import util
 
 
 class Store:
     artifacts: Dict[str, Artifact]
     indicators: Dict[str, Indicator]
 
-    def __init__(self, logger: 'Logger'):
-        self.values = {}
-        # self.queues = {}
-        # self.histograms = {}
-        # self.pairs: Dict[str, List[Tuple[int, int]]] = {}
-        # self.scalars = {}
-        self.__logger = logger
+    def __init__(self):
         self.indicators = {}
         self.artifacts = {}
         self.__indicators_file = None
@@ -32,7 +24,7 @@ class Store:
         with open(str(file), "w") as file:
             file.write(util.yaml_dump(indicators))
 
-    def save_artifactors(self, file: PurePath):
+    def save_artifacts(self, file: PurePath):
         self.__artifacts_file = file
 
         artifacts = {k: art.to_dict() for k, art in self.artifacts.items()}
@@ -57,11 +49,11 @@ class Store:
         artifact.clear()
 
         if self.__artifacts_file is not None:
-            self.save_artifactors(self.__artifacts_file)
+            self.save_artifacts(self.__artifacts_file)
 
     def _store_kv(self, k, v):
         if k not in self.indicators and k not in self.artifacts:
-            self.__logger.add_indicator(Scalar(k, True))
+            self.add_indicator(Scalar(k, True))
 
         if k in self.artifacts:
             self.artifacts[k].collect_value(None, v)
