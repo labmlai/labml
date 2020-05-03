@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -7,6 +6,7 @@ import torch.utils.data
 from lab import experiment
 from lab.helpers.pytorch.datasets.mnist import MNISTConfigs
 from lab.helpers.pytorch.device import DeviceConfigs
+from lab.helpers.pytorch.seed import SeedConfigs
 from lab.helpers.pytorch.train_valid import TrainValidConfigs
 
 
@@ -28,39 +28,33 @@ class Net(nn.Module):
         return self.fc2(x)
 
 
-class SimpleAccuracyFunc:
+class SimpleAccuracy:
     def __call__(self, output: torch.Tensor, target: torch.Tensor) -> int:
         pred = output.argmax(dim=1)
         return pred.eq(target).sum().item()
 
 
-class Configs(MNISTConfigs, DeviceConfigs, TrainValidConfigs):
+class Configs(MNISTConfigs, DeviceConfigs, SeedConfigs, TrainValidConfigs):
     epochs: int = 10
 
     is_save_models = True
-
-    seed: int = 5
-
     model: nn.Module
 
     learning_rate: float = 0.01
     momentum: float = 0.5
 
-    set_seed = 'set_seed'
     loss_func = 'cross_entropy_loss'
     accuracy_func = 'simple_accuracy'
 
 
 @Configs.calc(Configs.model)
 def model(c: Configs):
-    m: Net = Net()
-    m.to(c.device)
-    return m
+    return Net().to(c.device)
 
 
 @Configs.calc(Configs.accuracy_func)
 def simple_accuracy():
-    return SimpleAccuracyFunc()
+    return SimpleAccuracy()
 
 
 @Configs.calc(Configs.loss_func)
@@ -76,11 +70,6 @@ def sgd_optimizer(c: Configs):
 @Configs.calc(Configs.optimizer)
 def adam_optimizer(c: Configs):
     return optim.Adam(c.model.parameters(), lr=c.learning_rate)
-
-
-@Configs.calc(Configs.set_seed)
-def set_seed(c: Configs):
-    torch.manual_seed(c.seed)
 
 
 def main():
