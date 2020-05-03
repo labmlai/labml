@@ -28,3 +28,13 @@ def get_modules(configs: BaseConfigs):
             modules[k] = value
 
     return modules
+
+
+def get_device(module: torch.nn.Module):
+    params = module.parameters()
+    try:
+        sample_param = next(params)
+        return sample_param.device
+    except StopIteration:
+        raise RuntimeError(f"Unable to determine"
+                           f" device of {module.__class__.__name__}") from None

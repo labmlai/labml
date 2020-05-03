@@ -4,11 +4,10 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data
 
-from lab import tracker, monit, loop, experiment
+from lab import experiment
 from lab.helpers.pytorch.datasets.mnist import MNISTConfigs
 from lab.helpers.pytorch.device import DeviceConfigs
-from lab.helpers.training_loop import TrainingLoopConfigs
-from lab.utils import pytorch as pytorch_utils
+from lab.helpers.pytorch.train_valid import TrainValidConfigs
 
 
 class Net(nn.Module):
@@ -29,71 +28,27 @@ class Net(nn.Module):
         return self.fc2(x)
 
 
-class Configs(MNISTConfigs, DeviceConfigs, TrainingLoopConfigs):
-    epochs: int = 10
+class SimpleAccuracyFunc:
+    def __call__(self, output: torch.Tensor, target: torch.Tensor) -> int:
+        pred = output.argmax(dim=1)
+        return pred.eq(target).sum().item()
 
-    loop_step = 'loop_step'
-    loop_count = 'loop_count'
+
+class Configs(MNISTConfigs, DeviceConfigs, TrainValidConfigs):
+    epochs: int = 10
 
     is_save_models = True
 
     seed: int = 5
-    train_log_interval: int = 10
-
-    is_log_parameters: bool = True
 
     model: nn.Module
 
     learning_rate: float = 0.01
     momentum: float = 0.5
-    optimizer: optim.SGD
 
     set_seed = 'set_seed'
-
-    def train(self):
-        self.model.train()
-        for i, (data, target) in monit.enum("Train", self.train_loader):
-            data, target = data.to(self.device), target.to(self.device)
-
-            self.optimizer.zero_grad()
-            output = self.model(data)
-            loss = F.cross_entropy(output, target)
-            loss.backward()
-            self.optimizer.step()
-
-            tracker.add(train_loss=loss)
-            loop.add_global_step()
-
-            if i % self.train_log_interval == 0:
-                tracker.save()
-
-    def test(self):
-        self.model.eval()
-        test_loss = 0
-        correct = 0
-        with torch.no_grad():
-            for data, target in monit.iterate("Test", self.valid_loader):
-                data, target = data.to(self.device), target.to(self.device)
-                output = self.model(data)
-                test_loss += F.cross_entropy(output, target, reduction='sum').item()
-                pred = output.argmax(dim=1, keepdim=True)
-                correct += pred.eq(target.view_as(pred)).sum().item()
-
-        tracker.add(test_loss=test_loss / len(self.valid_dataset))
-        tracker.add(accuracy=correct / len(self.valid_dataset))
-
-    def run(self):
-        pytorch_utils.add_model_indicators(self.model)
-
-        tracker.set_queue("train_loss", 20, True)
-        tracker.set_histogram("test_loss", True)
-        tracker.set_histogram("accuracy", True)
-
-        for _ in self.training_loop:
-            self.train()
-            self.test()
-            if self.is_log_parameters:
-                pytorch_utils.store_model_indicators(self.model)
+    loss_func = 'cross_entropy_loss'
+    accuracy_func = 'simple_accuracy'
 
 
 @Configs.calc(Configs.model)
@@ -101,6 +56,16 @@ def model(c: Configs):
     m: Net = Net()
     m.to(c.device)
     return m
+
+
+@Configs.calc(Configs.accuracy_func)
+def simple_accuracy():
+    return SimpleAccuracyFunc()
+
+
+@Configs.calc(Configs.loss_func)
+def cross_entropy_loss():
+    return nn.CrossEntropyLoss()
 
 
 @Configs.calc(Configs.optimizer)
@@ -116,16 +81,6 @@ def adam_optimizer(c: Configs):
 @Configs.calc(Configs.set_seed)
 def set_seed(c: Configs):
     torch.manual_seed(c.seed)
-
-
-@Configs.calc(Configs.loop_count)
-def loop_count(c: Configs):
-    return c.epochs * len(c.train_loader)
-
-
-@Configs.calc(Configs.loop_step)
-def loop_step(c: Configs):
-    return len(c.train_loader)
 
 
 def main():
