@@ -19,7 +19,7 @@
    :maxdepth: 1
    :caption: Tutorials
 
-   tutorials/mnist_classification
+   guide/tutorial
 
 .. toctree::
    :maxdepth: 1
