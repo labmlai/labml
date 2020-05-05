@@ -7,7 +7,7 @@ setuptools.setup(
     name='machine_learning_lab',
     version='0.4.1',
     author="Varuna Jayasiri, Nipun Wijerathne",
-    author_email="vpjayasiri@gmail.com",
+    author_email="vpjayasiri@gmail.com, hnipun@gmail.com",
     description="🧪 Organize Machine Learning Experiments",
     long_description=long_description,
     long_description_content_type="text/x-rst",
