@@ -5,7 +5,7 @@ with open("readme.rst", "r") as f:
 
 setuptools.setup(
     name='machine_learning_lab',
-    version='0.4.0',
+    version='0.4.1',
     author="Varuna Jayasiri, Nipun Wijerathne",
     author_email="vpjayasiri@gmail.com",
     description="🧪 Organize Machine Learning Experiments",
