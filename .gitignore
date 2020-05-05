@@ -9,3 +9,5 @@ temp.ipynb
 .*.swp
 source.json
 *.egg-info/
+dist/
+build/
