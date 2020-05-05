@@ -3,18 +3,17 @@ import setuptools
 with open("readme.md", "r") as f:
     long_description = f.read()
 
-print(setuptools.find_packages())
-
 setuptools.setup(
     name='machine_learning_lab',
-    version='3.0',
-    author="Varuna Jayasiri",
+    version='0.4.0',
+    author="Varuna Jayasiri, Nipun Wijerathne",
     author_email="vpjayasiri@gmail.com",
     description="🧪 Organize Machine Learning Experiments",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/vpj/lab",
-    packages=setuptools.find_packages(exclude=('samples', 'samples.*')),
+    url="https://github.com/lab-ml/lab",
+    packages=setuptools.find_packages(exclude=('test',
+                                               'test.*')),
     install_requires=['gitpython',
                       'pyyaml',
                       'numpy'],

@@ -1,6 +1,8 @@
 gitpython
 pyyaml
 numpy
+
+# These are not automatically installed
 torch
 torchvision
 pandas
