@@ -1,6 +1,6 @@
 import setuptools
 
-with open("lab.rst", "r") as f:
+with open("readme.rst", "r") as f:
     long_description = f.read()
 
 setuptools.setup(
@@ -10,6 +10,7 @@ setuptools.setup(
     author_email="vpjayasiri@gmail.com",
     description="🧪 Organize Machine Learning Experiments",
     long_description=long_description,
+    long_description_content_type="text/x-rst",
     url="https://github.com/lab-ml/lab",
     packages=setuptools.find_packages(exclude=('test',
                                                'test.*')),

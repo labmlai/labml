@@ -9,6 +9,7 @@ Lab is a collection of small tools that work together to
 improve your machine learning workflow.
 
 .. about
+
 We developed lab to speed up our own machine learning workflow,
 and have made it open source for others to use.
 Lab is intentially kept simple and small so that not only us,
@@ -17,6 +18,7 @@ We add new features and make improvements to Lab based on our machine learning
 experience and feedback from other users.
 
 .. who it is for
+
 Lab started as a project to help individuals with their machine learning experiments.
 It has come a long way since then, and from our experience, we believe it can help
 small research groups too.
@@ -40,22 +42,18 @@ All these are maintained automatically in a clean folder structure.
 
 `Dashboard <https://github.com/vpj/lab_dashboard/>`_ is there, when you want to browse past experiemnts visually.
 
-.. raw:: html
-
-    <p align="center">
-      <img style="max-width:100%;"
-       src="https://raw.githubusercontent.com/vpj/lab/master/images/dashboard.png"
-       width="1024" title="Dashboard Screenshot">
-    </p>
+.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/dashboard.png
+   :width: 100%
+   :alt: Dashboard Screenshot
 
 
 Note
 	`Dashboard <https://github.com/vpj/lab_dashboard/>`_ is a reletively new project and is improving very fast.
 	As of now, you can view experiments, launch tensorboard, and delete unwanted experiments.
 
-	We want to let users edit hyper-parameters and run new experiments directly from the dashboard, 
+	We want to let users edit hyper-parameters and run new experiments directly from the dashboard,
 	and do hyper-parameter searches.
-	
+
 	We plan on showing basic visualizations also on the dashboard.
 	We are also playing around with using Jupyter Notebook based analytics.
 
@@ -73,13 +71,9 @@ to a training loop that keeps and a tracker collect data for visualization.
 .. The API of lab uses type hints and it works well with IDEs.
 
 
-.. raw:: html
-
-    <p align="center">
-     <img style="max-width:100%"
-       src="https://raw.githubusercontent.com/vpj/lab/master/images/loop.gif"
-      />
-    </p>
+.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/loop.gif
+   :width: 100%
+   :alt: Dashboard Screenshot
 
 We introduced configurations to lab recently.
 It lets you easily set hyper-parameters,
