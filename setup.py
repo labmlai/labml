@@ -12,6 +12,9 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/lab-ml/lab",
+    project_urls={
+        'Documentation': 'https://lab-ml.com/'
+    },
     packages=setuptools.find_packages(exclude=('test',
                                                'test.*')),
     install_requires=['gitpython',
