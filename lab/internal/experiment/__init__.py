@@ -1,5 +1,5 @@
-import os
 import json
+import os
 import pathlib
 import time
 from typing import Optional, List, Set, Dict, Union
@@ -11,10 +11,9 @@ from lab.internal.configs import Configs, ConfigProcessor
 from lab.internal.experiment.experiment_run import Run
 from lab.internal.lab import lab_singleton
 from lab.internal.logger import logger_singleton as logger_internal
-from lab.internal.logger.writers import sqlite, tensorboard
 from lab.internal.util import is_ipynb
-from lab.utils import get_caller_file
 from lab.logger import Text
+from lab.utils import get_caller_file
 
 
 class CheckpointSaver:
@@ -173,8 +172,10 @@ class Experiment:
             writers = {'sqlite', 'tensorboard'}
 
         if 'sqlite' in writers:
+            from lab.internal.logger.writers import sqlite
             logger_internal().add_writer(sqlite.Writer(self.run.sqlite_path))
         if 'tensorboard' in writers:
+            from lab.internal.logger.writers import tensorboard
             logger_internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
 
         self.checkpoint_saver = None

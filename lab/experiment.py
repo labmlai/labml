@@ -1,15 +1,15 @@
 from pathlib import Path
-from typing import Optional, Set, Dict, List, Union
+from typing import Optional, Set, Dict, List, Union, TYPE_CHECKING
 
 import numpy as np
-import torch
 
 from lab.configs import BaseConfigs
 from lab.internal.experiment import \
     create_experiment as _create_experiment, \
     experiment_singleton as _experiment_singleton
-from lab.internal.experiment.pytorch import add_models as _add__pytorch_models
-from lab.internal.experiment.sklearn import add_models as _add__sklearn_models
+
+if TYPE_CHECKING:
+    import torch
 
 
 def save_checkpoint():
@@ -45,7 +45,7 @@ def create(*,
                        tags=tags)
 
 
-def add_pytorch_models(models: Dict[str, torch.nn.Module]):
+def add_pytorch_models(models: Dict[str, 'torch.nn.Module']):
     """
     Set variables for saving and loading
 
@@ -55,10 +55,11 @@ def add_pytorch_models(models: Dict[str, torch.nn.Module]):
             and loaded with :meth:`lab.experiment.Experiment.start`.
 
     """
-    _add__pytorch_models(models)
+    from lab.internal.experiment.pytorch import add_models as _add_pytorch_models
+    _add_pytorch_models(models)
 
 
-def add_sklearn_models(models: Dict[str, torch.nn.Module]):
+def add_sklearn_models(models: Dict[str, 'torch.nn.Module']):
     """
     Set variables for saving and loading
 
@@ -68,7 +69,8 @@ def add_sklearn_models(models: Dict[str, torch.nn.Module]):
             and loaded with :meth:`lab.experiment.Experiment.start`.
 
     """
-    _add__sklearn_models(models)
+    from lab.internal.experiment.sklearn import add_models as _add_sklearn_models
+    _add_sklearn_models(models)
 
 
 def calculate_configs(
