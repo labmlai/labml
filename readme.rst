@@ -1,3 +1,8 @@
+.. image:: https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png
+   :width: 150
+   :alt: Logo
+   :align: center
+
 Lab
 ===
 

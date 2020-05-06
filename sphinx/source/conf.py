@@ -95,7 +95,8 @@ html_theme_options = {
     # 'logo_only': True,
 }
 
-# html_logo = '_static/img/lab-logo.png'
+html_favicon = '_static/img/lab_icon.png'
+# html_logo = '_static/img/lab_logo.png'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
