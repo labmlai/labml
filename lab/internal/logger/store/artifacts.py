@@ -3,7 +3,11 @@ from collections import OrderedDict
 from typing import Dict, Optional, Any, OrderedDict as OrderedDictType
 from uuid import uuid1
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except (ImportError, ModuleNotFoundError):
+    plt = None
+
 import numpy as np
 
 from lab import logger
@@ -137,6 +141,9 @@ class Image(_Collection):
         return None
 
     def print_all(self, others: Dict[str, Artifact]):
+        if plt is None:
+            logger.log(('matplotlib', logger.Text.highlight),
+                       ' not found. So cannot display impages')
         images = [_to_numpy(v) for v in self._values.values()]
         cols = 3
         fig: plt.Figure

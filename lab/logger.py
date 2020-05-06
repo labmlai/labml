@@ -1,4 +1,4 @@
-from typing import Union, List, Tuple, Optional, overload, Dict
+from typing import Union, List, Tuple, overload, Dict
 
 from lab.internal.util.colors import StyleCode
 
