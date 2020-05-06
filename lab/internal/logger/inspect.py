@@ -41,6 +41,8 @@ class Inspect:
                 self._log_key_value([(i, v) for i, v in enumerate(arg)])
             elif type(arg) == dict:
                 self._log_key_value([(k, v) for k, v in arg.items()])
+            else:
+                self.__logger.log([str(arg)])
         else:
             assert len(kwargs.keys()) == 0
             self._log_key_value([(i, v) for i, v in enumerate(args)], False)
