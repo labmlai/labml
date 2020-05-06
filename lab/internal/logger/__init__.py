@@ -63,7 +63,7 @@ class Logger:
         self.__writers = []
         self.__writers.append(self.__screen_writer)
 
-    def log(self, parts: List[Union[str, Tuple[str, StyleCode]]], *,
+    def log(self, parts: List[Union[str, Tuple[str, Optional[StyleCode]]]], *,
             is_new_line=True):
         self.__destination.log(parts, is_new_line=is_new_line)
 

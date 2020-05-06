@@ -1,4 +1,4 @@
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Optional
 
 from lab.internal.util.colors import StyleCode, ANSI_RESET
 from lab.internal.logger.destinations import Destination
@@ -17,7 +17,7 @@ class ConsoleDestination(Destination):
         else:
             return f"{color.ansi()}{text}{ANSI_RESET}"
 
-    def log(self, parts: List[Union[str, Tuple[str, StyleCode]]], *,
+    def log(self, parts: List[Union[str, Tuple[str, Optional[StyleCode]]]], *,
             is_new_line=True):
         tuple_parts = []
         for p in parts:

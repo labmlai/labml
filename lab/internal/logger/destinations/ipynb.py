@@ -1,4 +1,4 @@
-from typing import List, Union, Tuple, Callable
+from typing import List, Union, Tuple, Callable, Optional
 
 from IPython.core.display import display, HTML
 
@@ -46,7 +46,7 @@ class IpynbDestination(Destination):
 
         return open_tags + text + close_tags
 
-    def log(self, parts: List[Union[str, Tuple[str, StyleCode]]], *,
+    def log(self, parts: List[Union[str, Tuple[str, Optional[StyleCode]]]], *,
             is_new_line=True):
         tuple_parts = []
         for p in parts:

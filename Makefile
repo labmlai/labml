@@ -15,4 +15,7 @@ upload: build
 install:
 	pip install -e .
 
+uninstall:
+	pip uninstall machine_learning_lab
+
 .PHONY: clean build check upload
