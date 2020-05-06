@@ -12,4 +12,7 @@ check: build
 upload: build
 	twine upload dist/*
 
+install:
+	pip install -e .
+
 .PHONY: clean build check upload
