@@ -94,3 +94,8 @@ Any programmer can easily hack our components or write new reusable components t
 
 If you have any feature suggestions, report any bugs or check feature updates, We have created a slack space for Lab. Please use this `URL <https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ/>`_ to login.
 
+Install
+-------
+
+.. code-block:: console
+    pip install machine_learning_lab
