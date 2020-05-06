@@ -13,6 +13,8 @@ def _open_dashboard():
                    ('pip install machine_learning_lab_dashboard', Text.value))
         return
 
+    lab_dashboard.start_server()
+
 
 def main():
     parser = argparse.ArgumentParser(description='Lab CLI')
