@@ -53,14 +53,13 @@ You can use `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse past 
    :alt: Dashboard Screenshot
 
 
-⚠️ Note
-	`Dashboard <https://github.com/vpj/lab_dashboard/>`_ is a reletively new project and is improving very fast.
-	As of now, you can view experiments, launch tensorboard, and delete unwanted experiments.
+📝 Note
+	`Dashboard <https://github.com/vpj/lab_dashboard/>`_ is a reletively new project.
+	You can view experiments, launch tensorboard, and delete unwanted experiments.
 
 	We want to let users edit hyper-parameters and run new experiments directly from the dashboard,
 	and do hyper-parameter searches.
-
-	We plan on showing basic visualizations also on the dashboard.
+	We plan on showing basic visualizations on the dashboard itself.
 	We are also playing around with using Jupyter Notebook based analytics.
 
 
