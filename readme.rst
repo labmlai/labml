@@ -17,8 +17,7 @@ improve your machine learning workflow.
 
 We developed lab to speed-up our own machine learning workflow,
 and have made it open source for others to use.
-Lab is intentially kept simple and small so that not only us,
-but anyone can dig into its codebase.
+Lab is small modular library so anyone can dig into its codebase.
 We add new features and make improvements to Lab based on our machine learning 
 experience and feedback from other users.
 
