@@ -10,43 +10,47 @@ Lab
 `💬 Slack workspace for discussions <https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ/>`_
 
 
-Lab is a collection of small tools that work together to 
-improve your machine learning workflow.
+Lab is a library to improve your machine learning workflow and keep track of experiments.
 
 .. about
 
-We developed lab to speed-up our own machine learning workflow,
-and have made it open source for others to use.
-Lab is small modular library so anyone can dig into its codebase.
-We add new features and make improvements to Lab based on our machine learning 
-experience and feedback from other users.
+We developed lab to speed-up our own machine learning workflow.
+We kept it open source from the beginning.
+Lab is small library (~4,000 lines of code), so anyone can dig into its codebase.
+We make improvements to Lab based on our machine learning experience.
+We also have made a bunch of improvements based feedback from other users.
 
 .. who it is for
 
 Lab started as a project to help individuals with their machine learning experiments.
-It has come a long way since then, and from our experience, we believe it can help
-small research groups too.
+It has come a long way since then, and from our experience,
+it can help small research groups too.
 
-We work actively on this project.
-Since we are using it heavily for our own work,
-we will continue to do so.
-Therefore, Lab will rapidly get better.
-The negative side of it is that we will be forced to make some breaking changes to it.
-However, as the project is getting mature, we believe that breaking changes will be rare.
+.. state
+
+We use lab in every internal project.
+So, we have and will work on Lab actively.
+When improve Lab, we might have to make breaking changes to it.
+But, as the project is getting mature, breaking changes will be rare.
 
 Organize Experiments
 --------------------
 
-Lab keeps track of every detail of the experiemnts:
+Lab keeps track of every detail of the experiments:
 *source code*,
 *configurations*,
 *hyper-parameters*,
 *checkpoints*, 
 *Tensorboard logs* and
 *other statistics*.
-All these are saved automatically in a clean folder structure.
+Lab saves all these automatically in a clean folder structure.
 
-You can use `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse past experiments visually.
+.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/loop.gif
+   :width: 100%
+   :alt: Dashboard Screenshot
+
+
+You can use `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse experiments.
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/dashboard.png
    :width: 100%
@@ -54,42 +58,35 @@ You can use `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse past 
 
 
 📝 Note
-	`Dashboard <https://github.com/vpj/lab_dashboard/>`_ is a reletively new project.
-	You can view experiments, launch tensorboard, and delete unwanted experiments.
+	`Dashboard <https://github.com/vpj/lab_dashboard/>`_ is a new project.
+	With it, you can view experiments, launch TensorBoard, and delete unwanted experiments.
 
-	We want to let users edit hyper-parameters and run new experiments directly from the dashboard,
-	and do hyper-parameter searches.
-	We plan on showing basic visualizations on the dashboard itself.
-	We are also playing around with using Jupyter Notebook based analytics.
+	We want to let users edit hyper-parameters, run new experiments,
+	and do hyper-parameter searches from the dashboard.
+	We plan on showing basic visualizations on the dashboard. 
+	We are also playing around with using Jupyter Notebook for analytics.
 
 
+Write clean reusable code
+-------------------------
 
-Keep source code clean and encourage good coding practices
-----------------------------------------------------------
-
-Lab provides a bunch of utilities to help you keep your source code clean
-by doing most of the overhead work for you.
-This includes a range of utilites,
-from monitored sections that let you split code into sections,
-to a training loop that keeps and a tracker collect data for visualization.
-
+Lab does most of the overhead work for you.
+So you have to write less code.
+Lab also includes utilities such as monitored sections,
+ which lets you break code into sections and make it more readable.
+ 
 .. The API of lab uses type hints and it works well with IDEs.
 
+We introduced configurations module to lab recently.
+Configurations let you set hyper-parameters and other reusable modules.
+Using this, we were able to reuse a lot of code in internal machine learning projects.
 
-.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/loop.gif
-   :width: 100%
-   :alt: Dashboard Screenshot
-
-We introduced configurations to lab recently.
-It lets you easily set hyper-parameters,
-and encourage and assist researchers write reusable modular code.
-It help keep away from bad practices like passing a large monolithic configuration object around,
+Configurations module help keep away from a range of common bad practices.
+For example, passing around a large monolithic configuration object,
 and having a big class that does everything.
-Using the Lab's configurations module, we were able to reuse a lot of code among our machine learning projects
-and significantly improve the maintainability of the code base.
 
-We have ve released some comomnly used configurable components such as ``TrainingLoop`` and ``Datasets``.
-Any programmer can easily hack our components or write new reusable components to suite their requirements.
+We have released some comomnly used configurable components such as ``TrainingLoop`` and ``Datasets``.
+It is very easy to hack our components or write new reusable components.
 
 .. **Screenshot of a MNIST Sample**
 
