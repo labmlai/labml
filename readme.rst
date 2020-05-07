@@ -82,8 +82,8 @@ Configurations let you set hyper-parameters and other reusable modules.
 Using this, we were able to reuse a lot of code in internal machine learning projects.
 
 Configurations module help keep away from a range of common bad practices.
-For example, passing around a large monolithic configuration object,
-and having a big class that does everything.
+`For example, passing around a large monolithic configuration object,
+and having a big class that does everything<https://www.reddit.com/r/MachineLearning/comments/g1vku4/d_antipatterns_in_open_sourced_ml_research_code/>`.
 
 We have released some common configurable components such as ``TrainingLoop`` and ``Datasets``.
 It is very easy to hack our components or write new reusable components.
