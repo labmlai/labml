@@ -53,7 +53,7 @@ You can use `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse past 
    :alt: Dashboard Screenshot
 
 
-Note
+⚠️ Note
 	`Dashboard <https://github.com/vpj/lab_dashboard/>`_ is a reletively new project and is improving very fast.
 	As of now, you can view experiments, launch tensorboard, and delete unwanted experiments.
 
