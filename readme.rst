@@ -27,9 +27,10 @@ Lab started as a project to help individuals with their machine learning experim
 It has come a long way since then, and from our experience, we believe it can help
 small research groups too.
 
-We work actively on this project, and will continue to do so,
-since we are using it heavily for our own work.
-So, Lab will rapidly get better.
+We work actively on this project.
+Since we are using it heavily for our own work,
+we will continue to do so.
+Therefore, Lab will rapidly get better.
 The negative side of it is that we will be forced to make some breaking changes to it.
 However, as the project is getting mature, we believe that breaking changes will be rare.
 
