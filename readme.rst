@@ -37,10 +37,10 @@ Organize Experiments
 --------------------
 
 Lab keeps track of every detail of the experiments:
-`source code<http://lab-ml.com/guide/experiment.html>`_,
-`**configurations**, **hyper-parameters**<http://lab-ml.com/guide/configs.html>`_,
-`**checkpoints**<http://lab-ml.com/guide/experiment.html>`_, 
-`**Tensorboard logs** and **other statistics**<http://lab-ml.com/guide/tracker.html>`_.
+`**source code** <http://lab-ml.com/guide/experiment.html>`_,
+`**configurations**, **hyper-parameters** <http://lab-ml.com/guide/configs.html>`_,
+`**checkpoints** <http://lab-ml.com/guide/experiment.html>`_, 
+`**Tensorboard logs** and **other statistics** <http://lab-ml.com/guide/tracker.html>`_.
 Lab saves all these automatically in a clean folder structure.
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/loop.gif
