@@ -38,14 +38,15 @@ Organize Experiments
 --------------------
 
 Lab keeps track of every detail of the experiemnts:
-source code,
-configurations,
-hyper-parements,
-checkpoints, 
-Tensorboard logs and other statistics.
-All these are maintained automatically in a clean folder structure.
+*source code*,
+*configurations*,
+*hyper-parameters*,
+*checkpoints*, 
+*Tensorboard logs* and
+*other statistics*.
+All these are saved automatically in a clean folder structure.
 
-`Dashboard <https://github.com/vpj/lab_dashboard/>`_ is there, when you want to browse past experiemnts visually.
+You can use `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse past experiments visually.
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/dashboard.png
    :width: 100%
