@@ -15,7 +15,7 @@ improve your machine learning workflow.
 
 .. about
 
-We developed lab to speed up our own machine learning workflow,
+We developed lab to speed-up our own machine learning workflow,
 and have made it open source for others to use.
 Lab is intentially kept simple and small so that not only us,
 but anyone can dig into its codebase.
@@ -97,10 +97,8 @@ Any programmer can easily hack our components or write new reusable components t
 `Slack workspace for discussions <https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ/>`_
 ------------------------------------------------------------------------------------------------------------------------
 
-If you have any feature suggestions, report any bugs or check feature updates, We have created a slack space for Lab. Please use this `URL <https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ/>`_ to login.
-
-Install
--------
+Installation
+------------
 
 .. code-block:: console
 
