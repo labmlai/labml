@@ -37,12 +37,12 @@ Organize Experiments
 --------------------
 
 Lab keeps track of every detail of the experiments:
-*source code*,
-*configurations*,
-*hyper-parameters*,
-*checkpoints*, 
-*Tensorboard logs* and
-*other statistics*.
+**source code**,
+**configurations**,
+**hyper-parameters**,
+**checkpoints**, 
+**Tensorboard logs** and
+**other statistics**.
 Lab saves all these automatically in a clean folder structure.
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/loop.gif
@@ -73,7 +73,7 @@ Write clean reusable code
 Lab does most of the overhead work for you.
 So you have to write less code.
 Lab also includes utilities such as monitored sections,
- which lets you break code into sections and make it more readable.
+which lets you break code into sections and make it more readable.
  
 .. The API of lab uses type hints and it works well with IDEs.
 
@@ -85,7 +85,7 @@ Configurations module help keep away from a range of common bad practices.
 For example, passing around a large monolithic configuration object,
 and having a big class that does everything.
 
-We have released some comomnly used configurable components such as ``TrainingLoop`` and ``Datasets``.
+We have released some common configurable components such as ``TrainingLoop`` and ``Datasets``.
 It is very easy to hack our components or write new reusable components.
 
 .. **Screenshot of a MNIST Sample**
