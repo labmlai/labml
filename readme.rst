@@ -43,7 +43,7 @@ Lab keeps track of every detail of the experiments:
 `Tensorboard logs and other statistics <http://lab-ml.com/guide/tracker.html>`_.
 Lab saves all these automatically in a clean folder structure.
 
-.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/loop.gif
+.. image: https://raw.githubusercontent.com/vpj/lab/master/images/loop.gif
    :width: 100%
    :alt: Logger output
 
@@ -55,7 +55,7 @@ You can use `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse exper
    :alt: Dashboard Screenshot
 
 
-📝 Note
+.. 📝 Note
 	`Dashboard <https://github.com/vpj/lab_dashboard/>`_ is a new project.
 	With it, you can view experiments, launch TensorBoard, and delete unwanted experiments.
 
