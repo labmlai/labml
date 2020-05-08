@@ -9,6 +9,7 @@ Lab
 
 `💬 Slack workspace for discussions <https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ/>`_
 
+`📗 Documentation <http://lab-ml.com/>`_
 
 Lab is a library to improve your machine learning workflow and keep track of experiments.
 
