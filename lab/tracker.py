@@ -164,4 +164,14 @@ def save(*args, **kwargs):
 
 
 def namespace(name: str):
+    r"""
+    Set a namespace for tracking
+    """
     return _internal().store_namespace(name)
+
+
+def reset():
+    r"""
+    Reset indicators, for a new experiment
+    """
+    _internal().reset_store()

@@ -67,6 +67,9 @@ class Logger:
             is_new_line=True):
         self.__destination.log(parts, is_new_line=is_new_line)
 
+    def reset_store(self):
+        self.__store = Store()
+
     def add_indicator(self, indicator: Indicator):
         self.__store.add_indicator(indicator)
 
