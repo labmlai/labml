@@ -45,7 +45,7 @@ Lab saves all these automatically in a clean folder structure.
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/loop.gif
    :width: 100%
-   :alt: Dashboard Screenshot
+   :alt: Logger output
 
 
 You can use `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse experiments.
@@ -85,7 +85,10 @@ Configurations module help keep away from a range of common bad practices.
 We have released some common configurable components such as ``TrainingLoop`` and ``Datasets``.
 It is very easy to hack our components or write new reusable components.
 
-.. **Screenshot of a MNIST Sample**
+.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/full@0.5x.png
+   :width: 100%
+   :alt: Code improvement
+
 
 
 `Slack workspace for discussions <https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ/>`_
