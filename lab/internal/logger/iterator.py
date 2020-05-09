@@ -56,7 +56,8 @@ class Iterator:
             is_silent=self._is_silent,
             is_timed=self._is_timed,
             is_partial=False,
-            total_steps=self._total_steps)
+            total_steps=self._total_steps,
+            is_new_line=True)
         self._iterator = iter(self._iterable)
         self._section.__enter__()
 
