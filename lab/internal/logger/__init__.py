@@ -220,7 +220,8 @@ class Logger:
 
         if len(self.__sections) > 1 and not self.__sections[-2].is_parented:
             self.__sections[-2].make_parent()
-            self.log([])
+            if not self.__sections[-1].is_silent:
+                self.log([])
 
         self.__log_line()
 
@@ -240,7 +241,11 @@ class Logger:
         if len(self.__sections) == 0:
             return
 
-        self.log(self.__sections[-1].log(), is_new_line=False)
+        parts = self.__sections[-1].log()
+        if parts is None:
+            return
+
+        self.log(parts, is_new_line=False)
 
     def section_exit(self, section):
         if len(self.__sections) == 0:

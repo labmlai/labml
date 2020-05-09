@@ -23,7 +23,7 @@ class Section:
                  total_steps: float):
         self._logger = logger
         self._name = name
-        self._is_silent = is_silent
+        self.is_silent = is_silent
         self._is_timed = is_timed
         self._is_partial = is_partial
         self._total_steps = total_steps
@@ -79,7 +79,7 @@ class Section:
         old_progress = self._progress
         self._progress = steps / self._total_steps
 
-        if self._is_silent:
+        if self.is_silent:
             return False
 
         if math.floor(self._progress * 100) != math.floor(old_progress * 100):
@@ -128,7 +128,7 @@ class OuterSection(Section):
             return self._end_time - self._start_time
 
     def log(self):
-        if self._is_silent:
+        if self.is_silent:
             return
 
         if self._state is 'none':
@@ -217,7 +217,7 @@ class LoopingSection(Section):
         return self.get_estimated_time()
 
     def log(self):
-        if self._is_silent:
+        if self.is_silent:
             return []
 
         if self._state == 'none':
