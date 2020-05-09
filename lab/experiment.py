@@ -37,6 +37,12 @@ def create(*,
         tags (Set[str], optional): Set of tags for experiment
 
     """
+    if writers is None:
+        writers = {'sqlite', 'tensorboard'}
+
+    if ignore_callers is None:
+        ignore_callers = {}
+
     _create_experiment(name=name,
                        python_file=python_file,
                        comment=comment,
@@ -75,7 +81,7 @@ def add_sklearn_models(models: Dict[str, 'torch.nn.Module']):
 
 def calculate_configs(
         configs: Optional[BaseConfigs],
-        configs_dict: Dict[str, any] = None,
+        configs_dict: Optional[Dict[str, any]] = None,
         run_order: Optional[List[Union[List[str], str]]] = None):
     r"""
     Calculate configurations
@@ -88,6 +94,9 @@ def calculate_configs(
             configs to be calculated and the order in which they should be
             calculated. If ``None`` all configs will be calculated.
     """
+    if configs_dict is None:
+        configs_dict = {}
+
     _experiment_singleton().calc_configs(configs, configs_dict, run_order)
 
 

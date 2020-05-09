@@ -17,18 +17,18 @@ def get_global_step() -> int:
 
 @overload
 def loop(iterator_: int, *,
-         is_print_iteration_time=True):
+         is_print_iteration_time: bool = True):
     ...
 
 
 @overload
 def loop(iterator_: range, *,
-         is_print_iteration_time=True):
+         is_print_iteration_time: bool = True):
     ...
 
 
 def loop(iterator_: Union[range, int], *,
-         is_print_iteration_time=True):
+         is_print_iteration_time: bool = True):
     """
         This has multiple overloads
 

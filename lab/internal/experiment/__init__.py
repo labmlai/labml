@@ -168,9 +168,6 @@ class Experiment:
 
         logger_internal().reset_writers()
 
-        if writers is None:
-            writers = {'sqlite', 'tensorboard'}
-
         if 'sqlite' in writers:
             from lab.internal.logger.writers import sqlite
             logger_internal().add_writer(sqlite.Writer(self.run.sqlite_path))
@@ -226,10 +223,8 @@ class Experiment:
 
     def calc_configs(self,
                      configs: Optional[Configs],
-                     configs_dict: Dict[str, any] = None,
-                     run_order: Optional[List[Union[List[str], str]]] = None):
-        if configs_dict is None:
-            configs_dict = {}
+                     configs_dict: Dict[str, any],
+                     run_order: Optional[List[Union[List[str], str]]]):
         self.configs_processor = ConfigProcessor(configs, configs_dict)
         self.configs_processor(run_order)
 

@@ -7,7 +7,8 @@ def iterate(name, iterable: Union[Iterable, Sized, int],
             total_steps: Optional[int] = None, *,
             is_silent: bool = False,
             is_timed: bool = True):
-    return _internal().iterate(name, iterable, total_steps, is_silent=is_silent,
+    return _internal().iterate(name, iterable, total_steps,
+                               is_silent=is_silent,
                                is_timed=is_timed)
 
 

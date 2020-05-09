@@ -112,7 +112,7 @@ class Queue(Indicator):
 
 
 class _Collection(Indicator, ABC):
-    def __init__(self, name: str, is_print=False):
+    def __init__(self, name: str, is_print: bool):
         super().__init__(name=name, is_print=is_print)
         self._values = []
 

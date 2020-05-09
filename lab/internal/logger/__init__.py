@@ -129,9 +129,9 @@ class Logger:
             self.log(parts, is_new_line=False)
 
     def iterate(self, name, iterable: Union[typing.Iterable, typing.Sized, int],
-                total_steps: Optional[int] = None, *,
-                is_silent: bool = False,
-                is_timed: bool = True):
+                total_steps: Optional[int], *,
+                is_silent: bool,
+                is_timed: bool):
         return Iterator(logger=self,
                         name=name,
                         iterable=iterable,
@@ -141,8 +141,8 @@ class Logger:
                         is_enumerate=False)
 
     def enum(self, name, iterable: typing.Sized, *,
-             is_silent: bool = False,
-             is_timed: bool = True):
+             is_silent: bool,
+             is_timed: bool):
         return Iterator(logger=self,
                         name=name,
                         iterable=iterable,
@@ -152,11 +152,11 @@ class Logger:
                         is_enumerate=True)
 
     def section(self, name, *,
-                is_silent: bool = False,
-                is_timed: bool = True,
-                is_partial: bool = False,
-                is_new_line: bool = True,
-                total_steps: float = 1.0):
+                is_silent: bool,
+                is_timed: bool,
+                is_partial: bool,
+                is_new_line: bool,
+                total_steps: float):
 
         if self.__is_looping():
             if len(self.__sections) != 0:
@@ -195,7 +195,7 @@ class Logger:
         self.__log_line()
 
     def loop(self, iterator_: range, *,
-             is_print_iteration_time=True):
+             is_print_iteration_time: bool):
         if len(self.__sections) != 0:
             raise RuntimeError("Cannot start a loop within a section")
 
