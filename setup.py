@@ -5,10 +5,10 @@ with open("readme.rst", "r") as f:
 
 setuptools.setup(
     name='machine_learning_lab',
-    version='0.4.3',
+    version='0.4.6',
     author="Varuna Jayasiri, Nipun Wijerathne",
     author_email="vpjayasiri@gmail.com, hnipun@gmail.com",
-    description="🧪 Organize Machine Learning Experiments",
+    description="Organize Machine Learning Experiments",
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/lab-ml/lab",
