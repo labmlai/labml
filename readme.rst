@@ -11,6 +11,8 @@ Lab
 
 `📗 Documentation <http://lab-ml.com/>`_
 
+`📑 Articles <https://medium.com/@labml/>`_
+
 Lab is a library to improve your machine learning workflow and keep track of experiments.
 
 .. about
