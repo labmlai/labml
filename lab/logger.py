@@ -103,10 +103,8 @@ def log(*args, is_new_line: bool = True):
     .. function:: log(messages: List[Union[str, Tuple[str, StyleCode]]], *, is_new_line=True)
         :noindex:
 
-    .. function:: log(*args: Union[str, Tuple[str, StyleCode]], is_new_line: bool = True):
+    .. function:: log(*args: Union[str, Tuple[str, StyleCode]], is_new_line: bool = True)
         :noindex:
-    ...
-
 
     Arguments:
         message (str): string to be printed
