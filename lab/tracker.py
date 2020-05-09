@@ -78,7 +78,7 @@ def add(*args, **kwargs):
     elif len(args) == 1:
         assert not kwargs
         assert isinstance(args[0], dict)
-        _add_dict(**args[0])
+        _add_dict(args[0])
     elif len(args) == 2:
         assert not kwargs
         assert isinstance(args[0], str)
