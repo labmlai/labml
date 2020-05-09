@@ -31,12 +31,13 @@ def create(*,
         python_file (str, optional): path of the Python file that
             created the experiment
         comment (str, optional): a short description of the experiment
-        writers (Set[str], optional): list of writers to write stat to
+        writers (Set[str], optional): list of writers to write stat to.
+            Defaults to ``{'tensorboard', 'sqlite'}``.
         ignore_callers: (Set[str], optional): list of files to ignore when
             automatically determining ``python_file``
         tags (Set[str], optional): Set of tags for experiment
-
     """
+
     if writers is None:
         writers = {'sqlite', 'tensorboard'}
 
@@ -57,23 +58,26 @@ def add_pytorch_models(models: Dict[str, 'torch.nn.Module']):
 
     Arguments:
         models (Dict[str, torch.nn.Module]): a dictionary of torch modules
-            used in the experiment. These will be saved with :func:`lab.logger.save_checkpoint`
-            and loaded with :meth:`lab.experiment.Experiment.start`.
-
+            used in the experiment.
+            These will be saved with :func:`lab.experiment.save_checkpoint`
+            and loaded with :func:`lab.experiment.load`.
     """
+
     from lab.internal.experiment.pytorch import add_models as _add_pytorch_models
     _add_pytorch_models(models)
 
 
-def add_sklearn_models(models: Dict[str, 'torch.nn.Module']):
+def add_sklearn_models(models: Dict[str, any]):
     """
+    .. warning::
+        This is still experimental.
+
     Set variables for saving and loading
 
     Arguments:
-        models (Dict[str, torch.nn.Module]): a dictionary of torch modules
-            used in the experiment. These will be saved with :func:`lab.logger.save_checkpoint`
-            and loaded with :meth:`lab.experiment.Experiment.start`.
-
+        models (Dict[str, any]): a dictionary of SKLearn models
+            These will be saved with :func:`lab.experiment.save_checkpoint`
+            and loaded with :func:`lab.experiment.load`.
     """
     from lab.internal.experiment.sklearn import add_models as _add_sklearn_models
     _add_sklearn_models(models)
@@ -102,7 +106,7 @@ def calculate_configs(
 
 def start():
     r"""
-    Start the experiment.
+    Starts the experiment.
     """
     _experiment_singleton().start()
 
@@ -110,7 +114,7 @@ def start():
 def load(run_uuid: str,
          checkpoint: Optional[int] = None):
     r"""
-    Start the experiment from a previous checkpoint.
+    Loads and starts the experiment from a previous checkpoint.
 
     Keyword Arguments:
         run_uuid (str): if provided the experiment will start from
@@ -122,9 +126,8 @@ def load(run_uuid: str,
 
 
 def save_numpy(name: str, array: np.ndarray):
-    """
-    Save a single numpy array.
-    This is used to save processed data
+    r"""
+    Saves a single numpy array. This is used to save processed data.
     """
     numpy_path = Path(_experiment_singleton().run.numpy_path)
 
