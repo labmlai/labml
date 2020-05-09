@@ -103,10 +103,17 @@ def log(*args, is_new_line: bool = True):
     .. function:: log(messages: List[Union[str, Tuple[str, StyleCode]]], *, is_new_line=True)
         :noindex:
 
+    .. function:: log(*args: Union[str, Tuple[str, StyleCode]], is_new_line: bool = True):
+        :noindex:
+    ...
+
+
     Arguments:
         message (str): string to be printed
         color (StyleCode): color/style of the message
         colors (List[StyleCode]): list of colors/styles for the message
+        args (Union[str, Tuple[str, StyleCode]]): list of messages
+            Each element should be either a string or a tuple of string and styles.
         messages (List[Union[str, Tuple[str, StyleCode]]]): a list of messages.
             Each element should be either a string or a tuple of string and styles.
 
