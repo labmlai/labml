@@ -68,8 +68,8 @@ You can use `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse exper
 	We are also playing around with using Jupyter Notebook for analytics.
 
 
-Write clean reusable code
--------------------------
+Improve code quality
+--------------------
 
 Lab does most of the overhead work for you.
 So you have to write less code.
@@ -80,9 +80,10 @@ which lets you break code into sections and make it more readable.
 
 We introduced configurations module to lab recently.
 Configurations let you set hyper-parameters and other reusable modules.
-Using this, we were able to reuse a lot of code in internal machine learning projects.
+Using this API, we were able to reuse a lot of code in
+internal machine learning projects.
 
-Configurations module help keep away from a range of common bad practices.
+Configurations module helps to stay away from a range of common bad practices.
 `For example, passing around a large monolithic configuration object, and having a big class that does everything <https://www.reddit.com/r/MachineLearning/comments/g1vku4/d_antipatterns_in_open_sourced_ml_research_code/>`_.
 
 We have released some common configurable components such as ``TrainingLoop`` and ``Datasets``.
