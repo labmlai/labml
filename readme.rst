@@ -90,11 +90,6 @@ It is very easy to hack our components or write new reusable components.
    :width: 100%
    :alt: Code improvement
 
-
-
-`Slack workspace for discussions <https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ/>`_
-------------------------------------------------------------------------------------------------------------------------
-
 Installation
 ------------
 
