@@ -89,6 +89,8 @@ Configurations module helps to stay away from a range of common bad practices.
 We have released some common configurable components such as ``TrainingLoop`` and ``Datasets``.
 It is very easy to hack our components or write new reusable components.
 
+Here's how you can write a MNIST classifier with reusable components.
+
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/full@0.5x.png
    :width: 100%
    :alt: Code improvement
