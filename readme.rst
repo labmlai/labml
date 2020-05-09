@@ -51,7 +51,7 @@ Lab saves all these automatically in a clean folder structure.
 
 You can use `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse experiments.
 
-.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/dashboard.png
+.. image:: https://raw.githubusercontent.com/lab-ml/dashboard/master/images/screenshots/dashboard_table.png
    :width: 100%
    :alt: Dashboard Screenshot
 
