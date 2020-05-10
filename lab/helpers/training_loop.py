@@ -50,7 +50,10 @@ class TrainingLoop:
             logger.log("Saving model...")
             experiment.save_checkpoint()
 
-    def __is_interval(self, global_step, interval):
+    def is_interval(self, interval: int, global_step: Optional[int] = None):
+        if global_step is None:
+            global_step = loop.get_global_step()
+
         if global_step - self.__loop_step < 0:
             return False
 
@@ -75,13 +78,13 @@ class TrainingLoop:
 
         loop.set_global_step(global_step)
 
-        if self.__is_interval(global_step, self.__log_write_interval):
+        if self.is_interval(self.__log_write_interval, global_step):
             tracker.save()
-        if self.__is_interval(global_step, self.__log_new_line_interval):
+        if self.is_interval(self.__log_new_line_interval, global_step):
             logger.log()
 
         if (self.__is_save_models and
-                self.__is_interval(global_step, self.__save_models_interval)):
+                self.is_interval(self.__save_models_interval), global_step):
             experiment.save_checkpoint()
 
         return global_step
