@@ -107,7 +107,7 @@ Installation
 Citing Lab
 ----------
 
-If you use Lab for academic research, please cite the repository using the following BibTeX entry. You should update the commit field with the commit your publication uses.
+If you use Lab for academic research, please cite the library using the following BibTeX entry.
 
 .. code-block:: bibtex
 
