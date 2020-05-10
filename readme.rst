@@ -15,30 +15,7 @@ Lab
 
 `👨‍🏫 Samples <https://github.com/lab-ml/samples>`_
 
-Lab is a library to improve your machine learning workflow and keep track of experiments.
-
-.. about
-
-We developed lab to speed-up our own machine learning workflow.
-We kept it open source from the beginning.
-Lab is small library (~4,000 lines of code), so anyone can dig into its codebase.
-We make improvements to Lab based on our machine learning experience.
-We also have made a bunch of improvements based feedback from other users.
-
-.. who it is for
-
-Lab started as a project to help individuals with their machine learning experiments.
-It has come a long way since then, and from our experience,
-it can help small research groups too.
-
-.. state
-
-We use lab in every internal project.
-So, we have and will work on Lab actively.
-When improve Lab, we might have to make breaking changes to it.
-But, as the project is getting mature, breaking changes will be rare.
-
-.. Organize Experiments
+Lab is a library to track PyTorch experiments.
 
 Lab keeps track of every detail of the experiments:
 `source code <http://lab-ml.com/guide/experiment.html>`_,
