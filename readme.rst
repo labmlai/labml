@@ -6,15 +6,6 @@
 Lab
 ===
 
-
-`💬 Slack workspace for discussions <https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ/>`_
-
-`📗 Documentation <http://lab-ml.com/>`_
-
-`📑 Articles & Tutorials <https://medium.com/@labml/>`_
-
-`👨‍🏫 Samples <https://github.com/lab-ml/samples>`_
-
 Lab is a library to track PyTorch experiments.
 
 Lab keeps track of every detail of the experiments:
@@ -28,22 +19,12 @@ Lab saves all these automatically in a clean folder structure.
    :width: 100%
    :alt: Logger output
 
-
-You can use `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse experiments.
+Lab comes with a `Dashboard <https://github.com/vpj/lab_dashboard/>`_ to browse experiments.
 
 .. image:: https://raw.githubusercontent.com/lab-ml/dashboard/master/images/screenshots/dashboard_table.png
    :width: 100%
    :alt: Dashboard Screenshot
 
-
-.. 📝 Note
-	`Dashboard <https://github.com/vpj/lab_dashboard/>`_ is a new project.
-	With it, you can view experiments, launch TensorBoard, and delete unwanted experiments.
-
-	We want to let users edit hyper-parameters, run new experiments,
-	and do hyper-parameter searches from the dashboard.
-	We plan on showing basic visualizations on the dashboard. 
-	We are also playing around with using Jupyter Notebook for analytics.
 
 Installation
 ------------
@@ -51,6 +32,18 @@ Installation
 .. code-block:: console
 
     pip install machine_learning_lab
+
+Links
+-----
+
+`💬 Slack workspace for discussions <https://join.slack.com/t/labforml/shared_invite/zt-cg5iui5u-4cJPT7DUwRGqup9z8RHwhQ/>`_
+
+`📗 Documentation <http://lab-ml.com/>`_
+
+`📑 Articles & Tutorials <https://medium.com/@labml/>`_
+
+`👨‍🏫 Samples <https://github.com/lab-ml/samples>`_
+
 
 Citing Lab
 ----------
