@@ -84,7 +84,7 @@ class TrainingLoop:
             logger.log()
 
         if (self.__is_save_models and
-                self.is_interval(self.__save_models_interval), global_step):
+                self.is_interval(self.__save_models_interval, global_step)):
             experiment.save_checkpoint()
 
         return global_step
