@@ -103,3 +103,18 @@ Installation
 .. code-block:: console
 
     pip install machine_learning_lab
+
+Citing Lab
+----------
+
+If you use Lab for academic research, please cite the repository using the following BibTeX entry. You should update the commit field with the commit your publication uses.
+
+.. code-block:: bibtex
+
+	@misc{lab,
+	 author = {Varuna Jayasiri, Nipun Wijerathne},
+	 title = {Lab: A library to organize machine learning experiments},
+	 year = {2020},
+	 url = {https://lab-ml.com/},
+	}
+
