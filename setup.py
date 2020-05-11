@@ -4,7 +4,7 @@ with open("readme.rst", "r") as f:
     long_description = f.read()
 
 setuptools.setup(
-    name='machine_learning_lab',
+    name='labml',
     version='0.4.6',
     author="Varuna Jayasiri, Nipun Wijerathne",
     author_email="vpjayasiri@gmail.com, hnipun@gmail.com",
