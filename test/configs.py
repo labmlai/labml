@@ -1,6 +1,7 @@
 from typing import List
 
-from labml.internal.configs import Configs, ConfigProcessor
+from labml.internal.configs.base import Configs
+from labml.internal.configs.processor import ConfigProcessor
 
 
 class SampleModel:
@@ -61,5 +62,6 @@ configs = Sample()
 
 processor = ConfigProcessor(configs)
 processor()
+processor.print()
 
 print(configs.__dict__)

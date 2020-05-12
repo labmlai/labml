@@ -7,7 +7,7 @@ from ... import logger
 from ... import monit
 
 if TYPE_CHECKING:
-    from . import Configs, ConfigFunction
+    from .base import Configs
 
 
 class Calculator:

@@ -1,6 +1,5 @@
 import warnings
 from collections import OrderedDict
-from enum import Enum
 from typing import List, Dict, Type, OrderedDict as OrderedDictType, Set
 from typing import TYPE_CHECKING
 
@@ -8,7 +7,7 @@ from .config_function import ConfigFunction
 from .config_item import ConfigItem
 
 if TYPE_CHECKING:
-    from . import Configs
+    from .base import Configs
 
 RESERVED = {'calc', 'list', 'set_hyperparams', 'aggregate'}
 _STANDARD_TYPES = {int, str, bool, Dict, List}

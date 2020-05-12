@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from .config_item import ConfigItem
 
 if TYPE_CHECKING:
-    from . import Configs
+    from .base import Configs
 
 
 class DependencyParser(ast.NodeVisitor):

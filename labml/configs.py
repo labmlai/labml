@@ -1,4 +1,4 @@
-from labml.internal.configs import Configs as _Configs
+from labml.internal.configs.base import Configs as _Configs
 
 
 class BaseConfigs(_Configs):

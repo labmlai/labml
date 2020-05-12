@@ -7,7 +7,8 @@ from typing import Optional, List, Set, Dict, Union
 import git
 
 from labml import logger, monit
-from labml.internal.configs import Configs, ConfigProcessor
+from labml.internal.configs.base import Configs
+from labml.internal.configs.processor import ConfigProcessor
 from labml.internal.experiment.experiment_run import Run
 from labml.internal.lab import lab_singleton
 from labml.internal.logger import logger_singleton as logger_internal
