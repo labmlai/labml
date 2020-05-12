@@ -4,6 +4,7 @@ from typing import Dict, Optional, List, Union
 from labml import logger
 from labml.internal import util
 from labml.internal.configs.base import Configs
+from labml.internal.configs.utils import Value
 from labml.logger import Text
 
 from .calculator import Calculator
@@ -26,45 +27,6 @@ class ConfigProcessor:
     def __call__(self, run_order: Optional[List[Union[List[str], str]]] = None):
         self.calculator(run_order)
 
-    @staticmethod
-    def __is_primitive(value):
-        if value is None:
-            return True
-
-        if type(value) == str:
-            return True
-
-        if type(value) == int:
-            return True
-
-        if type(value) == bool:
-            return True
-
-        if type(value) == list and all([ConfigProcessor.__is_primitive(v) for v in value]):
-            return True
-
-        if type(value) == dict and all([ConfigProcessor.__is_primitive(v) for v in value.values()]):
-            return True
-
-        return False
-
-    @staticmethod
-    def __to_yaml(value):
-        if ConfigProcessor.__is_primitive(value):
-            return value
-        else:
-            return ConfigProcessor.__to_str(value)
-
-    @staticmethod
-    def __to_str(value):
-        if str(value) == ConfigProcessor.__default_repr(value):
-            if value.__class__.__module__ == '__main__':
-                return value.__class__.__name__
-            else:
-                return f"{value.__class__.__module__}.{value.__class__.__name__}"
-        else:
-            return str(value)
-
     def save(self, configs_path: PurePath):
         orders = {k: i for i, k in enumerate(self.calculator.topological_order)}
         configs = {}
@@ -72,24 +34,16 @@ class ConfigProcessor:
             configs[k] = {
                 'name': k,
                 'type': str(v),
-                'value': self.__to_yaml(self.parser.values.get(k, None)),
+                'value': Value.to_yaml(self.parser.values.get(k, None)),
                 'order': orders.get(k, -1),
                 'options': list(self.parser.options.get(k, {}).keys()),
-                'computed': self.__to_yaml(getattr(self.calculator.configs, k, None)),
+                'computed': Value.to_yaml(getattr(self.calculator.configs, k, None)),
                 'is_hyperparam': self.parser.hyperparams.get(k, None),
                 'is_explicitly_specified': (k in self.parser.explicitly_specified)
             }
 
         with open(str(configs_path), "w") as file:
             file.write(util.yaml_dump(configs))
-
-    @staticmethod
-    def __default_repr(value):
-        return '<%s.%s object at %s>' % (
-            value.__class__.__module__,
-            value.__class__.__name__,
-            hex(id(value))
-        )
 
     def get_hyperparams(self):
         order = self.calculator.topological_order.copy()
@@ -103,7 +57,7 @@ class ConfigProcessor:
                     value = self.parser.values[key]
 
                 if type(value) not in {int, float, str}:
-                    value = ConfigProcessor.__to_str(value)
+                    value = Value.to_str(value)
 
                 hyperparams[key] = value
 
@@ -134,7 +88,7 @@ class ConfigProcessor:
             other_options = []
 
         if value is not None:
-            value_str = ConfigProcessor.__to_str(value)
+            value_str = Value.to_str(value)
 
             value_str = value_str.replace('\n', '')
             if len(value_str) < _CONFIG_PRINT_LEN:
