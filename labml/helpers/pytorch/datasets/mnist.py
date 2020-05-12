@@ -1,13 +1,12 @@
-import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
-import labml
+from labml import lab
 from labml.configs import BaseConfigs
 
 
 def _dataset(is_train, transform):
-    return datasets.MNIST(str(labml.get_data_path()),
+    return datasets.MNIST(str(lab.get_data_path()),
                           train=is_train,
                           download=True,
                           transform=transform)
