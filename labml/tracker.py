@@ -3,6 +3,18 @@ from typing import Dict, overload, Optional
 from labml.internal.logger import logger_singleton as _internal
 
 
+def set_global_step(global_step: Optional[int]):
+    _internal().set_global_step(global_step)
+
+
+def add_global_step(increment_global_step: int = 1):
+    _internal().add_global_step(int(increment_global_step))
+
+
+def get_global_step() -> int:
+    return _internal().global_step
+
+
 def set_queue(name: str, queue_size: int = 10, is_print: bool = False):
     from labml.internal.logger.store.indicators import Queue
     _internal().add_indicator(Queue(name, queue_size, is_print))

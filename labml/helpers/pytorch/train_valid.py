@@ -71,7 +71,7 @@ class Trainer:
                 self.optimizer.step()
 
             if self.is_increment_global_step:
-                loop.add_global_step(len(target))
+                tracker.add_global_step(len(target))
 
             if self.log_interval is not None and (i + 1) % self.log_interval == 0:
                 tracker.save()

@@ -3,18 +3,6 @@ from typing import Union, Optional, overload
 from labml.internal.logger import logger_singleton as _internal
 
 
-def set_global_step(global_step: Optional[int]):
-    _internal().set_global_step(global_step)
-
-
-def add_global_step(increment_global_step: int = 1):
-    _internal().add_global_step(int(increment_global_step))
-
-
-def get_global_step() -> int:
-    return _internal().global_step
-
-
 @overload
 def loop(iterator_: int, *,
          is_print_iteration_time: bool = True):

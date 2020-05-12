@@ -29,7 +29,7 @@ class TrainingLoop:
         self.__is_loop_on_interrupt = is_loop_on_interrupt
 
     def __iter__(self):
-        self.__loop = loop.loop(range(loop.get_global_step(),
+        self.__loop = loop.loop(range(tracker.get_global_step(),
                                       self.__loop_count,
                                       self.__loop_step))
         iter(self.__loop)
@@ -52,7 +52,7 @@ class TrainingLoop:
 
     def is_interval(self, interval: int, global_step: Optional[int] = None):
         if global_step is None:
-            global_step = loop.get_global_step()
+            global_step = tracker.get_global_step()
 
         if global_step - self.__loop_step < 0:
             return False
@@ -76,7 +76,7 @@ class TrainingLoop:
             self.__finish()
             raise e
 
-        loop.set_global_step(global_step)
+        tracker.set_global_step(global_step)
 
         if self.is_interval(self.__log_write_interval, global_step):
             tracker.save()
