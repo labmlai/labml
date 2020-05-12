@@ -46,7 +46,7 @@ class Lab:
     def __get_config(configs):
         config = dict(
             path=None,
-            check_repo_dirty=True,
+            check_repo_dirty=False,
             is_log_python_file=True,
             config_file_path=None,
             data_path='data',
