@@ -19,7 +19,7 @@ install:  ## Install from repo
 	pip install -e .
 
 uninstall: ## Uninstall
-	pip uninstall machine_learning_lab
+	pip uninstall labml
 
 help: ## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'

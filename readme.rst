@@ -31,7 +31,7 @@ Installation
 
 .. code-block:: console
 
-    pip install machine_learning_lab
+    pip install labml
 
 Links
 -----

@@ -5,13 +5,13 @@ with open("readme.rst", "r") as f:
 
 setuptools.setup(
     name='labml',
-    version='0.4.6',
+    version='0.4.7',
     author="Varuna Jayasiri, Nipun Wijerathne",
     author_email="vpjayasiri@gmail.com, hnipun@gmail.com",
     description="Organize Machine Learning Experiments",
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    url="https://github.com/lab-ml/lab",
+    url="https://github.com/lab-ml/labml",
     project_urls={
         'Documentation': 'https://lab-ml.com/'
     },
@@ -21,7 +21,7 @@ setuptools.setup(
                       'pyyaml',
                       'numpy'],
     entry_points={
-        'console_scripts': ['lab=lab.cli:main'],
+        'console_scripts': ['labml=labml.cli:main'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
