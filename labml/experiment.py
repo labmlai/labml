@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Set, Dict, List, Union, TYPE_CHECKING
+from typing import Optional, Set, Dict, List, Union, TYPE_CHECKING, overload
 
 import numpy as np
 
@@ -83,25 +83,121 @@ def add_sklearn_models(models: Dict[str, any]):
     _add_sklearn_models(models)
 
 
-def calculate_configs(
-        configs: Optional[BaseConfigs],
-        configs_dict: Optional[Dict[str, any]] = None,
-        run_order: Optional[List[Union[List[str], str]]] = None):
+@overload
+def calculate_configs(configs_dict: Dict[str, any]):
+    ...
+
+
+@overload
+def calculate_configs(configs_dict: Dict[str, any], configs_override: Dict[str, any]):
+    ...
+
+
+@overload
+def calculate_configs(configs: BaseConfigs):
+    ...
+
+
+@overload
+def calculate_configs(configs: BaseConfigs, run_order: List[Union[List[str], str]]):
+    ...
+
+
+@overload
+def calculate_configs(configs: BaseConfigs, *run_order: str):
+    ...
+
+
+@overload
+def calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any]):
+    ...
+
+
+@overload
+def calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any],
+                      run_order: List[Union[List[str], str]]):
+    ...
+
+
+@overload
+def calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any],
+                      *run_order: str):
+    ...
+
+
+def calculate_configs(*args):
     r"""
     Calculate configurations
 
+    This has multiple overloads
+
+    .. function:: calculate_configs(configs_dict: Dict[str, any])
+        :noindex:
+
+    .. function:: calculate_configs(configs_dict: Dict[str, any], configs_override: Dict[str, any])
+        :noindex:
+
+    .. function:: calculate_configs(configs: BaseConfigs)
+        :noindex:
+
+    .. function:: calculate_configs(configs: BaseConfigs, run_order: List[Union[List[str], str]])
+        :noindex:
+
+    .. function:: calculate_configs(configs: BaseConfigs, *run_order: str)
+        :noindex:
+
+    .. function:: calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any])
+        :noindex:
+
+    .. function:: calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any], run_order: List[Union[List[str], str]])
+        :noindex:
+
+    .. function:: calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any], *run_order: str)
+        :noindex:
+
     Arguments:
-        configs (Configs, optional): configurations object
-        configs_dict (Dict[str, any], optional): a dictionary of
+        configs (BaseConfigs, optional): configurations object
+        configs_dict (Dict[str, any], optional): a dictionary of configs
+        configs_override (Dict[str, any], optional): a dictionary of
             configs to be overridden
         run_order (List[Union[str, List[str]]], optional): list of
             configs to be calculated and the order in which they should be
-            calculated. If ``None`` all configs will be calculated.
+            calculated. If not provided all configs will be calculated.
     """
-    if configs_dict is None:
-        configs_dict = {}
+    configs_override: Optional[Dict[str, any]] = None
+    run_order: Optional[List[Union[List[str], str]]] = None
+    idx = 1
 
-    _experiment_singleton().calc_configs(configs, configs_dict, run_order)
+    if isinstance(args[0], BaseConfigs):
+        if idx < len(args) and isinstance(args[idx], dict):
+            configs_override = args[idx]
+            idx += 1
+
+        if idx < len(args) and isinstance(args[idx], list):
+            run_order = args[idx]
+            if len(args) != idx + 1:
+                raise RuntimeError("Invalid call to calculate configs")
+            _experiment_singleton().calc_configs(args[0], configs_override, run_order)
+        else:
+            if idx == len(args):
+                _experiment_singleton().calc_configs(args[0], configs_override, run_order)
+            else:
+                run_order = list(args[idx:])
+                for key in run_order:
+                    if not isinstance(key, str):
+                        raise RuntimeError("Invalid call to calculate configs")
+                _experiment_singleton().calc_configs(args[0], configs_override, run_order)
+    elif isinstance(args[0], dict):
+        if idx < len(args) and isinstance(args[idx], dict):
+            configs_override = args[idx]
+            idx += 1
+
+        if idx != len(args):
+            raise RuntimeError("Invalid call to calculate configs")
+
+        _experiment_singleton().calc_configs_dict(args[0], configs_override)
+    else:
+        raise RuntimeError("Invalid call to calculate configs")
 
 
 def start():

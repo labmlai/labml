@@ -9,6 +9,7 @@ import git
 from labml import logger, monit
 from labml.internal.configs.base import Configs
 from labml.internal.configs.processor import ConfigProcessor
+from labml.internal.configs.processor_dict import ConfigProcessorDict
 from labml.internal.experiment.experiment_run import Run
 from labml.internal.lab import lab_singleton
 from labml.internal.logger import logger_singleton as logger_internal
@@ -223,11 +224,19 @@ class Experiment:
             self.checkpoint_saver.save(logger_internal().global_step)
 
     def calc_configs(self,
-                     configs: Optional[Configs],
-                     configs_dict: Dict[str, any],
+                     configs: Configs,
+                     configs_override: Optional[Dict[str, any]],
                      run_order: Optional[List[Union[List[str], str]]]):
-        self.configs_processor = ConfigProcessor(configs, configs_dict)
+        self.configs_processor = ConfigProcessor(configs, configs_override)
         self.configs_processor(run_order)
+
+        logger.log()
+
+    def calc_configs_dict(self,
+                          configs: Dict[str, any],
+                          configs_override: Optional[Dict[str, any]]):
+        self.configs_processor = ConfigProcessorDict(configs, configs_override)
+        self.configs_processor()
 
         logger.log()
 
