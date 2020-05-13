@@ -1,5 +1,4 @@
-import labml
-from labml.internal import util
+from labml.internal import util, lab
 from labml.internal.experiment import experiment_run
 
 
@@ -54,7 +53,7 @@ class Analyzer:
 
     @staticmethod
     def __get_run_info(experiment_name: str, run_uuid: str):
-        experiment_path = labml.get_experiments_path() / experiment_name
+        experiment_path = lab.get_experiments_path() / experiment_name
 
         run_path = experiment_path / run_uuid
         run_info_path = run_path / 'run.yaml'
