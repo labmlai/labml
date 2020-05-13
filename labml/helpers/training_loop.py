@@ -1,7 +1,7 @@
 import signal
 from typing import Optional, Tuple, Any
 
-from labml import loop, tracker, logger, experiment
+from labml import tracker, logger, experiment, monit
 from labml.configs import BaseConfigs
 from labml.internal.logger import Loop
 from labml.logger import Text
@@ -29,9 +29,9 @@ class TrainingLoop:
         self.__is_loop_on_interrupt = is_loop_on_interrupt
 
     def __iter__(self):
-        self.__loop = loop.loop(range(tracker.get_global_step(),
-                                      self.__loop_count,
-                                      self.__loop_step))
+        self.__loop = monit.loop(range(tracker.get_global_step(),
+                                       self.__loop_count,
+                                       self.__loop_step))
         iter(self.__loop)
         try:
             self.old_handler = signal.signal(signal.SIGINT, self.__handler)
@@ -65,7 +65,7 @@ class TrainingLoop:
     def __next__(self):
         if self.__signal_received is not None:
             logger.log('\nKilling Loop.', Text.danger)
-            loop.finish_loop()
+            monit.finish_loop()
             self.__finish()
             raise StopIteration("SIGINT")
 

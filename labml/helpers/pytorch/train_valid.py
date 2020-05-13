@@ -1,13 +1,12 @@
 from typing import Optional, Callable
 
+import labml.utils.pytorch as pytorch_utils
 import torch.optim
 import torch.utils.data
-from torch import nn
-
-import labml.utils.pytorch as pytorch_utils
-from labml import tracker, monit, loop
+from labml import tracker, monit
 from labml.helpers.training_loop import TrainingLoopConfigs
 from labml.utils.pytorch import get_device
+from torch import nn
 
 
 class Trainer:
