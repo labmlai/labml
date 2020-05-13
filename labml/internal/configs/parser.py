@@ -11,7 +11,7 @@ from .config_item import ConfigItem
 if TYPE_CHECKING:
     from .base import Configs
 
-RESERVED = {'calc', 'list', 'set_hyperparams', 'aggregate'}
+RESERVED = {'calc', 'list', 'set_hyperparams', 'aggregate', 'calc_wrap'}
 _STANDARD_TYPES = {int, str, bool, Dict, List}
 
 

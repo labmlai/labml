@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Type, Optional
+from typing import TYPE_CHECKING, Type, Optional, Callable
 
 if TYPE_CHECKING:
     from .base import Configs
@@ -30,3 +30,6 @@ class ConfigItem:
 
     def calc(self, option: Optional[str] = None):
         return self._configs_class.calc(self, option)
+
+    def __call__(self, func: Callable):
+        return self._configs_class.calc_wrap(func, self)

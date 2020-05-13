@@ -117,6 +117,14 @@ class Configs:
         return wrapper
 
     @classmethod
+    def calc_wrap(cls, func: Callable,
+                  name: ConfigItem,
+                  option: Optional[str] = None):
+        cls._add_config_function(func, name, option, is_append=False)
+
+        return func
+
+    @classmethod
     def calc(cls, name: Union[ConfigItem, List[ConfigItem]] = None,
              option: Optional[str] = None):
         r"""
