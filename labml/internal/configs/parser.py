@@ -3,6 +3,8 @@ from collections import OrderedDict
 from typing import List, Dict, Type, OrderedDict as OrderedDictType, Set
 from typing import TYPE_CHECKING
 
+from labml.internal.configs.eval_function import EvalFunction
+
 from .config_function import ConfigFunction
 from .config_item import ConfigItem
 
@@ -50,7 +52,7 @@ def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
 class Parser:
     config_items: Dict[str, ConfigItem]
     options: Dict[str, OrderedDictType[str, ConfigFunction]]
-    evals: Dict[str, OrderedDictType[str, ConfigFunction]]
+    evals: Dict[str, OrderedDictType[str, EvalFunction]]
     types: Dict[str, Type]
     values: Dict[str, any]
     list_appends: Dict[str, List[ConfigFunction]]
@@ -176,13 +178,11 @@ class Parser:
 
             self.options[k][v.option_name] = v
 
-    def __collect_evaluator(self, k, v: ConfigFunction):
-        assert not v.is_append
-
+    def __collect_evaluator(self, k, v: EvalFunction):
         if k not in self.evals:
             self.evals[k] = OrderedDict()
 
-        self.evals[k][v.option_name] = v
+        self.evals[k]['default'] = v
 
     def __calculate_missing_values(self):
         for k in self.types:

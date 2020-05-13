@@ -2,6 +2,8 @@ from typing import List, Dict, Type, Set, Optional, \
     OrderedDict as OrderedDictType, Union, Any, Tuple
 from typing import TYPE_CHECKING
 
+from labml.internal.configs.eval_function import EvalFunction
+
 from .config_function import ConfigFunction
 from ... import logger
 from ... import monit
@@ -11,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class Calculator:
-    evals: Dict[str, OrderedDictType[str, ConfigFunction]]
+    evals: Dict[str, OrderedDictType[str, EvalFunction]]
     options: Dict[str, OrderedDictType[str, ConfigFunction]]
     types: Dict[str, Type]
     values: Dict[str, any]
@@ -29,7 +31,7 @@ class Calculator:
     def __init__(self, *,
                  configs: 'Configs',
                  options: Dict[str, OrderedDictType[str, ConfigFunction]],
-                 evals: Dict[str, OrderedDictType[str, ConfigFunction]],
+                 evals: Dict[str, OrderedDictType[str, EvalFunction]],
                  types: Dict[str, Type],
                  values: Dict[str, any],
                  list_appends: Dict[str, List[ConfigFunction]],

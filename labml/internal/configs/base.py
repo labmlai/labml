@@ -1,6 +1,7 @@
 from typing import Dict, List, Callable, Union, Tuple
 
 from labml.internal import util
+from labml.internal.configs.eval_function import EvalFunction
 
 from .config_function import ConfigFunction
 from .config_item import ConfigItem
@@ -15,13 +16,15 @@ def _is_class_method(func: Callable):
 
     spec: inspect.Signature = inspect.signature(func)
     params: List[inspect.Parameter] = list(spec.parameters.values())
-    if len(params) != 1:
-        return False
+    if len(params) == 0:
+        raise RuntimeError('Can only have methods in a config class', func)
     p = params[0]
     if p.kind != p.POSITIONAL_OR_KEYWORD:
-        return False
+        raise RuntimeError('Can only have methods in a config class', func)
+    if p.name != 'self':
+        raise RuntimeError('Can only have methods in a config class', func)
 
-    return p.name == 'self'
+    return True
 
 
 class Configs:
@@ -30,7 +33,7 @@ class Configs:
     """
 
     _calculators: Dict[str, List[ConfigFunction]] = {}
-    _evaluators: Dict[str, List[ConfigFunction]] = {}
+    _evaluators: Dict[str, List[EvalFunction]] = {}
 
     def __init_subclass__(cls, **kwargs):
         configs = {}
@@ -91,11 +94,8 @@ class Configs:
         if PropertyKeys.evaluators not in cls.__dict__:
             cls._evaluators = {}
 
-        calc = ConfigFunction(func,
-                              config_names=name,
-                              option_name=option,
-                              is_append=False,
-                              check_string_names=False)
+        calc = EvalFunction(func,
+                            config_name=name)
 
         if name not in cls._evaluators:
             cls._evaluators[name] = []
