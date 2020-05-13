@@ -64,8 +64,7 @@ class TrainingLoop:
 
     def __next__(self):
         if self.__signal_received is not None:
-            logger.log('\nKilling Loop.',
-                       color=Text.danger)
+            logger.log('\nKilling Loop.', Text.danger)
             loop.finish_loop()
             self.__finish()
             raise StopIteration("SIGINT")
@@ -92,16 +91,14 @@ class TrainingLoop:
     def __handler(self, sig, frame):
         # Pass second interrupt without delaying
         if self.__signal_received is not None:
-            logger.log('\nSIGINT received twice. Stopping...',
-                       color=Text.danger)
+            logger.log('\nSIGINT received twice. Stopping...', Text.danger)
             self.old_handler(*self.__signal_received)
             return
 
         if self.__is_loop_on_interrupt:
             # Store the interrupt signal for later
             self.__signal_received = (sig, frame)
-            logger.log('\nSIGINT received. Delaying KeyboardInterrupt.',
-                       color=Text.danger)
+            logger.log('\nSIGINT received. Delaying KeyboardInterrupt.', Text.danger)
         else:
             self.__finish()
             logger.log('Killing loop...', Text.danger)
