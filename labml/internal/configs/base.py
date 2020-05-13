@@ -1,4 +1,4 @@
-from typing import Dict, List, Callable, Union, Tuple
+from typing import Dict, List, Callable, Union, Tuple, Optional
 
 from labml.internal import util
 from labml.internal.configs.eval_function import EvalFunction
@@ -42,9 +42,11 @@ class Configs:
             if not Parser.is_valid(k):
                 continue
 
-            configs[k] = ConfigItem(k,
-                                    True, v,
-                                    k in cls.__dict__, cls.__dict__.get(k, None))
+            configs[k] = ConfigItem(key=k,
+                                    configs_class=cls,
+                                    has_annotation=True, annotation=v,
+                                    has_value=k in cls.__dict__,
+                                    value=cls.__dict__.get(k, None))
 
         evals = []
         for k, v in cls.__dict__.items():
@@ -55,9 +57,11 @@ class Configs:
                 evals.append((k, v))
                 continue
 
-            configs[k] = ConfigItem(k,
-                                    k in cls.__annotations__, cls.__annotations__.get(k, None),
-                                    True, v)
+            configs[k] = ConfigItem(key=k,
+                                    configs_class=cls,
+                                    has_annotation=k in cls.__annotations__,
+                                    annotation=cls.__annotations__.get(k, None),
+                                    has_value=True, value=v)
 
         for e in evals:
             cls._add_eval_function(e[1], e[0], 'default')
@@ -102,9 +106,19 @@ class Configs:
         cls._evaluators[name].append(calc)
 
     @classmethod
+    def _calc(cls, name: Union[ConfigItem, List[ConfigItem]] = None,
+              option: Optional[str] = None, *,
+              is_append: bool = False):
+        def wrapper(func: Callable):
+            cls._add_config_function(func, name, option, is_append=is_append)
+
+            return func
+
+        return wrapper
+
+    @classmethod
     def calc(cls, name: Union[ConfigItem, List[ConfigItem]] = None,
-             option: str = None, *,
-             is_append: bool = False):
+             option: Optional[str] = None):
         r"""
         Use this as a decorator to register configuration options.
 
@@ -117,16 +131,11 @@ class Configs:
                 function name.
         """
 
-        def wrapper(func: Callable):
-            cls._add_config_function(func, name, option, is_append=is_append)
-
-            return func
-
-        return wrapper
+        return cls._calc(name, option, is_append=False)
 
     @classmethod
     def list(cls, name: str = None):
-        return cls.calc(name, f"_{util.random_string()}", is_append=True)
+        return cls._calc(name, f"_{util.random_string()}", is_append=True)
 
     @classmethod
     def set_hyperparams(cls, *args: ConfigItem, is_hyperparam=True):
