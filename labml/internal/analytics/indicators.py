@@ -63,12 +63,12 @@ class IndicatorCollection:
     def __dir__(self):
         return self._indicators_list
 
-    def __getattr__(self, k):
+    def __getattr__(self, k: str):
         key = self._indicator_keys[k]
         inds = []
         for ind in self._indicators:
             if ind.key == key:
-                inds.append(inds)
+                inds.append(ind)
 
         return IndicatorCollection(inds)
 

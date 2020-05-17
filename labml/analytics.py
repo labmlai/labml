@@ -42,7 +42,8 @@ def set_preferred_db(db: str):
 def get_data(indicators: IndicatorCollection):
     data = {}
     for i, ind in enumerate(indicators):
-        data[ind.key] = _cache.get_indicator_data(ind)
+        d = _cache.get_indicator_data(ind)
+        data[ind.key] = d[:, [0, 5]]
 
     return data
 
