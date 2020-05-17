@@ -45,7 +45,7 @@ def get_sqlite_data(indicator: Indicator):
 
     sqlite: SQLiteAnalytics = _SQLITE[indicator.uuid]
 
-    if indicator.class_ == IndicatorClass.histogram:
+    if indicator.class_ in [IndicatorClass.histogram, IndicatorClass.queue]:
         key = f"{indicator.key}.mean"
     else:
         key = indicator.key
@@ -65,7 +65,7 @@ def set_preferred_db(db: str):
 
 
 def get_indicator_data(indicator: Indicator):
-    if _PREFERRED_DB == 'sqlite':
+    if _PREFERRED_DB == 'tensorboard':
         data = get_tensorboard_data(indicator)
         if data is None:
             data = get_sqlite_data(indicator)
