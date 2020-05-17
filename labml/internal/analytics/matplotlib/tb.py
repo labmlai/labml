@@ -1,11 +1,7 @@
-from typing import List, Union
+from typing import List
 
 import numpy as np
 import tensorflow as tf
-from matplotlib.axes import Axes
-
-from ..tensorboard import TensorBoardAnalytics
-from ..matplotlib import MatPlotLibAnalytics
 
 
 class MatPlotLibTensorBoardAnalytics:
