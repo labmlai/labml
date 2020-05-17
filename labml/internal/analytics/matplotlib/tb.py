@@ -8,21 +8,7 @@ from ..tensorboard import TensorBoardAnalytics
 from ..matplotlib import MatPlotLibAnalytics
 
 
-class MatPlotLibTensorBoardAnalytics(TensorBoardAnalytics, MatPlotLibAnalytics):
-    def render_scalar(self, name, ax: Axes, color, *, levels=5, line_width=1, alpha=0.6):
-        data = self.summarize_scalars(self.tensor(name))
-        self.render_density(ax, data, color, name,
-                            levels=levels,
-                            line_width=line_width,
-                            alpha=alpha)
-
-    def render_histogram(self, name, ax: Axes, color, *, levels=5, line_width=1, alpha=0.6):
-        data = self.summarize_compressed_histogram(self.tensor(name))
-        self.render_density(ax, data, color, name,
-                            levels=levels,
-                            line_width=line_width,
-                            alpha=alpha)
-
+class MatPlotLibTensorBoardAnalytics:
     @staticmethod
     def render_matrix(matrix, ax, color):
         from matplotlib.patches import Rectangle
@@ -64,9 +50,7 @@ class MatPlotLibTensorBoardAnalytics(TensorBoardAnalytics, MatPlotLibAnalytics):
 
         return x_ticks[0], x_ticks[-1], y_ticks[0], y_ticks[-1]
 
-    def render_tensors(self, tensors: Union[str, List[any]], axes: np.ndarray, color):
-        if type(tensors) == str:
-            tensors = self.tensor(tensors)
+    def render_tensors(self, tensors: List[any], axes: np.ndarray, color):
         assert len(axes.shape) == 2
         assert axes.shape[0] * axes.shape[1] == len(tensors)
         x_min = x_max = y_min = y_max = 0
