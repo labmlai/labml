@@ -15,6 +15,9 @@ class Writer:
               artifacts: Dict[str, Artifact]):
         raise NotImplementedError()
 
+    def flush(self):
+        pass
+
     def write_h_parameters(self, hparams: Dict[str, any]):
         pass
 

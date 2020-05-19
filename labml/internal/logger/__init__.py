@@ -208,6 +208,8 @@ class Logger:
             raise RuntimeError("Cannot be within a section when finishing the loop")
         self.__last_global_step = self.global_step
         self.__loop = None
+        for w in self.__writers:
+            w.flush()
 
     def section_enter(self, section):
         if len(self.__sections) == 0:

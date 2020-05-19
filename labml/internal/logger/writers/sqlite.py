@@ -1,4 +1,5 @@
 import sqlite3
+import time
 from pathlib import PurePath
 from typing import Dict, Optional
 
@@ -15,6 +16,9 @@ class Writer(WriteBase):
 
         self.sqlite_path = sqlite_path
         self.conn = None
+        self.scalars_cache = []
+        self.indexed_scalars_cache = []
+        self.last_committed = time.time()
 
     def __connect(self):
         if self.conn is not None:
@@ -62,4 +66,11 @@ class Writer(WriteBase):
                     f"INSERT INTO indexed_scalars VALUES (?, ?, ?, ?)",
                     data)
 
+        t = time.time()
+        if t - self.last_committed > 0.1:
+            self.last_committed = t
+            self.flush()
+
+    def flush(self):
+        assert self.conn is not None
         self.conn.commit()
