@@ -110,6 +110,7 @@ class AltairDensity:
 
         detail = self._render_density(table,
                                       name=name,
+                                      x_name='Step',
                                       line_color=line_color,
                                       range_color=range_color,
                                       levels=levels,
@@ -153,8 +154,8 @@ class AltairDensity:
         details = None
         for i, t in enumerate(tables):
             detail = self._render_density(t,
-                                          name=names[i],
-                                          x_name='step',
+                                          name=names[i] if len(names) == 1 else '',
+                                          x_name='Step',
                                           line_color=TABLEAU_10[i],
                                           range_color=TABLEAU_10[i],
                                           levels=levels,
@@ -168,7 +169,27 @@ class AltairDensity:
             else:
                 details += detail
 
+        colors = alt.Data(values=[{'idx': i, 'name': name} for i, name in enumerate(names)])
+        legend = alt.Chart(colors).mark_rect().encode(
+            alt.Y('name:N',
+                  sort=alt.EncodingSortField(field='i', order='ascending'),
+                  axis=alt.Axis(
+                      orient='right',
+                      titleX=7,
+                      titleY=-2,
+                      titleAlign='left',
+                      titleAngle=0
+                  ),
+                  title=''),
+            alt.Color('idx:O',
+                      scale=alt.Scale(domain=list(range(len(tables))),
+                                      range=TABLEAU_10),
+                      legend=None))
+
         minimaps = minimaps.properties(width=width, height=height_minimap)
         details = details.properties(width=width, height=height)
 
-        return details & minimaps
+        if len(names) == 1:
+            return details & minimaps
+        else:
+            return (details & minimaps) | legend

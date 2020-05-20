@@ -52,7 +52,6 @@ class AltairScatter:
                 .encode(x=alt.X('x:Q', scale=x_scale, title=scat_x_title),
                         y=alt.Y('y:Q', scale=y_scale, title=scat_y_title),
                         opacity='step:Q',
-                        #                     size='step:Q',
                         color=alt.value(range_color)
                         ))
 
@@ -61,12 +60,14 @@ class AltairScatter:
 
             x_ticks = base.mark_tick().encode(
                 x=alt.X('x:Q', axis=tick_axis, scale=x_scale, title=x_name),
-                color='step:Q'
+                opacity='step:Q',
+                color=alt.value(range_color)
             )
 
             y_ticks = alt.Chart(table).mark_tick().encode(
                 y=alt.X('y:Q', axis=tick_axis, scale=y_scale, title=name),
-                color='step:Q'
+                opacity='step:Q',
+                color=alt.value(range_color)
             )
 
             scat = scat.properties(width=width, height=height)
