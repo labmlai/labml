@@ -29,7 +29,7 @@ def add():
 
 
 def main():
-    experiment.create()  # writers={'tensorboard'})
+    experiment.create(writers={'sqlite'})
 
     start = time.time()
     setup_and_add()
