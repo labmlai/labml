@@ -16,6 +16,14 @@ def save_checkpoint():
     _experiment_singleton().save_checkpoint()
 
 
+def get_uuid():
+    r"""
+    Returns the UUID of the current experiment run
+    """
+
+    return _experiment_singleton().run.uuid
+
+
 def create(*,
            name: Optional[str] = None,
            python_file: Optional[str] = None,
