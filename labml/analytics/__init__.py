@@ -88,7 +88,7 @@ def scatter(indicators: IndicatorCollection, x: IndicatorCollection, *,
             noise: Optional[Tuple[float, float]] = None,
             height: int = 400, width: int = 800, height_minimap: int = 100):
     r"""
-    Creates a distribution plot distribution with Altair
+    Creates a scatter plot with Altair
 
     Arguments:
         indicators(IndicatorCollection): Set of indicators to be plotted
