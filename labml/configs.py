@@ -12,6 +12,9 @@ class BaseConfigs(_Configs):
 
 
 def option(config_item: any):
+    r"""
+    An alternative to :meth:`BaseConfigs.calc`.
+    """
     assert isinstance(config_item, ConfigItem)
 
     def wrapper(func: Callable):

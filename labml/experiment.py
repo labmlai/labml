@@ -13,6 +13,9 @@ if TYPE_CHECKING:
 
 
 def save_checkpoint():
+    r"""
+    Saves model checkpoints
+    """
     _experiment_singleton().save_checkpoint()
 
 

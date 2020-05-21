@@ -11,7 +11,7 @@ ALTAIR_SCATTER = _AltairScatter()
 
 class IndicatorCollection(_IndicatorCollection):
     r"""
-    You can get a indicator collection with `:meth:runs`.
+    You can get a indicator collection with :func:`runs`.
 
     >>> from labml import analytics
     >>> indicators = analytics.runs('1d3f855874d811eabb9359457a24edc8')
