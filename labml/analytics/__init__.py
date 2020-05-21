@@ -3,10 +3,28 @@ from typing import Tuple, Optional
 from labml.internal.analytics import cache as _cache
 from labml.internal.analytics.altair.density import AltairDensity as _AltairDensity
 from labml.internal.analytics.altair.scatter import AltairScatter as _AltairScatter
-from labml.internal.analytics.indicators import IndicatorCollection
+from labml.internal.analytics.indicators import IndicatorCollection as _IndicatorCollection
 
 ALTAIR_DENSITY = _AltairDensity()
 ALTAIR_SCATTER = _AltairScatter()
+
+
+class IndicatorCollection(_IndicatorCollection):
+    r"""
+    You can get a indicator collection with `:meth:runs`.
+
+    >>> from labml import analytics
+    >>> indicators = analytics.runs('1d3f855874d811eabb9359457a24edc8')
+
+    You can reference individual indicators as attributes.
+
+    >>> train_loss = indicators.train_loss
+
+    You can add multiple indicator collections
+
+    >>> losses = indicators.train_loss + indicators.validation_loss
+    """
+    pass
 
 
 def runs(*uuids: str):
