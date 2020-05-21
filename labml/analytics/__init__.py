@@ -18,10 +18,6 @@ def runs(*uuids: str):
         uuids (str): UUIDs of the runs. You can
             get this from `dashboard <https://github.com/lab-ml/lab_dashboard>`_
 
-    Attributes:
-        tb (AltairTensorBoardAnalytics or MatPlotLibTensorBoardAnalytics): analytics
-            based on Tensorboard logs
-
     Example:
         >>> from labml import analytics
         >>> indicators = analytics.runs('1d3f855874d811eabb9359457a24edc8')
@@ -109,7 +105,7 @@ def scatter(indicators: IndicatorCollection, x: IndicatorCollection, *,
     Example:
         >>> from labml import analytics
         >>> indicators = analytics.runs('1d3f855874d811eabb9359457a24edc8')
-        >>> analytics.distribution(indicators)
+        >>> analytics.scatter(indicators.validation_loss, indicators.train_loss)
     """
 
     datas = []
