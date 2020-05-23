@@ -29,7 +29,7 @@ def get_tensorboard_data(indicator: Indicator):
         return None
 
     tensor = tb.tensor(indicator.key)
-    if indicator.class_ == IndicatorClass.histogram:
+    if indicator.class_ in [IndicatorClass.histogram, IndicatorClass.queue]:
         data = tb.summarize_compressed_histogram(tensor)
     else:
         data = tb.summarize_scalars(tensor)
