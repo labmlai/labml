@@ -1,4 +1,4 @@
-from typing import List, Callable, overload, Union
+from typing import List, Callable, overload, Union, Tuple
 
 from labml.internal.configs.base import Configs as _Configs
 from labml.internal.configs.config_item import ConfigItem
@@ -10,6 +10,15 @@ class BaseConfigs(_Configs):
     You should sub-class this class to create your own configurations
     """
     pass
+
+
+def _get_config_class(name: any):
+    if isinstance(name, ConfigItem):
+        return name.configs_class
+    elif isinstance(name, list) and len(name) > 0 and isinstance(name[0], ConfigItem):
+        return name[0].config_class
+    else:
+        return None
 
 
 @overload
@@ -64,11 +73,8 @@ def option(name: Union[any, List[any]], *args: any):
         If provided the corresponding calculated configuration items
         will be passed to the function
     """
-    if isinstance(name, ConfigItem):
-        config_class = name.configs_class
-    elif isinstance(name, list) and len(name) > 0 and isinstance(name[0], ConfigItem):
-        config_class = name[0].config_class
-    else:
+    config_class = _get_config_class(name)
+    if config_class is None:
         raise ConfigsError('You need to pass config items to option')
 
     option_name = None
@@ -139,12 +145,9 @@ def calculate(name: any, *args: any):
         will be passed to the function
 
     """
-    if isinstance(name, ConfigItem):
-        config_class = name.configs_class
-    elif isinstance(name, list) and len(name) > 0 and isinstance(name[0], ConfigItem):
-        config_class = name[0].config_class
-    else:
-        raise ConfigsError('You need to pass config items to option')
+    config_class = _get_config_class(name)
+    if config_class is None:
+        raise ConfigsError('You need to pass config items to calculate')
 
     option_name = None
     pass_params = None
@@ -163,3 +166,37 @@ def calculate(name: any, *args: any):
         raise ConfigsError('You need to pass the function that calculates the configs')
 
     return config_class.calc_wrap(func, name, option_name, pass_params)
+
+
+def hyperparams(*args: any, is_hyperparam=True):
+    r"""
+    Identifies configuration as (or not) hyper-parameters
+
+    Arguments:
+        *args: list of configurations
+        is_hyperparam (bool, optional): whether the provided configuration
+            items are hyper-parameters. Defaults to ``True``.
+    """
+
+    for arg in args:
+        config_class = _get_config_class(arg)
+        if config_class is None:
+            raise ConfigsError('You need to pass config items to set hyperparams')
+        config_class.set_hyperparams(arg, is_hyperparam=is_hyperparam)
+
+
+def aggregate(name: any, option_name: str, *args: Tuple[any, any]):
+    r"""
+    Aggregate configs
+
+    Arguments:
+        name: name of the aggregate
+        option_name: aggregate option name
+        *args: list of configs to be aggregated
+    """
+
+    config_class = _get_config_class(name)
+    if config_class is None:
+        raise ConfigsError('You need to pass config item to aggregate')
+
+    config_class.aggregate(name, option_name, *args)

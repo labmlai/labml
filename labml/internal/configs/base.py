@@ -26,10 +26,6 @@ def _is_class_method(func: Callable):
 
 
 class Configs:
-    r"""
-    You should sub-class this class to create your own configurations
-    """
-
     _calculators: Dict[str, List[ConfigFunction]] = {}
     _evaluators: Dict[str, List[EvalFunction]] = {}
 
@@ -135,14 +131,6 @@ class Configs:
 
     @classmethod
     def set_hyperparams(cls, *args: ConfigItem, is_hyperparam=True):
-        r"""
-        Identifies configuration as (or not) hyper-parameters
-
-        Arguments:
-            *args: list of configurations
-            is_hyperparam (bool, optional): whether the provided configuration
-                items are hyper-parameters. Defaults to ``True``.
-        """
         if PropertyKeys.hyperparams not in cls.__dict__:
             cls._hyperparams = {}
 
@@ -150,17 +138,8 @@ class Configs:
             cls._hyperparams[h.key] = is_hyperparam
 
     @classmethod
-    def aggregate(cls, name: Union[ConfigItem, any], option: str,
-                  *args: Tuple[Union[ConfigItem, any], str]):
-        r"""
-        Aggregate configs
-
-        Arguments:
-            name: name of the aggregate
-            option: aggregate option
-            *args: list of options
-        """
-
+    def aggregate(cls, name: ConfigItem, option: str,
+                  *args: Tuple[ConfigItem, any]):
         assert args
 
         if PropertyKeys.aggregates not in cls.__dict__:
