@@ -1,5 +1,3 @@
-from typing import List
-
 from labml.internal.configs.base import Configs
 from labml.internal.configs.processor import ConfigProcessor
 
@@ -22,8 +20,6 @@ class Sample(Configs):
     # get from type annotations
     model_obj: SampleModel
 
-    steps: List[any]
-
 
 class SampleChild(Sample):
     def __init__(self, *, test: int):
@@ -45,17 +41,6 @@ def input_model2(c: Sample):
 @Sample.calc('model')
 def simple_model(c: Sample):
     return c.total_global_steps * 3
-
-
-# When collecting unordered items
-@Sample.list('steps')
-def remove_first():
-    return None
-
-
-@Sample.list('steps')
-def model_step(c: Sample):
-    return c.model
 
 
 configs = Sample()

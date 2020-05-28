@@ -24,7 +24,6 @@ class ConfigFunction:
     dependencies: Set[str]
     config_names: Union[str, List[str]]
     option_name: str
-    is_append: bool
     params: List[inspect.Parameter]
 
     def __get_type(self):
@@ -103,13 +102,10 @@ class ConfigFunction:
     def __init__(self, func, *,
                  config_names: Union[str, ConfigItem, List[ConfigItem], List[str]],
                  option_name: str,
-                 is_append: bool,
                  check_string_names: bool = True):
         self.func = func
         self.check_string_names = check_string_names
         self.config_names = self.__get_config_names(config_names)
-        self.is_append = is_append
-        assert not (self.is_append and type(self.config_names) != str)
         self.option_name = self.__get_option_name(option_name)
 
         self.params = self.__get_params()

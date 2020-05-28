@@ -17,7 +17,6 @@ class Calculator:
     options: Dict[str, OrderedDictType[str, ConfigFunction]]
     types: Dict[str, Type]
     values: Dict[str, any]
-    list_appends: Dict[str, List[ConfigFunction]]
 
     configs: 'Configs'
 
@@ -34,7 +33,6 @@ class Calculator:
                  evals: Dict[str, OrderedDictType[str, EvalFunction]],
                  types: Dict[str, Type],
                  values: Dict[str, any],
-                 list_appends: Dict[str, List[ConfigFunction]],
                  aggregate_parent: Dict[str, str]):
         self.aggregate_parent = aggregate_parent
         self.evals = evals
@@ -42,7 +40,6 @@ class Calculator:
         self.options = options
         self.types = types
         self.values = values
-        self.list_appends = list_appends
 
         self.visited = set()
         self.stack = []
@@ -57,27 +54,14 @@ class Calculator:
                 return value, None
             return None, self.options[key][value]
 
-        if key in self.list_appends:
-            return None, [f for f in self.list_appends[key]]
-
         return self.values[key], None
 
     def __get_dependencies(self, key) -> Set[str]:
-        assert not (key in self.options and key in self.list_appends), \
-            f"{key} in options and appends"
-
         if key in self.options:
             value = self.values[key]
             if value not in self.options[key]:
                 return set()
             return self.options[key][value].dependencies
-
-        if key in self.list_appends:
-            dep = set()
-            for func in self.list_appends[key]:
-                dep = dep.union(func.dependencies)
-
-            return dep
 
         if key in self.evals:
             value = self.values.get(key, None)

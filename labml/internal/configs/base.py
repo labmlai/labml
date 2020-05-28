@@ -73,13 +73,11 @@ class Configs:
     def _add_config_function(cls,
                              func: Callable,
                              name: Union[ConfigItem, List[ConfigItem]],
-                             option: str, *,
-                             is_append: bool
-                             ):
+                             option: str):
         if PropertyKeys.calculators not in cls.__dict__:
             cls._calculators = {}
 
-        calc = ConfigFunction(func, config_names=name, option_name=option, is_append=is_append)
+        calc = ConfigFunction(func, config_names=name, option_name=option)
         if type(calc.config_names) == str:
             config_names = [calc.config_names]
         else:
@@ -107,10 +105,9 @@ class Configs:
 
     @classmethod
     def _calc(cls, name: Union[ConfigItem, List[ConfigItem]] = None,
-              option: Optional[str] = None, *,
-              is_append: bool = False):
+              option: Optional[str] = None):
         def wrapper(func: Callable):
-            cls._add_config_function(func, name, option, is_append=is_append)
+            cls._add_config_function(func, name, option)
 
             return func
 
@@ -120,7 +117,7 @@ class Configs:
     def calc_wrap(cls, func: Callable,
                   name: ConfigItem,
                   option: Optional[str] = None):
-        cls._add_config_function(func, name, option, is_append=False)
+        cls._add_config_function(func, name, option)
 
         return func
 
@@ -139,11 +136,7 @@ class Configs:
                 function name.
         """
 
-        return cls._calc(name, option, is_append=False)
-
-    @classmethod
-    def list(cls, name: str = None):
-        return cls._calc(name, f"_{util.random_string()}", is_append=True)
+        return cls._calc(name, option)
 
     @classmethod
     def set_hyperparams(cls, *args: ConfigItem, is_hyperparam=True):

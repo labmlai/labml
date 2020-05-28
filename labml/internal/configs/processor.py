@@ -21,7 +21,6 @@ class ConfigProcessor:
                                      evals=self.parser.evals,
                                      types=self.parser.types,
                                      values=self.parser.values,
-                                     list_appends=self.parser.list_appends,
                                      aggregate_parent=self.parser.aggregate_parent)
 
     def __call__(self, run_order: Optional[List[Union[List[str], str]]] = None):
@@ -136,10 +135,6 @@ class ConfigProcessor:
 
             if k in ignored:
                 parts = self.__print_config(k, is_ignored=True)
-            elif k in self.parser.list_appends:
-                parts = self.__print_config(k,
-                                            value=computed,
-                                            is_list=True)
             elif k in self.parser.options:
                 v = self.parser.values[k]
                 opts = self.parser.options[k]
