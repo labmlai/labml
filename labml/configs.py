@@ -16,7 +16,7 @@ def _get_config_class(name: any):
     if isinstance(name, ConfigItem):
         return name.configs_class
     elif isinstance(name, list) and len(name) > 0 and isinstance(name[0], ConfigItem):
-        return name[0].config_class
+        return name[0].configs_class
     else:
         return None
 
