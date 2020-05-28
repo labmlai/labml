@@ -1,12 +1,12 @@
 import inspect
 import warnings
 from enum import Enum
-from typing import List, Callable, cast, Set, Union
+from typing import List, Callable, cast, Set, Union, Optional
 from typing import TYPE_CHECKING
 
 from labml.internal.configs.dependency_parser import DependencyParser
-
 from .config_item import ConfigItem
+from ...utils.errors import ConfigsError
 
 if TYPE_CHECKING:
     from .base import Configs
@@ -14,8 +14,9 @@ if TYPE_CHECKING:
 
 class FunctionKind(Enum):
     pass_configs = 'pass_configs'
-    pass_parameters = 'pass_parameters'
+    pass_kwargs = 'pass_kwargs'
     pass_nothing = 'pass_nothing'
+    pass_params = 'pass_params'
 
 
 class ConfigFunction:
@@ -25,6 +26,7 @@ class ConfigFunction:
     config_names: Union[str, List[str]]
     option_name: str
     params: List[inspect.Parameter]
+    pass_params: Optional[List[ConfigItem]]
 
     def __get_type(self):
         key, pos = 0, 0
@@ -37,6 +39,14 @@ class ConfigFunction:
             else:
                 assert False, "Only positional or keyword only arguments should be accepted"
 
+        if self.pass_params is not None:
+            if key > 0:
+                raise ConfigsError('No keyword arguments are supported when passing configs')
+            if pos != len(self.pass_params):
+                raise ConfigsError('Number of argumnents to function should match the number of '
+                                   'configs to be passed')
+            return FunctionKind.pass_params
+
         if pos == 1:
             assert key == 0
             return FunctionKind.pass_configs
@@ -46,7 +56,7 @@ class ConfigFunction:
             warnings.warn("Use configs object, because it's easier to refactor, find usage etc",
                           FutureWarning, stacklevel=4)
             assert pos == 0
-            return FunctionKind.pass_parameters
+            return FunctionKind.pass_kwargs
 
     def __get_dependencies(self):
         if self.kind == FunctionKind.pass_configs:
@@ -54,8 +64,14 @@ class ConfigFunction:
             assert not parser.is_referenced, \
                 f"{self.func.__name__} should only use attributes of configs"
             return parser.required
-        else:
+        elif self.kind == FunctionKind.pass_kwargs:
             return {p.name for p in self.params}
+        elif self.kind == FunctionKind.pass_params:
+            return {p.key for p in self.pass_params}
+        elif self.kind == FunctionKind.pass_nothing:
+            return set()
+        else:
+            assert False
 
     def __get_option_name(self, option_name: str):
         if option_name is not None:
@@ -102,9 +118,11 @@ class ConfigFunction:
     def __init__(self, func, *,
                  config_names: Union[str, ConfigItem, List[ConfigItem], List[str]],
                  option_name: str,
+                 pass_params: Optional[List[ConfigItem]] = None,
                  check_string_names: bool = True):
         self.func = func
         self.check_string_names = check_string_names
+        self.pass_params = pass_params
         self.config_names = self.__get_config_names(config_names)
         self.option_name = self.__get_option_name(option_name)
 
@@ -119,8 +137,13 @@ class ConfigFunction:
                 return self.func(configs)
             else:
                 return self.func()
-        elif self.kind == FunctionKind.pass_parameters:
+        elif self.kind == FunctionKind.pass_kwargs:
             kwargs = {p.name: configs.__getattribute__(p.name) for p in self.params}
             return self.func(**kwargs)
-        else:
+        elif self.kind == FunctionKind.pass_params:
+            args = [configs.__getattribute__(p.key) for p in self.pass_params]
+            return self.func(*args)
+        elif self.kind == FunctionKind.pass_nothing:
             return self.func()
+        else:
+            assert False

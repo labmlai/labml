@@ -17,7 +17,7 @@ class ConfigItem:
         self.value = value
         self.has_annotation = has_annotation
         self.has_value = has_value
-        self._configs_class = configs_class
+        self.configs_class = configs_class
 
     def update(self, k: 'ConfigItem'):
         if k.has_annotation:
@@ -28,8 +28,8 @@ class ConfigItem:
             self.has_value = True
             self.value = k.value
 
-    def calc(self, option: Optional[str] = None):
-        return self._configs_class.calc(self, option)
-
-    def __call__(self, func: Callable):
-        return self._configs_class.calc_wrap(func, self)
+    # def calc(self, option: Optional[str] = None):
+    #     return self.configs_class.calc(self, option)
+    #
+    # def __call__(self, func: Callable):
+    #     return self.configs_class.calc_wrap(func, self)
