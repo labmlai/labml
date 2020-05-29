@@ -90,5 +90,5 @@ class Writer(WriteBase):
             self.flush()
 
     def flush(self):
-        assert self.conn is not None
-        self.conn.commit()
+        if self.conn is not None:
+            self.conn.commit()

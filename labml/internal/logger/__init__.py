@@ -117,7 +117,8 @@ class Logger:
         global_step = self.global_step
 
         for w in self.__writers:
-            self.__store.write(w, global_step)
+            if w != self.__screen_writer:
+                self.__store.write(w, global_step)
         self.__indicators_print = self.__store.write(self.__screen_writer, global_step)
         self.__store.clear()
 
