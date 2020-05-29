@@ -3,18 +3,21 @@ import time
 from pathlib import PurePath
 from typing import Dict, Optional
 
+import numpy as np
+
 from . import Writer as WriteBase
-from labml.internal.logger.store.artifacts import Artifact
-from labml.internal.logger.store.indicators import Indicator
+from ..store.artifacts import Artifact, Tensor
+from ..store.indicators import Indicator
 
 
 class Writer(WriteBase):
     conn: Optional[sqlite3.Connection]
 
-    def __init__(self, sqlite_path: PurePath):
+    def __init__(self, sqlite_path: PurePath, artifacts_path: PurePath):
         super().__init__()
 
         self.sqlite_path = sqlite_path
+        self.artifacts_path = artifacts_path
         self.conn = None
         self.scalars_cache = []
         self.indexed_scalars_cache = []
@@ -31,6 +34,8 @@ class Writer(WriteBase):
                               f"(indicator text, step integer, value real)")
             self.conn.execute(f"CREATE TABLE indexed_scalars "
                               f"(indicator text, step integer, idx integer, value real)")
+            self.conn.execute(f"CREATE TABLE tensors "
+                              f"(indicator text, step integer, filename text)")
 
         except sqlite3.OperationalError:
             print('Scalar table exists')
@@ -65,6 +70,19 @@ class Writer(WriteBase):
                 self.conn.executemany(
                     f"INSERT INTO indexed_scalars VALUES (?, ?, ?, ?)",
                     data)
+
+        for art in artifacts.values():
+            if art.is_empty():
+                continue
+            key = self._parse_key(art.name)
+            if type(art) == Tensor:
+                for k in art.keys():
+                    tensor = art.get_value(k)
+                    filename = f'{key}_{global_step}_{k}.npy'
+                    self.conn.execute(
+                        f"INSERT INTO tensors VALUES (?, ?, ?)",
+                        (key, global_step, filename))
+                    np.save(self.artifacts_path / filename, tensor)
 
         t = time.time()
         if t - self.last_committed > 0.1:

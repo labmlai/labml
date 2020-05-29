@@ -45,6 +45,11 @@ def set_text(name: str, is_print: bool = False):
     _internal().add_artifact(Text(name, is_print))
 
 
+def set_tensor(name: str):
+    from labml.internal.logger.store.artifacts import Tensor
+    _internal().add_artifact(Tensor(name))
+
+
 def set_indexed_text(name: str, title: Optional[str] = None, is_print: bool = False):
     from labml.internal.logger.store.artifacts import IndexedText
     _internal().add_artifact(IndexedText(name, title, is_print))

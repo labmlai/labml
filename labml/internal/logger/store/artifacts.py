@@ -128,6 +128,16 @@ class _Collection(Artifact, ABC):
         return self._values[key]
 
 
+class Tensor(_Collection):
+    def get_print_length(self) -> Optional[int]:
+        return None
+
+    def copy(self, key: str):
+        return Tensor(key, is_print=self.is_print)
+
+    def _collect_value(self, key: str, value):
+        self._values[key] = _to_numpy(value)
+
 class Image(_Collection):
     r"""
     Image artifact

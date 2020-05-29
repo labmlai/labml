@@ -172,7 +172,11 @@ class Experiment:
 
         if 'sqlite' in writers:
             from labml.internal.logger.writers import sqlite
-            logger_internal().add_writer(sqlite.Writer(self.run.sqlite_path))
+            artifacts_folder = pathlib.Path(self.run.artifacts_folder)
+            if not artifacts_folder.exists():
+                artifacts_folder.mkdir(parents=True)
+            logger_internal().add_writer(
+                sqlite.Writer(self.run.sqlite_path, self.run.artifacts_folder))
         if 'tensorboard' in writers:
             from labml.internal.logger.writers import tensorboard
             logger_internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
