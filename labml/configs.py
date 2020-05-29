@@ -60,18 +60,18 @@ def option(name: Union[any, List[any]], *args: any):
         :noindex:
 
     Arguments:
-    name: the configuration item or a list of items.
-        If it is a list of items the function should return
-        tuple.
+        name: the configuration item or a list of items.
+            If it is a list of items the function should return
+            tuple.
 
-    option_name (str, optional): name of the option.
-        If not provided it will be derived from the
-        function name.
+        option_name (str, optional): name of the option.
+            If not provided it will be derived from the
+            function name.
 
-    pass_params (list, optional): list of params to be passed.
-        If not provided the configs object is passed.
-        If provided the corresponding calculated configuration items
-        will be passed to the function
+        pass_params (list, optional): list of params to be passed.
+            If not provided the configs object is passed.
+            If provided the corresponding calculated configuration items
+            will be passed to the function
     """
     config_class = _get_config_class(name)
     if config_class is None:
@@ -129,21 +129,20 @@ def calculate(name: any, *args: any):
         :noindex:
 
     Arguments:
-    name: the configuration item or a list of items.
-        If it is a list of items the function should return
-        tuple.
+        name: the configuration item or a list of items.
+            If it is a list of items the function should return
+            tuple.
 
-    func: the function to calculate the configuration
+        func: the function to calculate the configuration
 
-    option_name (str, optional): name of the option.
-        If not provided it will be derived from the
-        function name.
+        option_name (str, optional): name of the option.
+            If not provided it will be derived from the
+            function name.
 
-    pass_params (list, optional): list of params to be passed.
-        If not provided the configs object is passed.
-        If provided the corresponding calculated configuration items
-        will be passed to the function
-
+        pass_params (list, optional): list of params to be passed.
+            If not provided the configs object is passed.
+            If provided the corresponding calculated configuration items
+            will be passed to the function
     """
     config_class = _get_config_class(name)
     if config_class is None:
