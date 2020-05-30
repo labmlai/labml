@@ -28,7 +28,10 @@ def get_tensorboard_data(indicator: Indicator):
     except:
         return None
 
-    tensor = tb.tensor(indicator.key)
+    try:
+        tensor = tb.tensor(indicator.key)
+    except KeyError:
+        return None
     if indicator.class_ in [IndicatorClass.histogram, IndicatorClass.queue]:
         data = tb.summarize_compressed_histogram(tensor)
     else:

@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Optional
 
 from labml import lab
 from labml.internal import util
@@ -32,6 +32,7 @@ class IndicatorClass(Enum):
     scalar = 'scalar'
     histogram = 'histogram'
     queue = 'queue'
+    tensor = 'tensor'
 
 
 class Indicator:
@@ -108,6 +109,19 @@ class Run:
                 class_ = IndicatorClass.scalar
             elif cn == 'Scalar':
                 class_ = IndicatorClass.scalar
+
+            if class_ is None:
+                continue
+            inds.append(Indicator(k, class_, self.run_info.uuid))
+
+        with open(str(self.run_info.artifacts_path), 'r') as f:
+            artifacts = util.yaml_load(f.read())
+
+        for k, v in artifacts.items():
+            cn = v['class_name']
+            class_ = None
+            if cn == 'Tensor':
+                class_ = IndicatorClass.tensor
 
             if class_ is None:
                 continue
