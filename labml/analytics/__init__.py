@@ -2,12 +2,9 @@ from typing import Tuple, Optional, List
 
 import numpy as np
 from labml.internal.analytics import cache as _cache
-from labml.internal.analytics.altair.density import AltairDensity as _AltairDensity
-from labml.internal.analytics.altair.scatter import AltairScatter as _AltairScatter
+from labml.internal.analytics.altair import density as _density
+from labml.internal.analytics.altair import scatter as _scatter
 from labml.internal.analytics.indicators import IndicatorCollection as _IndicatorCollection
-
-_ALTAIR_DENSITY = _AltairDensity()
-_ALTAIR_SCATTER = _AltairScatter()
 
 
 class IndicatorCollection(_IndicatorCollection):
@@ -111,7 +108,7 @@ def distribution(indicators: IndicatorCollection, *,
     if not series:
         raise ValueError("No series found")
 
-    return _ALTAIR_DENSITY.render_density_minimap_multiple(
+    return _density.render_density_minimap_multiple(
         series,
         names=names,
         levels=levels,
@@ -153,7 +150,7 @@ def scatter(indicators: IndicatorCollection, x: IndicatorCollection, *,
     if not series:
         raise ValueError("No series found")
 
-    return _ALTAIR_SCATTER.scatter(
+    return _scatter.scatter(
         series, x_series[0],
         names=names,
         x_name=x_names[0],
