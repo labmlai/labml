@@ -1,7 +1,8 @@
 from pathlib import PurePath
 
 import numpy as np
-from labml.internal.analytics.indicators import IndicatorClass, Indicator, Run
+
+from labml.internal.analytics.indicators import IndicatorClass, Indicator, Run, IndicatorCollection
 from labml.internal.analytics.sqlite import SQLiteAnalytics
 from labml.internal.analytics.tensorboard import TensorBoardAnalytics
 
@@ -100,7 +101,7 @@ def _get_numpy_array(path: PurePath):
     return _NUMPY_ARRAYS[path]
 
 
-def get_artifact_data(indicator: Indicator):
+def get_artifact_files(indicator: Indicator):
     run = get_run(indicator.uuid)
 
     if indicator.uuid not in _SQLITE:
@@ -116,6 +117,53 @@ def get_artifact_data(indicator: Indicator):
     if not data:
         return None
 
+    return data
+
+
+def get_artifact_data(indicator: Indicator):
+    data = get_artifact_files(indicator)
+    if data is None:
+        return data
+
+    run = get_run(indicator.uuid)
     data = [(c[0], _get_numpy_array(run.run_info.artifacts_folder / c[1])) for c in data]
 
     return data
+
+
+def get_artifacts_data(indicators: IndicatorCollection, limit: int = 100):
+    series = []
+    names = []
+    series_inds = []
+    for i, ind in enumerate(indicators):
+        d = get_artifact_files(ind)
+        if d is not None:
+            series.append(d)
+            series_inds.append(ind)
+            names.append(ind.key)
+
+    steps = {}
+    step_lookups = []
+    for s in series:
+        lookup = {}
+        for i, c in enumerate(s):
+            steps[c[0]] = steps.get(c[0], 0) + 1
+            lookup[c[0]] = i
+        step_lookups.append(lookup)
+
+    steps = [k for k, v in steps.items() if v == len(series)]
+    steps = sorted(steps)
+    interval = max(1, len(steps) // limit)
+    offset = (len(steps) - 1) % interval
+
+    data_series = []
+    for si, s in enumerate(series):
+        run = get_run(series_inds[si].uuid)
+        data = []
+        for i in range(offset, len(steps), interval):
+            step = steps[i]
+            filename = s[step_lookups[si][step]][1]
+            data.append((step, _get_numpy_array(run.run_info.artifacts_folder / filename)))
+        data_series.append(data)
+
+    return data_series, names

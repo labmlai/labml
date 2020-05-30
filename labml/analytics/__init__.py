@@ -1,6 +1,7 @@
 from typing import Tuple, Optional, List
 
 import numpy as np
+
 from labml.internal.analytics import cache as _cache
 from labml.internal.analytics.altair import density as _density
 from labml.internal.analytics.altair import scatter as _scatter
@@ -183,18 +184,6 @@ def indicator_data(indicators: IndicatorCollection) -> Tuple[List[np.ndarray], L
     return series, names
 
 
-def _get_artifacts(indicators: IndicatorCollection):
-    series = []
-    names = []
-    for i, ind in enumerate(indicators):
-        d = _cache.get_artifact_data(ind)
-        if d is not None:
-            series.append(d)
-            names.append(ind.key)
-
-    return series, names
-
-
 def artifact_data(indicators: IndicatorCollection) -> Tuple[List[any], List[str]]:
     r"""
     Returns a tuple of a list of series and a list of names of series.
@@ -210,7 +199,7 @@ def artifact_data(indicators: IndicatorCollection) -> Tuple[List[any], List[str]
         >>> analytics.artifact_data(indicators)
     """
 
-    series, names = _get_artifacts(indicators)
+    series, names = _cache.get_artifacts_data(indicators)
 
     if not series:
         raise ValueError("No series found")
