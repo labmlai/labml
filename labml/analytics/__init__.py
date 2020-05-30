@@ -5,8 +5,8 @@ from labml.internal.analytics.altair.density import AltairDensity as _AltairDens
 from labml.internal.analytics.altair.scatter import AltairScatter as _AltairScatter
 from labml.internal.analytics.indicators import IndicatorCollection as _IndicatorCollection
 
-ALTAIR_DENSITY = _AltairDensity()
-ALTAIR_SCATTER = _AltairScatter()
+_ALTAIR_DENSITY = _AltairDensity()
+_ALTAIR_SCATTER = _AltairScatter()
 
 
 class IndicatorCollection(_IndicatorCollection):
@@ -62,6 +62,18 @@ def get_data(indicators: IndicatorCollection):
     return data
 
 
+def _get_series(indicators: IndicatorCollection):
+    series = []
+    names = []
+    for i, ind in enumerate(indicators):
+        d = _cache.get_indicator_data(ind)
+        if d is not None:
+            series.append(d)
+            names.append(ind.key)
+
+    return series, names
+
+
 def distribution(indicators: IndicatorCollection, *,
                  levels: int = 5, alpha: int = 0.6,
                  height: int = 400, width: int = 800, height_minimap: int = 100):
@@ -86,14 +98,13 @@ def distribution(indicators: IndicatorCollection, *,
         >>> analytics.distribution(indicators)
     """
 
-    datas = []
-    names = []
-    for i, ind in enumerate(indicators):
-        datas.append(_cache.get_indicator_data(ind))
-        names.append(ind.key)
+    series, names = _get_series(indicators)
 
-    return ALTAIR_DENSITY.render_density_minimap_multiple(
-        datas,
+    if not series:
+        raise ValueError("No series found")
+
+    return _ALTAIR_DENSITY.render_density_minimap_multiple(
+        series,
         names=names,
         levels=levels,
         alpha=alpha,
@@ -126,22 +137,16 @@ def scatter(indicators: IndicatorCollection, x: IndicatorCollection, *,
         >>> analytics.scatter(indicators.validation_loss, indicators.train_loss)
     """
 
-    datas = []
-    names = []
-    x_datas = []
-    x_names = []
+    series, names = _get_series(indicators)
+    x_series, x_names = _get_series(x)
 
-    for i, ind in enumerate(indicators):
-        datas.append(_cache.get_indicator_data(ind))
-        names.append(ind.key)
-    for i, ind in enumerate(x):
-        x_datas.append(_cache.get_indicator_data(ind))
-        x_names.append(ind.key)
+    if len(x_series) != 1:
+        raise ValueError("There should be exactly one series for x-axis")
+    if not series:
+        raise ValueError("No series found")
 
-    assert len(x_datas) == 1
-
-    return ALTAIR_SCATTER.scatter(
-        datas, x_datas[0],
+    return _ALTAIR_SCATTER.scatter(
+        series, x_series[0],
         names=names,
         x_name=x_names[0],
         width=width,

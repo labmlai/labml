@@ -2,6 +2,7 @@ from typing import List
 
 import numpy as np
 import tensorflow as tf
+from tensorboard.backend.event_processing.directory_watcher import DirectoryDeletedError
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 from tensorboard.plugins.distribution import compressor
 
@@ -13,7 +14,10 @@ class TensorBoardAnalytics(Analytics):
         self.event_acc = EventAccumulator(str(log_path), size_guidance={'tensors': 1000})
 
     def load(self):
-        self.event_acc.Reload()
+        try:
+            self.event_acc.Reload()
+        except DirectoryDeletedError:
+            raise FileNotFoundError()
 
     def tensor(self, name) -> List[Event]:
         name = name.replace('.', '/')

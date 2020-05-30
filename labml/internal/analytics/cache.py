@@ -25,7 +25,7 @@ def get_tensorboard_data(indicator: Indicator):
     tb: TensorBoardAnalytics = _TENSORBOARD[indicator.uuid]
     try:
         tb.load()
-    except:
+    except FileNotFoundError:
         return None
 
     try:
@@ -54,6 +54,9 @@ def get_sqlite_data(indicator: Indicator):
         key = indicator.key
 
     data = sqlite.scalar(key)
+    if not data:
+        return None
+
     data = sqlite.summarize_scalars(data)
 
     return data
