@@ -1,5 +1,6 @@
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
+import numpy as np
 from labml.internal.analytics import cache as _cache
 from labml.internal.analytics.altair.density import AltairDensity as _AltairDensity
 from labml.internal.analytics.altair.scatter import AltairScatter as _AltairScatter
@@ -47,6 +48,13 @@ def runs(*uuids: str):
         indicators = indicators + run.indicators
 
     return indicators
+
+
+def get_run(uuid: str):
+    r"""
+    Returns ``Run`` object
+    """
+    return _cache.get_run(uuid)
 
 
 def set_preferred_db(db: str):
@@ -153,3 +161,61 @@ def scatter(indicators: IndicatorCollection, x: IndicatorCollection, *,
         height=height,
         height_minimap=height_minimap,
         noise=noise)
+
+
+def indicator_data(indicators: IndicatorCollection) -> Tuple[List[np.ndarray], List[str]]:
+    r"""
+    Returns a tuple of a list of series and a list of names of series.
+    Each series, `S` is a timeseries of histograms of shape `[T, 10]`,
+    where `T` is the number of timesteps.
+    `S[:, 0]` is the `global_step`.
+    `S[:, 1:10]` represents the distribution at basis points
+     `0, 6.68, 15.87, 30.85, 50.00, 69.15, 84.13, 93.32, 100.00`.
+
+    Example:
+        >>> from labml import analytics
+        >>> indicators = analytics.runs('1d3f855874d811eabb9359457a24edc8')
+        >>> analytics.indicator_data(indicators)
+    """
+
+    series, names = _get_series(indicators)
+
+    if not series:
+        raise ValueError("No series found")
+
+    return series, names
+
+
+def _get_artifacts(indicators: IndicatorCollection):
+    series = []
+    names = []
+    for i, ind in enumerate(indicators):
+        d = _cache.get_artifact_data(ind)
+        if d is not None:
+            series.append(d)
+            names.append(ind.key)
+
+    return series, names
+
+
+def artifact_data(indicators: IndicatorCollection) -> Tuple[List[any], List[str]]:
+    r"""
+    Returns a tuple of a list of series and a list of names of series.
+    Each series, ``S`` is a timeseries of histograms of shape ``[T, 10]``,
+    where ``T`` is the number of timesteps.
+    ``S[:, 0]`` is the `global_step`.
+    ``S[:, 1:10]`` represents the distribution at basis points:
+    ``0, 6.68, 15.87, 30.85, 50.00, 69.15, 84.13, 93.32, 100.00``.
+
+    Example:
+        >>> from labml import analytics
+        >>> indicators = analytics.runs('1d3f855874d811eabb9359457a24edc8')
+        >>> analytics.artifact_data(indicators)
+    """
+
+    series, names = _get_artifacts(indicators)
+
+    if not series:
+        raise ValueError("No series found")
+
+    return series, names

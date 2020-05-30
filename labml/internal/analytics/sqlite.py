@@ -24,3 +24,9 @@ class SQLiteAnalytics(Analytics):
         basis_points = np.percentile(values, BASIS_POINTS)
 
         return np.concatenate(([step], basis_points))
+
+    def tensor(self, name):
+        key = self.get_key(name)
+        cur = self.conn.execute(
+            f'SELECT step, filename from tensors WHERE indicator = "{key}"')
+        return [c for c in cur]

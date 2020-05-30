@@ -1,3 +1,6 @@
+from pathlib import PurePath
+
+import numpy as np
 from labml.internal.analytics.indicators import IndicatorClass, Indicator, Run
 from labml.internal.analytics.sqlite import SQLiteAnalytics
 from labml.internal.analytics.tensorboard import TensorBoardAnalytics
@@ -7,6 +10,8 @@ _RUNS = {}
 _TENSORBOARD = {}
 
 _SQLITE = {}
+
+_NUMPY_ARRAYS = {}
 
 
 def get_run(uuid: str) -> Run:
@@ -40,6 +45,16 @@ def get_tensorboard_data(indicator: Indicator):
     return data
 
 
+def _get_sqlite_scalar_data(sqlite: SQLiteAnalytics, key: str):
+    data = sqlite.scalar(key)
+    if not data:
+        return None
+
+    data = sqlite.summarize_scalars(data)
+
+    return data
+
+
 def get_sqlite_data(indicator: Indicator):
     run = get_run(indicator.uuid)
 
@@ -49,17 +64,11 @@ def get_sqlite_data(indicator: Indicator):
     sqlite: SQLiteAnalytics = _SQLITE[indicator.uuid]
 
     if indicator.class_ in [IndicatorClass.histogram, IndicatorClass.queue]:
-        key = f"{indicator.key}.mean"
+        return _get_sqlite_scalar_data(sqlite, f"{indicator.key}.mean")
+    elif indicator.class_ == IndicatorClass.scalar:
+        return _get_sqlite_scalar_data(sqlite, indicator.key)
     else:
-        key = indicator.key
-
-    data = sqlite.scalar(key)
-    if not data:
         return None
-
-    data = sqlite.summarize_scalars(data)
-
-    return data
 
 
 _PREFERRED_DB = 'tensorboard'
@@ -79,5 +88,34 @@ def get_indicator_data(indicator: Indicator):
         data = get_sqlite_data(indicator)
         if data is None:
             data = get_tensorboard_data(indicator)
+
+    return data
+
+
+def _get_numpy_array(path: PurePath):
+    path = str(path)
+    if path not in _NUMPY_ARRAYS:
+        _NUMPY_ARRAYS[path] = np.load(path)
+
+    return _NUMPY_ARRAYS[path]
+
+
+def get_artifact_data(indicator: Indicator):
+    run = get_run(indicator.uuid)
+
+    if indicator.uuid not in _SQLITE:
+        _SQLITE[indicator.uuid] = SQLiteAnalytics(run.run_info.sqlite_path)
+
+    sqlite: SQLiteAnalytics = _SQLITE[indicator.uuid]
+
+    if indicator.class_ != IndicatorClass.tensor:
+        return None
+
+    data = sqlite.tensor(indicator.key)
+
+    if not data:
+        return None
+
+    data = [(c[0], _get_numpy_array(run.run_info.artifacts_folder / c[1])) for c in data]
 
     return data

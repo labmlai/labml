@@ -138,6 +138,7 @@ class Tensor(_Collection):
     def _collect_value(self, key: str, value):
         self._values[key] = _to_numpy(value)
 
+
 class Image(_Collection):
     r"""
     Image artifact
