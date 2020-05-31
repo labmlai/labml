@@ -1,7 +1,6 @@
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, overload
 
 import numpy as np
-
 from labml.internal.analytics import cache as _cache
 from labml.internal.analytics.altair import density as _density
 from labml.internal.analytics.altair import scatter as _scatter
@@ -59,43 +58,46 @@ def set_preferred_db(db: str):
     assert db in ['tensorboard', 'sqlite']
 
 
-def get_data(indicators: IndicatorCollection):
-    data = {}
-    for i, ind in enumerate(indicators):
-        d = _cache.get_indicator_data(ind)
-        data[ind.key] = d[:, [0, 5]]
-
-    return data
-
-
-def _get_series(indicators: IndicatorCollection):
-    series = []
-    names = []
-    for i, ind in enumerate(indicators):
-        d = _cache.get_indicator_data(ind)
-        if d is not None:
-            series.append(d)
-            names.append(ind.key)
-
-    return series, names
-
-
+@overload
 def distribution(indicators: IndicatorCollection, *,
+                 levels: int = 5, alpha: int = 0.6,
+                 height: int = 400, width: int = 800, height_minimap: int = 100):
+    ...
+
+
+@overload
+def distribution(series: List[np.ndarray], names: List[str], *,
+                 levels: int = 5, alpha: int = 0.6,
+                 height: int = 400, width: int = 800, height_minimap: int = 100):
+    ...
+
+
+@overload
+def distribution(series: List[np.ndarray], *,
+                 levels: int = 5, alpha: int = 0.6,
+                 height: int = 400, width: int = 800, height_minimap: int = 100):
+    ...
+
+
+def distribution(*args: any,
                  levels: int = 5, alpha: int = 0.6,
                  height: int = 400, width: int = 800, height_minimap: int = 100):
     r"""
     Creates a distribution plot distribution with Altair
 
-    Arguments:
+    :Arguments:
         indicators(IndicatorCollection): Set of indicators to be plotted
+        series(List[np.ndarray]): List of series of data
+        names(List[str]): List of names of series
 
+    :Keyword Arguments:
         levels: how many levels of the distribution to be plotted
         alpha: opacity of the distribution
         height: height of the visualization
         width: width of the visualization
         height_minimap: height of the view finder
 
-    Return:
+    :Return:
         The Altair visualization
 
     Example:
@@ -104,13 +106,30 @@ def distribution(indicators: IndicatorCollection, *,
         >>> analytics.distribution(indicators)
     """
 
-    series, names = _get_series(indicators)
+    series = None
+    names = None
 
-    if not series:
-        raise ValueError("No series found")
+    if len(args) == 1:
+        if isinstance(args[0], _IndicatorCollection):
+            series, names = _cache.get_indicators_data(args[0])
+            if not series:
+                raise ValueError("No series found")
+        elif isinstance(args[0], list):
+            series = args[0]
+            names = [f'{i + 1}' for i in range(len(series))]
+    elif len(args) == 2:
+        if isinstance(args[0], list) and isinstance(args[1], list):
+            series = args[0]
+            names = args[1]
 
-    return _density.render_density_minimap_multiple(
-        series,
+    if series is None:
+        raise ValueError("distribution should be called with an indicator collection"
+                         " or a series. Check documentation for details.")
+
+    tables = [_density.data_to_table(s) for s in series]
+
+    return _density.render(
+        tables,
         names=names,
         levels=levels,
         alpha=alpha,
@@ -119,42 +138,96 @@ def distribution(indicators: IndicatorCollection, *,
         height_minimap=height_minimap)
 
 
-def scatter(indicators: IndicatorCollection, x: IndicatorCollection, *,
+@overload
+def scatter(indicators: IndicatorCollection, x_indicators: IndicatorCollection, *,
+            noise: Optional[Tuple[float, float]] = None,
+            height: int = 400, width: int = 800, height_minimap: int = 100):
+    ...
+
+
+@overload
+def scatter(series: List[np.ndarray], names: List[str],
+            x_series: np.ndarray, x_name: str, *,
+            noise: Optional[Tuple[float, float]] = None,
+            height: int = 400, width: int = 800, height_minimap: int = 100):
+    ...
+
+
+@overload
+def scatter(series: List[np.ndarray],
+            x_series: np.ndarray,
+            noise: Optional[Tuple[float, float]] = None,
+            height: int = 400, width: int = 800, height_minimap: int = 100):
+    ...
+
+
+def scatter(*args: any,
             noise: Optional[Tuple[float, float]] = None,
             height: int = 400, width: int = 800, height_minimap: int = 100):
     r"""
     Creates a scatter plot with Altair
 
-    Arguments:
+    :Arguments:
         indicators(IndicatorCollection): Set of indicators to be plotted
-        x(IndicatorCollection): Indicator for x-axis
+        x_indicators(IndicatorCollection): Indicator for x-axis
+        series(List[np.ndarray]): List of series of data
+        names(List[str]): List of names of series
+        x_series(np.ndarray): X series of data
+        name(str): Name of X series
 
+    :Keyword Arguments:
         noise: Noise to be added to spread out the scatter plot
         height: height of the visualization
         width: width of the visualization
         height_minimap: height of the view finder
 
-    Return:
+    :Return:
         The Altair visualization
 
-    Example:
+    :Example:
         >>> from labml import analytics
         >>> indicators = analytics.runs('1d3f855874d811eabb9359457a24edc8')
         >>> analytics.scatter(indicators.validation_loss, indicators.train_loss)
     """
 
-    series, names = _get_series(indicators)
-    x_series, x_names = _get_series(x)
+    series = None
+    names = None
+    x_series = None
+    x_name = None
 
-    if len(x_series) != 1:
-        raise ValueError("There should be exactly one series for x-axis")
-    if not series:
-        raise ValueError("No series found")
+    if len(args) == 2:
+        if isinstance(args[0], _IndicatorCollection) and isinstance(args[1], _IndicatorCollection):
+            series, names = _cache.get_indicators_data(args[0])
+            x_series, x_name = _cache.get_indicators_data(args[1])
 
-    return _scatter.scatter(
-        series, x_series[0],
+            if len(x_series) != 1:
+                raise ValueError("There should be exactly one series for x-axis")
+            if not series:
+                raise ValueError("No series found")
+            x_series = x_series[0]
+            x_name = x_name[0]
+        elif isinstance(args[0], list):
+            series = args[0]
+            names = [f'{i + 1}' for i in range(len(series))]
+            x_series = args[1]
+            x_name = 'x'
+    elif len(args) == 4:
+        if isinstance(args[0], list) and isinstance(args[1], list):
+            series = args[0]
+            names = args[1]
+            x_series = args[2]
+            x_name = args[3]
+
+    if series is None:
+        raise ValueError("scatter should be called with an indicator collection"
+                         " or a series. Check documentation for details.")
+
+    tables = [_scatter.data_to_table(s, x_series, noise) for s in series]
+
+    return _scatter.render(
+        tables,
         names=names,
-        x_name=x_names[0],
+        x_name=x_name,
         width=width,
         height=height,
         height_minimap=height_minimap,
@@ -176,7 +249,7 @@ def indicator_data(indicators: IndicatorCollection) -> Tuple[List[np.ndarray], L
         >>> analytics.indicator_data(indicators)
     """
 
-    series, names = _get_series(indicators)
+    series, names = _cache.get_indicators_data(indicators)
 
     if not series:
         raise ValueError("No series found")

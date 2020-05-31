@@ -1,6 +1,5 @@
 /data
 .ipynb_checkpoints/
-.idea/
 __pycache__/
 /logs
 /analytics
@@ -11,3 +10,5 @@ source.json
 *.egg-info/
 dist/
 build/
+.idea/*
+!.idea/dictionaries

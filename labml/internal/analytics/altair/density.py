@@ -65,76 +65,13 @@ def _render_density(table: alt.Data, *,
         return areas_sum + line
 
 
-def render_density(data, *,
-                   name: str,
-                   line_color: str,
-                   range_color: str,
-                   levels: int,
-                   alpha: float,
-                   height: int,
-                   width: int):
-    table = data_to_table(data)
-
-    chart = _render_density(table,
-                            name=name,
-                            x_name='step',
-                            line_color=line_color,
-                            range_color=range_color,
-                            levels=levels,
-                            alpha=alpha)
-    chart = chart.properties(width=width, height=height)
-
-    return chart
-
-
-def render_density_minimap(data, *,
-                           name: str,
-                           line_color: str,
-                           range_color: str,
-                           levels=5,
-                           alpha=0.6,
-                           height: int,
-                           width: int,
-                           height_minimap: int):
-    table = data_to_table(data)
-
-    zoom = alt.selection_interval(encodings=["x", "y"])
-
-    minimap = _render_density(table,
-                              name='',
-                              x_name='',
-                              line_color=line_color,
-                              range_color=range_color,
-                              levels=levels,
-                              alpha=alpha,
-                              selection=zoom)
-
-    detail = _render_density(table,
-                             name=name,
-                             x_name='Step',
-                             line_color=line_color,
-                             range_color=range_color,
-                             levels=levels,
-                             alpha=alpha,
-                             x_scale=alt.Scale(domain={'selection': zoom.name,
-                                                       "encoding": "x"}),
-                             y_scale=alt.Scale(domain={'selection': zoom.name,
-                                                       "encoding": "y"}))
-    minimap = minimap.properties(width=width, height=height_minimap)
-    detail = detail.properties(width=width, height=height)
-
-    return detail & minimap
-
-
-def render_density_minimap_multiple(datas, *,
-                                    names: List[str],
-                                    levels=5,
-                                    alpha=0.6,
-                                    height: int,
-                                    width: int,
-                                    height_minimap: int):
-    tables = [data_to_table(d) for d in datas]
-
+def render(tables: List[alt.Data], *,
+           names: List[str],
+           levels=5,
+           alpha=0.6,
+           height: int,
+           width: int,
+           height_minimap: int):
     zoom = alt.selection_interval(encodings=["x", "y"])
 
     minimaps = None

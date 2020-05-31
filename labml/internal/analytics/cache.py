@@ -93,6 +93,18 @@ def get_indicator_data(indicator: Indicator):
     return data
 
 
+def get_indicators_data(indicators: IndicatorCollection):
+    series = []
+    names = []
+    for i, ind in enumerate(indicators):
+        d = get_indicator_data(ind)
+        if d is not None:
+            series.append(d)
+            names.append(ind.key)
+
+    return series, names
+
+
 def _get_numpy_array(path: PurePath):
     path = str(path)
     if path not in _NUMPY_ARRAYS:

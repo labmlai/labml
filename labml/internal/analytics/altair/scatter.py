@@ -77,15 +77,13 @@ def _scatter_chart(table: alt.Data, *,
     return scat
 
 
-def scatter(datas: List[np.ndarray], x_data: np.ndarray, *,
-            names: List[str],
-            x_name: str,
-            height: int,
-            width: int,
-            height_minimap: int,
-            noise: Optional[Tuple[float, float]]):
-    tables = [data_to_table(d, x_data, noise) for d in datas]
-
+def render(tables: List[alt.Data], *,
+           names: List[str],
+           x_name: str,
+           height: int,
+           width: int,
+           height_minimap: int,
+           noise: Optional[Tuple[float, float]]):
     zoom = alt.selection_interval(encodings=["x", "y"])
 
     minimaps = None
