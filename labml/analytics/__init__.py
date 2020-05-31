@@ -86,19 +86,30 @@ def distribution(*args: any,
     r"""
     Creates a distribution plot distribution with Altair
 
-    :Arguments:
+    This has multiple overloads
+
+    .. function:: distribution(indicators: IndicatorCollection, *, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
+        :noindex:
+
+    .. function:: distribution(series: List[np.ndarray], names: List[str], *, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
+        :noindex:
+
+    .. function:: distribution(series: List[np.ndarray], *, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
+        :noindex:
+
+    Arguments:
         indicators(IndicatorCollection): Set of indicators to be plotted
         series(List[np.ndarray]): List of series of data
         names(List[str]): List of names of series
 
-    :Keyword Arguments:
+    Keyword Arguments:
         levels: how many levels of the distribution to be plotted
         alpha: opacity of the distribution
         height: height of the visualization
         width: width of the visualization
         height_minimap: height of the view finder
 
-    :Return:
+    Return:
         The Altair visualization
 
     Example:
@@ -172,7 +183,18 @@ def scatter(*args: any,
     r"""
     Creates a scatter plot with Altair
 
-    :Arguments:
+    This has multiple overloads
+
+    .. function:: scatter(indicators: IndicatorCollection, x_indicators: IndicatorCollection, *, noise: Optional[Tuple[float, float]] = None, circle_size: int = 20, height: int = 400, width: int = 800, height_minimap: int = 100)
+        :noindex:
+
+    .. function:: scatter(series: List[np.ndarray], names: List[str], x_series: np.ndarray, x_name: str, *, noise: Optional[Tuple[float, float]] = None, circle_size: int = 20, height: int = 400, width: int = 800, height_minimap: int = 100)
+        :noindex:
+
+    .. function:: scatter(series: List[np.ndarray], x_series: np.ndarray, noise: Optional[Tuple[float, float]] = None, circle_size: int = 20, height: int = 400, width: int = 800, height_minimap: int = 100)
+        :noindex:
+
+    Arguments:
         indicators(IndicatorCollection): Set of indicators to be plotted
         x_indicators(IndicatorCollection): Indicator for x-axis
         series(List[np.ndarray]): List of series of data
@@ -180,14 +202,14 @@ def scatter(*args: any,
         x_series(np.ndarray): X series of data
         name(str): Name of X series
 
-    :Keyword Arguments:
+    Keyword Arguments:
         noise: Noise to be added to spread out the scatter plot
         circle_size: size of circles in the plot
         height: height of the visualization
         width: width of the visualization
         height_minimap: height of the view finder
 
-    :Return:
+    Return:
         The Altair visualization
 
     :Example:
@@ -255,7 +277,7 @@ def binned_heatmap(series: List[np.ndarray], names: List[str],
 
 @overload
 def binned_heatmap(series: List[np.ndarray],
-                   x_series: np.ndarray,
+                   x_series: np.ndarray, *,
                    height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
 
@@ -265,7 +287,18 @@ def binned_heatmap(*args: any,
     r"""
     Creates a scatter plot with Altair
 
-    :Arguments:
+    This has multiple overloads
+
+    .. function:: binned_heatmap(indicators: IndicatorCollection, x_indicators: IndicatorCollection, *, height: int = 400, width: int = 800, height_minimap: int = 100)
+        :noindex:
+
+    .. function:: binned_heatmap(series: List[np.ndarray], names: List[str], x_series: np.ndarray, x_name: str, *, height: int = 400, width: int = 800, height_minimap: int = 100)
+        :noindex:
+
+    .. function:: binned_heatmap(series: List[np.ndarray], x_series: np.ndarray, *, height: int = 400, width: int = 800, height_minimap: int = 100)
+        :noindex:
+
+    Arguments:
         indicators(IndicatorCollection): Set of indicators to be plotted
         x_indicators(IndicatorCollection): Indicator for x-axis
         series(List[np.ndarray]): List of series of data
@@ -273,17 +306,17 @@ def binned_heatmap(*args: any,
         x_series(np.ndarray): X series of data
         name(str): Name of X series
 
-    :Keyword Arguments:
+    Keyword Arguments:
         noise: Noise to be added to spread out the scatter plot
         circle_size: size of circles in the plot
         height: height of the visualization
         width: width of the visualization
         height_minimap: height of the view finder
 
-    :Return:
+    Return:
         The Altair visualization
 
-    :Example:
+    Example:
         >>> from labml import analytics
         >>> indicators = analytics.runs('1d3f855874d811eabb9359457a24edc8')
         >>> analytics.scatter(indicators.validation_loss, indicators.train_loss)
@@ -339,7 +372,7 @@ def indicator_data(indicators: IndicatorCollection) -> Tuple[List[np.ndarray], L
     where `T` is the number of timesteps.
     `S[:, 0]` is the `global_step`.
     `S[:, 1:10]` represents the distribution at basis points
-     `0, 6.68, 15.87, 30.85, 50.00, 69.15, 84.13, 93.32, 100.00`.
+    `0, 6.68, 15.87, 30.85, 50.00, 69.15, 84.13, 93.32, 100.00`.
 
     Example:
         >>> from labml import analytics
