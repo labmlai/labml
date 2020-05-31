@@ -163,6 +163,7 @@ def scatter(series: List[np.ndarray],
 
 def scatter(*args: any,
             noise: Optional[Tuple[float, float]] = None,
+            circle_size: int = 20,
             height: int = 400, width: int = 800, height_minimap: int = 100):
     r"""
     Creates a scatter plot with Altair
@@ -177,6 +178,7 @@ def scatter(*args: any,
 
     :Keyword Arguments:
         noise: Noise to be added to spread out the scatter plot
+        circle_size: size of circles in the plot
         height: height of the visualization
         width: width of the visualization
         height_minimap: height of the view finder
@@ -231,7 +233,7 @@ def scatter(*args: any,
         width=width,
         height=height,
         height_minimap=height_minimap,
-        noise=noise)
+        circle_size=circle_size)
 
 
 def indicator_data(indicators: IndicatorCollection) -> Tuple[List[np.ndarray], List[str]]:

@@ -16,16 +16,23 @@ def data_to_table(data: np.ndarray, x_data: np.ndarray,
         nx = np.zeros(data.shape[0])
         ny = np.zeros(data.shape[0])
 
-    for i in range(data.shape[0]):
-        row = {'step': x_data[i, 0],
-               'x': x_data[i, 5] + nx[i],
-               'y': data[i, 5] + ny[i]}
-        table.append(row)
+    if len(data.shape) == 2:  # Distribution
+        for i in range(data.shape[0]):
+            row = {'step': x_data[i, 0],
+                   'x': x_data[i, 5] + nx[i],
+                   'y': data[i, 5] + ny[i]}
+            table.append(row)
+    else:
+        for i in range(data.shape[0]):
+            row = {'x': x_data[i] + nx[i],
+                   'y': data[i] + ny[i]}
+            table.append(row)
 
     return alt.Data(values=table)
 
 
 def _scatter_chart(table: alt.Data, *,
+                   circle_size: int,
                    is_ticks: bool,
                    name: str,
                    x_name: str,
@@ -46,13 +53,17 @@ def _scatter_chart(table: alt.Data, *,
         scat_x_title = ''
         scat_y_title = ''
 
+    encode_kwargs = dict(
+        x=alt.X('x:Q', scale=x_scale, title=scat_x_title),
+        y=alt.Y('y:Q', scale=y_scale, title=scat_y_title),
+        color=alt.value(range_color)
+    )
+    if len(table.values) > 0 and 'step' in table.values[0]:
+        encode_kwargs['opacity'] = 'step:Q'
+
     scat = (base
-            .mark_circle()
-            .encode(x=alt.X('x:Q', scale=x_scale, title=scat_x_title),
-                    y=alt.Y('y:Q', scale=y_scale, title=scat_y_title),
-                    opacity='step:Q',
-                    color=alt.value(range_color)
-                    ))
+            .mark_circle(size=circle_size)
+            .encode(**encode_kwargs))
 
     if is_ticks:
         tick_axis = alt.Axis(labels=False, domain=False, ticks=False)
@@ -79,11 +90,11 @@ def _scatter_chart(table: alt.Data, *,
 
 def render(tables: List[alt.Data], *,
            names: List[str],
+           circle_size: int,
            x_name: str,
            height: int,
            width: int,
-           height_minimap: int,
-           noise: Optional[Tuple[float, float]]):
+           height_minimap: int):
     zoom = alt.selection_interval(encodings=["x", "y"])
 
     minimaps = None
@@ -94,7 +105,8 @@ def render(tables: List[alt.Data], *,
                                  range_color=TABLEAU_10[i],
                                  name='',
                                  x_name='',
-                                 selection=z)
+                                 selection=z,
+                                 circle_size=circle_size)
         if minimaps is None:
             minimaps = minimap
         else:
@@ -112,7 +124,9 @@ def render(tables: List[alt.Data], *,
                                 x_scale=alt.Scale(domain={'selection': zoom.name,
                                                           "encoding": "x"}),
                                 y_scale=alt.Scale(domain={'selection': zoom.name,
-                                                          "encoding": "y"}))
+                                                          "encoding": "y"}),
+                                circle_size=circle_size)
+
         if details is None:
             details = detail
         else:
