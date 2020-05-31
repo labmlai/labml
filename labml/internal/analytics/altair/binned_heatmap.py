@@ -8,12 +8,13 @@ from labml.internal.analytics.altair.utils import TABLEAU_10
 def data_to_table(data: np.ndarray, x_data: np.ndarray):
     table = []
 
-    nx = np.zeros(data.shape[0])
-    ny = np.zeros(data.shape[0])
-
     for i in range(data.shape[0]):
-        row = {'x': x_data[i] + nx[i],
-               'y': data[i] + ny[i]}
+        if len(data.shape) == 2:  # Distribution
+            row = {'x': x_data[i, 5],
+                   'y': data[i, 5]}
+        else:
+            row = {'x': x_data[i],
+                   'y': data[i]}
         table.append(row)
 
     return alt.Data(values=table)
