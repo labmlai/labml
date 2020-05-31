@@ -8,9 +8,17 @@ def data_to_table(data):
     table = []
 
     for i in range(data.shape[0]):
-        row = {'step': data[i, 0]}
-        for j in range(1, 10):
-            row[f"v{j}"] = data[i, j]
+        if len(data.shape) == 2:
+            if data.shape[1] == 10:
+                row = {'step': data[i, 0]}
+                for j in range(1, 10):
+                    row[f"v{j}"] = data[i, j]
+            else:
+                row = {'step': data[i, 0],
+                       'v5': data[i, 1]}
+        else:
+            row = {'step': i,
+                   'v5': data[i]}
         table.append(row)
 
     return alt.Data(values=table)

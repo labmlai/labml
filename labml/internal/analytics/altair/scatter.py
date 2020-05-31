@@ -16,17 +16,15 @@ def data_to_table(data: np.ndarray, x_data: np.ndarray,
         nx = np.zeros(data.shape[0])
         ny = np.zeros(data.shape[0])
 
-    if len(data.shape) == 2:  # Distribution
-        for i in range(data.shape[0]):
+    for i in range(data.shape[0]):
+        if len(data.shape) == 2:  # Distribution
             row = {'step': x_data[i, 0],
                    'x': x_data[i, 5] + nx[i],
                    'y': data[i, 5] + ny[i]}
-            table.append(row)
-    else:
-        for i in range(data.shape[0]):
+        else:
             row = {'x': x_data[i] + nx[i],
                    'y': data[i] + ny[i]}
-            table.append(row)
+        table.append(row)
 
     return alt.Data(values=table)
 
