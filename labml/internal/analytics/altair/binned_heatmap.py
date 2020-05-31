@@ -71,14 +71,12 @@ def _heatmap(table: alt.Data, *,
     return scat
 
 
-def render(datas: List[np.ndarray], x_data: np.ndarray, *,
+def render(tables: List[alt.Data], *,
            names: List[str],
            x_name: str,
            height: int,
            width: int,
            height_minimap: int):
-    tables = [data_to_table(d, x_data) for d in datas]
-
     zoom = alt.selection_interval(encodings=["x", "y"])
 
     minimaps = None

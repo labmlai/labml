@@ -4,6 +4,7 @@ import numpy as np
 from labml.internal.analytics import cache as _cache
 from labml.internal.analytics.altair import density as _density
 from labml.internal.analytics.altair import scatter as _scatter
+from labml.internal.analytics.altair import binned_heatmap as _binned_heatmap
 from labml.internal.analytics.indicators import IndicatorCollection as _IndicatorCollection
 
 
@@ -141,6 +142,7 @@ def distribution(*args: any,
 @overload
 def scatter(indicators: IndicatorCollection, x_indicators: IndicatorCollection, *,
             noise: Optional[Tuple[float, float]] = None,
+            circle_size: int = 20,
             height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
 
@@ -149,6 +151,7 @@ def scatter(indicators: IndicatorCollection, x_indicators: IndicatorCollection, 
 def scatter(series: List[np.ndarray], names: List[str],
             x_series: np.ndarray, x_name: str, *,
             noise: Optional[Tuple[float, float]] = None,
+            circle_size: int = 20,
             height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
 
@@ -157,6 +160,7 @@ def scatter(series: List[np.ndarray], names: List[str],
 def scatter(series: List[np.ndarray],
             x_series: np.ndarray,
             noise: Optional[Tuple[float, float]] = None,
+            circle_size: int = 20,
             height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
 
@@ -234,6 +238,98 @@ def scatter(*args: any,
         height=height,
         height_minimap=height_minimap,
         circle_size=circle_size)
+
+
+@overload
+def binned_heatmap(indicators: IndicatorCollection, x_indicators: IndicatorCollection, *,
+                   height: int = 400, width: int = 800, height_minimap: int = 100):
+    ...
+
+
+@overload
+def binned_heatmap(series: List[np.ndarray], names: List[str],
+                   x_series: np.ndarray, x_name: str, *,
+                   height: int = 400, width: int = 800, height_minimap: int = 100):
+    ...
+
+
+@overload
+def binned_heatmap(series: List[np.ndarray],
+                   x_series: np.ndarray,
+                   height: int = 400, width: int = 800, height_minimap: int = 100):
+    ...
+
+
+def binned_heatmap(*args: any,
+                   height: int = 400, width: int = 800, height_minimap: int = 100):
+    r"""
+    Creates a scatter plot with Altair
+
+    :Arguments:
+        indicators(IndicatorCollection): Set of indicators to be plotted
+        x_indicators(IndicatorCollection): Indicator for x-axis
+        series(List[np.ndarray]): List of series of data
+        names(List[str]): List of names of series
+        x_series(np.ndarray): X series of data
+        name(str): Name of X series
+
+    :Keyword Arguments:
+        noise: Noise to be added to spread out the scatter plot
+        circle_size: size of circles in the plot
+        height: height of the visualization
+        width: width of the visualization
+        height_minimap: height of the view finder
+
+    :Return:
+        The Altair visualization
+
+    :Example:
+        >>> from labml import analytics
+        >>> indicators = analytics.runs('1d3f855874d811eabb9359457a24edc8')
+        >>> analytics.scatter(indicators.validation_loss, indicators.train_loss)
+    """
+
+    series = None
+    names = None
+    x_series = None
+    x_name = None
+
+    if len(args) == 2:
+        if isinstance(args[0], _IndicatorCollection) and isinstance(args[1], _IndicatorCollection):
+            series, names = _cache.get_indicators_data(args[0])
+            x_series, x_name = _cache.get_indicators_data(args[1])
+
+            if len(x_series) != 1:
+                raise ValueError("There should be exactly one series for x-axis")
+            if not series:
+                raise ValueError("No series found")
+            x_series = x_series[0]
+            x_name = x_name[0]
+        elif isinstance(args[0], list):
+            series = args[0]
+            names = [f'{i + 1}' for i in range(len(series))]
+            x_series = args[1]
+            x_name = 'x'
+    elif len(args) == 4:
+        if isinstance(args[0], list) and isinstance(args[1], list):
+            series = args[0]
+            names = args[1]
+            x_series = args[2]
+            x_name = args[3]
+
+    if series is None:
+        raise ValueError("scatter should be called with an indicator collection"
+                         " or a series. Check documentation for details.")
+
+    tables = [_binned_heatmap.data_to_table(s, x_series) for s in series]
+
+    return _binned_heatmap.render(
+        tables,
+        names=names,
+        x_name=x_name,
+        width=width,
+        height=height,
+        height_minimap=height_minimap)
 
 
 def indicator_data(indicators: IndicatorCollection) -> Tuple[List[np.ndarray], List[str]]:
