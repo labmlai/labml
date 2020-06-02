@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple, NamedTuple
 
 from labml import lab
 from labml.internal import util
@@ -35,11 +35,20 @@ class IndicatorClass(Enum):
     tensor = 'tensor'
 
 
+class StepSelect(NamedTuple):
+    start: Optional[int]
+    end: Optional[int]
+
+
 class Indicator:
-    def __init__(self, key: str, class_: IndicatorClass, uuid: str):
+    def __init__(self, key: str, class_: IndicatorClass, uuid: str,
+                 select: StepSelect = None):
         self.uuid = uuid
         self.class_ = class_
         self.key = key
+        if select is None:
+            select = StepSelect(None, None)
+        self.select = select
 
     def hash_str(self):
         return f"{self.uuid}#{self.key}"
@@ -87,6 +96,11 @@ class IndicatorCollection:
 
     def __len__(self):
         return len(self._indicators)
+
+    def __getitem__(self, item: slice):
+        select = StepSelect(item.start, item.stop)
+        inds = [Indicator(ind.key, ind.class_, ind.uuid, select) for ind in self._indicators]
+        return IndicatorCollection(inds)
 
 
 class Run:

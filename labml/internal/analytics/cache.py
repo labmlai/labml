@@ -2,7 +2,8 @@ from pathlib import PurePath
 
 import numpy as np
 
-from labml.internal.analytics.indicators import IndicatorClass, Indicator, Run, IndicatorCollection
+from labml.internal.analytics.indicators import IndicatorClass, Indicator, Run, IndicatorCollection, \
+    StepSelect
 from labml.internal.analytics.sqlite import SQLiteAnalytics
 from labml.internal.analytics.tensorboard import TensorBoardAnalytics
 
@@ -35,7 +36,7 @@ def get_tensorboard_data(indicator: Indicator):
         return None
 
     try:
-        tensor = tb.tensor(indicator.key)
+        tensor = tb.tensor(indicator.key, indicator.select.start, indicator.select.end)
     except KeyError:
         return None
     if indicator.class_ in [IndicatorClass.histogram, IndicatorClass.queue]:
@@ -46,8 +47,8 @@ def get_tensorboard_data(indicator: Indicator):
     return data
 
 
-def _get_sqlite_scalar_data(sqlite: SQLiteAnalytics, key: str):
-    data = sqlite.scalar(key)
+def _get_sqlite_scalar_data(sqlite: SQLiteAnalytics, key: str, select: StepSelect):
+    data = sqlite.scalar(key, select.start, select.end)
     if not data:
         return None
 
@@ -65,9 +66,9 @@ def get_sqlite_data(indicator: Indicator):
     sqlite: SQLiteAnalytics = _SQLITE[indicator.uuid]
 
     if indicator.class_ in [IndicatorClass.histogram, IndicatorClass.queue]:
-        return _get_sqlite_scalar_data(sqlite, f"{indicator.key}.mean")
+        return _get_sqlite_scalar_data(sqlite, f"{indicator.key}.mean", indicator.select)
     elif indicator.class_ == IndicatorClass.scalar:
-        return _get_sqlite_scalar_data(sqlite, indicator.key)
+        return _get_sqlite_scalar_data(sqlite, indicator.key, indicator.select)
     else:
         return None
 
@@ -124,7 +125,7 @@ def get_artifact_files(indicator: Indicator):
     if indicator.class_ != IndicatorClass.tensor:
         return None
 
-    data = sqlite.tensor(indicator.key)
+    data = sqlite.tensor(indicator.key, indicator.select.start, indicator.select.end)
 
     if not data:
         return None

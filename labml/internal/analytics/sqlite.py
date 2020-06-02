@@ -1,8 +1,19 @@
 import sqlite3
+from typing import Optional
 
 import numpy as np
 
 from .analytics import Analytics, BASIS_POINTS
+
+
+def _filter_steps(start_step: Optional[int], end_step: Optional[int]):
+    sql = ''
+    if start_step is not None:
+        sql += f' AND step >= {start_step}'
+    if end_step is not None:
+        sql += f' AND step < {end_step}'
+
+    return sql
 
 
 class SQLiteAnalytics(Analytics):
@@ -12,10 +23,11 @@ class SQLiteAnalytics(Analytics):
     def get_key(self, name):
         return name
 
-    def scalar(self, name):
+    def scalar(self, name: str, start_step: Optional[int], end_step: Optional[int]):
         key = self.get_key(name)
-        cur = self.conn.execute(
-            f'SELECT step, value from scalars WHERE indicator = "{key}"')
+        sql = f'SELECT step, value from scalars WHERE indicator = "{key}"'
+        sql += _filter_steps(start_step, end_step)
+        cur = self.conn.execute(sql)
         return [c for c in cur]
 
     def summarize(self, events):
@@ -25,8 +37,9 @@ class SQLiteAnalytics(Analytics):
 
         return np.concatenate(([step], basis_points))
 
-    def tensor(self, name):
+    def tensor(self, name: str, start_step: Optional[int], end_step: Optional[int]):
         key = self.get_key(name)
-        cur = self.conn.execute(
-            f'SELECT step, filename from tensors WHERE indicator = "{key}"')
+        sql = f'SELECT step, filename from tensors WHERE indicator = "{key}"'
+        sql += _filter_steps(start_step, end_step)
+        cur = self.conn.execute(sql)
         return [c for c in cur]
