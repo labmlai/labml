@@ -61,13 +61,7 @@ def set_preferred_db(db: str):
 
 @overload
 def distribution(indicators: IndicatorCollection, *,
-                 levels: int = 5, alpha: int = 0.6,
-                 height: int = 400, width: int = 800, height_minimap: int = 100):
-    ...
-
-
-@overload
-def distribution(series: List[np.ndarray], names: List[str], *,
+                 names: Optional[List[str]] = None,
                  levels: int = 5, alpha: int = 0.6,
                  height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
@@ -75,12 +69,14 @@ def distribution(series: List[np.ndarray], names: List[str], *,
 
 @overload
 def distribution(series: List[np.ndarray], *,
+                 names: Optional[List[str]] = None,
                  levels: int = 5, alpha: int = 0.6,
                  height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
 
 
 def distribution(*args: any,
+                 names: Optional[List[str]] = None,
                  levels: int = 5, alpha: int = 0.6,
                  height: int = 400, width: int = 800, height_minimap: int = 100):
     r"""
@@ -88,21 +84,18 @@ def distribution(*args: any,
 
     This has multiple overloads
 
-    .. function:: distribution(indicators: IndicatorCollection, *, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
+    .. function:: distribution(indicators: IndicatorCollection, *, names: Optional[List[str]] = None, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
         :noindex:
 
-    .. function:: distribution(series: List[np.ndarray], names: List[str], *, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
-        :noindex:
-
-    .. function:: distribution(series: List[np.ndarray], *, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
+    .. function:: distribution(series: List[np.ndarray], *, names: Optional[List[str]] = None, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
         :noindex:
 
     Arguments:
         indicators(IndicatorCollection): Set of indicators to be plotted
         series(List[np.ndarray]): List of series of data
-        names(List[str]): List of names of series
 
     Keyword Arguments:
+        names(List[str]): List of names of series
         levels: how many levels of the distribution to be plotted
         alpha: opacity of the distribution
         height: height of the visualization
@@ -119,20 +112,19 @@ def distribution(*args: any,
     """
 
     series = None
-    names = None
 
     if len(args) == 1:
         if isinstance(args[0], _IndicatorCollection):
-            series, names = _cache.get_indicators_data(args[0])
+            series, names_ = _cache.get_indicators_data(args[0])
             if not series:
                 raise ValueError("No series found")
+            if names is None:
+                names = names_
         elif isinstance(args[0], list):
             series = args[0]
-            names = [f'{i + 1}' for i in range(len(series))]
-    elif len(args) == 2:
-        if isinstance(args[0], list) and isinstance(args[1], list):
-            series = args[0]
-            names = args[1]
+
+    if names is None:
+        names = [f'{i + 1}' for i in range(len(series))]
 
     if series is None:
         raise ValueError("distribution should be called with an indicator collection"
@@ -152,15 +144,7 @@ def distribution(*args: any,
 
 @overload
 def scatter(indicators: IndicatorCollection, x_indicators: IndicatorCollection, *,
-            noise: Optional[Tuple[float, float]] = None,
-            circle_size: int = 20,
-            height: int = 400, width: int = 800, height_minimap: int = 100):
-    ...
-
-
-@overload
-def scatter(series: List[np.ndarray], names: List[str],
-            x_series: np.ndarray, x_name: str, *,
+            names: Optional[List[str]] = None, x_name: Optional[str] = None,
             noise: Optional[Tuple[float, float]] = None,
             circle_size: int = 20,
             height: int = 400, width: int = 800, height_minimap: int = 100):
@@ -169,7 +153,8 @@ def scatter(series: List[np.ndarray], names: List[str],
 
 @overload
 def scatter(series: List[np.ndarray],
-            x_series: np.ndarray,
+            x_series: np.ndarray, *,
+            names: Optional[List[str]] = None, x_name: Optional[str] = None,
             noise: Optional[Tuple[float, float]] = None,
             circle_size: int = 20,
             height: int = 400, width: int = 800, height_minimap: int = 100):
@@ -177,6 +162,7 @@ def scatter(series: List[np.ndarray],
 
 
 def scatter(*args: any,
+            names: Optional[List[str]] = None, x_name: Optional[str] = None,
             noise: Optional[Tuple[float, float]] = None,
             circle_size: int = 20,
             height: int = 400, width: int = 800, height_minimap: int = 100):
@@ -185,24 +171,21 @@ def scatter(*args: any,
 
     This has multiple overloads
 
-    .. function:: scatter(indicators: IndicatorCollection, x_indicators: IndicatorCollection, *, noise: Optional[Tuple[float, float]] = None, circle_size: int = 20, height: int = 400, width: int = 800, height_minimap: int = 100)
+    .. function:: scatter(indicators: IndicatorCollection, x_indicators: IndicatorCollection, *, names: Optional[List[str]] = None, x_name: Optional[str] = None, noise: Optional[Tuple[float, float]] = None, circle_size: int = 20, height: int = 400, width: int = 800, height_minimap: int = 100)
         :noindex:
 
-    .. function:: scatter(series: List[np.ndarray], names: List[str], x_series: np.ndarray, x_name: str, *, noise: Optional[Tuple[float, float]] = None, circle_size: int = 20, height: int = 400, width: int = 800, height_minimap: int = 100)
-        :noindex:
-
-    .. function:: scatter(series: List[np.ndarray], x_series: np.ndarray, noise: Optional[Tuple[float, float]] = None, circle_size: int = 20, height: int = 400, width: int = 800, height_minimap: int = 100)
+    .. function:: scatter(series: List[np.ndarray], x_series: np.ndarray, *, names: Optional[List[str]] = None, x_name: Optional[str] = None, noise: Optional[Tuple[float, float]] = None, circle_size: int = 20, height: int = 400, width: int = 800, height_minimap: int = 100)
         :noindex:
 
     Arguments:
         indicators(IndicatorCollection): Set of indicators to be plotted
         x_indicators(IndicatorCollection): Indicator for x-axis
         series(List[np.ndarray]): List of series of data
-        names(List[str]): List of names of series
         x_series(np.ndarray): X series of data
-        name(str): Name of X series
 
     Keyword Arguments:
+        names(List[str]): List of names of series
+        name(str): Name of X series
         noise: Noise to be added to spread out the scatter plot
         circle_size: size of circles in the plot
         height: height of the visualization
@@ -219,36 +202,34 @@ def scatter(*args: any,
     """
 
     series = None
-    names = None
     x_series = None
-    x_name = None
 
     if len(args) == 2:
         if isinstance(args[0], _IndicatorCollection) and isinstance(args[1], _IndicatorCollection):
-            series, names = _cache.get_indicators_data(args[0])
-            x_series, x_name = _cache.get_indicators_data(args[1])
+            series, names_ = _cache.get_indicators_data(args[0])
+            x_series, x_name_ = _cache.get_indicators_data(args[1])
 
             if len(x_series) != 1:
                 raise ValueError("There should be exactly one series for x-axis")
             if not series:
                 raise ValueError("No series found")
             x_series = x_series[0]
-            x_name = x_name[0]
+            if x_name is None:
+                x_name = x_name_[0]
+            if names is None:
+                names = names_
         elif isinstance(args[0], list):
             series = args[0]
-            names = [f'{i + 1}' for i in range(len(series))]
             x_series = args[1]
-            x_name = 'x'
-    elif len(args) == 4:
-        if isinstance(args[0], list) and isinstance(args[1], list):
-            series = args[0]
-            names = args[1]
-            x_series = args[2]
-            x_name = args[3]
 
     if series is None:
         raise ValueError("scatter should be called with an indicator collection"
                          " or a series. Check documentation for details.")
+
+    if x_name is None:
+        x_name = 'x'
+    if names is None:
+        names = [f'{i + 1}' for i in range(len(series))]
 
     tables = [_scatter.data_to_table(s, x_series, noise) for s in series]
 
@@ -264,13 +245,7 @@ def scatter(*args: any,
 
 @overload
 def binned_heatmap(indicators: IndicatorCollection, x_indicators: IndicatorCollection, *,
-                   height: int = 400, width: int = 800, height_minimap: int = 100):
-    ...
-
-
-@overload
-def binned_heatmap(series: List[np.ndarray], names: List[str],
-                   x_series: np.ndarray, x_name: str, *,
+                   names: Optional[List[str]] = None, x_name: Optional[str] = None,
                    height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
 
@@ -278,35 +253,34 @@ def binned_heatmap(series: List[np.ndarray], names: List[str],
 @overload
 def binned_heatmap(series: List[np.ndarray],
                    x_series: np.ndarray, *,
+                   names: Optional[List[str]] = None, x_name: Optional[str] = None,
                    height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
 
 
 def binned_heatmap(*args: any,
+                   names: Optional[List[str]] = None, x_name: Optional[str] = None,
                    height: int = 400, width: int = 800, height_minimap: int = 100):
     r"""
     Creates a scatter plot with Altair
 
     This has multiple overloads
 
-    .. function:: binned_heatmap(indicators: IndicatorCollection, x_indicators: IndicatorCollection, *, height: int = 400, width: int = 800, height_minimap: int = 100)
+    .. function:: binned_heatmap(indicators: IndicatorCollection, x_indicators: IndicatorCollection, *, names: Optional[List[str]] = None, x_name: Optional[str] = None, height: int = 400, width: int = 800, height_minimap: int = 100)
         :noindex:
 
-    .. function:: binned_heatmap(series: List[np.ndarray], names: List[str], x_series: np.ndarray, x_name: str, *, height: int = 400, width: int = 800, height_minimap: int = 100)
-        :noindex:
-
-    .. function:: binned_heatmap(series: List[np.ndarray], x_series: np.ndarray, *, height: int = 400, width: int = 800, height_minimap: int = 100)
+    .. function:: binned_heatmap(series: List[np.ndarray], x_series: np.ndarray, *, names: Optional[List[str]] = None, x_name: Optional[str] = None, height: int = 400, width: int = 800, height_minimap: int = 100)
         :noindex:
 
     Arguments:
         indicators(IndicatorCollection): Set of indicators to be plotted
         x_indicators(IndicatorCollection): Indicator for x-axis
         series(List[np.ndarray]): List of series of data
-        names(List[str]): List of names of series
         x_series(np.ndarray): X series of data
-        name(str): Name of X series
 
     Keyword Arguments:
+        names(List[str]): List of names of series
+        name(str): Name of X series
         noise: Noise to be added to spread out the scatter plot
         circle_size: size of circles in the plot
         height: height of the visualization
@@ -323,36 +297,34 @@ def binned_heatmap(*args: any,
     """
 
     series = None
-    names = None
     x_series = None
-    x_name = None
 
     if len(args) == 2:
         if isinstance(args[0], _IndicatorCollection) and isinstance(args[1], _IndicatorCollection):
-            series, names = _cache.get_indicators_data(args[0])
-            x_series, x_name = _cache.get_indicators_data(args[1])
+            series, names_ = _cache.get_indicators_data(args[0])
+            x_series, x_name_ = _cache.get_indicators_data(args[1])
 
             if len(x_series) != 1:
                 raise ValueError("There should be exactly one series for x-axis")
             if not series:
                 raise ValueError("No series found")
             x_series = x_series[0]
-            x_name = x_name[0]
+            if x_name is None:
+                x_name = x_name_[0]
+            if names is None:
+                names = names_
         elif isinstance(args[0], list):
             series = args[0]
-            names = [f'{i + 1}' for i in range(len(series))]
             x_series = args[1]
-            x_name = 'x'
-    elif len(args) == 4:
-        if isinstance(args[0], list) and isinstance(args[1], list):
-            series = args[0]
-            names = args[1]
-            x_series = args[2]
-            x_name = args[3]
 
     if series is None:
         raise ValueError("scatter should be called with an indicator collection"
                          " or a series. Check documentation for details.")
+
+    if x_name is None:
+        x_name = 'x'
+    if names is None:
+        names = [f'{i + 1}' for i in range(len(series))]
 
     tables = [_binned_heatmap.data_to_table(s, x_series) for s in series]
 
