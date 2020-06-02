@@ -4,7 +4,7 @@ import altair as alt
 from labml.internal.analytics.altair.utils import TABLEAU_10
 
 
-def data_to_table(data):
+def data_to_table(data, step):
     table = []
 
     for i in range(data.shape[0]):
@@ -16,6 +16,9 @@ def data_to_table(data):
             else:
                 row = {'step': data[i, 0],
                        'v5': data[i, 1]}
+        elif step is not None:
+            row = {'step': step[i],
+                   'v5': data[i]}
         else:
             row = {'step': i,
                    'v5': data[i]}

@@ -75,6 +75,15 @@ def distribution(series: List[np.ndarray], *,
     ...
 
 
+@overload
+def distribution(series: List[np.ndarray],
+                 step: np.ndarray, *,
+                 names: Optional[List[str]] = None,
+                 levels: int = 5, alpha: int = 0.6,
+                 height: int = 400, width: int = 800, height_minimap: int = 100):
+    ...
+
+
 def distribution(*args: any,
                  names: Optional[List[str]] = None,
                  levels: int = 5, alpha: int = 0.6,
@@ -90,9 +99,13 @@ def distribution(*args: any,
     .. function:: distribution(series: List[np.ndarray], *, names: Optional[List[str]] = None, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
         :noindex:
 
+    .. function:: distribution(series: List[np.ndarray], step: np.ndarray, *, names: Optional[List[str]] = None, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
+        :noindex:
+
     Arguments:
         indicators(IndicatorCollection): Set of indicators to be plotted
         series(List[np.ndarray]): List of series of data
+        step(np.ndarray): Steps
 
     Keyword Arguments:
         names(List[str]): List of names of series
@@ -112,6 +125,7 @@ def distribution(*args: any,
     """
 
     series = None
+    step = None
 
     if len(args) == 1:
         if isinstance(args[0], _IndicatorCollection):
@@ -122,6 +136,9 @@ def distribution(*args: any,
                 names = names_
         elif isinstance(args[0], list):
             series = args[0]
+    elif len(args) == 2:
+        series = args[0]
+        step = args[1]
 
     if names is None:
         names = [f'{i + 1}' for i in range(len(series))]
@@ -130,7 +147,7 @@ def distribution(*args: any,
         raise ValueError("distribution should be called with an indicator collection"
                          " or a series. Check documentation for details.")
 
-    tables = [_density.data_to_table(s) for s in series]
+    tables = [_density.data_to_table(s, step) for s in series]
 
     return _density.render(
         tables,
