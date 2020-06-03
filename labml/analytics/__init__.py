@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, List, overload
+from typing import Tuple, Optional, List, overload, Union
 
 import numpy as np
 from labml.internal.analytics import cache as _cache
@@ -6,6 +6,40 @@ from labml.internal.analytics.altair import density as _density
 from labml.internal.analytics.altair import scatter as _scatter
 from labml.internal.analytics.altair import binned_heatmap as _binned_heatmap
 from labml.internal.analytics.indicators import IndicatorCollection as _IndicatorCollection
+
+
+def _remove_names_prefix(names: List[Union[str, List[str]]]) -> List[str]:
+    if len(names) == 0:
+        return []
+
+    if isinstance(names[0], list):
+        common = names[0]
+    else:
+        common = None
+
+    for n in names:
+        if common is None:
+            break
+        if not isinstance(n, list):
+            common = None
+        merge = []
+        for x, y in zip(common, n):
+            if x != y:
+                merge.append(None)
+            else:
+                merge.append(x)
+        common = merge
+
+    res = []
+    for n in names:
+        if isinstance(n, list):
+            if common is not None:
+                n = [p for i, p in enumerate(n) if i > len(common) or p != common[i]]
+            n = '-'.join(n)
+
+        res.append(n)
+
+    return res
 
 
 class IndicatorCollection(_IndicatorCollection):
@@ -148,6 +182,7 @@ def distribution(*args: any,
                          " or a series. Check documentation for details.")
 
     tables = [_density.data_to_table(s, step) for s in series]
+    names = _remove_names_prefix(names)
 
     return _density.render(
         tables,
@@ -249,6 +284,7 @@ def scatter(*args: any,
         names = [f'{i + 1}' for i in range(len(series))]
 
     tables = [_scatter.data_to_table(s, x_series, noise) for s in series]
+    names = _remove_names_prefix(names)
 
     return _scatter.render(
         tables,
@@ -344,6 +380,7 @@ def binned_heatmap(*args: any,
         names = [f'{i + 1}' for i in range(len(series))]
 
     tables = [_binned_heatmap.data_to_table(s, x_series) for s in series]
+    names = _remove_names_prefix(names)
 
     return _binned_heatmap.render(
         tables,

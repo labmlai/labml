@@ -1,4 +1,5 @@
 from pathlib import PurePath
+from typing import List
 
 import numpy as np
 
@@ -21,6 +22,11 @@ def get_run(uuid: str) -> Run:
         _RUNS[uuid] = Run(uuid)
 
     return _RUNS[uuid]
+
+
+def get_name(ind: Indicator) -> List[str]:
+    run = get_run(ind.uuid)
+    return [run.name, ind.uuid[-5:], run.run_info.comment, ind.key]
 
 
 def get_tensorboard_data(indicator: Indicator):
@@ -101,7 +107,7 @@ def get_indicators_data(indicators: IndicatorCollection):
         d = get_indicator_data(ind)
         if d is not None:
             series.append(d)
-            names.append(ind.key)
+            names.append(get_name(ind))
 
     return series, names
 
@@ -153,7 +159,7 @@ def get_artifacts_data(indicators: IndicatorCollection, limit: int = 100):
         if d is not None:
             series.append(d)
             series_inds.append(ind)
-            names.append(ind.key)
+            names.append(get_name(ind))
 
     steps = {}
     step_lookups = []

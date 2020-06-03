@@ -1,31 +1,33 @@
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional, Tuple, NamedTuple
+from typing import List, Optional, Tuple, NamedTuple, Dict
 
 from labml import lab
 from labml.internal import util
-from labml.internal.experiment import experiment_run
+from labml.internal.experiment.experiment_run import RunInfo
 
 
 class RunsSet:
+    _runs: Dict[str, Tuple[Path, str]]
+
     def __init__(self):
         experiment_path = Path(lab.get_experiments_path())
         runs = {}
         for exp_path in experiment_path.iterdir():
             for run_path in exp_path.iterdir():
-                runs[run_path.name] = run_path
+                runs[run_path.name] = (run_path, experiment_path.name)
 
-        self.runs = runs
+        self._runs = runs
 
-    def get(self, uuid: str):
-        run_path = self.runs[uuid]
+    def get(self, uuid: str) -> Tuple[RunInfo, str]:
+        run_path = self._runs[uuid][0]
         run_info_path = run_path / 'run.yaml'
 
         with open(str(run_info_path), 'r') as f:
             data = util.yaml_load(f.read())
-            run = experiment_run.RunInfo.from_dict(run_path.parent, data)
+            run = RunInfo.from_dict(run_path.parent, data)
 
-        return run
+        return run, self._runs[uuid][1]
 
 
 class IndicatorClass(Enum):
@@ -104,9 +106,13 @@ class IndicatorCollection:
 
 
 class Run:
+    indicators: IndicatorCollection
+    name: str
+    run_info: RunInfo
+
     def __init__(self, uuid: str):
         runs = RunsSet()
-        self.run_info = runs.get(uuid)
+        self.run_info, self.name = runs.get(uuid)
 
         with open(str(self.run_info.indicators_path), 'r') as f:
             indicators = util.yaml_load(f.read())
