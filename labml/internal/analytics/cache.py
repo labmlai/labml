@@ -139,17 +139,6 @@ def get_artifact_files(indicator: Indicator):
     return data
 
 
-def get_artifact_data(indicator: Indicator):
-    data = get_artifact_files(indicator)
-    if data is None:
-        return data
-
-    run = get_run(indicator.uuid)
-    data = [(c[0], _get_numpy_array(run.run_info.artifacts_folder / c[1])) for c in data]
-
-    return data
-
-
 def _get_condensed_steps(series: List[Tuple[int, any]], limit: int):
     steps = {}
     step_lookups = []
