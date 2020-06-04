@@ -1,5 +1,5 @@
 from pathlib import PurePath
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 
@@ -150,17 +150,7 @@ def get_artifact_data(indicator: Indicator):
     return data
 
 
-def get_artifacts_data(indicators: IndicatorCollection, limit: int = 100):
-    series = []
-    names = []
-    series_inds = []
-    for i, ind in enumerate(indicators):
-        d = get_artifact_files(ind)
-        if d is not None:
-            series.append(d)
-            series_inds.append(ind)
-            names.append(get_name(ind))
-
+def _get_condensed_steps(series: List[Tuple[int, any]], limit: int):
     steps = {}
     step_lookups = []
     for s in series:
@@ -174,13 +164,28 @@ def get_artifacts_data(indicators: IndicatorCollection, limit: int = 100):
     steps = sorted(steps)
     interval = max(1, len(steps) // limit)
     offset = (len(steps) - 1) % interval
+    steps = [steps[i] for i in range(offset, len(steps), interval)]
+    return steps, step_lookups
+
+
+def get_artifacts_data(indicators: IndicatorCollection, limit: int = 100):
+    series = []
+    names = []
+    series_inds = []
+    for i, ind in enumerate(indicators):
+        d = get_artifact_files(ind)
+        if d is not None:
+            series.append(d)
+            series_inds.append(ind)
+            names.append(get_name(ind))
+
+    steps, step_lookups = _get_condensed_steps(series, limit)
 
     data_series = []
     for si, s in enumerate(series):
         run = get_run(series_inds[si].uuid)
         data = []
-        for i in range(offset, len(steps), interval):
-            step = steps[i]
+        for step in steps:
             filename = s[step_lookups[si][step]][1]
             data.append((step, _get_numpy_array(run.run_info.artifacts_folder / filename)))
         data_series.append(data)
