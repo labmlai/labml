@@ -161,11 +161,20 @@ def _get_condensed_steps(series: List[Tuple[int, any]], limit: int):
         step_lookups.append(lookup)
 
     steps = [k for k, v in steps.items() if v == len(series)]
+    if len(steps) == 0:
+        return [], step_lookups
+
     steps = sorted(steps)
-    interval = max(1, len(steps) // limit)
-    offset = (len(steps) - 1) % interval
-    steps = [steps[i] for i in range(offset, len(steps), interval)]
-    return steps, step_lookups
+    last = steps[-1]
+    interval = max(1, last // (limit - 1))
+
+    condensed = [steps[0]]
+    for s in steps[1:]:
+        if s - condensed[-1] >= interval:
+            condensed.append(s)
+    if condensed[-1] != steps[-1]:
+        condensed.append(steps[-1])
+    return condensed, step_lookups
 
 
 def get_artifacts_data(indicators: IndicatorCollection, limit: int = 100):
