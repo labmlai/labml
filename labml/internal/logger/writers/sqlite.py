@@ -85,6 +85,9 @@ class Writer(WriteBase):
                             (key, global_step, filename))
                     else:
                         filename = f'{key}_{k}.npy'
+                    self.conn.execute(
+                        f"INSERT INTO tensors VALUES (?, ?, ?)",
+                        (key, -1, filename))
                     np.save(str(self.artifacts_path / filename), tensor)
 
         t = time.time()

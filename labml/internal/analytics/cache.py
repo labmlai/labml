@@ -142,6 +142,9 @@ def get_artifact_files(indicator: Indicator):
 def _get_condensed_steps(series: List[Tuple[int, any]], limit: int):
     steps = {}
     step_lookups = []
+
+    series = [s for s in series if len(s) != 1 or s[0][0] != -1]
+
     for s in series:
         lookup = {}
         for i, c in enumerate(s):
@@ -181,11 +184,18 @@ def get_artifacts_data(indicators: IndicatorCollection, limit: int = 100):
 
     data_series = []
     for si, s in enumerate(series):
-        run = get_run(series_inds[si].uuid)
-        data = []
-        for step in steps:
-            filename = s[step_lookups[si][step]][1]
-            data.append((step, _get_numpy_array(run.run_info.artifacts_folder / filename)))
+        ind: Indicator = series_inds[si]
+        run: Run = get_run(ind.uuid)
+        print(ind)
+        if ind.props.get('is_once', False):
+            assert s[0][0] == -1
+            filename = s[0][1]
+            data = _get_numpy_array(run.run_info.artifacts_folder / filename)
+        else:
+            data = []
+            for step in steps:
+                filename = s[step_lookups[si][step]][1]
+                data.append((step, _get_numpy_array(run.run_info.artifacts_folder / filename)))
         data_series.append(data)
 
     return data_series, names

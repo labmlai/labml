@@ -44,13 +44,15 @@ class StepSelect(NamedTuple):
 
 class Indicator:
     def __init__(self, key: str, class_: IndicatorClass, uuid: str,
-                 select: StepSelect = None):
+                 props: Dict[str, any],
+                 select: Optional[StepSelect]):
         self.uuid = uuid
         self.class_ = class_
         self.key = key
         if select is None:
             select = StepSelect(None, None)
         self.select = select
+        self.props = props
 
     def hash_str(self):
         return f"{self.uuid}#{self.key}"
@@ -101,7 +103,8 @@ class IndicatorCollection:
 
     def __getitem__(self, item: slice):
         select = StepSelect(item.start, item.stop)
-        inds = [Indicator(ind.key, ind.class_, ind.uuid, select) for ind in self._indicators]
+        inds = [Indicator(ind.key, ind.class_, ind.uuid, ind.props, select)
+                for ind in self._indicators]
         return IndicatorCollection(inds)
 
 
@@ -132,7 +135,7 @@ class Run:
 
             if class_ is None:
                 continue
-            inds.append(Indicator(k, class_, self.run_info.uuid))
+            inds.append(Indicator(k, class_, self.run_info.uuid, v, None))
 
         with open(str(self.run_info.artifacts_path), 'r') as f:
             artifacts = util.yaml_load(f.read())
@@ -145,6 +148,6 @@ class Run:
 
             if class_ is None:
                 continue
-            inds.append(Indicator(k, class_, self.run_info.uuid))
+            inds.append(Indicator(k, class_, self.run_info.uuid, v, None))
 
         self.indicators = IndicatorCollection(inds)
