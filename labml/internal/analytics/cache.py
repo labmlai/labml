@@ -139,7 +139,7 @@ def get_artifact_files(indicator: Indicator):
     return data
 
 
-def _get_condensed_steps(series: List[Tuple[int, any]], limit: int):
+def _get_condensed_steps(series: List[List[Tuple[int, any]]], limit: int):
     steps = {}
     step_lookups = []
 

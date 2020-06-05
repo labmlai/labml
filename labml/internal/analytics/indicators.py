@@ -49,10 +49,12 @@ class Indicator:
         self.uuid = uuid
         self.class_ = class_
         self.key = key
+        self.props = props
+        if class_ == IndicatorClass.tensor and props.get('is_once', False):
+            select = None
         if select is None:
             select = StepSelect(None, None)
         self.select = select
-        self.props = props
 
     def hash_str(self):
         return f"{self.uuid}#{self.key}"
