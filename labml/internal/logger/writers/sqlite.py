@@ -75,14 +75,17 @@ class Writer(WriteBase):
             if art.is_empty():
                 continue
             key = self._parse_key(art.name)
-            if type(art) == Tensor:
+            if isinstance(art, Tensor):
                 for k in art.keys():
                     tensor = art.get_value(k)
-                    filename = f'{key}_{global_step}_{k}.npy'
-                    self.conn.execute(
-                        f"INSERT INTO tensors VALUES (?, ?, ?)",
-                        (key, global_step, filename))
-                    np.save(self.artifacts_path / filename, tensor)
+                    if not art.is_once:
+                        filename = f'{key}_{global_step}_{k}.npy'
+                        self.conn.execute(
+                            f"INSERT INTO tensors VALUES (?, ?, ?)",
+                            (key, global_step, filename))
+                    else:
+                        filename = f'{key}_{k}.npy'
+                    np.save(str(self.artifacts_path / filename), tensor)
 
         t = time.time()
         if t - self.last_committed > 0.1:
