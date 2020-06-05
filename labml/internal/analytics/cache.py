@@ -186,7 +186,6 @@ def get_artifacts_data(indicators: IndicatorCollection, limit: int = 100):
     for si, s in enumerate(series):
         ind: Indicator = series_inds[si]
         run: Run = get_run(ind.uuid)
-        print(ind)
         if ind.props.get('is_once', False):
             assert s[0][0] == -1
             filename = s[0][1]
