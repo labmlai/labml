@@ -52,8 +52,6 @@ def _scatter_chart(table: alt.Data, *,
         scat_y_title = ''
 
     encode_kwargs = dict(
-        x=alt.X('x:Q', scale=x_scale, title=scat_x_title),
-        y=alt.Y('y:Q', scale=y_scale, title=scat_y_title),
         color=alt.value(range_color)
     )
     if len(table.values) > 0 and 'step' in table.values[0]:
@@ -61,22 +59,20 @@ def _scatter_chart(table: alt.Data, *,
 
     scat = (base
             .mark_circle(size=circle_size)
-            .encode(**encode_kwargs))
+            .encode(x=alt.X('x:Q', scale=x_scale, title=scat_x_title),
+                    y=alt.Y('y:Q', scale=y_scale, title=scat_y_title),
+                    **encode_kwargs))
 
     if is_ticks:
         tick_axis = alt.Axis(labels=False, domain=False, ticks=False)
 
         x_ticks = base.mark_tick().encode(
             x=alt.X('x:Q', axis=tick_axis, scale=x_scale, title=x_name),
-            opacity='step:Q',
-            color=alt.value(range_color)
-        )
+            **encode_kwargs)
 
         y_ticks = alt.Chart(table).mark_tick().encode(
             y=alt.X('y:Q', axis=tick_axis, scale=y_scale, title=name),
-            opacity='step:Q',
-            color=alt.value(range_color)
-        )
+            **encode_kwargs)
 
         scat = scat.properties(width=width, height=height)
         x_ticks = x_ticks.properties(width=width)
