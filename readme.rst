@@ -1,3 +1,6 @@
+.. image:: https://badge.fury.io/py/labml.svg
+    :target: https://badge.fury.io/py/labml
+
 .. image:: https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png
    :width: 150
    :alt: Logo
