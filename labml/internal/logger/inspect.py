@@ -180,7 +180,9 @@ class Inspect:
             if type(arg) == list:
                 self._log_key_value([(i, v) for i, v in enumerate(arg)])
             elif type(arg) == dict:
-                self._log_key_value([(k, v) for k, v in arg.items()])
+                keys = list(arg.keys())
+                keys.sort()
+                self._log_key_value([(k, arg[k]) for k in keys])
             else:
                 self.__logger.log(self._get_value_full(arg))
         else:
