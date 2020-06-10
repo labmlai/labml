@@ -125,7 +125,10 @@ def _test():
         if (i + 1) % 10 == 0:
             print("")
 
-    print("")
+    print()
+
+    print("▁▂▃▄▅▆▇█")
+    print("▁▂▃▄▅▆▇█")
 
 
 if __name__ == "__main__":
