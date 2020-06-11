@@ -172,9 +172,6 @@ class Experiment:
 
         if 'sqlite' in writers:
             from labml.internal.logger.writers import sqlite
-            artifacts_folder = pathlib.Path(self.run.artifacts_folder)
-            if not artifacts_folder.exists():
-                artifacts_folder.mkdir(parents=True)
             logger_internal().add_writer(
                 sqlite.Writer(self.run.sqlite_path, self.run.artifacts_folder))
         if 'tensorboard' in writers:
@@ -246,7 +243,6 @@ class Experiment:
 
     def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):
         checkpoint_path, global_step = experiment_run.get_last_run_checkpoint(
-            self.experiment_path,
             run_uuid,
             checkpoint)
 

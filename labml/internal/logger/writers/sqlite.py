@@ -1,6 +1,6 @@
 import sqlite3
 import time
-from pathlib import PurePath
+from pathlib import PurePath, Path
 from typing import Dict, Optional
 
 import numpy as np
@@ -46,6 +46,50 @@ class Writer(WriteBase):
         # if we name tables
         # return key.replace('.', '_')
 
+    def _write_indicator(self, global_step: int, indicator: Indicator):
+        if indicator.is_empty():
+            return
+
+        value = indicator.get_mean()
+        if value is not None:
+            key = self._parse_key(indicator.mean_key)
+            self.conn.execute(
+                f"INSERT INTO scalars VALUES (?, ?, ?)",
+                (key, global_step, value))
+
+        idx, value = indicator.get_index_mean()
+        if idx is not None:
+            key = self._parse_key(indicator.mean_key)
+            data = [(key, global_step, i, v) for i, v in zip(idx, value)]
+            self.conn.executemany(
+                f"INSERT INTO indexed_scalars VALUES (?, ?, ?, ?)",
+                data)
+
+    def _write_artifact(self, global_step: int, artifact: Artifact):
+        if artifact.is_empty():
+            return
+
+        key = self._parse_key(artifact.name)
+        if isinstance(artifact, Tensor):
+            for k in artifact.keys():
+                tensor = artifact.get_value(k)
+                if not artifact.is_once:
+                    filename = f'{key}_{global_step}_{k}.npy'
+                    self.conn.execute(
+                        f"INSERT INTO tensors VALUES (?, ?, ?)",
+                        (key, global_step, filename))
+                else:
+                    filename = f'{key}_{k}.npy'
+                self.conn.execute(
+                    f"INSERT INTO tensors VALUES (?, ?, ?)",
+                    (key, -1, filename))
+
+                artifacts_folder = Path(self.artifacts_path)
+                if not artifacts_folder.exists():
+                    artifacts_folder.mkdir(parents=True)
+
+                np.save(str(self.artifacts_path / filename), tensor)
+
     def write(self, *,
               global_step: int,
               indicators: Dict[str, Indicator],
@@ -53,42 +97,10 @@ class Writer(WriteBase):
         self.__connect()
 
         for ind in indicators.values():
-            if ind.is_empty():
-                continue
-
-            value = ind.get_mean()
-            if value is not None:
-                key = self._parse_key(ind.mean_key)
-                self.conn.execute(
-                    f"INSERT INTO scalars VALUES (?, ?, ?)",
-                    (key, global_step, value))
-
-            idx, value = ind.get_index_mean()
-            if idx is not None:
-                key = self._parse_key(ind.mean_key)
-                data = [(key, global_step, i, v) for i, v in zip(idx, value)]
-                self.conn.executemany(
-                    f"INSERT INTO indexed_scalars VALUES (?, ?, ?, ?)",
-                    data)
+            self._write_indicator(global_step, ind)
 
         for art in artifacts.values():
-            if art.is_empty():
-                continue
-            key = self._parse_key(art.name)
-            if isinstance(art, Tensor):
-                for k in art.keys():
-                    tensor = art.get_value(k)
-                    if not art.is_once:
-                        filename = f'{key}_{global_step}_{k}.npy'
-                        self.conn.execute(
-                            f"INSERT INTO tensors VALUES (?, ?, ?)",
-                            (key, global_step, filename))
-                    else:
-                        filename = f'{key}_{k}.npy'
-                    self.conn.execute(
-                        f"INSERT INTO tensors VALUES (?, ?, ?)",
-                        (key, -1, filename))
-                    np.save(str(self.artifacts_path / filename), tensor)
+            self._write_artifact(global_step, art)
 
         t = time.time()
         if t - self.last_committed > 0.1:

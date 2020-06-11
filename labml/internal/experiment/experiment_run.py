@@ -5,6 +5,8 @@ from typing import List, Dict, Optional, Set
 import numpy as np
 
 from labml import logger
+from labml.internal.lab import lab_singleton
+
 from .. import util
 from ...logger import Text
 
@@ -200,8 +202,7 @@ class Run(RunInfo):
                 f.write(self.diff)
 
 
-def get_checkpoints(experiment_path: PurePath, run_uuid: str):
-    run_path = experiment_path / run_uuid
+def get_checkpoints(run_path: PurePath):
     checkpoint_path = Path(run_path / "checkpoints")
     if not checkpoint_path.exists():
         return {}
@@ -213,26 +214,27 @@ def get_runs(experiment_path: PurePath):
     return {child.name for child in Path(experiment_path).iterdir()}
 
 
-def get_last_run(experiment_path: PurePath, runs: Set[str]) -> Run:
-    last: Optional[Run] = None
-    for run_uuid in runs:
-        run_path = experiment_path / run_uuid
-        info_path = run_path / "run.yaml"
-        with open(str(info_path), "r") as file:
-            run = Run.from_dict(experiment_path, util.yaml_load(file.read()))
-            if last is None:
-                last = run
-            elif run.is_after(last):
-                last = run
-
-    return last
+def get_experiments(experiments_path: PurePath):
+    return {child.name
+            for child in Path(experiments_path).iterdir()
+            if not child.name.startswith('_')}
 
 
-def get_run_checkpoint(experiment_path: PurePath,
-                       run_uuid: str, checkpoint: int = -1):
-    checkpoints = get_checkpoints(experiment_path, run_uuid)
+def find_experiment(run_uuid: str) -> Optional[str]:
+    experiments_path = lab_singleton().experiments
+    experiments = get_experiments(experiments_path)
+    for exp_name in experiments:
+        run_path = experiments_path / exp_name / run_uuid
+        if Path(run_path).exists():
+            return exp_name
+
+    return None
+
+
+def get_run_checkpoint(run_path: PurePath, checkpoint: int = -1):
+    checkpoints = get_checkpoints(run_path)
     if len(checkpoints) == 0:
-        return None
+        return None, None, None
 
     if checkpoint < 0:
         required_ci = np.max(list(checkpoints)) + checkpoint + 1
@@ -246,17 +248,27 @@ def get_run_checkpoint(experiment_path: PurePath,
         return ci
 
 
-def get_last_run_checkpoint(experiment_path: PurePath,
-                            run_uuid: str,
+def get_last_run_checkpoint(run_uuid: str,
                             checkpoint: int = -1):
-    checkpoint = get_run_checkpoint(experiment_path, run_uuid,
-                                    checkpoint)
+    exp_name = find_experiment(run_uuid)
+    if exp_name is None:
+        logger.log("Couldn't find a previous run")
+        return None, None
+
+    run_path = lab_singleton().experiments / exp_name / run_uuid
+
+    exp_name, run_uuid, checkpoint = get_run_checkpoint(run_path,
+                                                        checkpoint)
 
     if checkpoint is None:
-        logger.log("Couldn't find a previous run/checkpoint")
+        logger.log("Couldn't find checkpoints")
         return None, None
 
     logger.log(["Selected ",
+                ("experiment", Text.key),
+                " = ",
+                (exp_name, Text.value),
+                " ",
                 ("run", Text.key),
                 " = ",
                 (run_uuid, Text.value),
@@ -265,6 +277,5 @@ def get_last_run_checkpoint(experiment_path: PurePath,
                 " = ",
                 (checkpoint, Text.value)])
 
-    run_path = experiment_path / str(run_uuid)
     checkpoint_path = run_path / "checkpoints"
     return checkpoint_path / str(checkpoint), checkpoint
