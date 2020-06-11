@@ -7,6 +7,8 @@ from labml.configs import BaseConfigs
 from labml.internal.experiment import \
     create_experiment as _create_experiment, \
     experiment_singleton as _experiment_singleton
+from labml.internal.experiment.experiment_run import \
+    get_configs as _get_configs
 
 if TYPE_CHECKING:
     import torch
@@ -218,17 +220,46 @@ def start():
     _experiment_singleton().start()
 
 
+def load_configs(run_uuid: str, *, is_only_hyperparam: bool = True):
+    r"""
+    Load configs of a previous run
+
+    Arguments:
+        run_uuid (str): if provided the experiment will start from
+            a saved state in the run with UUID ``run_uuid``
+    Keyword Arguments:
+        is_only_hyperparam (bool, optional): if True all only the hyper parameters
+            are returned
+    """
+
+    configs = _get_configs(run_uuid)
+    values = {}
+    for k, c in configs.items():
+        is_hyperparam = c.get('is_hyperparam', None)
+        is_explicit = c.get('is_explicitly_specified', False)
+
+        if not is_only_hyperparam:
+            values[k] = c['value']
+        elif is_hyperparam is None and is_explicit:
+            values[k] = c['value']
+        elif is_hyperparam:
+            values[k] =  c['value']
+
+    return values
+
+
 def load(run_uuid: str,
          checkpoint: Optional[int] = None):
     r"""
-    Loads and starts the experiment from a previous checkpoint.
+    Loads and starts the run from a previous checkpoint.
 
-    Keyword Arguments:
-        run_uuid (str): if provided the experiment will start from
+    Arguments:
+        run_uuid (str): experiment will start from
             a saved state in the run with UUID ``run_uuid``
         checkpoint (str, optional): if provided the experiment will start from
             given checkpoint. Otherwise it will start from the last checkpoint.
     """
+
     _experiment_singleton().start(run_uuid=run_uuid, checkpoint=checkpoint)
 
 
@@ -236,6 +267,7 @@ def save_numpy(name: str, array: np.ndarray):
     r"""
     Saves a single numpy array. This is used to save processed data.
     """
+
     numpy_path = Path(_experiment_singleton().run.numpy_path)
 
     if not numpy_path.exists():

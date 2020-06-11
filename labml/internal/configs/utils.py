@@ -4,19 +4,11 @@ class Value:
         if value is None:
             return True
 
-        if type(value) == str:
-            return True
-
-        if type(value) == int:
-            return True
-
-        if type(value) == bool:
-            return True
-
-        if type(value) == list and all([Value.is_primitive(v) for v in value]):
-            return True
-
-        if type(value) == dict and all([Value.is_primitive(v) for v in value.values()]):
+        if (isinstance(value, str)
+                or isinstance(value, int)
+                or isinstance(value, float)
+                or isinstance(value, bool)
+        ):
             return True
 
         return False
@@ -25,6 +17,12 @@ class Value:
     def to_yaml(value):
         if Value.is_primitive(value):
             return value
+        elif isinstance(value, list):
+            return [Value.to_yaml(v) for v in value]
+        elif isinstance(value, dict):
+            return {k: Value.to_yaml(v) for k, v in value.items()}
+        elif isinstance(value, tuple):
+            return tuple(Value.to_yaml(v) for v in value)
         else:
             return Value.to_str(value)
 

@@ -1,4 +1,4 @@
-from pathlib import PurePath
+from pathlib import PurePath, Path
 from typing import Dict, Optional, List, Union
 
 from labml import logger
@@ -154,3 +154,14 @@ class ConfigProcessor:
             logger.log(parts)
 
         logger.log()
+
+
+def load_configs(configs_path: PurePath):
+    configs_path = Path(configs_path)
+    if not configs_path.exists():
+        return None
+
+    with open(str(configs_path), 'r') as file:
+        configs = util.yaml_load(file.read())
+
+    return configs

@@ -5,6 +5,7 @@ from typing import List, Dict, Optional, Set
 import numpy as np
 
 from labml import logger
+from labml.internal.configs.processor import load_configs
 from labml.internal.lab import lab_singleton
 
 from .. import util
@@ -280,3 +281,15 @@ def get_run_checkpoint(run_uuid: str,
     checkpoint_path = run_path / "checkpoints"
     return checkpoint_path / str(checkpoint), checkpoint
 
+
+def get_configs(run_uuid: str):
+    exp_name = find_experiment(run_uuid)
+    if exp_name is None:
+        logger.log("Couldn't find a previous run")
+        return None
+
+    run_path = lab_singleton().experiments / exp_name / run_uuid
+    configs_path = run_path / "configs.yaml"
+    configs = load_configs(configs_path)
+
+    return configs
