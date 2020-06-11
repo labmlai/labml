@@ -242,7 +242,7 @@ class Experiment:
         logger.log()
 
     def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):
-        checkpoint_path, global_step = experiment_run.get_last_run_checkpoint(
+        checkpoint_path, global_step = experiment_run.get_run_checkpoint(
             run_uuid,
             checkpoint)
 

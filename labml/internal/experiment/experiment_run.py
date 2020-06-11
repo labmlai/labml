@@ -231,7 +231,7 @@ def find_experiment(run_uuid: str) -> Optional[str]:
     return None
 
 
-def get_run_checkpoint(run_path: PurePath, checkpoint: int = -1):
+def _get_run_checkpoint(run_path: PurePath, checkpoint: int = -1):
     checkpoints = get_checkpoints(run_path)
     if len(checkpoints) == 0:
         return None, None, None
@@ -248,8 +248,8 @@ def get_run_checkpoint(run_path: PurePath, checkpoint: int = -1):
         return ci
 
 
-def get_last_run_checkpoint(run_uuid: str,
-                            checkpoint: int = -1):
+def get_run_checkpoint(run_uuid: str,
+                       checkpoint: int = -1):
     exp_name = find_experiment(run_uuid)
     if exp_name is None:
         logger.log("Couldn't find a previous run")
@@ -257,8 +257,8 @@ def get_last_run_checkpoint(run_uuid: str,
 
     run_path = lab_singleton().experiments / exp_name / run_uuid
 
-    exp_name, run_uuid, checkpoint = get_run_checkpoint(run_path,
-                                                        checkpoint)
+    exp_name, run_uuid, checkpoint = _get_run_checkpoint(run_path,
+                                                         checkpoint)
 
     if checkpoint is None:
         logger.log("Couldn't find checkpoints")
@@ -279,3 +279,4 @@ def get_last_run_checkpoint(run_uuid: str,
 
     checkpoint_path = run_path / "checkpoints"
     return checkpoint_path / str(checkpoint), checkpoint
+
