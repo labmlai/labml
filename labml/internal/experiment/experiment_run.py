@@ -258,8 +258,8 @@ def get_run_checkpoint(run_uuid: str,
 
     run_path = lab_singleton().experiments / exp_name / run_uuid
 
-    exp_name, run_uuid, checkpoint = _get_run_checkpoint(run_path,
-                                                         checkpoint)
+    checkpoint = _get_run_checkpoint(run_path,
+                                     checkpoint)
 
     if checkpoint is None:
         logger.log("Couldn't find checkpoints")
