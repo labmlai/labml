@@ -276,7 +276,7 @@ def get_run_checkpoint(run_uuid: str,
                 " ",
                 ("checkpoint", Text.key),
                 " = ",
-                (checkpoint, Text.value)])
+                (str(checkpoint), Text.value)])
 
     checkpoint_path = run_path / "checkpoints"
     return checkpoint_path / str(checkpoint), checkpoint

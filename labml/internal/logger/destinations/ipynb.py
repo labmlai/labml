@@ -66,8 +66,9 @@ class IpynbDestination(Destination):
         text = "".join(coded)
         lines = text.split('\n')
         if self.is_same_cell():
-            self.__cell_lines.pop()
-            self.__cell_lines += lines
+            if coded:
+                self.__cell_lines.pop()
+                self.__cell_lines += lines
             text = '\n'.join(self.__cell_lines)
             html = HTML(f"<pre>{text}</pre>")
             self.__last_handle.update(html)
