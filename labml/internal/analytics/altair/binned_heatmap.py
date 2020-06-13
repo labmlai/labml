@@ -48,7 +48,7 @@ def _heatmap(table: alt.Data, *,
                             bin=alt.Bin(maxbins=50, extent=brush)),
                     y=alt.Y('y:Q', scale=y_scale, title=scat_y_title,
                             bin=alt.Bin(maxbins=50, extent=brush)),
-                    color=alt.Color('count(IMDB_Rating):Q', scale=alt.Scale(scheme='greenblue'))
+                    color=alt.Color('count():Q', scale=alt.Scale(scheme='greenblue'))
                     ))
 
     if is_ticks:

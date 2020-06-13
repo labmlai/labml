@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 
 from labml.internal.analytics import cache as _cache
 from labml.internal.analytics.altair import density as _density
+from labml.internal.analytics.altair import histogram as _histogram
 from labml.internal.analytics.altair import scatter as _scatter
 from labml.internal.analytics.altair import binned_heatmap as _binned_heatmap
 from labml.internal.analytics.indicators import IndicatorCollection as _IndicatorCollection
@@ -206,6 +207,35 @@ def distribution(*args: any,
         names=names,
         levels=levels,
         alpha=alpha,
+        width=width,
+        height=height,
+        height_minimap=height_minimap)
+
+
+def histogram(series: Union[np.ndarray, 'torch.Tensor'], *,
+              low: Optional[float] = None, high: Optional[float] = None,
+              height: int = 400, width: int = 800, height_minimap: int = 100):
+    r"""
+    Creates a histogram with Altair
+
+    Arguments:
+        series(Union[np.ndarray, torch.Tensor]): Data
+
+    Keyword Arguments:
+        low: values less than this are ignored
+        high: values greater than this are ignored
+        height: height of the visualization
+        width: width of the visualization
+        height_minimap: height of the view finder
+
+    Return:
+        The Altair visualization
+    """
+
+    table = _histogram.data_to_table(series, low, high)
+
+    return _histogram.render(
+        table,
         width=width,
         height=height,
         height_minimap=height_minimap)
