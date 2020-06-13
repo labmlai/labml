@@ -86,6 +86,7 @@ def _render_density(table: alt.Data, *,
 
 def render(tables: List[alt.Data], *,
            names: List[str],
+           is_independent: bool,
            levels=5,
            alpha=0.6,
            height: int,
@@ -124,6 +125,8 @@ def render(tables: List[alt.Data], *,
                                                            "encoding": "y"}))
         if details is None:
             details = detail
+        elif is_independent:
+            details = alt.layer(details, detail).resolve_scale(y='independent')
         else:
             details += detail
 
