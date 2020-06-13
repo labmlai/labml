@@ -1,6 +1,10 @@
-from typing import Tuple, Optional, List, overload, Union
+from typing import Tuple, Optional, List, overload, Union, TYPE_CHECKING
 
 import numpy as np
+
+if TYPE_CHECKING:
+    import torch
+
 from labml.internal.analytics import cache as _cache
 from labml.internal.analytics.altair import density as _density
 from labml.internal.analytics.altair import scatter as _scatter
@@ -102,7 +106,7 @@ def distribution(indicators: IndicatorCollection, *,
 
 
 @overload
-def distribution(series: List[np.ndarray], *,
+def distribution(series: List[Union[np.ndarray, 'torch.Tensor']], *,
                  names: Optional[List[str]] = None,
                  levels: int = 5, alpha: int = 0.6,
                  height: int = 400, width: int = 800, height_minimap: int = 100):
@@ -110,8 +114,16 @@ def distribution(series: List[np.ndarray], *,
 
 
 @overload
-def distribution(series: List[np.ndarray],
+def distribution(series: List[Union[np.ndarray, 'torch.Tensor']],
                  step: np.ndarray, *,
+                 names: Optional[List[str]] = None,
+                 levels: int = 5, alpha: int = 0.6,
+                 height: int = 400, width: int = 800, height_minimap: int = 100):
+    ...
+
+
+@overload
+def distribution(series: Union[np.ndarray, 'torch.Tensor'], *,
                  names: Optional[List[str]] = None,
                  levels: int = 5, alpha: int = 0.6,
                  height: int = 400, width: int = 800, height_minimap: int = 100):
@@ -130,10 +142,13 @@ def distribution(*args: any,
     .. function:: distribution(indicators: IndicatorCollection, *, names: Optional[List[str]] = None, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
         :noindex:
 
-    .. function:: distribution(series: List[np.ndarray], *, names: Optional[List[str]] = None, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
+    .. function:: distribution(series: Union[np.ndarray, torch.Tensor], *, names: Optional[List[str]] = None, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
         :noindex:
 
-    .. function:: distribution(series: List[np.ndarray], step: np.ndarray, *, names: Optional[List[str]] = None, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
+    .. function:: distribution(series: List[Union[np.ndarray, torch.Tensor]], *, names: Optional[List[str]] = None, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
+        :noindex:
+
+    .. function:: distribution(series: List[Union[np.ndarray, torch.Tensor]], step: np.ndarray, *, names: Optional[List[str]] = None, levels: int = 5, alpha: int = 0.6, height: int = 400, width: int = 800, height_minimap: int = 100)
         :noindex:
 
     Arguments:
@@ -170,6 +185,8 @@ def distribution(*args: any,
                 names = names_
         elif isinstance(args[0], list):
             series = args[0]
+        else:
+            series = [args[0]]
     elif len(args) == 2:
         series = args[0]
         step = args[1]

@@ -3,9 +3,17 @@ from typing import List
 import altair as alt
 from labml.internal.analytics.altair.utils import TABLEAU_10
 
+try:
+    import torch
+except ImportError:
+    torch = None
+
 
 def data_to_table(data, step):
     table = []
+
+    if torch is not None and isinstance(data, torch.Tensor):
+        data = data.detach().cpu().numpy()
 
     for i in range(data.shape[0]):
         if len(data.shape) == 2:
