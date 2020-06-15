@@ -2,7 +2,7 @@ from typing import Iterable
 import numpy as np
 
 
-def dp_match(key: str, pattern: str):
+def is_pattern_match(key: str, pattern: str):
     dp = np.zeros((len(key) + 1, len(pattern) + 1), dtype=np.bool)
     dp[0, 0] = True
 
@@ -18,11 +18,11 @@ def dp_match(key: str, pattern: str):
     return bool(dp[len(key), len(pattern)])
 
 
-def match(key: str, patterns: Iterable[str]):
+def find_best_pattern(key: str, patterns: Iterable[str]):
     max_score = -1
     best = None
     for p in patterns:
-        if dp_match(key, p):
+        if is_pattern_match(key, p):
             s = 0
             for c in p:
                 if c not in {'*', '?'}:

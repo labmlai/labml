@@ -1,10 +1,11 @@
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional, Tuple, NamedTuple, Dict
+from typing import List, Optional, Tuple, NamedTuple, Dict, Union
 
 from labml import lab
 from labml.internal import util
 from labml.internal.experiment.experiment_run import RunInfo
+from labml.internal.util.strings import is_pattern_match
 
 
 class RunsSet:
@@ -103,11 +104,17 @@ class IndicatorCollection:
     def __len__(self):
         return len(self._indicators)
 
-    def __getitem__(self, item: slice):
-        select = StepSelect(item.start, item.stop)
-        inds = [Indicator(ind.key, ind.class_, ind.uuid, ind.props, select)
-                for ind in self._indicators]
-        return IndicatorCollection(inds)
+    def __getitem__(self, item: Union[slice, str]):
+        if isinstance(item, slice):
+            select = StepSelect(item.start, item.stop)
+            inds = [Indicator(ind.key, ind.class_, ind.uuid, ind.props, select)
+                    for ind in self._indicators]
+            return IndicatorCollection(inds)
+        elif isinstance(item, str):
+            inds = [ind for ind in self._indicators if is_pattern_match(ind.key, item)]
+            return IndicatorCollection(inds)
+        else:
+            raise ValueError(item)
 
 
 class Run:

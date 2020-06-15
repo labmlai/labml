@@ -64,7 +64,7 @@ class Store:
         if key in self.indicators:
             self.indicators[key].collect_value(value)
         else:
-            ind_key, ind_score = strings.match(key, self.dot_indicators.keys())
+            ind_key, ind_score = strings.find_best_pattern(key, self.dot_indicators.keys())
 
             self.indicators[key] = self.dot_indicators[ind_key].copy(key)
             self.is_indicators_updated = True
