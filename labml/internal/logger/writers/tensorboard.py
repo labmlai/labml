@@ -2,11 +2,12 @@ from pathlib import PurePath
 from typing import Dict
 
 import tensorflow as tf
+from labml.internal.logger.store.indicators import Indicator
+from labml.internal.logger.store.indicators.artifacts import Image
+from labml.internal.logger.store.indicators.numeric import NumericIndicator
 from tensorboard.plugins.hparams import api as hp
 
 from . import Writer as WriteBase
-from labml.internal.logger.store.artifacts import Artifact, Image
-from labml.internal.logger.store.indicators import Indicator
 
 tf.config.experimental.set_visible_devices([], "GPU")
 
@@ -38,35 +39,33 @@ class Writer(WriteBase):
         with self.__writer.as_default():
             hp.hparams(hparams)
 
+    def _write_indicator(self, global_step: int, indicator: Indicator):
+        if indicator.is_empty():
+            return
+
+        if isinstance(indicator, NumericIndicator):
+            hist_data = indicator.get_histogram()
+            if hist_data is not None:
+                tf.summary.histogram(self._parse_key(indicator.name),
+                                     hist_data, step=global_step)
+
+            tf.summary.scalar(self._parse_key(indicator.mean_key),
+                              indicator.get_mean(),
+                              step=global_step)
+
+        if isinstance(indicator, Image):
+            for key in indicator.keys():
+                img = indicator.get_value(key)
+                img = img.cpu().detach().permute(0, 2, 3, 1).numpy()
+                tf.summary.image(self._parse_key(indicator.name),
+                                 img,
+                                 step=global_step)
+
     def write(self, *,
               global_step: int,
-              indicators: Dict[str, Indicator],
-              artifacts: Dict[str, Artifact]):
+              indicators: Dict[str, Indicator]):
         self.__connect()
 
         with self.__writer.as_default():
             for ind in indicators.values():
-                if ind.is_empty():
-                    continue
-
-                hist_data = ind.get_histogram()
-                if hist_data is not None:
-                    tf.summary.histogram(self._parse_key(ind.name), hist_data, step=global_step)
-
-                mean_value = ind.get_mean()
-                if mean_value is not None:
-                    tf.summary.scalar(self._parse_key(ind.mean_key), mean_value,
-                                      step=global_step)
-
-            for art in artifacts.values():
-                if art.is_empty():
-                    continue
-
-                if type(art) == Image:
-                    # Expecting NxCxHxW images in pytorch tensors normalized in [0, 1]
-                    for key in art.keys():
-                        img = art.get_value(key)
-                        img = img.cpu().detach().permute(0, 2, 3, 1).numpy()
-                        tf.summary.image(self._parse_key(art.name),
-                                         img,
-                                         step=global_step)
+                self._write_indicator(global_step, ind)

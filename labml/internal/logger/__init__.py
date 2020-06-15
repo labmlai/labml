@@ -2,16 +2,15 @@ import typing
 from pathlib import PurePath
 from typing import Optional, List, Union, Tuple, Dict
 
-from labml.internal.logger.store.artifacts import Artifact
-from labml.internal.logger.store.indicators import Indicator
-from labml.internal.util.colors import StyleCode
 from .destinations.factory import create_destination
 from .inspect import Inspect
 from .iterator import Iterator
 from .loop import Loop
 from .sections import Section, OuterSection
 from .store import Store
+from .store.indicators import Indicator
 from .writers import Writer, ScreenWriter
+from ..util.colors import StyleCode
 from ...logger import Text
 
 
@@ -73,14 +72,8 @@ class Logger:
     def add_indicator(self, indicator: Indicator):
         self.__store.add_indicator(indicator)
 
-    def add_artifact(self, artifact: Artifact):
-        self.__store.add_artifact(artifact)
-
     def save_indicators(self, file: PurePath):
         self.__store.save_indicators(file)
-
-    def save_artifacts(self, file: PurePath):
-        self.__store.save_artifacts(file)
 
     def store(self, key: str, value: any):
         self.__store.store(key, value)

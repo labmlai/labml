@@ -3,16 +3,16 @@ from typing import Dict
 import numpy as np
 
 from labml import logger
+from labml.internal.logger.store.indicators.numeric import NumericIndicator
 from labml.logger import Text
-from labml.internal.logger.store.artifacts import Artifact
+from labml.internal.logger.store.indicators.artifacts import Artifact
 from labml.internal.logger.store.indicators import Indicator
 
 
 class Writer:
     def write(self, *,
               global_step: int,
-              indicators: Dict[str, Indicator],
-              artifacts: Dict[str, Artifact]):
+              indicators: Dict[str, Indicator]):
         raise NotImplementedError()
 
     def flush(self):
@@ -73,6 +73,8 @@ class ScreenWriter(Writer):
         parts = []
 
         for ind in indicators.values():
+            if not isinstance(ind, NumericIndicator):
+                continue
             if not ind.is_print:
                 continue
 
@@ -93,7 +95,8 @@ class ScreenWriter(Writer):
 
         return parts
 
-    def _print_artifacts_list(self, table: Dict[str, int], artifacts: Dict[str, Artifact]):
+    @staticmethod
+    def _print_artifacts_list(table: Dict[str, int], artifacts: Dict[str, Artifact]):
         order = list(table.keys())
         if not len(order):
             return
@@ -130,18 +133,22 @@ class ScreenWriter(Writer):
                 parts.append(self.__format_artifact(table[name], value))
             logger.log('|'.join(parts), Text.value)
 
-    def _print_artifacts(self, artifacts: Dict[str, Artifact]):
-        table = {}
-        for art in artifacts.values():
-            if not art.is_print:
+    def _print_artifacts(self, indicators: Dict[str, Indicator]):
+        table  = {}
+        artifacts = {}
+        for ind in indicators.values():
+            if not isinstance(ind, Artifact):
+                return
+            if not ind.is_print:
                 continue
-            if art.is_empty():
+            if ind.is_empty():
                 continue
-            if not art.is_indexed:
-                art.print_all(artifacts)
+            if not ind.is_indexed:
+                ind.print_all()
                 continue
 
-            table[art.name] = art.get_print_length()
+            table[ind.name] = ind.get_print_length()
+            artifacts[ind.name] = ind
 
         if sum(table.values()) > 100:
             self._print_artifacts_list(table, artifacts)
@@ -150,9 +157,8 @@ class ScreenWriter(Writer):
 
     def write(self, *,
               global_step: int,
-              indicators: Dict[str, Indicator],
-              artifacts: Dict[str, Artifact]):
+              indicators: Dict[str, Indicator]):
 
-        self._print_artifacts(artifacts)
+        self._print_artifacts(indicators)
 
         return self._get_indicator_string(indicators)

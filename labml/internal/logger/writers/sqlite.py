@@ -4,10 +4,12 @@ from pathlib import PurePath, Path
 from typing import Dict, Optional
 
 import numpy as np
+from ..store.indicators import Indicator
+from ..store.indicators.artifacts import Tensor
+from ..store.indicators.indexed import IndexedIndicator
+from ..store.indicators.numeric import NumericIndicator
 
 from . import Writer as WriteBase
-from ..store.artifacts import Artifact, Tensor
-from ..store.indicators import Indicator
 
 
 class Writer(WriteBase):
@@ -50,30 +52,26 @@ class Writer(WriteBase):
         if indicator.is_empty():
             return
 
-        value = indicator.get_mean()
-        if value is not None:
+        if isinstance(indicator, NumericIndicator):
+            value = indicator.get_mean()
             key = self._parse_key(indicator.mean_key)
             self.conn.execute(
                 f"INSERT INTO scalars VALUES (?, ?, ?)",
                 (key, global_step, value))
 
-        idx, value = indicator.get_index_mean()
-        if idx is not None:
+        if isinstance(indicator, IndexedIndicator):
+            idx, value = indicator.get_index_mean()
             key = self._parse_key(indicator.mean_key)
             data = [(key, global_step, i, v) for i, v in zip(idx, value)]
             self.conn.executemany(
                 f"INSERT INTO indexed_scalars VALUES (?, ?, ?, ?)",
                 data)
 
-    def _write_artifact(self, global_step: int, artifact: Artifact):
-        if artifact.is_empty():
-            return
-
-        key = self._parse_key(artifact.name)
-        if isinstance(artifact, Tensor):
-            for k in artifact.keys():
-                tensor = artifact.get_value(k)
-                if not artifact.is_once:
+        if isinstance(indicator, Tensor):
+            key = self._parse_key(indicator.name)
+            for k in indicator.keys():
+                tensor = indicator.get_value(k)
+                if not indicator.is_once:
                     filename = f'{key}_{global_step}_{k}.npy'
                     self.conn.execute(
                         f"INSERT INTO tensors VALUES (?, ?, ?)",
@@ -92,15 +90,11 @@ class Writer(WriteBase):
 
     def write(self, *,
               global_step: int,
-              indicators: Dict[str, Indicator],
-              artifacts: Dict[str, Artifact]):
+              indicators: Dict[str, Indicator]):
         self.__connect()
 
         for ind in indicators.values():
             self._write_indicator(global_step, ind)
-
-        for art in artifacts.values():
-            self._write_artifact(global_step, art)
 
         t = time.time()
         if t - self.last_committed > 0.1:

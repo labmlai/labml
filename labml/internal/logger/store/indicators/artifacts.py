@@ -3,15 +3,16 @@ from collections import OrderedDict
 from typing import Dict, Optional, Any, OrderedDict as OrderedDictType
 from uuid import uuid1
 
+from labml.internal.util.values import to_numpy
+from labml import logger
+from labml.logger import Text as TextStyle
+
+from . import Indicator
+
 try:
     import matplotlib.pyplot as plt
 except (ImportError, ModuleNotFoundError):
     plt = None
-
-import numpy as np
-
-from labml import logger
-from labml.logger import Text as TextStyle
 
 try:
     import torch
@@ -19,42 +20,9 @@ except ImportError:
     torch = None
 
 
-def _to_numpy(value):
-    type_ = type(value)
-
-    if type_ == float or type_ == int:
-        return np.array(value)
-
-    if type_ == list:
-        return np.array(value)
-
-    if type_ == np.ndarray:
-        return value
-
-    if torch is not None:
-        if type_ == torch.nn.parameter.Parameter:
-            return value.data.cpu().numpy()
-        if type_ == torch.Tensor:
-            return value.data.cpu().numpy()
-
-    assert False, f"Unknown type {type_}"
-
-
-class Artifact(ABC):
+class Artifact(Indicator, ABC):
     def __init__(self, *, name: str, is_print: bool):
-        self.is_print = is_print
-        self.name = name
-
-    def clear(self):
-        pass
-
-    def is_empty(self) -> bool:
-        raise NotImplementedError()
-
-    def to_dict(self) -> Dict:
-        return dict(class_name=self.__class__.__name__,
-                    name=self.name,
-                    is_print=self.is_print)
+        super().__init__(name=name, is_print=is_print)
 
     def _collect_value(self, key: str, value):
         raise NotImplementedError()
@@ -69,7 +37,7 @@ class Artifact(ABC):
     def get_string(self, key: str, others: Dict[str, 'Artifact']) -> Optional[str]:
         return None
 
-    def print_all(self, others: Dict[str, 'Artifact']):
+    def print_all(self):
         pass
 
     def keys(self):
@@ -78,23 +46,14 @@ class Artifact(ABC):
     def get_value(self, key: str):
         return None
 
-    def collect_value(self, key: Optional[str], value):
-        if key is None:
-            if type(value) == tuple and len(value) == 2:
-                key = value[0]
-                value = value[1]
-            else:
-                key = uuid1().hex
+    def collect_value(self, value):
+        if type(value) == tuple and len(value) == 2:
+            key = value[0]
+            value = value[1]
+        else:
+            key = uuid1().hex
 
         self._collect_value(key, value)
-
-    def copy(self, key: str):
-        raise NotImplementedError()
-
-    def equals(self, value: any) -> bool:
-        if type(value) != type(self):
-            return False
-        return value.name == self.name and value.is_print == self.is_print
 
 
 class _Collection(Artifact, ABC):
@@ -138,7 +97,7 @@ class Tensor(_Collection):
         return Tensor(key, is_once=self.is_once)
 
     def _collect_value(self, key: str, value):
-        self._values[key] = _to_numpy(value)
+        self._values[key] = to_numpy(value)
 
     def equals(self, value: any) -> bool:
         if not isinstance(value, Tensor):
@@ -150,11 +109,11 @@ class Image(_Collection):
     def get_print_length(self) -> Optional[int]:
         return None
 
-    def print_all(self, others: Dict[str, Artifact]):
+    def print_all(self):
         if plt is None:
             logger.log(('matplotlib', logger.Text.highlight),
-                       ' not found. So cannot display impages')
-        images = [_to_numpy(v) for v in self._values.values()]
+                       ' not found. So cannot display images')
+        images = [to_numpy(v) for v in self._values.values()]
         cols = 3
         fig: plt.Figure
         fig, axs = plt.subplots((len(images) + cols - 1) // cols, cols,
@@ -174,7 +133,7 @@ class Text(_Collection):
     def get_print_length(self) -> Optional[int]:
         return None
 
-    def print_all(self, others: Dict[str, Artifact]):
+    def print_all(self):
         logger.log(self.name, TextStyle.heading)
         for t in self._values.values():
             logger.log(t, TextStyle.value)

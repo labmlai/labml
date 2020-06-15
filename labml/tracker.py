@@ -16,43 +16,43 @@ def get_global_step() -> int:
 
 
 def set_queue(name: str, queue_size: int = 10, is_print: bool = False):
-    from labml.internal.logger.store.indicators import Queue
+    from labml.internal.logger.store.indicators.numeric import Queue
     _internal().add_indicator(Queue(name, queue_size, is_print))
 
 
 def set_histogram(name: str, is_print: bool = False):
-    from labml.internal.logger.store.indicators import Histogram
+    from labml.internal.logger.store.indicators.numeric import Histogram
     _internal().add_indicator(Histogram(name, is_print))
 
 
 def set_scalar(name: str, is_print: bool = False):
-    from labml.internal.logger.store.indicators import Scalar
+    from labml.internal.logger.store.indicators.numeric import Scalar
     _internal().add_indicator(Scalar(name, is_print))
 
 
 def set_indexed_scalar(name: str):
-    from labml.internal.logger.store.indicators import IndexedScalar
+    from labml.internal.logger.store.indicators.indexed import IndexedScalar
     _internal().add_indicator(IndexedScalar(name))
 
 
 def set_image(name: str, is_print: bool = False):
-    from labml.internal.logger.store.artifacts import Image
-    _internal().add_artifact(Image(name, is_print))
+    from labml.internal.logger.store.indicators.artifacts import Image
+    _internal().add_indicator(Image(name, is_print))
 
 
 def set_text(name: str, is_print: bool = False):
-    from labml.internal.logger.store.artifacts import Text
-    _internal().add_artifact(Text(name, is_print))
+    from labml.internal.logger.store.indicators.artifacts import Text
+    _internal().add_indicator(Text(name, is_print))
 
 
 def set_tensor(name: str, is_once: bool = False):
-    from labml.internal.logger.store.artifacts import Tensor
-    _internal().add_artifact(Tensor(name, is_once=is_once))
+    from labml.internal.logger.store.indicators.artifacts import Tensor
+    _internal().add_indicator(Tensor(name, is_once=is_once))
 
 
 def set_indexed_text(name: str, title: Optional[str] = None, is_print: bool = False):
-    from labml.internal.logger.store.artifacts import IndexedText
-    _internal().add_artifact(IndexedText(name, title, is_print))
+    from labml.internal.logger.store.indicators.artifacts import IndexedText
+    _internal().add_indicator(IndexedText(name, title, is_print))
 
 
 def _add_dict(values: Dict[str, any]):

@@ -122,6 +122,13 @@ class Run:
         with open(str(self.run_info.indicators_path), 'r') as f:
             indicators = util.yaml_load(f.read())
 
+        if 'indicators' not in indicators:
+            raise RuntimeError("This run is corrupted or from an old version of LabML. "
+                               "Please update labml_dashboard and run it on this project. "
+                               "It will automatically migrate all the experiments.")
+
+        indicators = indicators['indicators']
+
         inds = []
         for k, v in indicators.items():
             cn = v['class_name']
@@ -134,18 +141,7 @@ class Run:
                 class_ = IndicatorClass.scalar
             elif cn == 'Scalar':
                 class_ = IndicatorClass.scalar
-
-            if class_ is None:
-                continue
-            inds.append(Indicator(k, class_, self.run_info.uuid, v, None))
-
-        with open(str(self.run_info.artifacts_path), 'r') as f:
-            artifacts = util.yaml_load(f.read())
-
-        for k, v in artifacts.items():
-            cn = v['class_name']
-            class_ = None
-            if cn == 'Tensor':
+            elif cn == 'Tensor':
                 class_ = IndicatorClass.tensor
 
             if class_ is None:

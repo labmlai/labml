@@ -110,7 +110,7 @@ class Experiment:
 
     # whether not to start the experiment if there are uncommitted changes.
     check_repo_dirty: bool
-    checkpoint_saver: CheckpointSaver
+    checkpoint_saver: Optional[CheckpointSaver]
 
     def __init__(self, *,
                  name: Optional[str],
@@ -278,7 +278,6 @@ class Experiment:
             self.configs_processor.save(self.run.configs_path)
 
         logger_internal().save_indicators(self.run.indicators_path)
-        logger_internal().save_artifacts(self.run.artifacts_path)
         if self.configs_processor:
             logger_internal().write_h_parameters(self.configs_processor.get_hyperparams())
 
