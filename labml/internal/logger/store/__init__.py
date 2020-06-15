@@ -22,8 +22,10 @@ class Store:
         self.__indicators_file = None
         self.namespaces = []
         self.add_indicator(Scalar('*', True))
+        self.is_indicators_updated = True
 
     def save_indicators(self, file: PurePath):
+        self.is_indicators_updated = False
         self.__indicators_file = file
 
         wildcards = {k: ind.to_dict() for k, ind in self.dot_indicators.items()}
@@ -53,9 +55,7 @@ class Store:
 
     def add_indicator(self, indicator: Indicator):
         self.dot_indicators[indicator.name] = indicator
-
-        if self.__indicators_file is not None:
-            self.save_indicators(self.__indicators_file)
+        self.is_indicators_updated = True
 
     def store(self, key: str, value: any):
         if key.startswith('.'):
@@ -67,8 +67,7 @@ class Store:
             ind_key, ind_score = strings.match(key, self.dot_indicators.keys())
 
             self.indicators[key] = self.dot_indicators[ind_key].copy(key)
-            if self.__indicators_file is not None:
-                self.save_indicators(self.__indicators_file)
+            self.is_indicators_updated = True
 
             self.store(key, value)
 
@@ -77,6 +76,9 @@ class Store:
             v.clear()
 
     def write(self, writer: Writer, global_step):
+        if self.is_indicators_updated and self.__indicators_file is not None:
+            self.save_indicators(self.__indicators_file)
+
         return writer.write(global_step=global_step,
                             indicators=self.indicators)
 
