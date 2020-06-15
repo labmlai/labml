@@ -3,7 +3,9 @@ from collections import OrderedDict
 from typing import List, Dict, Type, OrderedDict as OrderedDictType, Set
 from typing import TYPE_CHECKING
 
+from labml import logger
 from labml.internal.configs.eval_function import EvalFunction
+from labml.logger import Text
 
 from .config_function import ConfigFunction
 from .config_item import ConfigItem
@@ -114,8 +116,10 @@ class Parser:
 
         if values is not None:
             for k, v in values.items():
-                assert k in self.types
-                self.__collect_value(k, v)
+                if k in self.types:
+                    self.__collect_value(k, v)
+                else:
+                    logger.log(f'Ignoring config: {k} = {str(v)}', Text.warning)
 
         self.__calculate_aggregates()
         self.__calculate_missing_values()
