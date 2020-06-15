@@ -1,11 +1,12 @@
 from pathlib import PurePath
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Iterable
 
 from .artifacts import Artifact
 from .indicators import Indicator, Scalar
 from .namespace import Namespace
 from ..writers import Writer
 from ... import util
+from ...util import strings
 
 
 class Store:
@@ -23,11 +24,12 @@ class Store:
         self.__indicators_file = None
         self.__artifacts_file = None
         self.namespaces = []
+        self.add_indicator(Scalar('*', True))
 
     def save_indicators(self, file: PurePath):
         self.__indicators_file = file
 
-        data = {k: ind.to_dict() for k, ind in self.indicators.items() }
+        data = {k: ind.to_dict() for k, ind in self.indicators.items()}
         with open(str(file), "w") as file:
             file.write(util.yaml_dump(data))
 
@@ -61,31 +63,18 @@ class Store:
         self.namespaces.pop(-1)
 
     def add_indicator(self, indicator: Indicator):
-        self.__assert_name(indicator.name, indicator)
-        if indicator.name.startswith('.'):
-            self.dot_indicators[indicator.name] = indicator
-            return
-
-        self.indicators[indicator.name] = indicator
-        indicator.clear()
+        self.dot_indicators[indicator.name] = indicator
 
         if self.__indicators_file is not None:
             self.save_indicators(self.__indicators_file)
 
     def add_artifact(self, artifact: Artifact):
-        self.__assert_name(artifact.name, artifact)
-        if artifact.name.startswith('.'):
-            self.dot_artifacts[artifact.name] = artifact
-            return
-
-        self.artifacts[artifact.name] = artifact
-        artifact.clear()
+        self.dot_artifacts[artifact.name] = artifact
 
         if self.__artifacts_file is not None:
             self.save_artifacts(self.__artifacts_file)
 
     def store(self, key: str, value: any):
-        suffix = key
         if key.startswith('.'):
             key = '.'.join([ns.name for ns in self.namespaces] + [key[1:]])
 
@@ -93,15 +82,20 @@ class Store:
             self.artifacts[key].collect_value(None, value)
         elif key in self.indicators:
             self.indicators[key].collect_value(value)
-        elif suffix in self.dot_indicators:
-            self.add_indicator(self.dot_indicators[suffix].copy(key))
-            self.indicators[key].collect_value(value)
-        elif suffix in self.dot_artifacts:
-            self.add_artifact(self.dot_artifacts[suffix].copy(key))
-            self.artifacts[key].collect_value(None, value)
         else:
-            self.add_indicator(Scalar(key, True))
-            self.indicators[key].collect_value(value)
+            art_key, art_score = strings.match(key, self.dot_artifacts.keys())
+            ind_key, ind_score = strings.match(key, self.dot_indicators.keys())
+
+            if art_score > ind_score:
+                self.artifacts[key] = self.dot_artifacts[art_key].copy(key)
+                if self.__artifacts_file is not None:
+                    self.save_artifacts(self.__artifacts_file)
+            else:
+                self.indicators[key] = self.dot_indicators[ind_key].copy(key)
+                if self.__indicators_file is not None:
+                    self.save_indicators(self.__indicators_file)
+
+            self.store(key, value)
 
     def clear(self):
         for k, v in self.indicators.items():

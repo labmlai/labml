@@ -42,9 +42,8 @@ class SimpleBatchStep(BatchStep):
         self.optimizer = optimizer
         self.model = model
 
-        tracker.set_queue(".loss", 20, True)
-        if self.accuracy_func is not None:
-            tracker.set_scalar(".accuracy", True)
+        tracker.set_queue("*.loss", 20, True)
+        tracker.set_scalar("*.accuracy", True)
 
     def log_stats(self, stats: any):
         if self.accuracy_func is not None:
