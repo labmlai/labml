@@ -17,7 +17,7 @@ class NumericIndicator(Indicator, ABC):
 
     @property
     def mean_key(self):
-        return f'{self.name}'
+        return f'{self.name}.mean'
 
 
 class Queue(NumericIndicator):
@@ -99,3 +99,7 @@ class Scalar(_Collection):
 
     def copy(self, key: str):
         return Scalar(key, is_print=self.is_print)
+
+    @property
+    def mean_key(self):
+        return f'{self.name}'
