@@ -41,11 +41,16 @@ def get_tensorboard_data(indicator: Indicator):
     except FileNotFoundError:
         return None
 
+    key = indicator.key
+    if indicator.is_distribution and indicator.is_mean:
+        key = f'{key}.mean'
+
     try:
-        tensor = tb.tensor(indicator.key, indicator.select.start, indicator.select.end)
+        tensor = tb.tensor(key, indicator.select.start, indicator.select.end)
     except KeyError:
         return None
-    if indicator.class_ in [IndicatorClass.histogram, IndicatorClass.queue]:
+
+    if indicator.is_distribution and not indicator.is_mean:
         data = tb.summarize_compressed_histogram(tensor)
     else:
         data = tb.summarize_scalars(tensor)
@@ -71,9 +76,9 @@ def get_sqlite_data(indicator: Indicator):
 
     sqlite: SQLiteAnalytics = _SQLITE[indicator.uuid]
 
-    if indicator.class_ in [IndicatorClass.histogram, IndicatorClass.queue]:
+    if indicator.is_distribution:
         return _get_sqlite_scalar_data(sqlite, f"{indicator.key}.mean", indicator.select)
-    elif indicator.class_ == IndicatorClass.scalar:
+    elif indicator.is_scalar:
         return _get_sqlite_scalar_data(sqlite, indicator.key, indicator.select)
     else:
         return None

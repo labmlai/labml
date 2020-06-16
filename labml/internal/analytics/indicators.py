@@ -45,8 +45,9 @@ class StepSelect(NamedTuple):
 
 class Indicator:
     def __init__(self, key: str, class_: IndicatorClass, uuid: str,
-                 props: Dict[str, any],
-                 select: Optional[StepSelect]):
+                 props: Dict[str, any], *,
+                 select: Optional[StepSelect] = None,
+                 is_mean: bool = False):
         self.uuid = uuid
         self.class_ = class_
         self.key = key
@@ -56,9 +57,18 @@ class Indicator:
         if select is None:
             select = StepSelect(None, None)
         self.select = select
+        self.is_mean = is_mean
 
     def hash_str(self):
         return f"{self.uuid}#{self.key}"
+
+    @property
+    def is_distribution(self):
+        return self.class_ in [IndicatorClass.histogram, IndicatorClass.queue]
+
+    @property
+    def is_scalar(self):
+        return self.class_ == IndicatorClass.scalar
 
 
 class IndicatorCollection:
@@ -107,7 +117,8 @@ class IndicatorCollection:
     def __getitem__(self, item: Union[slice, str]):
         if isinstance(item, slice):
             select = StepSelect(item.start, item.stop)
-            inds = [Indicator(ind.key, ind.class_, ind.uuid, ind.props, select)
+            inds = [Indicator(ind.key, ind.class_, ind.uuid, ind.props,
+                              select=select, is_mean=ind.is_mean)
                     for ind in self._indicators]
             return IndicatorCollection(inds)
         elif isinstance(item, str):
@@ -115,6 +126,12 @@ class IndicatorCollection:
             return IndicatorCollection(inds)
         else:
             raise ValueError(item)
+
+    def mean(self):
+        inds = [Indicator(ind.key, ind.class_, ind.uuid, ind.props,
+                          select=ind.select,
+                          is_mean=True) for ind in self._indicators]
+        return IndicatorCollection(inds)
 
 
 class Run:
@@ -153,6 +170,6 @@ class Run:
 
             if class_ is None:
                 continue
-            inds.append(Indicator(k, class_, self.run_info.uuid, v, None))
+            inds.append(Indicator(k, class_, self.run_info.uuid, v))
 
         self.indicators = IndicatorCollection(inds)
