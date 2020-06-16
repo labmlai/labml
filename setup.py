@@ -5,7 +5,7 @@ with open("readme.rst", "r") as f:
 
 setuptools.setup(
     name='labml',
-    version='0.4.16',
+    version='0.4.17',
     author="Varuna Jayasiri, Nipun Wijerathne",
     author_email="vpjayasiri@gmail.com, hnipun@gmail.com",
     description="Organize Machine Learning Experiments",
