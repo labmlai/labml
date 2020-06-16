@@ -1,7 +1,6 @@
 from typing import List
 
 import altair as alt
-from labml.internal.analytics.altair.utils import TABLEAU_10
 
 try:
     import torch
@@ -9,39 +8,41 @@ except ImportError:
     torch = None
 
 
-def data_to_table(data, step):
+def data_to_table(series, names, step):
     table = []
 
-    if torch is not None and isinstance(data, torch.Tensor):
-        data = data.detach().cpu().numpy()
+    for s in range(len(series)):
+        data = series[s]
+        name = names[s]
 
-    for i in range(data.shape[0]):
-        if len(data.shape) == 2:
-            if data.shape[1] == 10:
-                row = {'step': data[i, 0]}
-                for j in range(1, 10):
-                    row[f"v{j}"] = data[i, j]
+        if torch is not None and isinstance(data, torch.Tensor):
+            data = data.detach().cpu().numpy()
+
+        for i in range(data.shape[0]):
+            if len(data.shape) == 2:
+                n = data.shape[1]
+                row = {'series': name, 'step': data[i, 0], 'v5': data[i, n // 2]}
+                for j in range(1, min(n // 2, 5)):
+                    row[f"v{5 - j}"] = data[i, n // 2 - j]
+                    row[f"v{5 + j}"] = data[i, n // 2 + j]
+            elif step is not None:
+                row = {'series': name,
+                       'step': step[i],
+                       'v5': data[i]}
             else:
-                row = {'step': data[i, 0],
-                       'v5': data[i, 1]}
-        elif step is not None:
-            row = {'step': step[i],
-                   'v5': data[i]}
-        else:
-            row = {'step': i,
-                   'v5': data[i]}
-        table.append(row)
+                row = {'series': name,
+                       'step': i,
+                       'v5': data[i]}
+            table.append(row)
 
     return alt.Data(values=table)
 
 
 def _render_density(table: alt.Data, *,
-                    name: str,
                     x_name: str,
-                    line_color: str,
-                    range_color: str,
                     levels: int,
                     alpha: float,
+                    series_selection: alt.Selection = None,
                     selection: alt.Selection = None,
                     x_scale: alt.Scale = alt.Undefined,
                     y_scale: alt.Scale = alt.Undefined) -> alt.Chart:
@@ -50,23 +51,34 @@ def _render_density(table: alt.Data, *,
         y = f"v{5 - i}:Q"
         y2 = f"v{5 + i}:Q"
 
+        encode = dict(
+            x=alt.X('step:Q', scale=x_scale),
+            y=alt.Y(y, scale=y_scale),
+            y2=alt.Y2(y2),
+            color=alt.Color('series:N', scale=alt.Scale(scheme='tableau10'))
+        )
+
+        if series_selection:
+            encode['opacity'] = alt.condition(series_selection, alt.value(alpha ** i),
+                                              alt.value(0.001))
+
         areas.append(
             alt.Chart(table)
                 .mark_area(opacity=alpha ** i)
-                .encode(x=alt.X('step:Q', scale=x_scale),
-                        y=alt.Y(y, scale=y_scale),
-                        y2=alt.Y2(y2),
-                        color=alt.value(range_color)
-                        )
+                .encode(**encode)
         )
+
+    encode = dict(x=alt.X('step:Q', scale=x_scale, title=x_name),
+                  y=alt.Y("v5:Q", scale=y_scale, title='Value'),
+                  color=alt.Color('series:N', scale=alt.Scale(scheme='tableau10')))
+
+    if series_selection:
+        encode['opacity'] = alt.condition(series_selection, alt.value(1), alt.value(0.001))
 
     line: alt.Chart = (
         alt.Chart(table)
             .mark_line()
-            .encode(x=alt.X('step:Q', scale=x_scale, title=x_name),
-                    y=alt.Y("v5:Q", scale=y_scale, title=name),
-                    color=alt.value(line_color)
-                    )
+            .encode(**encode)
     )
     if selection is not None:
         line = line.add_selection(selection)
@@ -78,79 +90,41 @@ def _render_density(table: alt.Data, *,
         else:
             areas_sum += a
 
-    if areas_sum is None:
-        return line
-    else:
-        return areas_sum + line
+    if areas_sum is not None:
+        line = areas_sum + line
+
+    if series_selection:
+        line = line.add_selection(series_selection)
+
+    return line
 
 
-def render(tables: List[alt.Data], *,
-           names: List[str],
-           is_independent: bool,
+def render(table: alt.Data, *,
            levels=5,
            alpha=0.6,
            height: int,
            width: int,
            height_minimap: int):
     zoom = alt.selection_interval(encodings=["x", "y"])
+    selection = alt.selection_multi(fields=['series'], bind='legend')
 
-    minimaps = None
-    for i, t in enumerate(tables):
-        z = zoom if i == 0 else None
-        minimap = _render_density(t,
-                                  name='',
-                                  x_name='',
-                                  line_color=TABLEAU_10[i % 10],
-                                  range_color=TABLEAU_10[i % 10],
-                                  levels=levels,
-                                  alpha=alpha,
-                                  selection=z)
-        if minimaps is None:
-            minimaps = minimap
-        else:
-            minimaps += minimap
+    minimaps = _render_density(table,
+                               x_name='',
+                               levels=levels,
+                               alpha=alpha,
+                               selection=zoom)
 
-    details = None
-    for i, t in enumerate(tables):
-        detail = _render_density(t,
-                                 name=names[i] if len(names) == 1 else '',
-                                 x_name='Step',
-                                 line_color=TABLEAU_10[i % 10],
-                                 range_color=TABLEAU_10[i % 10],
-                                 levels=levels,
-                                 alpha=alpha,
-                                 x_scale=alt.Scale(domain={'selection': zoom.name,
-                                                           "encoding": "x"}),
-                                 y_scale=alt.Scale(domain={'selection': zoom.name,
-                                                           "encoding": "y"}))
-        if details is None:
-            details = detail
-        elif is_independent:
-            details = alt.layer(details, detail).resolve_scale(y='independent')
-        else:
-            details += detail
-
-    colors = alt.Data(values=[{'idx': i, 'name': name} for i, name in enumerate(names)])
-    legend = alt.Chart(colors).mark_rect().encode(
-        alt.Y('name:N',
-              sort=alt.EncodingSortField(field='i', order='ascending'),
-              axis=alt.Axis(
-                  orient='right',
-                  titleX=7,
-                  titleY=-2,
-                  titleAlign='left',
-                  titleAngle=0
-              ),
-              title=''),
-        alt.Color('idx:O',
-                  scale=alt.Scale(domain=list(range(len(tables))),
-                                  range=TABLEAU_10),
-                  legend=None))
+    details = _render_density(table,
+                              x_name='Step',
+                              levels=levels,
+                              alpha=alpha,
+                              series_selection=selection,
+                              x_scale=alt.Scale(domain={'selection': zoom.name,
+                                                        "encoding": "x"}),
+                              y_scale=alt.Scale(domain={'selection': zoom.name,
+                                                        "encoding": "y"}))
 
     minimaps = minimaps.properties(width=width, height=height_minimap)
     details = details.properties(width=width, height=height)
 
-    if len(names) == 1:
-        return details & minimaps
-    else:
-        return (details & minimaps) | legend
+    return details & minimaps

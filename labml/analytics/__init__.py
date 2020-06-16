@@ -133,7 +133,6 @@ def distribution(series: Union[np.ndarray, 'torch.Tensor'], *,
 
 def distribution(*args: any,
                  names: Optional[List[str]] = None,
-                 is_independent: bool = False,
                  levels: int = 5, alpha: int = 0.6,
                  height: int = 400, width: int = 800, height_minimap: int = 100):
     r"""
@@ -160,7 +159,6 @@ def distribution(*args: any,
 
     Keyword Arguments:
         names(List[str]): List of names of series
-        is_independent(bool): Whether Y axes are independent
         levels: how many levels of the distribution to be plotted
         alpha: opacity of the distribution
         height: height of the visualization
@@ -201,16 +199,11 @@ def distribution(*args: any,
         raise ValueError("distribution should be called with an indicator collection"
                          " or a series. Check documentation for details.")
 
-    tables = [_density.data_to_table(s, step) for s in series]
     names = _remove_names_prefix(names)
-
-    if is_independent and len(tables) != 2:
-        raise ValueError("Only two series can be plotted with independent Y axes")
+    tables = _density.data_to_table(series, names, step)
 
     return _density.render(
         tables,
-        names=names,
-        is_independent=is_independent,
         levels=levels,
         alpha=alpha,
         width=width,
