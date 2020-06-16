@@ -10,8 +10,9 @@ def data_to_table(data: np.ndarray, x_data: np.ndarray):
 
     for i in range(data.shape[0]):
         if len(data.shape) == 2:  # Distribution
-            row = {'x': x_data[i, 5],
-                   'y': data[i, 5]}
+            m = data.shape[1] // 2
+            row = {'x': x_data[i, m],
+                   'y': data[i, m]}
         else:
             row = {'x': x_data[i],
                    'y': data[i]}

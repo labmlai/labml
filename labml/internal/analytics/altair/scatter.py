@@ -18,9 +18,10 @@ def data_to_table(data: np.ndarray, x_data: np.ndarray,
 
     for i in range(data.shape[0]):
         if len(data.shape) == 2:  # Distribution
+            m = data.shape[1] // 2
             row = {'step': x_data[i, 0],
-                   'x': x_data[i, 5] + nx[i],
-                   'y': data[i, 5] + ny[i]}
+                   'x': x_data[i, m] + nx[i],
+                   'y': data[i, m] + ny[i]}
         else:
             row = {'x': x_data[i] + nx[i],
                    'y': data[i] + ny[i]}

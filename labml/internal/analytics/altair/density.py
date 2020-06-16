@@ -20,11 +20,11 @@ def data_to_table(series, names, step):
 
         for i in range(data.shape[0]):
             if len(data.shape) == 2:
-                n = data.shape[1]
-                row = {'series': name, 'step': data[i, 0], 'v5': data[i, n // 2]}
-                for j in range(1, min(n // 2, 5)):
-                    row[f"v{5 - j}"] = data[i, n // 2 - j]
-                    row[f"v{5 + j}"] = data[i, n // 2 + j]
+                m = data.shape[1] // 2
+                row = {'series': name, 'step': data[i, 0], 'v5': data[i, m]}
+                for j in range(1, min(m, 5)):
+                    row[f"v{5 - j}"] = data[i, m - j]
+                    row[f"v{5 + j}"] = data[i, m + j]
             elif step is not None:
                 row = {'series': name,
                        'step': step[i],

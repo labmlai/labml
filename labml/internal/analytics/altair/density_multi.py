@@ -17,13 +17,11 @@ def data_to_table(data, step):
 
     for i in range(data.shape[0]):
         if len(data.shape) == 2:
-            if data.shape[1] == 10:
-                row = {'step': data[i, 0]}
-                for j in range(1, 10):
-                    row[f"v{j}"] = data[i, j]
-            else:
-                row = {'step': data[i, 0],
-                       'v5': data[i, 1]}
+            m = data.shape[1] // 2
+            row = {'step': data[i, 0], 'v5': data[i, m]}
+            for j in range(1, min(m, 5)):
+                row[f"v{5 - j}"] = data[i, m - j]
+                row[f"v{5 + j}"] = data[i, m + j]
         elif step is not None:
             row = {'step': step[i],
                    'v5': data[i]}
