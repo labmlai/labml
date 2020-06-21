@@ -157,13 +157,15 @@ class Inspect:
         for k, v in items:
             max_key_len = max(max_key_len, len(str(k)))
 
-        count = 0
+        count = len(items)
+        if count > 12:
+            items = items[:10]
         for k, v in items:
-            count += 1
             spaces = " " * (max_key_len - len(str(k)))
-            s = self._get_value_line(v)
             self.__logger.log([(f"{spaces}{k}: ", Text.key)] +
                               self._get_value_line(v))
+        if count > 12:
+            self.__logger.log([("...", Text.meta)])
 
         if is_show_count:
             self.__logger.log([
