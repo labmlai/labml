@@ -219,6 +219,8 @@ class Experiment:
     def _load_checkpoint(self, checkpoint_path: pathlib.PurePath):
         if self.checkpoint_saver is not None:
             self.checkpoint_saver.load(checkpoint_path)
+        else:
+            logger.log('No models registered', Text.warning)
 
     def save_checkpoint(self):
         if self.checkpoint_saver is not None:
