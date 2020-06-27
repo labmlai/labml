@@ -30,6 +30,9 @@ class BatchStep:
     def process(self, batch: any):
         raise NotImplementedError()
 
+    def update(self):
+        pass
+
 
 class SimpleBatchStep(BatchStep):
     def __init__(self, *,
@@ -88,9 +91,11 @@ class Trainer:
                  batch_step: BatchStep,
                  data_loader: torch.utils.data.DataLoader,
                  is_increment_global_step: bool,
-                 log_interval: Optional[int]):
+                 log_interval: Optional[int],
+                 update_interval: Optional[int]):
         self.batch_step = batch_step
         self.log_interval = log_interval
+        self.update_interval = update_interval
         self.is_increment_global_step = is_increment_global_step
         self.data_loader = data_loader
         self.name = name
@@ -104,16 +109,25 @@ class Trainer:
 
     def iterate(self):
         stats = self.batch_step.init_stats()
+        is_updated = True
 
         for i, batch in monit.enum(self.name, self.data_loader):
             update = self.batch_step.process(batch)
+            is_updated = False
             self.batch_step.update_stats(stats, update)
 
             if self.is_increment_global_step:
                 tracker.add_global_step(update['samples'])
 
+            if self.update_interval is not None and (i + 1) % self.update_interval == 0:
+                self.batch_step.update()
+                is_updated = True
+
             if self.log_interval is not None and (i + 1) % self.log_interval == 0:
                 tracker.save()
+
+        if not is_updated:
+            self.batch_step.update()
 
         self.batch_step.log_stats(stats)
 
@@ -132,6 +146,7 @@ class TrainValidConfigs(TrainingLoopConfigs):
     validator: Trainer
 
     train_log_interval: int = 10
+    train_update_interval: int = 1
 
     loop_count = 'data_loop_count'
     loop_step = 'data_loop_step'
@@ -176,7 +191,8 @@ def trainer(c: TrainValidConfigs):
                    batch_step=c.train_batch_step,
                    data_loader=c.train_loader,
                    is_increment_global_step=True,
-                   log_interval=c.train_log_interval)
+                   log_interval=c.train_log_interval,
+                   update_interval=c.train_update_interval)
 
 
 @option(TrainValidConfigs.validator)
@@ -185,7 +201,8 @@ def validator(c: TrainValidConfigs):
                    batch_step=c.valid_batch_step,
                    data_loader=c.valid_loader,
                    is_increment_global_step=False,
-                   log_interval=None)
+                   log_interval=None,
+                   update_interval=None)
 
 
 @option(TrainValidConfigs.loop_count)
