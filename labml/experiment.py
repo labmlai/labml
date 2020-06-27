@@ -52,7 +52,7 @@ def create(*,
     """
 
     if writers is None:
-        writers = {'sqlite', 'tensorboard'}
+        writers = {'sqlite', 'tensorboard', 'web_api'}
 
     if ignore_callers is None:
         ignore_callers = {}

@@ -177,6 +177,9 @@ class Experiment:
         if 'tensorboard' in writers:
             from labml.internal.logger.writers import tensorboard
             logger_internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
+        if 'web_api' in writers:
+            from labml.internal.logger.writers import web_api
+            logger_internal().add_writer(web_api.Writer())
 
         self.checkpoint_saver = None
 

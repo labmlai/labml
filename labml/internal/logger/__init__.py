@@ -9,7 +9,8 @@ from .loop import Loop
 from .sections import Section, OuterSection
 from .store import Store
 from .store.indicators import Indicator
-from .writers import Writer, ScreenWriter
+from .writers import Writer
+from .writers.screen import ScreenWriter
 from ..util.colors import StyleCode
 from ...logger import Text
 

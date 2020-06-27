@@ -20,6 +20,7 @@ class Lab:
         self.check_repo_dirty = None
         self.data_path = None
         self.experiments = None
+        self.web_api = None
 
         python_file = get_caller_file()
         self.set_path(python_file)
@@ -37,6 +38,7 @@ class Lab:
         self.data_path = self.path / config['data_path']
         self.experiments = self.path / config['experiments_path']
         self.indicators = config['indicators']
+        self.web_api = config['web_api']
 
     def __str__(self):
         return f"<Lab path={self.path}>"
@@ -55,6 +57,7 @@ class Lab:
             experiments_path='logs',
             analytics_path='analytics',
             analytics_templates={},
+            web_api=None,
             indicators=[{
                 'class_name': 'Scalar',
                 'is_print': True,
