@@ -68,9 +68,6 @@ class SimpleBatchStep(BatchStep):
             'samples': len(data)
         }
 
-        if self.optimizer is not None:
-            self.optimizer.zero_grad()
-
         output = self.model(data)
         loss = self.loss_func(output, target)
         if self.accuracy_func is not None:
@@ -80,9 +77,14 @@ class SimpleBatchStep(BatchStep):
 
         if self.optimizer is not None:
             loss.backward()
-            self.optimizer.step()
 
         return stats
+
+    def update(self):
+        if self.optimizer is None:
+            return
+        self.optimizer.step()
+        self.optimizer.zero_grad()
 
 
 class Trainer:
