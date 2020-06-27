@@ -43,19 +43,19 @@ class Writer(WriteBase):
         if self.web_api is None:
             return
 
-        text = [
-            f'run_uuid={self.run_uuid}',
-            f'name={self.name}',
-        ]
-        if self.comment != '':
-            text.append(f'comment={self.comment}')
+        data = {
+            'run_uuid': self.run_uuid,
+            'name': self.name,
+            'comment': self.comment,
+            'params': {}
+        }
 
         if self.hyperparams is not None:
             for k, v in self.hyperparams.items():
-                text.append(f'{k}={str(v)}')
+                data['params'][k] = v
 
         self.last_committed = time.time()
-        self.send(self.web_api['url'], '\n'.join(text))
+        self.send(self.web_api['url'], data)
 
     def _write_indicator(self, global_step: int, indicator: Indicator):
         if indicator.is_empty():
@@ -90,22 +90,24 @@ class Writer(WriteBase):
         if self.web_api is None:
             return
 
-        text = ['']
+        data = {}
         step = -1
         for key, values in self.indicators.items():
             values = np.array(values)
             step = max(step, values[:, 0].max())
-            text.append(f'{key} = {values[:, 1].mean()}')
-        text[0] = f'step = {step}'
-        text = '\n'.join(text)
+            data[key] = values[:, 1].mean()
+        data['step'] = step
 
-        self.send(self.web_api['url'], text)
+        self.send(self.web_api['url'], {
+            'run_uuid': self.run_uuid,
+            'track': data
+        })
 
     @staticmethod
-    def send(url: str, text: str):
+    def send(url: str, data: Dict[str, any]):
         req = urllib.request.Request(url)
         req.add_header('Content-Type', 'application/json; charset=utf-8')
-        data = json.dumps({'text': text})
+        data = json.dumps(data)
         data = data.encode('utf-8')
         req.add_header('Content-Length', str(len(data)))
 
