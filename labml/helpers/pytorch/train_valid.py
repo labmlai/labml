@@ -39,7 +39,9 @@ class SimpleBatchStep(BatchStep):
                  model: nn.Module,
                  optimizer: Optional[torch.optim.Adam],
                  loss_func: Callable,
-                 accuracy_func: Callable):
+                 accuracy_func: Callable,
+                 is_log_parameters: bool):
+        self.is_log_parameters = is_log_parameters
         self.accuracy_func = accuracy_func
         self.loss_func = loss_func
         self.optimizer = optimizer
@@ -84,6 +86,8 @@ class SimpleBatchStep(BatchStep):
         if self.optimizer is None:
             return
         self.optimizer.step()
+        if self.is_log_parameters:
+            pytorch_utils.store_model_indicators(self.model)
         self.optimizer.zero_grad()
 
 
@@ -159,21 +163,17 @@ class TrainValidConfigs(TrainingLoopConfigs):
     is_log_parameters: bool = True
 
     def run(self):
-        if self.is_log_parameters:
-            pytorch_utils.add_model_indicators(self.model)
-
         for _ in self.training_loop:
             with tracker.namespace('train'):
                 self.trainer()
             with tracker.namespace('valid'):
                 self.validator()
-            if self.is_log_parameters:
-                pytorch_utils.store_model_indicators(self.model)
 
 
 @option(TrainValidConfigs.train_batch_step)
 def simple_train_batch_step(c: TrainValidConfigs):
     return SimpleBatchStep(model=c.model,
+                           is_log_parameters=c.is_log_parameters,
                            optimizer=c.optimizer,
                            loss_func=c.loss_func,
                            accuracy_func=c.accuracy_func)
@@ -183,6 +183,7 @@ def simple_train_batch_step(c: TrainValidConfigs):
 def simple_valid_batch_step(c: TrainValidConfigs):
     return SimpleBatchStep(model=c.model,
                            optimizer=None,
+                           is_log_parameters=False,
                            loss_func=c.loss_func,
                            accuracy_func=c.accuracy_func)
 

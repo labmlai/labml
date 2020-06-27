@@ -15,6 +15,7 @@ class Lab:
     """
 
     def __init__(self):
+        self.indicators = {}
         self.path = None
         self.check_repo_dirty = None
         self.data_path = None
@@ -35,6 +36,7 @@ class Lab:
         self.check_repo_dirty = config['check_repo_dirty']
         self.data_path = self.path / config['data_path']
         self.experiments = self.path / config['experiments_path']
+        self.indicators = config['indicators']
 
     def __str__(self):
         return f"<Lab path={self.path}>"
@@ -52,7 +54,16 @@ class Lab:
             data_path='data',
             experiments_path='logs',
             analytics_path='analytics',
-            analytics_templates={}
+            analytics_templates={},
+            indicators=[{
+                'class_name': 'Scalar',
+                'is_print': True,
+                'name': '*'
+            }, {
+                'class_name': 'Scalar',
+                'is_print': False,
+                'name': 'param.*'
+            }]
         )
 
         for i, c in enumerate(reversed(configs)):

@@ -4,19 +4,19 @@ from labml import tracker
 from labml.configs import BaseConfigs
 
 
-def add_model_indicators(model: torch.nn.Module, model_name: str = "model"):
-    for name, param in model.named_parameters():
-        if param.requires_grad:
-            tracker.set_histogram(f"{model_name}.{name}")
-            tracker.set_histogram(f"{model_name}.{name}.grad")
+def _store_l1_l2(name: str, tensor: torch.Tensor):
+    tracker.add(f"{name}.mean", tensor.mean())
+    tracker.add(f"{name}.l1", tensor.abs().mean())
+    tracker.add(f"{name}.l2", (tensor ** 2).mean())
 
 
 def store_model_indicators(model: torch.nn.Module, model_name: str = "model"):
     for name, param in model.named_parameters():
         if param.requires_grad:
-            tracker.add(f"{model_name}.{name}", param)
-            if param.grad is not None:
-                tracker.add(f"{model_name}.{name}.grad", param.grad)
+            with torch.no_grad():
+                _store_l1_l2(f"param.{model_name}.{name}", param)
+                if param.grad is not None:
+                    _store_l1_l2(f"param.{model_name}.{name}.grad", param.grad)
 
 
 def get_modules(configs: BaseConfigs):
