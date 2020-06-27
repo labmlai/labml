@@ -1,8 +1,9 @@
+import json
 import time
+import urllib.request
 from typing import Dict
 
 import numpy as np
-import requests
 
 from . import Writer as WriteBase
 from ..store.indicators import Indicator
@@ -18,10 +19,43 @@ class Writer(WriteBase):
         self.last_committed = time.time()
         self.web_api = lab_singleton().web_api
         self.indicators = {}
+        self.run_uuid = None
+        self.name = None
+        self.comment = None
+        self.hyperparams = None
 
     @staticmethod
     def _parse_key(key: str):
         return key
+
+    def set_info(self, *,
+                 run_uuid: str,
+                 name: str,
+                 comment: str):
+        self.run_uuid = run_uuid
+        self.name = name
+        self.comment = comment
+
+    def set_hyperparams(self, hyperparams: Dict[str, any]):
+        self.hyperparams = hyperparams
+
+    def start(self):
+        if self.web_api is None:
+            return
+
+        text = [
+            f'run_uuid={self.run_uuid}',
+            f'name={self.name}',
+        ]
+        if self.comment != '':
+            text.append(f'comment={self.comment}')
+
+        if self.hyperparams is not None:
+            for k, v in self.hyperparams.items():
+                text.append(f'{k}={str(v)}')
+
+        self.last_committed = time.time()
+        self.send(self.web_api['url'], '\n'.join(text))
 
     def _write_indicator(self, global_step: int, indicator: Indicator):
         if indicator.is_empty():
@@ -69,7 +103,10 @@ class Writer(WriteBase):
 
     @staticmethod
     def send(url: str, text: str):
-        with requests.Session() as session:
-            response = session.post(url, json={
-                'text': text
-            })
+        req = urllib.request.Request(url)
+        req.add_header('Content-Type', 'application/json; charset=utf-8')
+        data = json.dumps({'text': text})
+        data = data.encode('utf-8')
+        req.add_header('Content-Length', str(len(data)))
+
+        response = urllib.request.urlopen(req, data)
