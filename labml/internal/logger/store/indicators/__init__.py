@@ -37,4 +37,3 @@ class Indicator:
         if type(value) != type(self):
             return False
         return value.name == self.name and value.is_print == self.is_print
-

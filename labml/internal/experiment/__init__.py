@@ -177,10 +177,16 @@ class Experiment:
         if 'tensorboard' in writers:
             from labml.internal.logger.writers import tensorboard
             logger_internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
+        if 'web_api' in writers:
+            from labml.internal.logger.writers import web_api
+            self.web_api = web_api.Writer()
+            logger_internal().add_writer(self.web_api)
+        else:
+            self.web_api = None
 
         self.checkpoint_saver = None
 
-    def __print_info_and_check_repo(self):
+    def __print_info(self):
         """
         🖨 Print the experiment info and check git repo status
         """
@@ -209,12 +215,6 @@ class Experiment:
                 ": ",
                 (f"{self.run.load_run}", Text.meta2),
             ])
-
-        # Exit if git repository is dirty
-        if self.check_repo_dirty and self.run.is_dirty:
-            logger.log([("[FAIL]", Text.danger),
-                        " Cannot trial an experiment with uncommitted changes."])
-            exit(1)
 
     def _load_checkpoint(self, checkpoint_path: pathlib.PurePath):
         if self.checkpoint_saver is not None:
@@ -270,7 +270,12 @@ class Experiment:
         self.run.start_step = global_step
         logger_internal().set_start_global_step(global_step)
 
-        self.__print_info_and_check_repo()
+        self.__print_info()
+        if self.check_repo_dirty and self.run.is_dirty:
+            logger.log([("[FAIL]", Text.danger),
+                        " Cannot trial an experiment with uncommitted changes."])
+            exit(1)
+
         if self.configs_processor is not None:
             self.configs_processor.print()
 
@@ -278,6 +283,14 @@ class Experiment:
 
         if self.configs_processor is not None:
             self.configs_processor.save(self.run.configs_path)
+
+        if self.web_api is not None:
+            self.web_api.set_info(run_uuid=self.run.uuid,
+                                  name=self.name,
+                                  comment=self.run.comment)
+            if self.configs_processor is not None:
+                self.web_api.set_hyperparams(self.configs_processor.get_hyperparams())
+            self.web_api.start()
 
         logger_internal().save_indicators(self.run.indicators_path)
         if self.configs_processor:
