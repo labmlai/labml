@@ -7,6 +7,10 @@ from labml.utils import get_caller_file
 _CONFIG_FILE_NAME = '.labml.yaml'
 
 
+class LabYamlNotfoundError(RuntimeError):
+    pass
+
+
 class Lab:
     """
     ### Lab
@@ -29,7 +33,8 @@ class Lab:
         configs = self.__get_config_files(path)
 
         if len(configs) == 0:
-            raise RuntimeError("No '.labml.yaml' config file found.")
+            raise LabYamlNotfoundError(f"No '.labml.yaml' config file found."
+                                       f"Looking in {path}")
 
         config = self.__get_config(configs)
 
@@ -66,7 +71,12 @@ class Lab:
                 'class_name': 'Scalar',
                 'is_print': False,
                 'name': 'param.*'
-            }]
+            }, {
+                'class_name': 'Scalar',
+                'is_print': False,
+                'name': 'module.*'
+            }
+            ]
         )
 
         for i, c in enumerate(reversed(configs)):

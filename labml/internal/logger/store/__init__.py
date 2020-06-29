@@ -9,7 +9,7 @@ from .indicators.factory import load_indicator_from_dict
 from .namespace import Namespace
 from ..writers import Writer
 from ... import util
-from ...lab import lab_singleton
+from ...lab import lab_singleton, LabYamlNotfoundError
 from ...util import strings
 
 
@@ -23,8 +23,12 @@ class Store:
         self.dot_indicators = {}
         self.__indicators_file = None
         self.namespaces = []
-        for ind in lab_singleton().indicators:
-            self.add_indicator(load_indicator_from_dict(ind))
+        try:
+            for ind in lab_singleton().indicators:
+                self.add_indicator(load_indicator_from_dict(ind))
+        except LabYamlNotfoundError:
+            pass
+
         self.is_indicators_updated = True
 
     def save_indicators(self, file: PurePath):

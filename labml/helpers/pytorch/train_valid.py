@@ -1,14 +1,15 @@
 from typing import Optional, Callable
 
-import labml.utils.pytorch as pytorch_utils
 import numpy as np
 import torch.optim
 import torch.utils.data
+from torch import nn
+
+import labml.utils.pytorch as pytorch_utils
 from labml import tracker, monit
 from labml.configs import option
 from labml.helpers.training_loop import TrainingLoopConfigs
 from labml.utils.pytorch import get_device
-from torch import nn
 
 
 class BatchStep:
@@ -31,6 +32,9 @@ class BatchStep:
         raise NotImplementedError()
 
     def update(self):
+        pass
+
+    def add_activation_hooks(self):
         pass
 
 
@@ -90,6 +94,9 @@ class SimpleBatchStep(BatchStep):
             pytorch_utils.store_model_indicators(self.model)
         self.optimizer.zero_grad()
 
+    def add_activation_hooks(self):
+        pytorch_utils.hook_model_outputs(self.model)
+
 
 class Trainer:
     def __init__(self, *,
@@ -97,14 +104,19 @@ class Trainer:
                  batch_step: BatchStep,
                  data_loader: torch.utils.data.DataLoader,
                  is_increment_global_step: bool,
+                 is_log_activations: bool,
                  log_interval: Optional[int],
                  update_interval: Optional[int]):
+        self.is_log_activations = is_log_activations
         self.batch_step = batch_step
         self.log_interval = log_interval
         self.update_interval = update_interval
         self.is_increment_global_step = is_increment_global_step
         self.data_loader = data_loader
         self.name = name
+
+        if self.is_log_activations:
+            self.batch_step.add_activation_hooks()
 
     def __call__(self):
         if self.batch_step.prepare_for_iteration():
@@ -118,7 +130,12 @@ class Trainer:
         is_updated = True
 
         for i, batch in monit.enum(self.name, self.data_loader):
-            update = self.batch_step.process(batch)
+            if i == 0 and self.is_log_activations:
+                with pytorch_utils.log_activation():
+                    update = self.batch_step.process(batch)
+            else:
+                update = self.batch_step.process(batch)
+
             is_updated = False
             self.batch_step.update_stats(stats, update)
 
@@ -161,6 +178,7 @@ class TrainValidConfigs(TrainingLoopConfigs):
     valid_loader: torch.utils.data.DataLoader
 
     is_log_parameters: bool = True
+    is_log_activations: bool = True
 
     def run(self):
         for _ in self.training_loop:
@@ -195,7 +213,8 @@ def trainer(c: TrainValidConfigs):
                    data_loader=c.train_loader,
                    is_increment_global_step=True,
                    log_interval=c.train_log_interval,
-                   update_interval=c.train_update_interval)
+                   update_interval=c.train_update_interval,
+                   is_log_activations=c.is_log_activations)
 
 
 @option(TrainValidConfigs.validator)
@@ -205,7 +224,8 @@ def validator(c: TrainValidConfigs):
                    data_loader=c.valid_loader,
                    is_increment_global_step=False,
                    log_interval=None,
-                   update_interval=None)
+                   update_interval=None,
+                   is_log_activations=False)
 
 
 @option(TrainValidConfigs.loop_count)

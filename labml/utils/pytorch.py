@@ -19,6 +19,49 @@ def store_model_indicators(model: torch.nn.Module, model_name: str = "model"):
                     _store_l1_l2(f"param.{model_name}.{name}.grad", param.grad)
 
 
+class LogActivations:
+    def __init__(self):
+        self.entered = False
+
+    def __enter__(self):
+        self.entered = True
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.entered = False
+
+
+_log_activations = LogActivations()
+
+
+def log_activation():
+    return _log_activations
+
+
+class ForwardHook:
+    def __init__(self, model_name, name: str, module: torch.nn.Module):
+        self.model_name = model_name
+        self.name = name
+        self.module = module
+        module.register_forward_hook(self)
+
+    def __call__(self, module, i, o):
+        if not _log_activations.entered:
+            return
+
+        if isinstance(o, torch.Tensor):
+            _store_l1_l2(f"module.{self.model_name}.{self.name}", o)
+        if isinstance(o, tuple):
+            for i, t in enumerate(o):
+                _store_l1_l2(f"module.{self.model_name}.{self.name}.{i}", t)
+
+
+def hook_model_outputs(model: torch.nn.Module, model_name: str = "model"):
+    for name, module in model.named_modules():
+        if name == '':
+            name = 'full'
+        ForwardHook(model_name, name, module)
+
+
 def get_modules(configs: BaseConfigs):
     keys = dir(configs)
 
