@@ -2,7 +2,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
 from labml import lab
-from labml.configs import BaseConfigs
+from labml.configs import BaseConfigs, aggregate, option
 
 
 def _dataset(is_train, transform):
@@ -28,7 +28,7 @@ class MNISTConfigs(BaseConfigs):
     valid_loader_shuffle: bool = False
 
 
-@MNISTConfigs.calc(MNISTConfigs.dataset_transforms)
+@option(MNISTConfigs.dataset_transforms)
 def mnist_transforms():
     return transforms.Compose([
         transforms.ToTensor(),
@@ -36,33 +36,33 @@ def mnist_transforms():
     ])
 
 
-@MNISTConfigs.calc(MNISTConfigs.train_dataset)
+@option(MNISTConfigs.train_dataset)
 def mnist_train_dataset(c: MNISTConfigs):
     return _dataset(True, c.dataset_transforms)
 
 
-@MNISTConfigs.calc(MNISTConfigs.valid_dataset)
+@option(MNISTConfigs.valid_dataset)
 def mnist_valid_dataset(c: MNISTConfigs):
     return _dataset(False, c.dataset_transforms)
 
 
-@MNISTConfigs.calc(MNISTConfigs.train_loader)
+@option(MNISTConfigs.train_loader)
 def mnist_train_loader(c: MNISTConfigs):
     return DataLoader(c.train_dataset,
                       batch_size=c.train_batch_size,
                       shuffle=c.train_loader_shuffle)
 
 
-@MNISTConfigs.calc(MNISTConfigs.valid_loader)
+@option(MNISTConfigs.valid_loader)
 def mnist_valid_loader(c: MNISTConfigs):
     return DataLoader(c.valid_dataset,
                       batch_size=c.valid_batch_size,
                       shuffle=c.valid_loader_shuffle)
 
 
-MNISTConfigs.aggregate(MNISTConfigs.dataset_name, 'MNIST',
-                       (MNISTConfigs.dataset_transforms, 'mnist_transforms'),
-                       (MNISTConfigs.train_dataset, 'mnist_train_dataset'),
-                       (MNISTConfigs.valid_dataset, 'mnist_valid_dataset'),
-                       (MNISTConfigs.train_loader, 'mnist_train_loader'),
-                       (MNISTConfigs.valid_loader, 'mnist_valid_loader'))
+aggregate(MNISTConfigs.dataset_name, 'MNIST',
+          (MNISTConfigs.dataset_transforms, 'mnist_transforms'),
+          (MNISTConfigs.train_dataset, 'mnist_train_dataset'),
+          (MNISTConfigs.valid_dataset, 'mnist_valid_dataset'),
+          (MNISTConfigs.train_loader, 'mnist_train_loader'),
+          (MNISTConfigs.valid_loader, 'mnist_valid_loader'))
