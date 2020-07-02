@@ -61,7 +61,13 @@ class PyTorchCheckpoint(Checkpoint):
                    checkpoint_path: pathlib.Path,
                    info: any):
         file_name: str = info
-        state = torch.load(str(checkpoint_path / file_name))
+        try:
+            sample_param = next(model.parameters())
+            device = sample_param.device
+        except StopIteration:
+            device = torch.device('cpu')
+
+        state = torch.load(str(checkpoint_path / file_name), map_location=device)
 
         model.load_state_dict(state)
 
