@@ -1,6 +1,8 @@
 import json
 import time
 import urllib.request
+import urllib.error
+import warnings
 from typing import Dict
 
 import numpy as np
@@ -19,6 +21,7 @@ class Writer(WriteBase):
         self.last_committed = time.time()
         self.web_api = lab_singleton().web_api
         self.indicators = {}
+        self.last_step = -1
         self.run_uuid = None
         self.name = None
         self.comment = None
@@ -75,6 +78,8 @@ class Writer(WriteBase):
         if self.web_api is None:
             return
 
+        self.last_step = max(self.last_step, global_step)
+
         for ind in indicators.values():
             if not ind.is_print:
                 continue
@@ -91,12 +96,10 @@ class Writer(WriteBase):
             return
 
         data = {}
-        step = -1
         for key, values in self.indicators.items():
             values = np.array(values)
-            step = max(step, values[:, 0].max())
             data[key] = values[:, 1].mean()
-        data['step'] = step
+        data['step'] = self.last_step
 
         self.send(self.web_api['url'], {
             'run_uuid': self.run_uuid,
@@ -111,4 +114,7 @@ class Writer(WriteBase):
         data = data.encode('utf-8')
         req.add_header('Content-Length', str(len(data)))
 
-        response = urllib.request.urlopen(req, data)
+        try:
+            response = urllib.request.urlopen(req, data)
+        except urllib.error.HTTPError as e:
+            warnings.warn("Failed to send message to WEB API: " + str(e))

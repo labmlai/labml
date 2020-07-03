@@ -18,37 +18,34 @@ from labml.logger import Text
 from labml.utils import get_caller_file
 
 
+class ModelSaver:
+    def save(self, checkpoint_path: pathlib.Path) -> any:
+        raise NotImplementedError()
+
+    def load(self, checkpoint_path: pathlib.Path, info: any):
+        raise NotImplementedError()
+
+
 class CheckpointSaver:
-    def save(self, global_step):
-        raise NotImplementedError()
-
-    def load(self, checkpoint_path):
-        raise NotImplementedError()
-
-
-class Checkpoint(CheckpointSaver):
-    _models: Dict[str, any]
+    model_savers: Dict[str, ModelSaver]
 
     def __init__(self, path: pathlib.PurePath):
         self.path = path
-        self._models = {}
+        self.model_savers = {}
 
-    def add_models(self, models: Dict[str, any]):
+    def add_savers(self, models: Dict[str, ModelSaver]):
         """
         ## Set variable for saving and loading
         """
-        self._models.update(models)
-
-    def save_model(self,
-                   name: str,
-                   model: any,
-                   checkpoint_path: pathlib.Path) -> any:
-        raise NotImplementedError()
+        self.model_savers.update(models)
 
     def save(self, global_step):
         """
         ## Save model as a set of numpy arrays
         """
+
+        if not self.model_savers:
+            return
 
         checkpoints_path = pathlib.Path(self.path)
         if not checkpoints_path.exists():
@@ -59,32 +56,28 @@ class Checkpoint(CheckpointSaver):
 
         checkpoint_path.mkdir()
 
-        files = {}
-        for name, model in self._models.items():
-            files[name] = self.save_model(name, model, checkpoint_path)
+        info = {}
+        for name, saver in self.model_savers.items():
+            info[name] = saver.save(checkpoint_path)
 
         # Save header
         with open(str(checkpoint_path / "info.json"), "w") as f:
-            f.write(json.dumps(files))
-
-    def load_model(self,
-                   name: str,
-                   model: any,
-                   checkpoint_path: pathlib.Path,
-                   info: any):
-        raise NotImplementedError()
+            f.write(json.dumps(info))
 
     def load(self, checkpoint_path):
         """
         ## Load model as a set of numpy arrays
         """
 
+        if not self.model_savers:
+            return False
+
         with open(str(checkpoint_path / "info.json"), "r") as f:
-            files = json.loads(f.readline())
+            info = json.loads(f.readline())
 
         # Load each model
-        for name, model in self._models.items():
-            self.load_model(name, model, checkpoint_path, files[name])
+        for name, saver in self.model_savers.items():
+            saver.load(checkpoint_path, info[name])
 
         return True
 
@@ -110,7 +103,7 @@ class Experiment:
 
     # whether not to start the experiment if there are uncommitted changes.
     check_repo_dirty: bool
-    checkpoint_saver: Optional[CheckpointSaver]
+    checkpoint_saver: CheckpointSaver
 
     def __init__(self, *,
                  name: Optional[str],
@@ -184,7 +177,7 @@ class Experiment:
         else:
             self.web_api = None
 
-        self.checkpoint_saver = None
+        self.checkpoint_saver = CheckpointSaver(self.run.checkpoint_path)
 
     def __print_info(self):
         """
@@ -217,14 +210,11 @@ class Experiment:
             ])
 
     def _load_checkpoint(self, checkpoint_path: pathlib.PurePath):
-        if self.checkpoint_saver is not None:
-            self.checkpoint_saver.load(checkpoint_path)
-        else:
+        if not self.checkpoint_saver.load(checkpoint_path):
             logger.log('No models registered', Text.warning)
 
     def save_checkpoint(self):
-        if self.checkpoint_saver is not None:
-            self.checkpoint_saver.save(logger_internal().global_step)
+        self.checkpoint_saver.save(logger_internal().global_step)
 
     def calc_configs(self,
                      configs: Configs,

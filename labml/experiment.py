@@ -6,7 +6,8 @@ import numpy as np
 from labml.configs import BaseConfigs
 from labml.internal.experiment import \
     create_experiment as _create_experiment, \
-    experiment_singleton as _experiment_singleton
+    experiment_singleton as _experiment_singleton, \
+    ModelSaver
 from labml.internal.experiment.experiment_run import \
     get_configs as _get_configs
 
@@ -63,6 +64,10 @@ def create(*,
                        writers=writers,
                        ignore_callers=ignore_callers,
                        tags=tags)
+
+
+def add_model_savers(savers: Dict[str, ModelSaver]):
+    _experiment_singleton().checkpoint_saver.add_savers(savers)
 
 
 def add_pytorch_models(models: Dict[str, 'torch.nn.Module']):
@@ -243,7 +248,7 @@ def load_configs(run_uuid: str, *, is_only_hyperparam: bool = True):
         elif is_hyperparam is None and is_explicit:
             values[k] = c['value']
         elif is_hyperparam:
-            values[k] =  c['value']
+            values[k] = c['value']
 
     return values
 
