@@ -142,7 +142,9 @@ class Inspect:
         return res
 
     def _get_value_line(self, value: any):
-        if isinstance(value, str):
+        if isinstance(value, int):
+            return [(f"{value :,}", Text.value)]
+        elif isinstance(value, str):
             return [('"', Text.subtle)] + self._shrink(value) + [('"', Text.subtle)]
         elif numpy is not None and isinstance(value, numpy.ndarray):
             return [*self._format_tensor(self._render_tensor(value, new_line=''), limit=80)]
