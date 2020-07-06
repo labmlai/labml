@@ -13,7 +13,7 @@ from labml.utils.pytorch import get_device
 
 
 class BatchStep:
-    def prepare_for_iteration(self):
+    def prepare_for_iteration(self) -> bool:
         raise NotImplementedError()
 
     def init_stats(self):
@@ -26,7 +26,7 @@ class BatchStep:
             stats[k].append(v)
 
     def log_stats(self, stats: any):
-        raise NotImplementedError()
+        pass
 
     def process(self, batch: any):
         raise NotImplementedError()
@@ -119,10 +119,8 @@ class Trainer:
             self.batch_step.add_activation_hooks()
 
     def __call__(self):
-        if self.batch_step.prepare_for_iteration():
-            with torch.no_grad():
-                self.iterate()
-        else:
+        is_grad = not self.batch_step.prepare_for_iteration()
+        with torch.set_grad_enabled(is_grad):
             self.iterate()
 
     def iterate(self):
