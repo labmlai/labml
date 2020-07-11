@@ -107,6 +107,8 @@ class Writer(WriteBase):
             data[key] = values[:, 1].mean()
         data['step'] = self.last_step
 
+        self.indicators = {}
+
         self.send({
             'run_uuid': self.run_uuid,
             'track': data
