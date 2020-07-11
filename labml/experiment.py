@@ -102,75 +102,75 @@ def add_sklearn_models(models: Dict[str, any]):
 
 
 @overload
-def calculate_configs(configs_dict: Dict[str, any]):
+def configs(configs_dict: Dict[str, any]):
     ...
 
 
 @overload
-def calculate_configs(configs_dict: Dict[str, any], configs_override: Dict[str, any]):
+def configs(configs_dict: Dict[str, any], configs_override: Dict[str, any]):
     ...
 
 
 @overload
-def calculate_configs(configs: BaseConfigs):
+def configs(configs: BaseConfigs):
     ...
 
 
 @overload
-def calculate_configs(configs: BaseConfigs, run_order: List[Union[List[str], str]]):
+def configs(configs: BaseConfigs, run_order: List[Union[List[str], str]]):
     ...
 
 
 @overload
-def calculate_configs(configs: BaseConfigs, *run_order: str):
+def configs(configs: BaseConfigs, *run_order: str):
     ...
 
 
 @overload
-def calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any]):
+def configs(configs: BaseConfigs, configs_override: Dict[str, any]):
     ...
 
 
 @overload
-def calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any],
+def configs(configs: BaseConfigs, configs_override: Dict[str, any],
                       run_order: List[Union[List[str], str]]):
     ...
 
 
 @overload
-def calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any],
+def configs(configs: BaseConfigs, configs_override: Dict[str, any],
                       *run_order: str):
     ...
 
 
-def calculate_configs(*args):
+def configs(*args):
     r"""
     Calculate configurations
 
     This has multiple overloads
 
-    .. function:: calculate_configs(configs_dict: Dict[str, any])
+    .. function:: configs(configs_dict: Dict[str, any])
         :noindex:
 
-    .. function:: calculate_configs(configs_dict: Dict[str, any], configs_override: Dict[str, any])
+    .. function:: configs(configs_dict: Dict[str, any], configs_override: Dict[str, any])
         :noindex:
 
-    .. function:: calculate_configs(configs: BaseConfigs)
+    .. function:: configs(configs: BaseConfigs)
         :noindex:
 
-    .. function:: calculate_configs(configs: BaseConfigs, run_order: List[Union[List[str], str]])
+    .. function:: configs(configs: BaseConfigs, run_order: List[Union[List[str], str]])
         :noindex:
 
-    .. function:: calculate_configs(configs: BaseConfigs, *run_order: str)
+    .. function:: configs(configs: BaseConfigs, *run_order: str)
         :noindex:
 
-    .. function:: calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any])
+    .. function:: configs(configs: BaseConfigs, configs_override: Dict[str, any])
         :noindex:
 
-    .. function:: calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any], run_order: List[Union[List[str], str]])
+    .. function:: configs(configs: BaseConfigs, configs_override: Dict[str, any], run_order: List[Union[List[str], str]])
         :noindex:
 
-    .. function:: calculate_configs(configs: BaseConfigs, configs_override: Dict[str, any], *run_order: str)
+    .. function:: configs(configs: BaseConfigs, configs_override: Dict[str, any], *run_order: str)
         :noindex:
 
     Arguments:

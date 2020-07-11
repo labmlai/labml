@@ -78,7 +78,7 @@ def main():
     experiment.create(name='mnist_latest')
     conf.optimizer = 'adam_optimizer'
     conf.cuda_device = 1
-    experiment.calculate_configs(conf,
+    experiment.configs(conf,
                                  {},
                                  ['set_seed', 'run'])
     experiment.add_pytorch_models(dict(model=conf.model))

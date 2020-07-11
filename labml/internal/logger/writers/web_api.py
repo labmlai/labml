@@ -1,9 +1,10 @@
 import json
+import ssl
 import time
 import urllib.request
 import urllib.error
 import warnings
-from typing import Dict
+from typing import Dict, Optional
 
 import numpy as np
 
@@ -14,18 +15,23 @@ from ...lab import lab_singleton
 
 
 class Writer(WriteBase):
+    url: Optional[str]
+
     def __init__(self):
         super().__init__()
 
         self.scalars_cache = []
         self.last_committed = time.time()
-        self.web_api = lab_singleton().web_api
         self.indicators = {}
         self.last_step = -1
         self.run_uuid = None
         self.name = None
         self.comment = None
         self.hyperparams = None
+        conf = lab_singleton().web_api or {}
+        self.url = conf.get('url', None)
+        self.frequency = conf.get('frequency', 60)
+        self.is_verify_connection = conf.get('verify_connection', True)
 
     @staticmethod
     def _parse_key(key: str):
@@ -43,7 +49,7 @@ class Writer(WriteBase):
         self.hyperparams = hyperparams
 
     def start(self):
-        if self.web_api is None:
+        if self.url is None:
             return
 
         data = {
@@ -58,7 +64,7 @@ class Writer(WriteBase):
                 data['params'][k] = v
 
         self.last_committed = time.time()
-        self.send(self.web_api['url'], data)
+        self.send(data)
 
     def _write_indicator(self, global_step: int, indicator: Indicator):
         if indicator.is_empty():
@@ -75,7 +81,7 @@ class Writer(WriteBase):
     def write(self, *,
               global_step: int,
               indicators: Dict[str, Indicator]):
-        if self.web_api is None:
+        if self.url is None:
             return
 
         self.last_step = max(self.last_step, global_step)
@@ -87,12 +93,12 @@ class Writer(WriteBase):
             self._write_indicator(global_step, ind)
 
         t = time.time()
-        if t - self.last_committed > self.web_api['frequency']:
+        if t - self.last_committed > self.frequency:
             self.last_committed = t
             self.flush()
 
     def flush(self):
-        if self.web_api is None:
+        if self.url is None:
             return
 
         data = {}
@@ -101,20 +107,23 @@ class Writer(WriteBase):
             data[key] = values[:, 1].mean()
         data['step'] = self.last_step
 
-        self.send(self.web_api['url'], {
+        self.send({
             'run_uuid': self.run_uuid,
             'track': data
         })
 
-    @staticmethod
-    def send(url: str, data: Dict[str, any]):
-        req = urllib.request.Request(url)
+    def send(self, data: Dict[str, any]):
+        req = urllib.request.Request(self.url)
         req.add_header('Content-Type', 'application/json; charset=utf-8')
         data = json.dumps(data)
         data = data.encode('utf-8')
         req.add_header('Content-Length', str(len(data)))
 
         try:
-            response = urllib.request.urlopen(req, data)
+            if self.is_verify_connection:
+                response = urllib.request.urlopen(req, data)
+            else:
+                response = urllib.request.urlopen(req, data,
+                                                  context=ssl._create_unverified_context())
         except urllib.error.HTTPError as e:
-            warnings.warn("Failed to send message to WEB API: " + str(e))
+            warnings.warn(f"Failed to send message to WEB API: {e}")
