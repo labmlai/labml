@@ -132,6 +132,8 @@ class Experiment:
 
         if comment is None:
             comment = ''
+        if global_params_singleton().comment is not None:
+            comment = global_params_singleton().comment
 
         self.name = name
         self.experiment_path = lab_singleton().experiments / name
@@ -220,6 +222,8 @@ class Experiment:
                      configs: Configs,
                      configs_override: Optional[Dict[str, any]],
                      run_order: Optional[List[Union[List[str], str]]]):
+        if configs_override is None:
+            configs_override = {}
         if global_params_singleton().configs is not None:
             configs_override.update(global_params_singleton().configs)
 
@@ -293,6 +297,7 @@ class Experiment:
 class GlobalParams:
     def __init__(self):
         self.configs = None
+        self.comment = None
 
 
 _global_params: Optional[GlobalParams] = None
