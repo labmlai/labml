@@ -3,6 +3,10 @@ from pathlib import PurePath
 from labml.internal.lab import lab_singleton as _internal
 
 
+def get_path() -> PurePath:
+    return _internal().path
+
+
 def get_data_path() -> PurePath:
     return _internal().data_path
 

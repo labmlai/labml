@@ -220,6 +220,9 @@ class Experiment:
                      configs: Configs,
                      configs_override: Optional[Dict[str, any]],
                      run_order: Optional[List[Union[List[str], str]]]):
+        if global_params_singleton().configs is not None:
+            configs_override.update(global_params_singleton().configs)
+
         self.configs_processor = ConfigProcessor(configs, configs_override)
         self.configs_processor(run_order)
 
@@ -287,7 +290,22 @@ class Experiment:
             logger_internal().write_h_parameters(self.configs_processor.get_hyperparams())
 
 
+class GlobalParams:
+    def __init__(self):
+        self.configs = None
+
+
+_global_params: Optional[GlobalParams] = None
 _internal: Optional[Experiment] = None
+
+
+def global_params_singleton() -> GlobalParams:
+    global _global_params
+
+    if _global_params is None:
+        _global_params = GlobalParams()
+
+    return _global_params
 
 
 def experiment_singleton() -> Experiment:

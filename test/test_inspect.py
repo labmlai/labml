@@ -1,6 +1,6 @@
-from labml.logger import inspect
-import numpy as np
 import torch
+
+from labml.logger import inspect
 
 
 def test():

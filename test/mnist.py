@@ -79,8 +79,8 @@ def main():
     conf.optimizer = 'adam_optimizer'
     conf.cuda_device = 1
     experiment.configs(conf,
-                                 {},
-                                 ['set_seed', 'run'])
+                       {},
+                       ['set_seed', 'run'])
     experiment.add_pytorch_models(dict(model=conf.model))
     experiment.start()
     conf.run()
