@@ -1,9 +1,8 @@
 from typing import List, Dict, Type, Set, Optional, \
-    OrderedDict as OrderedDictType, Union, Any, Tuple, Callable
+    OrderedDict as OrderedDictType, Union, Any, Tuple
 from typing import TYPE_CHECKING
 
 from labml.internal.configs.eval_function import EvalFunction
-
 from .config_function import ConfigFunction
 from ... import logger
 from ... import monit
@@ -28,6 +27,7 @@ class Calculator:
     is_computed: Set[str]
     is_top_sorted: Set[str]
     config_processors: Dict[str, 'ConfigProcessor']
+    secondary_attributes: Dict[str, Set[str]]
 
     def __init__(self, *,
                  configs: 'Configs',
@@ -49,6 +49,7 @@ class Calculator:
         self.topological_order = []
         self.is_computed = set()
         self.config_processors = {}
+        self.secondary_attributes = {}
 
     def __get_property(self, key) -> Tuple[Any, Union[None, ConfigFunction, List[ConfigFunction]]]:
         if key in self.options:
@@ -64,6 +65,11 @@ class Calculator:
             value = self.values[key]
             if value not in self.options[key]:
                 return set()
+            sa = self.options[key][value].secondary_attributes
+            for dep, att in sa.items():
+                if dep not in self.secondary_attributes:
+                    self.secondary_attributes[dep] = set()
+                self.secondary_attributes[dep] = self.secondary_attributes[dep].union(att)
             return self.options[key][value].dependencies
 
         if key in self.evals:
@@ -127,7 +133,7 @@ class Calculator:
         from .processor import ConfigProcessor
         if isinstance(value, Configs):
             processor = ConfigProcessor(value)
-            processor()
+            processor(list(self.secondary_attributes.get(key, set())))
             self.config_processors[key] = processor
         self.is_computed.add(key)
         self.configs.__setattr__(key, value)

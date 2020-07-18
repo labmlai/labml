@@ -12,7 +12,7 @@ class SampleModel:
 class SampleConfigsModule(Configs):
     prop1: int
     prop2: int = 10
-    # prop3: int
+    prop3: int = 10
     model: SampleModel
 
 

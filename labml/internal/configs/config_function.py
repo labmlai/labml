@@ -63,6 +63,7 @@ class ConfigFunction:
             parser = DependencyParser(self.func)
             assert not parser.is_referenced, \
                 f"{self.func.__name__} should only use attributes of configs"
+            self.secondary_attributes = parser.secondary_attributes
             return parser.required
         elif self.kind == FunctionKind.pass_kwargs:
             return {p.name for p in self.params}
