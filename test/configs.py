@@ -1,52 +1,55 @@
+from labml.configs import option
 from labml.internal.configs.base import Configs
 from labml.internal.configs.processor import ConfigProcessor
 
 
 class SampleModel:
-    def __init__(self, c: 'Sample'):
-        self.w = c.workers_count
+    def __init__(self, prop1: int, prop2: int):
+        self.prop2 = prop2
+        self.prop1 = prop1
 
 
-class Sample(Configs):
-    total_global_steps: int = 10
-    workers_count: int = 10
-    # empty: str
-
-    x = 'string'
-
-    input_model: int
-    model: int
-
-    # get from type annotations
-    model_obj: SampleModel
+class SampleConfigsModule(Configs):
+    prop1: int
+    prop2: int = 10
+    # prop3: int
+    model: SampleModel
 
 
-class SampleChild(Sample):
-    def __init__(self, *, test: int):
-        pass
-
-    new_attr = 2
-
-
-@Sample.calc()
-def input_model(c: Sample):
-    return c.workers_count * 2
+class SampleConfigs(Configs):
+    my_prop1: int = 2
+    module: SampleConfigsModule
+    run_model: SampleModel
 
 
-@Sample.calc(Sample.input_model)
-def input_model2(c: Sample):
-    return c.workers_count * 20
+@option(SampleConfigsModule.model)
+def sample_model(c: SampleConfigsModule):
+    return SampleModel(c.prop1, c.prop2)
 
 
-@Sample.calc('model')
-def simple_model(c: Sample):
-    return c.total_global_steps * 3
+@option(SampleConfigs.module)
+def sample_configs_module(c: SampleConfigs):
+    conf = SampleConfigsModule()
+    conf.prop1 = c.my_prop1
+    return conf
 
 
-configs = Sample()
+@option(SampleConfigs.run_model)
+def run_model(c: SampleConfigs):
+    print((2 + 2).__str__())
+    return c.module.model
 
-processor = ConfigProcessor(configs)
-processor()
-processor.print()
 
-print(configs.__dict__)
+def test():
+    configs = SampleConfigs()
+
+    processor = ConfigProcessor(configs)
+    processor()
+    processor.print()
+
+    print(configs.__dict__)
+    print(configs.module.__dict__)
+
+
+if __name__ == '__main__':
+    test()

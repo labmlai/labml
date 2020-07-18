@@ -1,5 +1,5 @@
 from typing import List, Dict, Type, Set, Optional, \
-    OrderedDict as OrderedDictType, Union, Any, Tuple
+    OrderedDict as OrderedDictType, Union, Any, Tuple, Callable
 from typing import TYPE_CHECKING
 
 from labml.internal.configs.eval_function import EvalFunction
@@ -10,6 +10,7 @@ from ... import monit
 
 if TYPE_CHECKING:
     from .base import Configs
+    from .processor import ConfigProcessor
 
 
 class Calculator:
@@ -26,6 +27,7 @@ class Calculator:
     visited: Set[str]
     is_computed: Set[str]
     is_top_sorted: Set[str]
+    config_processors: Dict[str, 'ConfigProcessor']
 
     def __init__(self, *,
                  configs: 'Configs',
@@ -46,6 +48,7 @@ class Calculator:
         self.is_top_sorted = set()
         self.topological_order = []
         self.is_computed = set()
+        self.config_processors = {}
 
     def __get_property(self, key) -> Tuple[Any, Union[None, ConfigFunction, List[ConfigFunction]]]:
         if key in self.options:
@@ -120,6 +123,12 @@ class Calculator:
 
     def __set_configs(self, key, value):
         assert key not in self.is_computed
+        from .base import Configs
+        from .processor import ConfigProcessor
+        if isinstance(value, Configs):
+            processor = ConfigProcessor(value)
+            processor()
+            self.config_processors[key] = processor
         self.is_computed.add(key)
         self.configs.__setattr__(key, value)
 

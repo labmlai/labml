@@ -6,7 +6,6 @@ from labml.internal import util
 from labml.internal.configs.base import Configs
 from labml.internal.configs.utils import Value
 from labml.logger import Text
-
 from .calculator import Calculator
 from .parser import Parser
 
@@ -62,9 +61,20 @@ class ConfigProcessor:
 
         return hyperparams
 
-    def __print_config(self, key, *, value=None, option=None,
+    def __print_config(self, key, *, indentation: int, value=None, option=None,
                        other_options=None, is_ignored=False, is_list=False):
-        parts = ['\t']
+        logger.log(self.__config_log_parts(key,
+                                           indentation=indentation,
+                                           value=value,
+                                           other_options=other_options,
+                                           is_ignored=is_ignored,
+                                           is_list=is_list))
+        if key in self.calculator.config_processors:
+            self.calculator.config_processors[key].print_configs(indentation + 1)
+
+    def __config_log_parts(self, key, *, indentation: int, value=None, option=None,
+                           other_options=None, is_ignored=False, is_list=False):
+        parts = ['\t' * indentation]
 
         if is_ignored:
             parts.append((key, Text.subtle))
@@ -116,7 +126,7 @@ class ConfigProcessor:
 
         return parts
 
-    def print(self):
+    def print_configs(self, indentation: int):
         order = self.calculator.topological_order.copy()
         order.sort()
         added = set(order)
@@ -128,13 +138,11 @@ class ConfigProcessor:
                 order.append(k)
                 ignored.add(k)
 
-        logger.log("Configs:", Text.heading)
-
         for k in order:
             computed = getattr(self.calculator.configs, k, None)
 
             if k in ignored:
-                parts = self.__print_config(k, is_ignored=True)
+                self.__print_config(k, indentation=indentation, is_ignored=True)
             elif k in self.parser.options:
                 v = self.parser.values[k]
                 opts = self.parser.options[k]
@@ -144,15 +152,17 @@ class ConfigProcessor:
                 else:
                     v = None
 
-                parts = self.__print_config(k,
-                                            value=computed,
-                                            option=v,
-                                            other_options=lst)
+                self.__print_config(k,
+                                    indentation=indentation,
+                                    value=computed,
+                                    option=v,
+                                    other_options=lst)
             else:
-                parts = self.__print_config(k, value=computed)
+                self.__print_config(k, indentation=indentation, value=computed)
 
-            logger.log(parts)
-
+    def print(self):
+        logger.log("Configs:", Text.heading)
+        self.print_configs(1)
         logger.log()
 
 
