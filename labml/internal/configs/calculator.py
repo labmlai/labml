@@ -2,8 +2,8 @@ from typing import List, Dict, Type, Set, Optional, \
     OrderedDict as OrderedDictType, Union, Any, Tuple
 from typing import TYPE_CHECKING
 
-from labml.internal.configs.eval_function import EvalFunction
 from .config_function import ConfigFunction
+from .eval_function import EvalFunction
 from ... import logger
 from ... import monit
 
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class Calculator:
+    secondary_values: Dict[str, Dict[str, any]]
     evals: Dict[str, OrderedDictType[str, EvalFunction]]
     options: Dict[str, OrderedDictType[str, ConfigFunction]]
     types: Dict[str, Type]
@@ -35,7 +36,9 @@ class Calculator:
                  evals: Dict[str, OrderedDictType[str, EvalFunction]],
                  types: Dict[str, Type],
                  values: Dict[str, any],
+                 secondary_values: Dict[str, Dict[str, any]],
                  aggregate_parent: Dict[str, str]):
+        self.secondary_values = secondary_values
         self.aggregate_parent = aggregate_parent
         self.evals = evals
         self.configs = configs
@@ -132,7 +135,7 @@ class Calculator:
         from .base import Configs
         from .processor import ConfigProcessor
         if isinstance(value, Configs):
-            processor = ConfigProcessor(value)
+            processor = ConfigProcessor(value, self.secondary_values.get(key, None))
             processor(list(self.secondary_attributes.get(key, set())))
             self.config_processors[key] = processor
         self.is_computed.add(key)

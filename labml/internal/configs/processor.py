@@ -3,11 +3,11 @@ from typing import Dict, Optional, List, Union
 
 from labml import logger
 from labml.internal import util
-from labml.internal.configs.base import Configs
-from labml.internal.configs.utils import Value
 from labml.logger import Text
+from .base import Configs
 from .calculator import Calculator
 from .parser import Parser
+from .utils import Value
 
 _CONFIG_PRINT_LEN = 40
 
@@ -20,6 +20,7 @@ class ConfigProcessor:
                                      evals=self.parser.evals,
                                      types=self.parser.types,
                                      values=self.parser.values,
+                                     secondary_values=self.parser.secondary_values,
                                      aggregate_parent=self.parser.aggregate_parent)
 
     def __call__(self, run_order: Optional[List[Union[List[str], str]]] = None):

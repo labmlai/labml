@@ -4,11 +4,10 @@ from typing import List, Dict, Type, OrderedDict as OrderedDictType, Set
 from typing import TYPE_CHECKING
 
 from labml import logger
-from labml.internal.configs.eval_function import EvalFunction
 from labml.logger import Text
-
 from .config_function import ConfigFunction
 from .config_item import ConfigItem
+from .eval_function import EvalFunction
 
 if TYPE_CHECKING:
     from .base import Configs
@@ -61,6 +60,7 @@ class Parser:
     hyperparams: Dict[str, bool]
     aggregates: Dict[str, Dict[str, Dict[str, str]]]
     aggregate_parent: Dict[str, str]
+    secondary_values: Dict[str, Dict[str, any]]
 
     def __init__(self, configs: 'Configs', values: Dict[str, any] = None):
         classes = _get_base_classes(type(configs))
@@ -75,6 +75,7 @@ class Parser:
         self.hyperparams = {}
         self.aggregates = {}
         self.aggregate_parent = {}
+        self.secondary_values = {}
 
         for c in classes:
             # for k, v in c.__annotations__.items():
@@ -119,7 +120,13 @@ class Parser:
                 if k in self.types:
                     self.__collect_value(k, v)
                 else:
-                    logger.log(f'Ignoring config: {k} = {str(v)}', Text.warning)
+                    parts = k.split('.')
+                    if parts[0] in self.types:
+                        if parts[0] not in self.secondary_values:
+                            self.secondary_values[parts[0]] = {}
+                        self.secondary_values[parts[0]][k[len(parts[0]) + 1:]] = v
+                    else:
+                        logger.log(f'Ignoring config: {k} = {str(v)}', Text.warning)
 
         self.__calculate_aggregates()
         self.__calculate_missing_values()

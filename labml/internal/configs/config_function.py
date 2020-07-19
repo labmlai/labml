@@ -4,8 +4,8 @@ from enum import Enum
 from typing import List, Callable, cast, Set, Union, Optional
 from typing import TYPE_CHECKING
 
-from labml.internal.configs.dependency_parser import DependencyParser
 from .config_item import ConfigItem
+from .dependency_parser import DependencyParser
 from ...utils.errors import ConfigsError
 
 if TYPE_CHECKING:

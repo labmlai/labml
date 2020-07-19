@@ -11,7 +11,7 @@ class SampleModel:
 
 class SampleConfigsModule(Configs):
     prop1: int
-    prop2: int = 10
+    prop2: int
     prop3: int = 10
     model: SampleModel
 
@@ -43,7 +43,7 @@ def run_model(c: SampleConfigs):
 def test():
     configs = SampleConfigs()
 
-    processor = ConfigProcessor(configs)
+    processor = ConfigProcessor(configs, {'module.prop2': 20})
     processor()
     processor.print()
 
