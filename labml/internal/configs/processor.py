@@ -32,6 +32,13 @@ class ConfigProcessor:
         with open(str(configs_path), "w") as file:
             file.write(util.yaml_dump(configs))
 
+    def _get_options_list(self, key: str):
+        opts = list(self.parser.options.get(key, {}).keys())
+        if not opts:
+            opts = list((self.parser.aggregates.get(key, {}).keys()))
+
+        return opts
+
     def to_json(self):
         orders = {k: i for i, k in enumerate(self.calculator.topological_order)}
         configs = {}
@@ -41,7 +48,7 @@ class ConfigProcessor:
                 'type': str(v),
                 'value': Value.to_yaml(self.parser.values.get(k, None)),
                 'order': orders.get(k, -1),
-                'options': list(self.parser.options.get(k, {}).keys()),
+                'options': self._get_options_list(k),
                 'computed': Value.to_yaml(getattr(self.calculator.configs, k, None)),
                 'is_hyperparam': self.parser.hyperparams.get(k, None),
                 'is_explicitly_specified': (k in self.parser.explicitly_specified)
@@ -151,15 +158,13 @@ class ConfigProcessor:
 
         for k in order:
             computed = getattr(self.calculator.configs, k, None)
-
+            opts = self._get_options_list(k)
             if k in ignored:
                 self.__print_config(k, indentation=indentation, is_ignored=True)
-            elif k in self.parser.options:
+            elif opts:
                 v = self.parser.values[k]
-                opts = self.parser.options[k]
-                lst = list(opts.keys())
                 if v in opts:
-                    lst.remove(v)
+                    opts.remove(v)
                 else:
                     v = None
 
@@ -167,7 +172,7 @@ class ConfigProcessor:
                                     indentation=indentation,
                                     value=computed,
                                     option=v,
-                                    other_options=lst)
+                                    other_options=opts)
             else:
                 self.__print_config(k, indentation=indentation, value=computed)
 
