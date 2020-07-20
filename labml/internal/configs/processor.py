@@ -27,6 +27,12 @@ class ConfigProcessor:
         self.calculator(run_order)
 
     def save(self, configs_path: PurePath):
+        configs = self.to_json()
+
+        with open(str(configs_path), "w") as file:
+            file.write(util.yaml_dump(configs))
+
+    def to_json(self):
         orders = {k: i for i, k in enumerate(self.calculator.topological_order)}
         configs = {}
         for k, v in self.parser.types.items():
@@ -41,8 +47,12 @@ class ConfigProcessor:
                 'is_explicitly_specified': (k in self.parser.explicitly_specified)
             }
 
-        with open(str(configs_path), "w") as file:
-            file.write(util.yaml_dump(configs))
+        for k, proc in self.calculator.config_processors.items():
+            sub_configs = proc.to_json()
+            for sk, v in sub_configs.items():
+                configs[f"{k}.{sk}"] = v
+
+        return configs
 
     def get_hyperparams(self):
         order = self.calculator.topological_order.copy()

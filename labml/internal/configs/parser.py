@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from .base import Configs
 
 RESERVED = {'calc', 'list', 'set_hyperparams', 'aggregate', 'calc_wrap'}
-_STANDARD_TYPES = {int, str, bool, Dict, List}
+_STANDARD_TYPES = {int, str, bool, float, Dict, List}
 
 
 class PropertyKeys:
@@ -112,7 +112,8 @@ class Parser:
                     self.aggregates[k] = aggregates
 
         for k, v in configs.__dict__.items():
-            assert k in self.types
+            if k not in self.types:
+                raise RuntimeError(f"Unknown key :{k}")
             self.__collect_value(k, v)
 
         if values is not None:

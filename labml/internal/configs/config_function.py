@@ -121,6 +121,7 @@ class ConfigFunction:
                  option_name: str,
                  pass_params: Optional[List[ConfigItem]] = None,
                  check_string_names: bool = True):
+        self.secondary_attributes = {}
         self.func = func
         self.check_string_names = check_string_names
         self.pass_params = pass_params
