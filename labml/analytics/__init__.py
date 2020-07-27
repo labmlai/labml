@@ -437,7 +437,7 @@ def binned_heatmap(*args: any,
         height_minimap=height_minimap)
 
 
-def indicator_data(indicators: IndicatorCollection) -> Tuple[List[np.ndarray], List[str]]:
+def indicator_data(indicators: IndicatorCollection) -> Tuple[List[np.ndarray], List[List[str]]]:
     r"""
     Returns a tuple of a list of series and a list of names of series.
     Each series, `S` is a timeseries of histograms of shape `[T, 10]`,
