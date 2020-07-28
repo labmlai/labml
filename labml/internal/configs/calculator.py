@@ -130,12 +130,14 @@ class Calculator:
             self.__add_to_stack(k)
             self.__dfs()
 
-    def __set_configs(self, key, value):
+    def __set_configs(self, key, value, is_direct: bool):
         assert key not in self.is_computed
         from .base import Configs
         from .processor import ConfigProcessor
         if isinstance(value, Configs):
-            processor = ConfigProcessor(value, self.secondary_values.get(key, None))
+            processor = ConfigProcessor(value,
+                                        self.secondary_values.get(key, None),
+                                        is_directly_specified=is_direct)
             processor(list(self.secondary_attributes.get(key, set())))
             self.config_processors[key] = processor
         self.is_computed.add(key)
@@ -150,9 +152,9 @@ class Calculator:
 
         value, funcs = self.__get_property(key)
         if funcs is None:
-            self.__set_configs(key, value)
+            self.__set_configs(key, value, is_direct=True)
         elif type(funcs) == list:
-            self.__set_configs(key, [f(self.configs) for f in funcs])
+            self.__set_configs(key, [f(self.configs) for f in funcs], is_direct=False)
         else:
             s = monit.section(f'Prepare {key}', is_new_line=False)
             with s:
@@ -163,10 +165,10 @@ class Calculator:
                 logger.log(' ' * 100, is_new_line=False)
 
             if type(funcs.config_names) == str:
-                self.__set_configs(key, value)
+                self.__set_configs(key, value, is_direct=False)
             else:
                 for i, k in enumerate(funcs.config_names):
-                    self.__set_configs(k, value[i])
+                    self.__set_configs(k, value[i], is_direct=False)
 
     def __compute_values(self):
         for k in self.topological_order:

@@ -62,7 +62,8 @@ class Parser:
     aggregate_parent: Dict[str, str]
     secondary_values: Dict[str, Dict[str, any]]
 
-    def __init__(self, configs: 'Configs', values: Dict[str, any] = None):
+    def __init__(self, configs: 'Configs', values: Dict[str, any] = None, *,
+                 is_directly_specified: bool):
         classes = _get_base_classes(type(configs))
 
         self.values = {}
@@ -116,6 +117,9 @@ class Parser:
                 raise RuntimeError(f"Unknown key :{k}")
             self.__collect_value(k, v)
 
+        if not is_directly_specified:
+            self.explicitly_specified = set()
+            
         if values is not None:
             for k, v in values.items():
                 if k in self.types:

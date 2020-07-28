@@ -13,8 +13,9 @@ _CONFIG_PRINT_LEN = 40
 
 
 class ConfigProcessor:
-    def __init__(self, configs: Configs, values: Dict[str, any] = None):
-        self.parser = Parser(configs, values)
+    def __init__(self, configs: Configs, values: Dict[str, any] = None, *,
+                 is_directly_specified: bool = True):
+        self.parser = Parser(configs, values, is_directly_specified=is_directly_specified)
         self.calculator = Calculator(configs=configs,
                                      options=self.parser.options,
                                      evals=self.parser.evals,
