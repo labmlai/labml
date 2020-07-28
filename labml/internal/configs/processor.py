@@ -84,6 +84,7 @@ class ConfigProcessor:
         logger.log(self.__config_log_parts(key,
                                            indentation=indentation,
                                            value=value,
+                                           option=option,
                                            other_options=other_options,
                                            is_ignored=is_ignored,
                                            is_list=is_list))
