@@ -13,6 +13,7 @@ from ..store.indicators import Indicator
 from ..store.indicators.numeric import NumericIndicator
 from ...lab import lab_singleton
 
+MAX_BUFFER_SIZE = 1024
 
 class Writer(WriteBase):
     url: Optional[str]
@@ -23,7 +24,6 @@ class Writer(WriteBase):
         self.scalars_cache = []
         self.last_committed = time.time()
         self.indicators = {}
-        self.last_step = -1
         self.run_uuid = None
         self.name = None
         self.comment = None
@@ -84,8 +84,6 @@ class Writer(WriteBase):
         if self.url is None:
             return
 
-        self.last_step = max(self.last_step, global_step)
-
         for ind in indicators.values():
             if not ind.is_print:
                 continue
@@ -102,10 +100,24 @@ class Writer(WriteBase):
             return
 
         data = {}
-        for key, values in self.indicators.items():
-            values = np.array(values)
-            data[key] = values[:, 1].mean()
-        data['step'] = self.last_step
+
+        for key, value in self.indicators.items():
+            value = np.array(value)
+            step: np.ndarray = value[:, 0]
+            value: np.ndarray = value[:, 1]
+            while value.shape[0] > MAX_BUFFER_SIZE:
+                if value.shape[0] % 2 == 1:
+                    value = np.concatenate((value, value[-1:]))
+                    step = np.concatenate((step, step[-1:]))
+
+                n = value.shape[0] // 2
+                step = np.mean(step.reshape(n, 2), axis=-1)
+                value = np.mean(value.reshape(n, 2), axis=-1)
+
+            data[key] = {
+                'step': step.tolist(),
+                'value': value.tolist()
+            }
 
         self.indicators = {}
 

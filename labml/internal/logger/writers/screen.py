@@ -36,7 +36,7 @@ class ScreenWriter(Writer):
             return self.get_empty_string(8, 2)
 
         estimate = self._estimates[k] / (1 - self._beta_pow[k])
-        if abs(estimate) < 1e-9:
+        if abs(estimate) < 1e-9 or np.isnan(estimate):
             lg = 0
         else:
             lg = int(np.ceil(np.log10(abs(estimate)))) + 1
