@@ -25,8 +25,10 @@ class Queue(NumericIndicator):
         super().__init__(name=name, is_print=is_print)
         self.queue_size = queue_size
         self._values = deque(maxlen=queue_size)
+        self._is_empty = True
 
     def collect_value(self, value):
+        self._is_empty = False
         self._values.append(to_numpy(value).ravel())
 
     def to_dict(self) -> Dict:
@@ -35,7 +37,10 @@ class Queue(NumericIndicator):
         return res
 
     def is_empty(self) -> bool:
-        return len(self._values) == 0
+        return len(self._values) == 0 or self._is_empty
+
+    def clear(self):
+        self._is_empty = True
 
     def get_mean(self) -> float:
         return float(np.mean(self._values))

@@ -51,12 +51,12 @@ class SimpleBatchStep(BatchStep):
         self.optimizer = optimizer
         self.model = model
 
-        tracker.set_queue("*.loss", 20, True)
-        tracker.set_scalar("*.accuracy", True)
+        tracker.set_queue("loss.*", 20, True)
+        tracker.set_scalar("accuracy.*", True)
 
     def log_stats(self, stats: any):
         if self.accuracy_func is not None:
-            tracker.add(".accuracy", np.sum(stats['correct']) / np.sum(stats['samples']))
+            tracker.add("accuracy.", np.sum(stats['correct']) / np.sum(stats['samples']))
 
     def prepare_for_iteration(self):
         if self.optimizer is None:
@@ -79,7 +79,7 @@ class SimpleBatchStep(BatchStep):
         if self.accuracy_func is not None:
             stats['correct'] = self.accuracy_func(output, target)
 
-        tracker.add(".loss", loss)
+        tracker.add("loss.", loss)
 
         if self.optimizer is not None:
             loss.backward()
