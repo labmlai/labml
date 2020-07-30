@@ -42,7 +42,7 @@ class Store:
                                        'indicators': inds}))
 
     def __assert_name(self, name: str, value: any):
-        if name.startswith("."):
+        if name.endswith("."):
             if name in self.dot_indicators:
                 assert self.dot_indicators[name].equals(value)
 
@@ -65,8 +65,8 @@ class Store:
         self.is_indicators_updated = True
 
     def store(self, key: str, value: any):
-        if key.startswith('.'):
-            key = '.'.join([ns.name for ns in self.namespaces] + [key[1:]])
+        if key.endswith('.'):
+            key = '.'.join([key[:-1]] + [ns.name for ns in self.namespaces])
 
         if key in self.indicators:
             self.indicators[key].collect_value(value)
