@@ -9,13 +9,12 @@ from ... import monit
 if TYPE_CHECKING:
     from .base import Configs
     from .processor import ConfigProcessor
-    from typing import OrderedDict as OrderedDictType
 
 
 class Calculator:
     secondary_values: Dict[str, Dict[str, any]]
-    evals: Dict[str, OrderedDictType[str, EvalFunction]]
-    options: Dict[str, OrderedDictType[str, ConfigFunction]]
+    evals: Dict[str, Dict[str, EvalFunction]]
+    options: Dict[str, Dict[str, ConfigFunction]]
     types: Dict[str, Type]
     values: Dict[str, any]
 
@@ -32,8 +31,8 @@ class Calculator:
 
     def __init__(self, *,
                  configs: 'Configs',
-                 options: Dict[str, OrderedDictType[str, ConfigFunction]],
-                 evals: Dict[str, OrderedDictType[str, EvalFunction]],
+                 options: Dict[str, Dict[str, ConfigFunction]],
+                 evals: Dict[str, Dict[str, EvalFunction]],
                  types: Dict[str, Type],
                  values: Dict[str, any],
                  secondary_values: Dict[str, Dict[str, any]],

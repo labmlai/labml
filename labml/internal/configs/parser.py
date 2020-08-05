@@ -11,7 +11,6 @@ from .eval_function import EvalFunction
 
 if TYPE_CHECKING:
     from .base import Configs
-    from typing import OrderedDict as OrderedDictType
 
 RESERVED = {'calc', 'list', 'set_hyperparams', 'aggregate', 'calc_wrap'}
 _STANDARD_TYPES = {int, str, bool, float, Dict, List}
@@ -53,8 +52,8 @@ def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
 
 class Parser:
     config_items: Dict[str, ConfigItem]
-    options: Dict[str, OrderedDictType[str, ConfigFunction]]
-    evals: Dict[str, OrderedDictType[str, EvalFunction]]
+    options: Dict[str, Dict[str, ConfigFunction]]
+    evals: Dict[str, Dict[str, EvalFunction]]
     types: Dict[str, Type]
     values: Dict[str, any]
     explicitly_specified: Set[str]
@@ -120,7 +119,7 @@ class Parser:
 
         if not is_directly_specified:
             self.explicitly_specified = set()
-            
+
         if values is not None:
             for k, v in values.items():
                 if k in self.types:

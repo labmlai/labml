@@ -1,16 +1,12 @@
 from abc import ABC
 from collections import OrderedDict
 from typing import Dict, Optional, Any
-from typing import TYPE_CHECKING
 from uuid import uuid1
 
 from labml import logger
 from labml.internal.util.values import to_numpy
 from labml.logger import Text as TextStyle
 from . import Indicator
-
-if TYPE_CHECKING:
-    from typing import OrderedDict as OrderedDictType
 
 try:
     import matplotlib.pyplot as plt
@@ -60,7 +56,7 @@ class Artifact(Indicator, ABC):
 
 
 class _Collection(Artifact, ABC):
-    _values: OrderedDictType[str, Any]
+    _values: Dict[str, Any]
 
     def __init__(self, name: str, is_print=False):
         super().__init__(name=name, is_print=is_print)
