@@ -1,3 +1,4 @@
+import warnings
 from pathlib import PurePath, Path
 from typing import List, Optional
 
@@ -32,11 +33,15 @@ class Lab:
     def set_path(self, path: str):
         configs = self.__get_config_files(path)
 
-        if len(configs) == 0:
-            raise LabYamlNotfoundError(f"No '.labml.yaml' config file found."
-                                       f"Looking in {path}")
+        if not configs:
+            warnings.warn(f"No '.labml.yaml' config file found."
+                          f"Looking in {path}",
+                          UserWarning, stacklevel=4)
 
         config = self.__get_config(configs)
+
+        if not configs:
+            config['path'] = path
 
         self.path = PurePath(config['path'])
         self.check_repo_dirty = config['check_repo_dirty']
