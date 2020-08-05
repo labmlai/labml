@@ -3,6 +3,7 @@ from pathlib import PurePath, Path
 from typing import List, Optional
 
 from labml.internal import util
+from labml.internal.util import is_colab
 from labml.utils import get_caller_file
 
 _CONFIG_FILE_NAME = '.labml.yaml'
@@ -33,8 +34,8 @@ class Lab:
     def set_path(self, path: str):
         configs = self.__get_config_files(path)
 
-        if not configs:
-            warnings.warn(f"No '.labml.yaml' config file found."
+        if not configs and not is_colab():
+            warnings.warn(f"No '.labml.yaml' config file found. "
                           f"Looking in {path}",
                           UserWarning, stacklevel=4)
 

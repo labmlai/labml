@@ -2,6 +2,7 @@ import json
 import os
 import pathlib
 import time
+import warnings
 from typing import Optional, List, Set, Dict, Union
 
 import git
@@ -13,7 +14,7 @@ from labml.internal.configs.processor_dict import ConfigProcessorDict
 from labml.internal.experiment.experiment_run import Run
 from labml.internal.lab import lab_singleton
 from labml.internal.logger import logger_singleton as logger_internal
-from labml.internal.util import is_ipynb
+from labml.internal.util import is_ipynb, is_colab
 from labml.logger import Text
 from labml.utils import get_caller_file
 
@@ -156,12 +157,21 @@ class Experiment:
             comment=comment,
             tags=list(tags))
 
-        repo = git.Repo(lab_singleton().path)
+        try:
+            repo = git.Repo(lab_singleton().path)
 
-        self.run.commit = repo.head.commit.hexsha
-        self.run.commit_message = repo.head.commit.message.strip()
-        self.run.is_dirty = repo.is_dirty()
-        self.run.diff = repo.git.diff()
+            self.run.commit = repo.head.commit.hexsha
+            self.run.commit_message = repo.head.commit.message.strip()
+            self.run.is_dirty = repo.is_dirty()
+            self.run.diff = repo.git.diff()
+        except git.InvalidGitRepositoryError:
+            if not is_colab():
+                warnings.warn(f"Not a valid git repository",
+                              UserWarning, stacklevel=4)
+            self.run.commit = 'unknown'
+            self.run.commit_message = ''
+            self.run.is_dirty = True
+            self.run.diff = ''
 
         logger_internal().reset_writers()
 

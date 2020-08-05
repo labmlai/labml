@@ -48,5 +48,10 @@ def is_ipynb():
         return False
 
 
+def is_colab():
+    import sys
+    return 'google.colab' in sys.modules
+
+
 if __name__ == '__main__':
     print(is_ipynb())
