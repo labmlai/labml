@@ -1,13 +1,16 @@
 from abc import ABC
 from collections import OrderedDict
-from typing import Dict, Optional, Any, OrderedDict as OrderedDictType
+from typing import Dict, Optional, Any
+from typing import TYPE_CHECKING
 from uuid import uuid1
 
-from labml.internal.util.values import to_numpy
 from labml import logger
+from labml.internal.util.values import to_numpy
 from labml.logger import Text as TextStyle
-
 from . import Indicator
+
+if TYPE_CHECKING:
+    from typing import OrderedDict as OrderedDictType
 
 try:
     import matplotlib.pyplot as plt

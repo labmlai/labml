@@ -1,5 +1,4 @@
-from typing import List, Dict, Type, Set, Optional, \
-    OrderedDict as OrderedDictType, Union, Any, Tuple
+from typing import List, Dict, Type, Set, Optional, Union, Any, Tuple
 from typing import TYPE_CHECKING
 
 from .config_function import ConfigFunction
@@ -10,6 +9,7 @@ from ... import monit
 if TYPE_CHECKING:
     from .base import Configs
     from .processor import ConfigProcessor
+    from typing import OrderedDict as OrderedDictType
 
 
 class Calculator:

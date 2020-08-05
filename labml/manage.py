@@ -1,7 +1,6 @@
 import importlib
 import multiprocessing as mp
 import multiprocessing.connection
-import sys
 from pathlib import PurePath
 from typing import Dict, Optional
 

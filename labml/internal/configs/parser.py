@@ -1,6 +1,6 @@
 import warnings
 from collections import OrderedDict
-from typing import List, Dict, Type, OrderedDict as OrderedDictType, Set
+from typing import List, Dict, Type, Set
 from typing import TYPE_CHECKING
 
 from labml import logger
@@ -11,6 +11,7 @@ from .eval_function import EvalFunction
 
 if TYPE_CHECKING:
     from .base import Configs
+    from typing import OrderedDict as OrderedDictType
 
 RESERVED = {'calc', 'list', 'set_hyperparams', 'aggregate', 'calc_wrap'}
 _STANDARD_TYPES = {int, str, bool, float, Dict, List}
