@@ -286,7 +286,7 @@ class Experiment:
                                   name=self.name,
                                   comment=self.run.comment)
             if self.configs_processor is not None:
-                self.web_api.set_hyperparams(self.configs_processor.get_hyperparams())
+                self.web_api.set_configs(self.configs_processor.to_json())
             self.web_api.start()
 
         logger_internal().save_indicators(self.run.indicators_path)

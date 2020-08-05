@@ -27,7 +27,7 @@ class Writer(WriteBase):
         self.run_uuid = None
         self.name = None
         self.comment = None
-        self.hyperparams = None
+        self.configs = None
         conf = lab_singleton().web_api or {}
         self.url = conf.get('url', None)
         self.frequency = conf.get('frequency', 60)
@@ -45,8 +45,8 @@ class Writer(WriteBase):
         self.name = name
         self.comment = comment
 
-    def set_hyperparams(self, hyperparams: Dict[str, any]):
-        self.hyperparams = hyperparams
+    def set_configs(self, configs: Dict[str, any]):
+        self.configs = configs
 
     def start(self):
         if self.url is None:
@@ -56,12 +56,12 @@ class Writer(WriteBase):
             'run_uuid': self.run_uuid,
             'name': self.name,
             'comment': self.comment,
-            'params': {}
+            'configs': {}
         }
 
-        if self.hyperparams is not None:
-            for k, v in self.hyperparams.items():
-                data['params'][k] = v
+        if self.configs is not None:
+            for k, v in self.configs.items():
+                data['configs'][k] = v
 
         self.last_committed = time.time()
         self.send(data)
