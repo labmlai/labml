@@ -141,8 +141,8 @@ class Writer(WriteBase):
                                                   context=ssl._create_unverified_context())
             content = response.read().decode('utf-8')
             result = json.loads(content)
-            if not result['success']:
-                warnings.warn(f"WEB API error {result['error']} : {result['message']}")
+            for e in result['errors']:
+                warnings.warn(f"WEB API error {e['error']} : {e['message']}")
         except urllib.error.HTTPError as e:
             warnings.warn(f"Failed to send message to WEB API: {e}")
         except urllib.error.URLError as e:
