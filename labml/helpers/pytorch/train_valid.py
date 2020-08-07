@@ -7,7 +7,7 @@ from torch import nn
 
 import labml.utils.pytorch as pytorch_utils
 from labml import tracker, monit
-from labml.configs import option
+from labml.configs import option, meta_config
 from labml.helpers.training_loop import TrainingLoopConfigs
 from labml.utils.pytorch import get_device
 
@@ -234,3 +234,7 @@ def data_loop_count(c: TrainValidConfigs):
 @option(TrainValidConfigs.loop_step)
 def data_loop_step(c: TrainValidConfigs):
     return len(c.train_loader.dataset)
+
+
+meta_config(TrainValidConfigs.is_log_parameters,
+            TrainValidConfigs.is_log_activations)

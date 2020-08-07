@@ -184,6 +184,23 @@ def hyperparams(*args: any, is_hyperparam=True):
         config_class.set_hyperparams(arg, is_hyperparam=is_hyperparam)
 
 
+def meta_config(*args: any, is_meta=True):
+    r"""
+    Identifies configuration as meta parameter
+
+    Arguments:
+        *args: list of configurations
+        is_meta (bool, optional): whether the provided configuration
+            items are meta. Defaults to ``True``.
+    """
+
+    for arg in args:
+        config_class = _get_config_class(arg)
+        if config_class is None:
+            raise ConfigsError('You need to pass config items to set hyperparams')
+        config_class.set_meta(arg, is_meta=is_meta)
+
+
 def aggregate(name: any, option_name: str, *args: Tuple[any, any]):
     r"""
     Aggregate configs

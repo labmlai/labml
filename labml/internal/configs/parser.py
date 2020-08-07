@@ -12,7 +12,7 @@ from .eval_function import EvalFunction
 if TYPE_CHECKING:
     from .base import Configs
 
-RESERVED = {'calc', 'list', 'set_hyperparams', 'aggregate', 'calc_wrap'}
+RESERVED = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wrap'}
 _STANDARD_TYPES = {int, str, bool, float, Dict, List}
 
 
@@ -21,6 +21,7 @@ class PropertyKeys:
     evaluators = '_evaluators'
     hyperparams = '_hyperparams'
     aggregates = '_aggregates'
+    meta = '_meta'
 
 
 def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
@@ -58,6 +59,7 @@ class Parser:
     values: Dict[str, any]
     explicitly_specified: Set[str]
     hyperparams: Dict[str, bool]
+    meta: Dict[str, bool]
     aggregates: Dict[str, Dict[str, Dict[str, str]]]
     aggregate_parent: Dict[str, str]
     secondary_values: Dict[str, Dict[str, any]]
@@ -74,6 +76,7 @@ class Parser:
         self.configs = configs
         self.explicitly_specified = set()
         self.hyperparams = {}
+        self.meta = {}
         self.aggregates = {}
         self.aggregate_parent = {}
         self.secondary_values = {}
@@ -106,6 +109,11 @@ class Parser:
             if PropertyKeys.hyperparams in c.__dict__:
                 for k, is_hyperparam in c.__dict__[PropertyKeys.hyperparams].items():
                     self.hyperparams[k] = is_hyperparam
+
+        for c in classes:
+            if PropertyKeys.meta in c.__dict__:
+                for k, is_meta in c.__dict__[PropertyKeys.meta].items():
+                    self.meta[k] = is_meta
 
         for c in classes:
             if PropertyKeys.aggregates in c.__dict__:

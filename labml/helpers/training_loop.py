@@ -2,7 +2,7 @@ import signal
 from typing import Optional, Tuple, Any
 
 from labml import tracker, logger, experiment, monit
-from labml.configs import BaseConfigs
+from labml.configs import BaseConfigs, meta_config
 from labml.internal.logger import Loop
 from labml.logger import Text
 
@@ -129,3 +129,12 @@ def _loop_configs(c: TrainingLoopConfigs):
                         log_write_interval=c.log_write_interval,
                         save_models_interval=c.save_models_interval,
                         is_loop_on_interrupt=c.is_loop_on_interrupt)
+
+
+meta_config(TrainingLoopConfigs.loop_step,
+            TrainingLoopConfigs.loop_count,
+            TrainingLoopConfigs.is_save_models,
+            TrainingLoopConfigs.log_new_line_interval,
+            TrainingLoopConfigs.log_write_interval,
+            TrainingLoopConfigs.save_models_interval,
+            TrainingLoopConfigs.is_loop_on_interrupt)

@@ -52,6 +52,7 @@ class ConfigProcessor:
                 'options': self._get_options_list(k),
                 'computed': Value.to_yaml(getattr(self.calculator.configs, k, None)),
                 'is_hyperparam': self.parser.hyperparams.get(k, None),
+                'is_meta': self.parser.meta.get(k, None),
                 'is_explicitly_specified': (k in self.parser.explicitly_specified)
             }
 
@@ -101,10 +102,16 @@ class ConfigProcessor:
             return parts
 
         is_hyperparam = self.parser.hyperparams.get(key, None)
+        is_meta = self.parser.meta.get(key, None)
         if is_hyperparam is None:
             is_hyperparam = key in self.parser.explicitly_specified
+            if is_meta:
+                is_hyperparam = False
+
         if is_hyperparam:
             parts.append((key, [Text.key, Text.highlight]))
+        elif is_meta:
+            parts.append((key, Text.subtle))
         else:
             parts.append((key, Text.key))
 

@@ -138,6 +138,14 @@ class Configs:
             cls._hyperparams[h.key] = is_hyperparam
 
     @classmethod
+    def set_meta(cls, *args: ConfigItem, is_meta=True):
+        if PropertyKeys.meta not in cls.__dict__:
+            cls._meta = {}
+
+        for h in args:
+            cls._meta[h.key] = is_meta
+
+    @classmethod
     def aggregate(cls, name: ConfigItem, option: str,
                   *args: Tuple[ConfigItem, any]):
         assert args
