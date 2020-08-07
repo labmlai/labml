@@ -1,6 +1,6 @@
 import torch
 
-from labml.configs import BaseConfigs
+from labml.configs import BaseConfigs, hyperparams, option
 
 
 class DeviceInfo:
@@ -40,16 +40,16 @@ class DeviceConfigs(BaseConfigs):
     device: torch.device
 
 
-@DeviceConfigs.calc(DeviceConfigs.device)
+@option(DeviceConfigs.device)
 def _device(c: DeviceConfigs):
     return c.device_info.device
 
 
-DeviceConfigs.set_hyperparams(DeviceConfigs.cuda_device, DeviceConfigs.use_cuda,
-                              is_hyperparam=False)
+hyperparams(DeviceConfigs.cuda_device, DeviceConfigs.use_cuda,
+            is_hyperparam=False)
 
 
-@DeviceConfigs.calc(DeviceConfigs.device_info)
+@option(DeviceConfigs.device_info)
 def _device_info(c: DeviceConfigs):
     return DeviceInfo(use_cuda=c.use_cuda,
                       cuda_device=c.cuda_device)

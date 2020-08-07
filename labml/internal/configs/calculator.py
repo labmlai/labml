@@ -134,11 +134,18 @@ class Calculator:
         from .base import Configs
         from .processor import ConfigProcessor
         if isinstance(value, Configs):
+            primary = value.__dict__.get('_primary', None)
             processor = ConfigProcessor(value,
                                         self.secondary_values.get(key, None),
                                         is_directly_specified=is_direct)
-            processor(list(self.secondary_attributes.get(key, set())))
+            secondary_attributes = self.secondary_attributes.get(key, set())
+            if primary:
+                secondary_attributes.add(primary)
+            processor(list(secondary_attributes))
+            if primary:
+                value = value.__dict__.get(primary)
             self.config_processors[key] = processor
+
         self.is_computed.add(key)
         self.configs.__setattr__(key, value)
 

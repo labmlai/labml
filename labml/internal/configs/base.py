@@ -29,6 +29,9 @@ class Configs:
     _calculators: Dict[str, List[ConfigFunction]] = {}
     _evaluators: Dict[str, List[EvalFunction]] = {}
 
+    def __init__(self, *, _primary: str = None):
+        self._primary = _primary
+
     def __init_subclass__(cls, **kwargs):
         configs = {}
 

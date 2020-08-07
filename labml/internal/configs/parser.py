@@ -121,6 +121,9 @@ class Parser:
                     self.aggregates[k] = aggregates
 
         for k, v in configs.__dict__.items():
+            if k.startswith('_'):
+                continue
+
             if k not in self.types:
                 raise RuntimeError(f"Unknown key :{k}")
             self.__collect_value(k, v)
