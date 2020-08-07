@@ -236,5 +236,7 @@ def data_loop_step(c: TrainValidConfigs):
     return len(c.train_loader.dataset)
 
 
-meta_config(TrainValidConfigs.is_log_parameters,
+meta_config(TrainValidConfigs.train_log_interval,
+            TrainValidConfigs.train_update_interval,
+            TrainValidConfigs.is_log_parameters,
             TrainValidConfigs.is_log_activations)
