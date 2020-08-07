@@ -205,7 +205,7 @@ class Run(RunInfo):
 def get_checkpoints(run_path: PurePath):
     checkpoint_path = Path(run_path / "checkpoints")
     if not checkpoint_path.exists():
-        return {}
+        return set()
 
     return {int(child.name) for child in Path(checkpoint_path).iterdir()}
 
@@ -234,7 +234,7 @@ def find_experiment(run_uuid: str) -> Optional[str]:
 def _get_run_checkpoint(run_path: PurePath, checkpoint: int = -1):
     checkpoints = get_checkpoints(run_path)
     if len(checkpoints) == 0:
-        return None, None, None
+        return None
 
     if checkpoint < 0:
         required_ci = np.max(list(checkpoints)) + checkpoint + 1
