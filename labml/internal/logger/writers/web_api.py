@@ -144,6 +144,6 @@ class Writer(WriteBase):
             for e in result['errors']:
                 warnings.warn(f"WEB API error {e['error']} : {e['message']}")
         except urllib.error.HTTPError as e:
-            warnings.warn(f"Failed to send message to WEB API: {e}")
+            warnings.warn(f"Failed to send message to WEB API  {self.url}: {e}")
         except urllib.error.URLError as e:
-            warnings.warn(f"Failed to connect to WEB API: {e}")
+            warnings.warn(f"Failed to connect to WEB API {self.url}: {e}")

@@ -1,6 +1,6 @@
 import warnings
 from pathlib import PurePath, Path
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from labml.internal import util
 from labml.internal.util import is_colab
@@ -27,29 +27,54 @@ class Lab:
         self.data_path = None
         self.experiments = None
         self.web_api = None
+        self.configs = self.__default_config()
+        self.custom_configs = []
+        self.__update_configs()
 
         python_file = get_caller_file()
-        self.set_path(python_file)
+        self.__load_configs(python_file)
 
     def set_path(self, path: str):
-        configs = self.__get_config_files(path)
+        self.__load_configs(path)
 
-        if not configs and not is_colab():
+    def __load_configs(self, path: str):
+        config_files = self.__load_config_files(path)
+
+        if not config_files and not is_colab():
             warnings.warn(f"No '.labml.yaml' config file found. "
                           f"Looking in {path}",
                           UserWarning, stacklevel=4)
 
-        config = self.__get_config(configs)
+        for c in config_files:
+            self.__merge_configs(c)
 
-        if not configs:
-            config['path'] = path
+        for c in self.custom_configs:
+            self.__merge_configs(c)
 
-        self.path = PurePath(config['path'])
-        self.check_repo_dirty = config['check_repo_dirty']
-        self.data_path = self.path / config['data_path']
-        self.experiments = self.path / config['experiments_path']
-        self.indicators = config['indicators']
-        self.web_api = config['web_api']
+        if not config_files and self.configs['path'] is None:
+            self.configs['path'] = path
+
+        self.__update_configs()
+
+    def __update_configs(self):
+        if self.configs['path'] is None:
+            self.path = None
+            self.experiments = None
+            self.data_path = None
+        else:
+            self.path = PurePath(self.configs['path'])
+            self.data_path = self.path / self.configs['data_path']
+            self.experiments = self.path / self.configs['experiments_path']
+
+        self.check_repo_dirty = self.configs['check_repo_dirty']
+        self.indicators = self.configs['indicators']
+        self.web_api = self.configs['web_api']
+
+    def set_configurations(self, configs: Dict[str, any]):
+        self.custom_configs.append(configs)
+        for c in self.custom_configs:
+            self.__merge_configs(c)
+        self.__update_configs()
 
     def __str__(self):
         return f"<Lab path={self.path}>"
@@ -58,8 +83,8 @@ class Lab:
         return str(self)
 
     @staticmethod
-    def __get_config(configs):
-        config = dict(
+    def __default_config():
+        return dict(
             path=None,
             check_repo_dirty=False,
             is_log_python_file=True,
@@ -85,25 +110,21 @@ class Lab:
             ]
         )
 
-        for i, c in enumerate(reversed(configs)):
-            if config['path'] is None:
-                config['path'] = c['config_file_path']
+    def __merge_configs(self, c):
+        if self.configs['path'] is None and 'config_file_path' in c:
+            self.configs['path'] = c['config_file_path']
 
-            assert 'path' not in c
-            assert i == 0 or 'experiments_path' not in c
-            assert i == 0 or 'analytics_path' not in c
-
-            for k, v in c.items():
-                if k not in config:
-                    raise RuntimeError(f"Unknown config parameter #{k} in file "
-                                       f"{c['config_file_path'] / _CONFIG_FILE_NAME}")
-                else:
-                    config[k] = v
-
-        return config
+        for k, v in c.items():
+            if k not in self.configs:
+                raise RuntimeError(f"Unknown config parameter #{k} in file "
+                                   f"{c['config_file_path'] / _CONFIG_FILE_NAME}")
+            elif k == 'indicators':
+                self.configs[k] += v
+            else:
+                self.configs[k] = v
 
     @staticmethod
-    def __get_config_files(path: str):
+    def __load_config_files(path: str):
         path = Path(path).resolve()
         configs = []
 
