@@ -13,12 +13,27 @@ class LabYamlNotfoundError(RuntimeError):
     pass
 
 
+class WebAPIConfigs:
+    url: str
+    frequency: float
+    verify_connection: bool
+
+    def __init__(self, *,
+                 url: str,
+                 frequency: float,
+                 verify_connection: bool):
+        self.frequency = frequency
+        self.verify_connection = verify_connection
+        self.url = url
+
+
 class Lab:
     """
     ### Lab
 
     Lab contains the labml specific properties.
     """
+    web_api: Optional[WebAPIConfigs]
 
     def __init__(self):
         self.indicators = {}
@@ -68,7 +83,9 @@ class Lab:
 
         self.check_repo_dirty = self.configs['check_repo_dirty']
         self.indicators = self.configs['indicators']
-        self.web_api = self.configs['web_api']
+        self.web_api = WebAPIConfigs(url=self.configs['web_api'],
+                                     frequency=self.configs['web_api_frequency'],
+                                     verify_connection=self.configs['web_api_verify_connection'])
 
     def set_configurations(self, configs: Dict[str, any]):
         self.custom_configs.append(configs)
@@ -94,6 +111,8 @@ class Lab:
             analytics_path='analytics',
             analytics_templates={},
             web_api=None,
+            web_api_frequency=60,
+            web_api_verify_connection=True,
             indicators=[{
                 'class_name': 'Scalar',
                 'is_print': True,

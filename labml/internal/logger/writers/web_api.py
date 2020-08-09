@@ -15,6 +15,7 @@ from ...lab import lab_singleton
 
 MAX_BUFFER_SIZE = 1024
 
+
 class Writer(WriteBase):
     url: Optional[str]
 
@@ -28,10 +29,7 @@ class Writer(WriteBase):
         self.name = None
         self.comment = None
         self.configs = None
-        conf = lab_singleton().web_api or {}
-        self.url = conf.get('url', None)
-        self.frequency = conf.get('frequency', 60)
-        self.is_verify_connection = conf.get('verify_connection', True)
+        self.web_api = lab_singleton().web_api
 
     @staticmethod
     def _parse_key(key: str):
@@ -49,7 +47,7 @@ class Writer(WriteBase):
         self.configs = configs
 
     def start(self):
-        if self.url is None:
+        if self.web_api is None:
             return
 
         data = {
@@ -81,7 +79,7 @@ class Writer(WriteBase):
     def write(self, *,
               global_step: int,
               indicators: Dict[str, Indicator]):
-        if self.url is None:
+        if self.web_api is None:
             return
 
         for ind in indicators.values():
@@ -91,12 +89,12 @@ class Writer(WriteBase):
             self._write_indicator(global_step, ind)
 
         t = time.time()
-        if t - self.last_committed > self.frequency:
+        if t - self.last_committed > self.web_api.frequency:
             self.last_committed = t
             self.flush()
 
     def flush(self):
-        if self.url is None:
+        if self.web_api is None:
             return
 
         data = {}
@@ -127,14 +125,14 @@ class Writer(WriteBase):
         })
 
     def send(self, data: Dict[str, any]):
-        req = urllib.request.Request(self.url)
+        req = urllib.request.Request(self.web_api.url)
         req.add_header('Content-Type', 'application/json; charset=utf-8')
         data = json.dumps(data)
         data = data.encode('utf-8')
         req.add_header('Content-Length', str(len(data)))
 
         try:
-            if self.is_verify_connection:
+            if self.web_api.verify_connection:
                 response = urllib.request.urlopen(req, data)
             else:
                 response = urllib.request.urlopen(req, data,
@@ -144,6 +142,6 @@ class Writer(WriteBase):
             for e in result['errors']:
                 warnings.warn(f"WEB API error {e['error']} : {e['message']}")
         except urllib.error.HTTPError as e:
-            warnings.warn(f"Failed to send message to WEB API  {self.url}: {e}")
+            warnings.warn(f"Failed to send message to WEB API  {self.web_api.url}: {e}")
         except urllib.error.URLError as e:
-            warnings.warn(f"Failed to connect to WEB API {self.url}: {e}")
+            warnings.warn(f"Failed to connect to WEB API {self.web_api.url}: {e}")
