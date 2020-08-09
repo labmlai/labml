@@ -44,15 +44,18 @@ class ForwardHook:
         self.module = module
         module.register_forward_hook(self)
 
+    def save(self, name: str, output):
+        if isinstance(output, torch.Tensor):
+            _store_l1_l2(name, output)
+        elif isinstance(output, tuple):
+            for i, o in enumerate(output):
+                self.save(f"{name}.{i}", o)
+
     def __call__(self, module, i, o):
         if not _log_activations.entered:
             return
 
-        if isinstance(o, torch.Tensor):
-            _store_l1_l2(f"module.{self.model_name}.{self.name}", o)
-        if isinstance(o, tuple):
-            for i, t in enumerate(o):
-                _store_l1_l2(f"module.{self.model_name}.{self.name}.{i}", t)
+        self.save(f"module.{self.model_name}.{self.name}", o)
 
 
 def hook_model_outputs(model: torch.nn.Module, model_name: str = "model"):

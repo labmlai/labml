@@ -75,6 +75,9 @@ class SimpleBatchStep(BatchStep):
         }
 
         output = self.model(data)
+        if isinstance(output, tuple):
+            output = output[0]
+
         loss = self.loss_func(output, target)
         if self.accuracy_func is not None:
             stats['correct'] = self.accuracy_func(output, target)

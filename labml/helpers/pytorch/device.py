@@ -39,6 +39,9 @@ class DeviceConfigs(BaseConfigs):
 
     device: torch.device
 
+    def __init__(self):
+        super().__init__(_primary='device')
+
 
 @option(DeviceConfigs.device)
 def _device(c: DeviceConfigs):
