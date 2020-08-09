@@ -23,7 +23,7 @@ class ConfigProcessorDict:
     def __call__(self, run_order: Optional[List[Union[List[str], str]]] = None):
         self.configs.update(self.values)
 
-    def save(self, configs_path: PurePath):
+    def to_json(self):
         orders = {k: i for i, k in enumerate(self.configs.keys())}
         configs = {}
         for k, v in self.configs.items():
@@ -35,8 +35,14 @@ class ConfigProcessorDict:
                 'options': [],
                 'computed': Value.to_yaml(v),
                 'is_hyperparam': False,
+                'is_meta': False,
                 'is_explicitly_specified': (k in self.values)
             }
+
+        return configs
+
+    def save(self, configs_path: PurePath):
+        configs = self.to_json()
 
         with open(str(configs_path), "w") as file:
             file.write(util.yaml_dump(configs))
