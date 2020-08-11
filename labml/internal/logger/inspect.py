@@ -41,6 +41,8 @@ def _format_value(value: any):
     elif isinstance(value, np.int) or isinstance(value, np.long):
         return _format_int(int(value))
     elif isinstance(value, np.float):
+        if np.isnan(value):
+            return 'NaN'
         return _format_float(float(value))
     elif torch is not None and isinstance(value, torch.Tensor):
         if not value.shape:
