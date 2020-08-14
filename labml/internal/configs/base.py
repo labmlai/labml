@@ -1,3 +1,4 @@
+import types
 from typing import Dict, List, Callable, Union, Tuple, Optional
 
 from labml.internal.configs.eval_function import EvalFunction
@@ -7,8 +8,10 @@ from .parser import Parser, PropertyKeys
 
 
 def _is_class_method(func: Callable):
-    if not callable(func):
+    if not isinstance(func, types.FunctionType):
         return False
+    # if not callable(func):
+    #     return False
 
     import inspect
 
