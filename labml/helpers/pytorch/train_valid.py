@@ -1,4 +1,4 @@
-from typing import Optional, Callable
+from typing import Optional, Callable, Dict
 
 import numpy as np
 import torch.optim
@@ -12,20 +12,20 @@ from labml.helpers.training_loop import TrainingLoopConfigs
 from labml.utils.pytorch import get_device
 
 
-class BatchStep:
-    def prepare_for_iteration(self) -> bool:
+class BatchStepProtocol:
+    def prepare_for_iteration(self) -> None:
         raise NotImplementedError()
 
-    def init_stats(self):
+    def init_stats(self) -> Dict[str, any]:
         return {}
 
-    def update_stats(self, stats: any, update: any):
+    def update_stats(self, stats: Dict[str, any], update: Dict[str, any]):
         for k, v in update.items():
             if k not in stats:
                 stats[k] = []
             stats[k].append(v)
 
-    def log_stats(self, stats: any):
+    def log_stats(self, stats: Dict[str, any]):
         pass
 
     def process(self, batch: any):
@@ -34,22 +34,18 @@ class BatchStep:
     def update(self):
         pass
 
-    def add_activation_hooks(self):
-        pass
 
-
-class SimpleBatchStep(BatchStep):
+class BatchStep(BatchStepProtocol):
     def __init__(self, *,
                  model: nn.Module,
-                 optimizer: Optional[torch.optim.Adam],
+                 optimizer: torch.optim.Adam,
                  loss_func: Callable,
-                 accuracy_func: Callable,
-                 is_log_parameters: bool):
-        self.is_log_parameters = is_log_parameters
+                 accuracy_func: Callable):
         self.accuracy_func = accuracy_func
         self.loss_func = loss_func
         self.optimizer = optimizer
         self.model = model
+        hook_model_outputs(self.model)
 
         tracker.set_queue("loss.*", 20, True)
         tracker.set_scalar("accuracy.*", True)
@@ -59,12 +55,10 @@ class SimpleBatchStep(BatchStep):
             tracker.add("accuracy.", np.sum(stats['correct']) / np.sum(stats['samples']))
 
     def prepare_for_iteration(self):
-        if self.optimizer is None:
-            self.model.eval()
-            return True
+        if MODE_STATE.is_train:
+            self.model.train()
         else:
             self.model.train()
-            return False
 
     def process(self, batch: any):
         device = get_device(self.model)
@@ -84,33 +78,116 @@ class SimpleBatchStep(BatchStep):
 
         tracker.add("loss.", loss)
 
-        if self.optimizer is not None:
+        if MODE_STATE.is_train:
             loss.backward()
 
         return stats
 
     def update(self):
-        if self.optimizer is None:
+        if not MODE_STATE.is_train:
             return
         self.optimizer.step()
-        if self.is_log_parameters:
+        if MODE_STATE.is_log_parameters:
             pytorch_utils.store_model_indicators(self.model)
         self.optimizer.zero_grad()
 
-    def add_activation_hooks(self):
-        pytorch_utils.hook_model_outputs(self.model)
+
+class ModeState:
+    def __init__(self):
+        self._rollback_stack = []
+
+        self.is_log_activations = False
+        self.is_train = False
+        self.is_log_parameters = False
+
+    def enter(self, mode: Dict[str, any]):
+        rollback = {}
+        for k, v in mode.items():
+            if v is None:
+                continue
+            rollback[k] = getattr(self, k)
+            setattr(self, k, v)
+
+        self._rollback_stack.append(rollback)
+
+        return len(self._rollback_stack)
+
+    def exit(self, n: int):
+        assert n == len(self._rollback_stack)
+
+        rollback = self._rollback_stack[-1]
+        self._rollback_stack.pop(-1)
+
+        for k, v in rollback.items():
+            setattr(self, k, v)
+
+
+MODE_STATE = ModeState()
+
+
+class Mode:
+    def __init__(self, *,
+                 is_train: bool = None,
+                 is_log_parameters: bool = None,
+                 is_log_activations: bool = None):
+        self.mode = {}
+        if is_log_activations is not None:
+            self.mode['is_log_activations'] = is_log_activations
+        if is_train is not None:
+            self.mode['is_train'] = is_train
+        if is_log_parameters is not None:
+            self.mode['is_log_parameters'] = is_log_parameters
+        # for k, v in kwargs.items():
+        #     if k[0] == '_' or not hasattr(_MODE_STATE, k):
+        #         raise RuntimeError(f"Unknown mode {k}={v}")
+        #
+        #     self.mode[k] = v
+
+        self.idx = -1
+
+    def __enter__(self):
+        self.idx = MODE_STATE.enter(self.mode)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        MODE_STATE.exit(self.idx)
+
+
+class ForwardHook:
+    def __init__(self, model_name, name: str, module: torch.nn.Module):
+        self.model_name = model_name
+        self.name = name
+        self.module = module
+        module.register_forward_hook(self)
+
+    def save(self, name: str, output):
+        if isinstance(output, torch.Tensor):
+            pytorch_utils.store_l1_l2(name, output)
+        elif isinstance(output, tuple):
+            for i, o in enumerate(output):
+                self.save(f"{name}.{i}", o)
+
+    def __call__(self, module, i, o):
+        if not MODE_STATE.is_log_activations:
+            return
+
+        self.save(f"module.{self.model_name}.{self.name}", o)
+
+
+def hook_model_outputs(model: torch.nn.Module, model_name: str = "model"):
+    for name, module in model.named_modules():
+        if name == '':
+            name = 'full'
+        ForwardHook(model_name, name, module)
 
 
 class Trainer:
     def __init__(self, *,
                  name: str,
-                 batch_step: BatchStep,
+                 batch_step: BatchStepProtocol,
                  data_loader: torch.utils.data.DataLoader,
                  is_increment_global_step: bool,
-                 is_log_activations: bool,
                  log_interval: Optional[int],
                  update_interval: Optional[int]):
-        self.is_log_activations = is_log_activations
         self.batch_step = batch_step
         self.log_interval = log_interval
         self.update_interval = update_interval
@@ -118,12 +195,9 @@ class Trainer:
         self.data_loader = data_loader
         self.name = name
 
-        if self.is_log_activations:
-            self.batch_step.add_activation_hooks()
-
     def __call__(self):
-        is_grad = not self.batch_step.prepare_for_iteration()
-        with torch.set_grad_enabled(is_grad):
+        self.batch_step.prepare_for_iteration()
+        with torch.set_grad_enabled(MODE_STATE.is_train):
             self.iterate()
 
     def iterate(self):
@@ -131,10 +205,7 @@ class Trainer:
         is_updated = True
 
         for i, batch in monit.enum(self.name, self.data_loader):
-            if i == 0 and self.is_log_activations:
-                with pytorch_utils.log_activation():
-                    update = self.batch_step.process(batch)
-            else:
+            with Mode(is_log_activations=(MODE_STATE.is_log_activations and i == 0)):
                 update = self.batch_step.process(batch)
 
             is_updated = False
@@ -163,8 +234,7 @@ class TrainValidConfigs(TrainingLoopConfigs):
     accuracy_func: Callable
     optimizer: torch.optim.Adam
     model: nn.Module
-    train_batch_step: BatchStep = 'simple_train_batch_step'
-    valid_batch_step: BatchStep = 'simple_valid_batch_step'
+    batch_step: BatchStepProtocol = 'simple_batch_step'
 
     trainer: Trainer
     validator: Trainer
@@ -183,50 +253,41 @@ class TrainValidConfigs(TrainingLoopConfigs):
 
     def run(self):
         for _ in self.training_loop:
-            with tracker.namespace('train'):
-                self.trainer()
+            with Mode(is_train=True,
+                      is_log_parameters=self.is_log_parameters,
+                      is_log_activations=self.is_log_activations):
+                with tracker.namespace('train'):
+                    self.trainer()
             with tracker.namespace('valid'):
                 self.validator()
 
 
-@option(TrainValidConfigs.train_batch_step)
-def simple_train_batch_step(c: TrainValidConfigs):
-    return SimpleBatchStep(model=c.model,
-                           is_log_parameters=c.is_log_parameters,
-                           optimizer=c.optimizer,
-                           loss_func=c.loss_func,
-                           accuracy_func=c.accuracy_func)
-
-
-@option(TrainValidConfigs.valid_batch_step)
-def simple_valid_batch_step(c: TrainValidConfigs):
-    return SimpleBatchStep(model=c.model,
-                           optimizer=None,
-                           is_log_parameters=False,
-                           loss_func=c.loss_func,
-                           accuracy_func=c.accuracy_func)
+@option(TrainValidConfigs.batch_step)
+def simple_batch_step(c: TrainValidConfigs):
+    return BatchStep(model=c.model,
+                     optimizer=c.optimizer,
+                     loss_func=c.loss_func,
+                     accuracy_func=c.accuracy_func)
 
 
 @option(TrainValidConfigs.trainer)
 def trainer(c: TrainValidConfigs):
     return Trainer(name='Train',
-                   batch_step=c.train_batch_step,
+                   batch_step=c.batch_step,
                    data_loader=c.train_loader,
                    is_increment_global_step=True,
                    log_interval=c.train_log_interval,
-                   update_interval=c.train_update_interval,
-                   is_log_activations=c.is_log_activations)
+                   update_interval=c.train_update_interval)
 
 
 @option(TrainValidConfigs.validator)
 def validator(c: TrainValidConfigs):
     return Trainer(name='Valid',
-                   batch_step=c.valid_batch_step,
+                   batch_step=c.batch_step,
                    data_loader=c.valid_loader,
                    is_increment_global_step=False,
                    log_interval=None,
-                   update_interval=None,
-                   is_log_activations=False)
+                   update_interval=None)
 
 
 @option(TrainValidConfigs.loop_count)
