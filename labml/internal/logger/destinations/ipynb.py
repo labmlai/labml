@@ -5,6 +5,7 @@ from ipywidgets import HTML
 
 from labml.internal.logger import StyleCode
 from labml.internal.logger.destinations import Destination
+from labml.internal.util import is_kaggle
 
 get_ipython: Callable
 
@@ -64,16 +65,22 @@ class IpynbDestination(Destination):
 
         text = "".join(coded)
         lines = text.split('\n')
+
+        if is_kaggle():
+            attrs = 'style="color: #444;'
+        else:
+            attrs = ''
+
         if self.is_same_cell():
             if coded:
                 self.__cell_lines.pop()
                 self.__cell_lines += lines
             text = '\n'.join(self.__cell_lines)
-            self.html.value = f"<pre>{text}</pre>"
+            self.html.value = f"<pre {attrs}>{text}</pre>"
         else:
             self.__cell_lines = lines
             text = '\n'.join(self.__cell_lines)
-            self.html = HTML(f"<pre>{text}</pre>")
+            self.html = HTML(f"<pre  {attrs}>{text}</pre>")
             display(self.html)
 
         # print(len(self.__cell_lines), self.__cell_lines[-1], is_new_line)

@@ -14,7 +14,7 @@ from labml.internal.configs.processor_dict import ConfigProcessorDict
 from labml.internal.experiment.experiment_run import Run
 from labml.internal.lab import lab_singleton
 from labml.internal.logger import logger_singleton as logger_internal
-from labml.internal.util import is_ipynb, is_colab
+from labml.internal.util import is_ipynb, is_colab, is_kaggle
 from labml.logger import Text
 from labml.utils import get_caller_file
 
@@ -165,7 +165,7 @@ class Experiment:
             self.run.is_dirty = repo.is_dirty()
             self.run.diff = repo.git.diff()
         except git.InvalidGitRepositoryError:
-            if not is_colab():
+            if not is_colab() and not is_kaggle():
                 warnings.warn(f"Not a valid git repository",
                               UserWarning, stacklevel=4)
             self.run.commit = 'unknown'
