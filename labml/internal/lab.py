@@ -3,7 +3,7 @@ from pathlib import PurePath, Path
 from typing import List, Optional, Dict
 
 from labml.internal import util
-from labml.internal.util import is_colab
+from labml.internal.util import is_colab, is_kaggle
 from labml.utils import get_caller_file
 
 _CONFIG_FILE_NAME = '.labml.yaml'
@@ -55,10 +55,11 @@ class Lab:
     def __load_configs(self, path: str):
         config_files = self.__load_config_files(path)
 
-        if not config_files and not is_colab():
-            warnings.warn(f"No '.labml.yaml' config file found. "
-                          f"Looking in {path}",
-                          UserWarning, stacklevel=4)
+        if not config_files:
+            if not is_colab() and not is_kaggle():
+                warnings.warn(f"No '.labml.yaml' config file found. "
+                              f"Looking in {path}",
+                              UserWarning, stacklevel=4)
 
         for c in config_files:
             self.__merge_configs(c)

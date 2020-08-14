@@ -53,5 +53,10 @@ def is_colab():
     return 'google.colab' in sys.modules
 
 
+def is_kaggle():
+    import sys
+    return 'kaggle_gcp' in sys.modules
+
+
 if __name__ == '__main__':
     print(is_ipynb())
