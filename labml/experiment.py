@@ -268,6 +268,20 @@ def load(run_uuid: str,
     _experiment_singleton().start(run_uuid=run_uuid, checkpoint=checkpoint)
 
 
+def load_models(models: List[str], run_uuid: str,
+         checkpoint: Optional[int] = None):
+    r"""
+    Loads and starts the run from a previous checkpoint.
+
+    Arguments:
+        run_uuid (str): experiment will start from
+            a saved state in the run with UUID ``run_uuid``
+        checkpoint (str, optional): if provided the experiment will start from
+            given checkpoint. Otherwise it will start from the last checkpoint.
+    """
+
+    _experiment_singleton().load_models(models=models, run_uuid=run_uuid, checkpoint=checkpoint)
+
 def save_numpy(name: str, array: np.ndarray):
     r"""
     Saves a single numpy array. This is used to save processed data.
