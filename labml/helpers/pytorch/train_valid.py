@@ -292,12 +292,14 @@ def validator(c: TrainValidConfigs):
 
 @option(TrainValidConfigs.loop_count)
 def data_loop_count(c: TrainValidConfigs):
-    return c.epochs * len(c.train_loader.dataset)
+    dataset = getattr(c.train_loader, 'dataset', c.train_loader)
+    return c.epochs * len(dataset)
 
 
 @option(TrainValidConfigs.loop_step)
 def data_loop_step(c: TrainValidConfigs):
-    return len(c.train_loader.dataset)
+    dataset = getattr(c.train_loader, 'dataset', c.train_loader)
+    return len(dataset)
 
 
 meta_config(TrainValidConfigs.train_log_interval,
