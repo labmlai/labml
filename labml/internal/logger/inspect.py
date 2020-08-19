@@ -119,9 +119,19 @@ def _render_tensor(tensor, *, new_line: str = '\n', indent: str = ''):
 
 def _get_value_full(value: any):
     if isinstance(value, str):
-        return [('"', Text.subtle),
-                (value, Text.value),
-                ('"', Text.subtle)]
+        if len(value) < 500:
+            return [('"', Text.subtle),
+                    (value, Text.value),
+                    ('" len(', Text.subtle),
+                    (_format_int(len(value)), Text.meta),
+                    (')', Text.subtle)]
+        else:
+            return [('"', Text.subtle),
+                    (value[:500], Text.value),
+                    (' ..." len(', Text.subtle),
+                    (_format_int(len(value)), Text.meta),
+                    (')', Text.subtle)]
+
     elif numpy is not None and isinstance(value, numpy.ndarray):
         return [*_key_value_pair('dtype', value.dtype),
                 '\n',
