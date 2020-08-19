@@ -38,7 +38,9 @@ def _format_float(value: float):
 def _format_value(value: any):
     if isinstance(value, int):
         return _format_int(value)
-    elif isinstance(value, np.int) or isinstance(value, np.long):
+    elif (isinstance(value, np.int) or
+          isinstance(value, np.long) or
+          isinstance(value, np.uint64)):
         return _format_int(int(value))
     elif isinstance(value, np.float):
         if np.isnan(value):

@@ -225,7 +225,7 @@ class Experiment:
                 (f"{self.run.load_run}", Text.meta2),
             ])
 
-    def _load_checkpoint(self, checkpoint_path: pathlib.PurePath):
+    def _load_checkpoint(self, checkpoint_path: pathlib.Path):
         if not self.checkpoint_saver.load(checkpoint_path):
             logger.log('No models registered', Text.warning)
 
@@ -271,7 +271,7 @@ class Experiment:
     def load_models(self, *,
                     models: List[str],
                     run_uuid: Optional[str] = None,
-              checkpoint: Optional[int] = None):
+                    checkpoint: Optional[int] = None):
         if checkpoint is None:
             checkpoint = -1
         checkpoint_path, global_step = experiment_run.get_run_checkpoint(
@@ -279,18 +279,12 @@ class Experiment:
             checkpoint)
 
         if global_step is None:
-            warnings.warn(f"Couldn't find checkpoint",
+            warnings.warn(f"Could not find checkpoint",
                           UserWarning, stacklevel=4)
             return
 
         with monit.section("Loading checkpoint"):
-            _ = self.checkpoint_saver.load(checkpoint_path)
-
-        self.run.load_run = run_uuid
-
-        return global_step
-
-        global_step = self.__start_from_checkpoint(run_uuid, checkpoint)
+            _ = self.checkpoint_saver.load(checkpoint_path, models)
 
     def start(self, *,
               run_uuid: Optional[str] = None,
