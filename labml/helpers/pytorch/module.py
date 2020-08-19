@@ -1,3 +1,5 @@
+from typing import Any
+
 import torch.nn
 
 
@@ -6,6 +8,10 @@ class Module(torch.nn.Module):
     Wraps ``torch.nn.Module`` to overload ``__call__`` instead of
     ``forward`` for better type checking.
     """
+
+    def _forward_unimplemented(self, *input: Any) -> None:
+        # To stop PyTorch from giving abstract methods warning
+        pass
 
     def __init_subclass__(cls, **kwargs):
         if cls.__dict__.get('__call__', None) is None:
