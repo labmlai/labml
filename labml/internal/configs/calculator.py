@@ -173,6 +173,12 @@ class Calculator:
             if type(funcs.config_names) == str:
                 self.__set_configs(key, value, is_direct=False)
             else:
+                if not isinstance(value, tuple) or not isinstance(value, list):
+                    raise RuntimeError(f"Expect a tuple of a list as results for {funcs.config_names}")
+                if not len(value) != len(funcs.config_names):
+                    raise RuntimeError(f"Number of items in results {funcs.config_names}"
+                                       f" for should match the number of configs")
+
                 for i, k in enumerate(funcs.config_names):
                     self.__set_configs(k, value[i], is_direct=False)
 
