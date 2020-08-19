@@ -37,25 +37,34 @@ class ConfigFunction:
             elif p.kind == p.KEYWORD_ONLY:
                 key += 1
             else:
-                assert False, "Only positional or keyword only arguments should be accepted"
+                raise ConfigsError(f"Only positional or keyword only arguments should be accepted: "
+                                   f"{self.config_names} - {self.option_name}")
 
         if self.pass_params is not None:
             if key > 0:
-                raise ConfigsError('No keyword arguments are supported when passing configs')
+                raise ConfigsError(f"No keyword arguments are supported when passing configs: "
+                                   f"{self.config_names} - {self.option_name}")
+
             if pos != len(self.pass_params):
-                raise ConfigsError('Number of argumnents to function should match the number of '
-                                   'configs to be passed')
+                raise ConfigsError('Number of arguments to function should match the number of '
+                                   'configs to be passed: '
+                                   f"{self.config_names} - {self.option_name}")
             return FunctionKind.pass_params
 
         if pos == 1:
-            assert key == 0
+            if key != 0:
+                raise ConfigsError(
+                    'No keyword arguments are allowed when passing a config object: '
+                    f"{self.config_names} - {self.option_name}")
             return FunctionKind.pass_configs
         elif pos == 0 and key == 0:
             return FunctionKind.pass_nothing
         else:
             warnings.warn("Use configs object, because it's easier to refactor, find usage etc",
                           FutureWarning, stacklevel=4)
-            assert pos == 0
+            if pos != 0:
+                raise ConfigsError(
+                    f"{self.config_names} - {self.option_name}")
             return FunctionKind.pass_kwargs
 
     def __get_dependencies(self):
