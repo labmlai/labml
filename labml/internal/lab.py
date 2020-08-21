@@ -84,9 +84,10 @@ class Lab:
 
         self.check_repo_dirty = self.configs['check_repo_dirty']
         self.indicators = self.configs['indicators']
-        self.web_api = WebAPIConfigs(url=self.configs['web_api'],
-                                     frequency=self.configs['web_api_frequency'],
-                                     verify_connection=self.configs['web_api_verify_connection'])
+        if self.configs['web_api']:
+            self.web_api = WebAPIConfigs(url=self.configs['web_api'],
+                                         frequency=self.configs['web_api_frequency'],
+                                         verify_connection=self.configs['web_api_verify_connection'])
 
     def set_configurations(self, configs: Dict[str, any]):
         self.custom_configs.append(configs)

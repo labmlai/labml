@@ -210,11 +210,12 @@ class Experiment:
         if self.run.comment != '':
             logger.log(['\t', (self.run.comment, Text.highlight)])
 
+        commit_message = self.run.commit_message.strip().replace('\n', '¶ ').replace('\r', '')
         logger.log([
             "\t"
             "[dirty]" if self.run.is_dirty else "[clean]",
             ": ",
-            (f"\"{self.run.commit_message.strip()}\"", Text.highlight)
+            (f"\"{commit_message}\"", Text.highlight)
         ])
 
         if self.run.load_run is not None:
