@@ -33,7 +33,7 @@ This is an example usage of `Tracker <http://lab-ml.com/guide/tracker.html>`_
 Here's the output,
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/logger_sample.png
-   :width: 100%
+   :width: 50%
    :alt: Logger output
 
 Create an experiment and save the configurations with a couple of lines of codes,
@@ -58,7 +58,7 @@ Join our `Slack workspace <https://join.slack.com/t/labforml/shared_invite/zt-eg
 
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/slack_chart.png
-   :width: 100%
+   :width: 50%
    :alt: Example chart update on slack
 
 
