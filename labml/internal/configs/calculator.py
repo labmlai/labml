@@ -175,7 +175,7 @@ class Calculator:
             else:
                 if not isinstance(value, tuple) and not isinstance(value, list):
                     raise RuntimeError(f"Expect a tuple or a list as results for {funcs.config_names}")
-                if not len(value) != len(funcs.config_names):
+                if len(value) != len(funcs.config_names):
                     raise RuntimeError(f"Number of items in results {funcs.config_names}"
                                        f" for should match the number of configs")
 
