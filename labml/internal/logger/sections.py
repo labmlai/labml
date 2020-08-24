@@ -1,6 +1,6 @@
 import math
 import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from ...logger import Text
 
@@ -39,6 +39,10 @@ class Section:
         self._is_parented = False
 
         self.is_successful = True
+
+    @property
+    def name(self):
+        return self._name
 
     def get_estimated_time(self) -> float:
         raise NotImplementedError()
@@ -171,7 +175,8 @@ class LoopingSection(Section):
                  is_timed: bool,
                  is_track: bool,
                  is_partial: bool,
-                 total_steps: float):
+                 total_steps: float,
+                 parents: List[str]):
         super().__init__(logger=logger,
                          name=name,
                          is_silent=is_silent,
@@ -186,9 +191,11 @@ class LoopingSection(Section):
         self._last_start_time = -1.
         self._last_step_time = 0.
         self._is_track = is_track
+        self._parents = parents
 
     def track_progress(self):
-        self._logger.store(f'time.{self._name}', self._calc_estimated_time())
+        name = '.'.join(self._parents + [self._name])
+        self._logger.store(f'time.{name}', self._calc_estimated_time())
 
     def get_estimated_time(self):
         et = self._estimated_time * self._beta

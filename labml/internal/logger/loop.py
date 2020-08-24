@@ -1,6 +1,6 @@
 import math
 import time
-from typing import Optional, Dict, TYPE_CHECKING
+from typing import Optional, Dict, TYPE_CHECKING, List, Collection
 
 from labml.internal.logger.sections import LoopingSection
 from ...logger import Text
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class Loop:
-    def __init__(self, iterator: range, *,
+    def __init__(self, iterator: Collection, *,
                  logger: 'Logger',
                  is_track: bool,
                  is_print_iteration_time: bool):
@@ -27,7 +27,6 @@ class Loop:
         self._iter_time = 0.
         self._beta_pow = 1.
         self._beta = 0.9
-        self.steps = len(iterator)
         self.counter = 0
         self.logger = logger
         self.__global_step: Optional[int] = None
@@ -63,7 +62,7 @@ class Loop:
             self._iter_time += (1 - self._beta) * (now - self._iter_start_time)
             if self._is_track:
                 self.logger.store('time.loop',
-                                  (now - self._iter_start_time) / (self.logger.global_step- self._iter_start_step))
+                                  (now - self._iter_start_time) / (self.logger.global_step - self._iter_start_step))
 
         self._iter_start_time = now
         self._iter_start_step = self.logger.global_step
@@ -86,7 +85,7 @@ class Loop:
             estimate = sum([s.get_estimated_time()
                             for s in self.__looping_sections.values()])
 
-        total_time = estimate * self.steps + self._init_time
+        total_time = estimate * len(self.iterator) + self._init_time
         total_time = max(total_time, spent)
         remain = total_time - spent
 
@@ -111,16 +110,19 @@ class Loop:
                     is_silent: bool,
                     is_timed: bool,
                     is_partial: bool,
-                    total_steps: float):
-        if name not in self.__looping_sections:
-            self.__looping_sections[name] = LoopingSection(logger=self.logger,
-                                                           name=name,
-                                                           is_silent=is_silent,
-                                                           is_timed=is_timed,
-                                                           is_track=self._is_track,
-                                                           is_partial=is_partial,
-                                                           total_steps=total_steps)
-        return self.__looping_sections[name]
+                    total_steps: float,
+                    parents: List[str]):
+        key = '.'.join(parents + [name])
+        if key not in self.__looping_sections:
+            self.__looping_sections[key] = LoopingSection(logger=self.logger,
+                                                          name=name,
+                                                          is_silent=is_silent,
+                                                          is_timed=is_timed,
+                                                          is_track=self._is_track,
+                                                          is_partial=is_partial,
+                                                          total_steps=total_steps,
+                                                          parents=parents)
+        return self.__looping_sections[key]
 
     def log_sections(self):
         parts = []

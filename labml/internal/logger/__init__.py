@@ -161,7 +161,8 @@ class Logger:
                                               is_silent=is_silent,
                                               is_timed=is_timed,
                                               is_partial=is_partial,
-                                              total_steps=total_steps)
+                                              total_steps=total_steps,
+                                              parents=[s.name for s in self.__sections])
             self.__sections.append(section)
         else:
             self.__sections.append(OuterSection(logger=self,
@@ -189,7 +190,7 @@ class Logger:
         self.__sections[-1].is_successful = is_successful
         self.__log_line()
 
-    def loop(self, iterator_: range, *,
+    def loop(self, iterator_: typing.Collection, *,
              is_track: bool,
              is_print_iteration_time: bool):
         if len(self.__sections) != 0:

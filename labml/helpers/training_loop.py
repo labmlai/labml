@@ -1,10 +1,49 @@
 import signal
-from typing import Optional, Tuple, Any
+from typing import Optional, Tuple, Any, Collection
+
+import typing
 
 from labml import tracker, logger, experiment, monit
 from labml.configs import BaseConfigs, meta_config, option
 from labml.internal.logger import Loop
 from labml.logger import Text
+
+
+class TrainingLoopIterator(Collection):
+    def __init__(self, start: int, total: int, step: Optional[int]):
+        self.step = step
+        self.total = total
+        self.start = start
+        self.i = None
+
+    def __iter__(self):
+        self.i = None
+        return self
+
+    def __next__(self):
+        if self.i is None:
+            self.i = self.start
+        elif self.step is not None:
+            self.i += self.step
+        else:
+            self.i += 1
+
+        if self.i >= self.total:
+            raise StopIteration()
+
+        if self.step is None:
+            return tracker.get_global_step()
+        else:
+            return self.i
+
+    def __len__(self) -> int:
+        if self.step is not None:
+            return (self.total - self.start) // self.step
+        else:
+            return self.total
+
+    def __contains__(self, x: object) -> bool:
+        return False
 
 
 class TrainingLoop:
@@ -24,14 +63,21 @@ class TrainingLoop:
         self.__is_save_models = is_save_models
         self.__log_new_line_interval = log_new_line_interval
         self.__log_write_interval = log_write_interval
+        self.__last_write_step = 0
+        self.__last_new_line_step = 0
         self.__save_models_interval = save_models_interval
+        self.__last_save_step = 0
         self.__signal_received = None
         self.__is_loop_on_interrupt = is_loop_on_interrupt
+        self._iter = None
 
     def __iter__(self):
-        self.__loop = monit.loop(range(tracker.get_global_step(),
-                                       self.__loop_count,
-                                       self.__loop_step))
+        self._iter = TrainingLoopIterator(tracker.get_global_step(),
+                                          self.__loop_count,
+                                          self.__loop_step)
+
+        self.__loop = monit.loop(typing.cast(Collection, self._iter))
+
         iter(self.__loop)
         try:
             self.old_handler = signal.signal(signal.SIGINT, self.__handler)
@@ -50,17 +96,17 @@ class TrainingLoop:
             logger.log("Saving model...")
             experiment.save_checkpoint()
 
-    def is_interval(self, interval: int, global_step: Optional[int] = None):
-        if global_step is None:
-            global_step = tracker.get_global_step()
-
-        if global_step - self.__loop_step < 0:
-            return False
-
-        if global_step // interval > (global_step - self.__loop_step) // interval:
-            return True
-        else:
-            return False
+    # def is_interval(self, interval: int, global_step: Optional[int] = None):
+    #     if global_step is None:
+    #         global_step = tracker.get_global_step()
+    #
+    #     if global_step - self.__loop_step < 0:
+    #         return False
+    #
+    #     if global_step // interval > (global_step - self.__loop_step) // interval:
+    #         return True
+    #     else:
+    #         return False
 
     def __next__(self):
         if self.__signal_received is not None:
@@ -77,13 +123,22 @@ class TrainingLoop:
 
         tracker.set_global_step(global_step)
 
-        if self.is_interval(self.__log_write_interval, global_step):
+        if global_step - self.__last_write_step >= self.__log_write_interval:
             tracker.save()
-        if self.is_interval(self.__log_new_line_interval, global_step):
+            self.__last_write_step = global_step
+        if global_step - self.__last_new_line_step >= self.__log_new_line_interval:
             logger.log()
+            self.__last_new_line_step = global_step
+        # if self.is_interval(self.__log_write_interval, global_step):
+        #     tracker.save()
+        # if self.is_interval(self.__log_new_line_interval, global_step):
+        #     logger.log()
 
+        # if (self.__is_save_models and
+        #         self.is_interval(self.__save_models_interval, global_step)):
+        #     experiment.save_checkpoint()
         if (self.__is_save_models and
-                self.is_interval(self.__save_models_interval, global_step)):
+                global_step - self.__last_save_step >= self.__save_models_interval):
             experiment.save_checkpoint()
 
         return global_step

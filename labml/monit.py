@@ -1,4 +1,4 @@
-from typing import Iterable, Sized
+from typing import Iterable, Sized, Collection
 from typing import Union, Optional, overload
 
 from labml.internal.logger import logger_singleton as _internal
@@ -54,7 +54,7 @@ def loop(iterator_: range, *,
     ...
 
 
-def loop(iterator_: Union[range, int], *,
+def loop(iterator_: Union[Collection, int], *,
          is_track: bool = True,
          is_print_iteration_time: bool = True):
     """

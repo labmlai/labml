@@ -58,7 +58,7 @@ class BatchStep(BatchStepProtocol):
         if MODE_STATE.is_train:
             self.model.train()
         else:
-            self.model.train()
+            self.model.eval()
 
     def process(self, batch: any):
         device = get_device(self.model)
@@ -81,14 +81,16 @@ class BatchStep(BatchStepProtocol):
         tracker.add("loss.", loss)
 
         if MODE_STATE.is_train:
-            loss.backward()
+            with monit.section('backward'):
+                loss.backward()
 
         return stats
 
     def update(self):
         if not MODE_STATE.is_train:
             return
-        self.optimizer.step()
+        with monit.section('optimize'):
+            self.optimizer.step()
         if MODE_STATE.is_log_parameters:
             pytorch_utils.store_model_indicators(self.model)
         self.optimizer.zero_grad()
@@ -245,7 +247,7 @@ class TrainValidConfigs(TrainingLoopConfigs):
     train_update_interval: int = 1
 
     loop_count = 'data_loop_count'
-    loop_step = 'data_loop_step'
+    loop_step = None
 
     train_loader: torch.utils.data.DataLoader
     valid_loader: torch.utils.data.DataLoader
@@ -294,14 +296,7 @@ def validator(c: TrainValidConfigs):
 
 @option(TrainValidConfigs.loop_count)
 def data_loop_count(c: TrainValidConfigs):
-    dataset = getattr(c.train_loader, 'dataset', c.train_loader)
-    return c.epochs * len(dataset)
-
-
-@option(TrainValidConfigs.loop_step)
-def data_loop_step(c: TrainValidConfigs):
-    dataset = getattr(c.train_loader, 'dataset', c.train_loader)
-    return len(dataset)
+    return c.epochs
 
 
 meta_config(TrainValidConfigs.train_log_interval,
