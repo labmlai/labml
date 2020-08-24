@@ -2,7 +2,7 @@ import signal
 from typing import Optional, Tuple, Any
 
 from labml import tracker, logger, experiment, monit
-from labml.configs import BaseConfigs, meta_config
+from labml.configs import BaseConfigs, meta_config, option
 from labml.internal.logger import Loop
 from labml.logger import Text
 
@@ -120,7 +120,7 @@ class TrainingLoopConfigs(BaseConfigs):
     training_loop: TrainingLoop
 
 
-@TrainingLoopConfigs.calc(TrainingLoopConfigs.training_loop)
+@option(TrainingLoopConfigs.training_loop)
 def _loop_configs(c: TrainingLoopConfigs):
     return TrainingLoop(loop_count=c.loop_count,
                         loop_step=c.loop_step,

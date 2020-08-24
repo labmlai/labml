@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 class Loop:
     def __init__(self, iterator: range, *,
                  logger: 'Logger',
+                 is_track: bool,
                  is_print_iteration_time: bool):
         """
         Creates an iterator with a range `iterator`.
@@ -21,6 +22,7 @@ class Loop:
         self.iterator = iterator
         self._start_time = 0.
         self._iter_start_time = 0.
+        self._iter_start_step = 0
         self._init_time = 0.
         self._iter_time = 0.
         self._beta_pow = 1.
@@ -31,6 +33,7 @@ class Loop:
         self.__global_step: Optional[int] = None
         self.__looping_sections: Dict[str, LoopingSection] = {}
         self._is_print_iteration_time = is_print_iteration_time
+        self._is_track = is_track
         self.is_started = False
 
     def __iter__(self):
@@ -40,6 +43,8 @@ class Loop:
         self._init_time = 0.
         self._iter_time = 0.
         self.counter = 0
+        self._iter_start_step = self.logger.global_step
+        self._started = False
         return self
 
     def __next__(self):
@@ -50,14 +55,19 @@ class Loop:
             raise e
 
         now = time.time()
-        if self.counter == 0:
+        if not self._started:
             self.__init_time = now - self._start_time
         else:
             self._beta_pow *= self._beta
             self._iter_time *= self._beta
             self._iter_time += (1 - self._beta) * (now - self._iter_start_time)
+            if self._is_track:
+                self.logger.store('time.loop',
+                                  (now - self._iter_start_time) / (self.logger.global_step- self._iter_start_step))
 
         self._iter_start_time = now
+        self._iter_start_step = self.logger.global_step
+        self._started = True
 
         self.counter = next_value
 
@@ -107,6 +117,7 @@ class Loop:
                                                            name=name,
                                                            is_silent=is_silent,
                                                            is_timed=is_timed,
+                                                           is_track=self._is_track,
                                                            is_partial=is_partial,
                                                            total_steps=total_steps)
         return self.__looping_sections[name]

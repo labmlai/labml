@@ -155,7 +155,7 @@ class Logger:
 
         if self.__is_looping():
             if len(self.__sections) != 0:
-                raise RuntimeError("No nested sections within loop")
+                is_silent = True
 
             section = self.__loop.get_section(name=name,
                                               is_silent=is_silent,
@@ -190,11 +190,14 @@ class Logger:
         self.__log_line()
 
     def loop(self, iterator_: range, *,
+             is_track: bool,
              is_print_iteration_time: bool):
         if len(self.__sections) != 0:
             raise RuntimeError("Cannot start a loop within a section")
 
-        self.__loop = Loop(iterator=iterator_, logger=self,
+        self.__loop = Loop(iterator=iterator_,
+                           logger=self,
+                           is_track=is_track,
                            is_print_iteration_time=is_print_iteration_time)
         return self.__loop
 

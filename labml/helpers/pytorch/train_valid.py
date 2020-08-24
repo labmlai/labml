@@ -68,7 +68,9 @@ class BatchStep(BatchStepProtocol):
             'samples': len(data)
         }
 
-        output = self.model(data)
+        with monit.section("model"):
+            output = self.model(data)
+
         if isinstance(output, tuple):
             output = output[0]
 

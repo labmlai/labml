@@ -70,7 +70,12 @@ class Section:
 
         self._end_progress = self._progress
 
+        self.track_progress()
+
         self._logger.section_exit(self)
+
+    def track_progress(self):
+        pass
 
     def log(self):
         raise NotImplementedError()
@@ -164,6 +169,7 @@ class LoopingSection(Section):
                  name: str,
                  is_silent: bool,
                  is_timed: bool,
+                 is_track: bool,
                  is_partial: bool,
                  total_steps: float):
         super().__init__(logger=logger,
@@ -179,6 +185,10 @@ class LoopingSection(Section):
         self._last_end_time = -1.
         self._last_start_time = -1.
         self._last_step_time = 0.
+        self._is_track = is_track
+
+    def track_progress(self):
+        self._logger.store(f'time.{self._name}', self._calc_estimated_time())
 
     def get_estimated_time(self):
         et = self._estimated_time * self._beta
