@@ -102,44 +102,42 @@ def add_sklearn_models(models: Dict[str, any]):
 
 
 @overload
-def configs(configs_dict: Dict[str, any]):
+def configs(conf_dict: Dict[str, any]):
     ...
 
 
 @overload
-def configs(configs_dict: Dict[str, any], configs_override: Dict[str, any]):
+def configs(conf_dict: Dict[str, any], conf_override: Dict[str, any]):
     ...
 
 
 @overload
-def configs(configs: BaseConfigs):
+def configs(conf: BaseConfigs):
     ...
 
 
 @overload
-def configs(configs: BaseConfigs, run_order: List[Union[List[str], str]]):
+def configs(conf: BaseConfigs, run_order: List[Union[List[str], str]]):
     ...
 
 
 @overload
-def configs(configs: BaseConfigs, *run_order: str):
+def configs(conf: BaseConfigs, *run_order: str):
     ...
 
 
 @overload
-def configs(configs: BaseConfigs, configs_override: Dict[str, any]):
+def configs(conf: BaseConfigs, conf_override: Dict[str, any]):
     ...
 
 
 @overload
-def configs(configs: BaseConfigs, configs_override: Dict[str, any],
-                      run_order: List[Union[List[str], str]]):
+def configs(conf: BaseConfigs, conf_override: Dict[str, any], run_order: List[Union[List[str], str]]):
     ...
 
 
 @overload
-def configs(configs: BaseConfigs, configs_override: Dict[str, any],
-                      *run_order: str):
+def configs(conf: BaseConfigs, conf_override: Dict[str, any], *run_order: str):
     ...
 
 
@@ -149,34 +147,34 @@ def configs(*args):
 
     This has multiple overloads
 
-    .. function:: configs(configs_dict: Dict[str, any])
+    .. function:: configs(conf_dict: Dict[str, any])
         :noindex:
 
-    .. function:: configs(configs_dict: Dict[str, any], configs_override: Dict[str, any])
+    .. function:: configs(conf_dict: Dict[str, any], conf_override: Dict[str, any])
         :noindex:
 
-    .. function:: configs(configs: BaseConfigs)
+    .. function:: configs(conf: BaseConfigs)
         :noindex:
 
-    .. function:: configs(configs: BaseConfigs, run_order: List[Union[List[str], str]])
+    .. function:: configs(conf: BaseConfigs, run_order: List[Union[List[str], str]])
         :noindex:
 
-    .. function:: configs(configs: BaseConfigs, *run_order: str)
+    .. function:: configs(conf: BaseConfigs, *run_order: str)
         :noindex:
 
-    .. function:: configs(configs: BaseConfigs, configs_override: Dict[str, any])
+    .. function:: configs(conf: BaseConfigs, conf_override: Dict[str, any])
         :noindex:
 
-    .. function:: configs(configs: BaseConfigs, configs_override: Dict[str, any], run_order: List[Union[List[str], str]])
+    .. function:: configs(conf: BaseConfigs, conf_override: Dict[str, any], run_order: List[Union[List[str], str]])
         :noindex:
 
-    .. function:: configs(configs: BaseConfigs, configs_override: Dict[str, any], *run_order: str)
+    .. function:: configs(conf: BaseConfigs, conf_override: Dict[str, any], *run_order: str)
         :noindex:
 
     Arguments:
-        configs (BaseConfigs, optional): configurations object
-        configs_dict (Dict[str, any], optional): a dictionary of configs
-        configs_override (Dict[str, any], optional): a dictionary of
+        conf (BaseConfigs, optional): configurations object
+        conf_dict (Dict[str, any], optional): a dictionary of configs
+        conf_override (Dict[str, any], optional): a dictionary of
             configs to be overridden
         run_order (List[Union[str, List[str]]], optional): list of
             configs to be calculated and the order in which they should be
@@ -218,11 +216,18 @@ def configs(*args):
         raise RuntimeError("Invalid call to calculate configs")
 
 
+_load_run_uuid: Optional[str] = None
+_load_checkpoint: Optional[int] = None
+
+
 def start():
     r"""
     Starts the experiment.
     """
-    _experiment_singleton().start()
+    global _load_run_uuid
+    global _load_checkpoint
+
+    _experiment_singleton().start(run_uuid=_load_run_uuid, checkpoint=_load_checkpoint)
 
 
 def load_configs(run_uuid: str, *, is_only_hyperparam: bool = True):
@@ -232,14 +237,15 @@ def load_configs(run_uuid: str, *, is_only_hyperparam: bool = True):
     Arguments:
         run_uuid (str): if provided the experiment will start from
             a saved state in the run with UUID ``run_uuid``
+
     Keyword Arguments:
         is_only_hyperparam (bool, optional): if True all only the hyper parameters
             are returned
     """
 
-    configs = _get_configs(run_uuid)
+    conf = _get_configs(run_uuid)
     values = {}
-    for k, c in configs.items():
+    for k, c in conf.items():
         is_hyperparam = c.get('is_hyperparam', None)
         is_explicit = c.get('is_explicitly_specified', False)
 
@@ -253,10 +259,10 @@ def load_configs(run_uuid: str, *, is_only_hyperparam: bool = True):
     return values
 
 
-def load(run_uuid: str,
-         checkpoint: Optional[int] = None):
+def load(run_uuid: str, checkpoint: Optional[int] = None):
     r"""
-    Loads and starts the run from a previous checkpoint.
+    Loads a the run from a previous checkpoint.
+    You need to separately call ``experiment.start`` to start the experiment.
 
     Arguments:
         run_uuid (str): experiment will start from
@@ -264,16 +270,19 @@ def load(run_uuid: str,
         checkpoint (str, optional): if provided the experiment will start from
             given checkpoint. Otherwise it will start from the last checkpoint.
     """
+    global _load_run_uuid
+    global _load_checkpoint
 
-    _experiment_singleton().start(run_uuid=run_uuid, checkpoint=checkpoint)
+    _load_run_uuid = run_uuid
+    _load_checkpoint = checkpoint
 
 
-def load_models(models: List[str], run_uuid: str,
-         checkpoint: Optional[int] = None):
+def load_models(models: List[str], run_uuid: str, checkpoint: Optional[int] = None):
     r"""
     Loads and starts the run from a previous checkpoint.
 
     Arguments:
+        models (List[str]): List of names of models to be loaded
         run_uuid (str): experiment will start from
             a saved state in the run with UUID ``run_uuid``
         checkpoint (str, optional): if provided the experiment will start from
@@ -281,6 +290,7 @@ def load_models(models: List[str], run_uuid: str,
     """
 
     _experiment_singleton().load_models(models=models, run_uuid=run_uuid, checkpoint=checkpoint)
+
 
 def save_numpy(name: str, array: np.ndarray):
     r"""
