@@ -52,7 +52,7 @@ class TrainingLoop:
 
     def __init__(self, *,
                  loop_count: int,
-                 loop_step: int,
+                 loop_step: Optional[int],
                  is_save_models: bool,
                  log_new_line_interval: int,
                  log_write_interval: int,
@@ -170,7 +170,7 @@ class TrainingLoopConfigs(BaseConfigs):
     log_new_line_interval: int = 1
     log_write_interval: int = 1
     save_models_interval: int = 1
-    is_loop_on_interrupt: bool = True
+    is_loop_on_interrupt: bool = False
 
     training_loop: TrainingLoop
 

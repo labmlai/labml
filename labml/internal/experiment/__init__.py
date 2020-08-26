@@ -11,7 +11,8 @@ from labml import logger, monit
 from labml.internal.configs.base import Configs
 from labml.internal.configs.processor import ConfigProcessor
 from labml.internal.configs.processor_dict import ConfigProcessorDict
-from labml.internal.experiment.experiment_run import Run
+from labml.internal.experiment.experiment_run import Run, struct_time_to_time, struct_time_to_date
+from labml.internal.experiment.watcher import ExperimentWatcher
 from labml.internal.lab import lab_singleton
 from labml.internal.logger import logger_singleton as logger_internal
 from labml.internal.util import is_ipynb, is_colab, is_kaggle
@@ -325,6 +326,17 @@ class Experiment:
         logger_internal().save_indicators(self.run.indicators_path)
         if self.configs_processor:
             logger_internal().write_h_parameters(self.configs_processor.get_hyperparams())
+
+        return ExperimentWatcher(self)
+
+    def finish(self, reason: str = 'completed', details: any = None):
+        with open(str(self.run.run_log_path), 'a') as f:
+            end_time = time.localtime()
+            data = json.dumps({'reason': reason,
+                               'details': details,
+                               'end_date': struct_time_to_date(end_time),
+                               'end_time': struct_time_to_time(end_time)}, indent=None)
+            f.write(data + '\n')
 
 
 class GlobalParams:

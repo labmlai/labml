@@ -62,7 +62,8 @@ class Loop:
             self._iter_time += (1 - self._beta) * (now - self._iter_start_time)
             if self._is_track:
                 self.logger.store('time.loop',
-                                  (now - self._iter_start_time) / (self.logger.global_step - self._iter_start_step))
+                                  (now - self._iter_start_time) /
+                                  max(1, self.logger.global_step - self._iter_start_step))
 
         self._iter_start_time = now
         self._iter_start_step = self.logger.global_step

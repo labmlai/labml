@@ -223,11 +223,13 @@ _load_checkpoint: Optional[int] = None
 def start():
     r"""
     Starts the experiment.
+    Run it using ``with`` statement and it will monitor and report, experiment completion
+     and exceptions.
     """
     global _load_run_uuid
     global _load_checkpoint
 
-    _experiment_singleton().start(run_uuid=_load_run_uuid, checkpoint=_load_checkpoint)
+    return _experiment_singleton().start(run_uuid=_load_run_uuid, checkpoint=_load_checkpoint)
 
 
 def load_configs(run_uuid: str, *, is_only_hyperparam: bool = True):

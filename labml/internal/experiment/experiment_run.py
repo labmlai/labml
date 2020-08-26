@@ -12,11 +12,11 @@ from .. import util
 from ...logger import Text
 
 
-def _struct_time_to_time(t: time.struct_time):
+def struct_time_to_time(t: time.struct_time):
     return f"{t.tm_hour :02}:{t.tm_min :02}:{t.tm_sec :02}"
 
 
-def _struct_time_to_date(t: time.struct_time):
+def struct_time_to_date(t: time.struct_time):
     return f"{t.tm_year :04}-{t.tm_mon :02}-{t.tm_mday :02}"
 
 
@@ -69,6 +69,7 @@ class RunInfo:
         self.info_path = self.run_path / "run.yaml"
         self.indicators_path = self.run_path / "indicators.yaml"
         self.configs_path = self.run_path / "configs.yaml"
+        self.run_log_path = self.run_path / "run_log.jsonl"
         self.notes = notes
         self.tags = tags
 
@@ -182,8 +183,8 @@ class Run(RunInfo):
         ## Create a new trial
         """
         return cls(python_file=python_file,
-                   trial_date=_struct_time_to_date(trial_time),
-                   trial_time=_struct_time_to_time(trial_time),
+                   trial_date=struct_time_to_date(trial_time),
+                   trial_time=struct_time_to_time(trial_time),
                    uuid=_generate_uuid(),
                    experiment_path=experiment_path,
                    comment=comment,

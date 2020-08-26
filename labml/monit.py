@@ -54,7 +54,14 @@ def loop(iterator_: range, *,
     ...
 
 
-def loop(iterator_: Union[Collection, int], *,
+@overload
+def loop(iterator_: Collection, *,
+         is_track: bool = True,
+         is_print_iteration_time: bool = True):
+    ...
+
+
+def loop(iterator_: Union[Collection, range, int], *,
          is_track: bool = True,
          is_print_iteration_time: bool = True):
     """
