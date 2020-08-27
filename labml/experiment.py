@@ -224,7 +224,7 @@ def start():
     r"""
     Starts the experiment.
     Run it using ``with`` statement and it will monitor and report, experiment completion
-     and exceptions.
+    and exceptions.
     """
     global _load_run_uuid
     global _load_checkpoint
