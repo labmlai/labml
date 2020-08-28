@@ -329,14 +329,17 @@ class Experiment:
 
         return ExperimentWatcher(self)
 
-    def finish(self, reason: str = 'completed', details: any = None):
+    def finish(self, status: str, details: any = None):
         with open(str(self.run.run_log_path), 'a') as f:
             end_time = time.localtime()
-            data = json.dumps({'reason': reason,
+            data = json.dumps({'status': status,
                                'details': details,
-                               'end_date': struct_time_to_date(end_time),
-                               'end_time': struct_time_to_time(end_time)}, indent=None)
+                               'date': struct_time_to_date(end_time),
+                               'time': struct_time_to_time(end_time)}, indent=None)
             f.write(data + '\n')
+
+        if self.web_api is not None:
+            self.web_api.status(status, details, struct_time_to_date(end_time), struct_time_to_time(end_time))
 
 
 class GlobalParams:

@@ -13,7 +13,7 @@ class ExperimentWatcher:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:
-            self.exp.finish()
+            self.exp.finish('completed')
         elif exc_type == KeyboardInterrupt:
             self.exp.finish('interrupted')
         else:

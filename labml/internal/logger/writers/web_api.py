@@ -30,6 +30,7 @@ class Writer(WriteBase):
         self.comment = None
         self.configs = None
         self.web_api = lab_singleton().web_api
+        self.state = None
 
     @staticmethod
     def _parse_key(key: str):
@@ -93,6 +94,16 @@ class Writer(WriteBase):
             self.last_committed = t
             self.flush()
 
+    def status(self, status: str, details: str, date: str, time_: str):
+        self.state = {
+            'status': status,
+            'details': details,
+            'date': date,
+            'time': time_
+        }
+
+        self.flush()
+
     def flush(self):
         if self.web_api is None:
             return
@@ -121,7 +132,8 @@ class Writer(WriteBase):
 
         self.send({
             'run_uuid': self.run_uuid,
-            'track': data
+            'track': data,
+            'status': self.state
         })
 
     def send(self, data: Dict[str, any]):

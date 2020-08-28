@@ -8,7 +8,7 @@ class OptimizerConfigs(BaseConfigs):
     learning_rate: float = 0.01
     momentum: float = 0.5
     parameters: any
-    d_model: int
+    d_model: int = None
 
     def __init__(self):
         super().__init__(_primary='optimizer')
