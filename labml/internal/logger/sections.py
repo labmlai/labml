@@ -20,7 +20,9 @@ class Section:
                  is_silent: bool,
                  is_timed: bool,
                  is_partial: bool,
+                 is_children_silent: bool,
                  total_steps: float):
+        self.is_children_silent = is_children_silent
         self._logger = logger
         self._name = name
         self.is_silent = is_silent
@@ -111,6 +113,7 @@ class OuterSection(Section):
                  is_silent: bool,
                  is_timed: bool,
                  is_partial: bool,
+                 is_children_silent: bool,
                  is_new_line: bool,
                  total_steps: float,
                  level: int):
@@ -122,6 +125,7 @@ class OuterSection(Section):
                          is_silent=is_silent,
                          is_timed=is_timed,
                          is_partial=is_partial,
+                         is_children_silent=is_children_silent,
                          total_steps=total_steps)
 
         self._level = level
@@ -182,6 +186,7 @@ class LoopingSection(Section):
                          is_silent=is_silent,
                          is_timed=is_timed,
                          is_partial=is_partial,
+                         is_children_silent=False,
                          total_steps=total_steps)
         self._beta_pow = 1.
         self._beta = 0.9

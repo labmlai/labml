@@ -126,6 +126,7 @@ class Logger:
     def iterate(self, name, iterable: Union[typing.Iterable, typing.Sized, int],
                 total_steps: Optional[int], *,
                 is_silent: bool,
+                is_children_silent: bool,
                 is_timed: bool):
         return Iterator(logger=self,
                         name=name,
@@ -133,10 +134,12 @@ class Logger:
                         is_silent=is_silent,
                         is_timed=is_timed,
                         total_steps=total_steps,
+                        is_children_silent=is_children_silent,
                         is_enumerate=False)
 
     def enum(self, name, iterable: typing.Sized, *,
              is_silent: bool,
+             is_children_silent: bool,
              is_timed: bool):
         return Iterator(logger=self,
                         name=name,
@@ -144,6 +147,7 @@ class Logger:
                         is_silent=is_silent,
                         is_timed=is_timed,
                         total_steps=None,
+                        is_children_silent=is_children_silent,
                         is_enumerate=True)
 
     def section(self, name, *,
@@ -151,6 +155,7 @@ class Logger:
                 is_timed: bool,
                 is_partial: bool,
                 is_new_line: bool,
+                is_children_silent: bool,
                 total_steps: float):
 
         if self.__is_looping():
@@ -165,12 +170,17 @@ class Logger:
                                               parents=[s.name for s in self.__sections])
             self.__sections.append(section)
         else:
+            if len(self.__sections) > 0:
+                if self.__sections[-1].is_silent or self.__sections[-1].is_children_silent:
+                    is_silent = True
+                    is_children_silent = True
             self.__sections.append(OuterSection(logger=self,
                                                 name=name,
                                                 is_silent=is_silent,
                                                 is_timed=is_timed,
                                                 is_partial=is_partial,
                                                 is_new_line=is_new_line,
+                                                is_children_silent=is_children_silent,
                                                 total_steps=total_steps,
                                                 level=len(self.__sections)))
 
