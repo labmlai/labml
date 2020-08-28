@@ -7,6 +7,9 @@ class TrackerDebug:
         self.values = {}
 
     def store(self, name: str, value: any):
+        if not self.is_debug:
+            return
+
         if name not in self.values:
             self.values[name] = []
 

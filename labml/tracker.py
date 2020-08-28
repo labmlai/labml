@@ -24,7 +24,7 @@ def debug(*args):
         if isinstance(args[0], bool):
             _tracker_debug_singleton().is_debug = args[0]
         else:
-            _tracker_debug_singleton().get(args[0])
+            return _tracker_debug_singleton().get(args[0])
     else:
         _tracker_debug_singleton().store(args[0], args[1])
 
