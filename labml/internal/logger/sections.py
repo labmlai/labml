@@ -41,6 +41,7 @@ class Section:
         self._is_parented = False
 
         self.is_successful = True
+        self.message = None
 
     @property
     def name(self):
@@ -164,6 +165,9 @@ class OuterSection(Section):
             duration_ms = 1000 * self.get_estimated_time()
             parts.append((f"\t{duration_ms :,.2f}ms",
                           Text.meta))
+
+        if self.message is not None:
+            parts.append((f"\t{self.message}", Text.value))
 
         if self._state != 'entered' and self._is_new_line:
             parts.append(("\n", None))
