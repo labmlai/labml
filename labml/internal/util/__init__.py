@@ -48,6 +48,20 @@ def is_ipynb():
         return False
 
 
+def is_ipynb_pycharm():
+    if not is_ipynb():
+        return False
+
+    if is_colab() or is_kaggle():
+        return False
+
+    import os
+    if '_' not in os.environ:
+        return True
+    else:
+        return False
+
+
 def is_colab():
     import sys
     return 'google.colab' in sys.modules

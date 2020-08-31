@@ -1,6 +1,7 @@
 from typing import List, Union, Tuple, Callable, Optional
 
-from IPython.core.display import display, HTML
+from IPython.core.display import display
+from ipywidgets import HTML
 
 from labml.internal.logger import StyleCode
 from labml.internal.logger.destinations import Destination
@@ -11,10 +12,9 @@ get_ipython: Callable
 
 class IpynbDestination(Destination):
     def __init__(self):
-        self.__last_handle = None
-        self.__last_id = 1
         self.__cell_lines = []
         self.__cell_count = 0
+        self.html: Optional[HTML] = None
 
     def is_same_cell(self):
         cells = get_ipython().ev('len(In)')
@@ -23,7 +23,6 @@ class IpynbDestination(Destination):
 
         self.__cell_count = cells
         self.__cell_lines = []
-        self.__last_handle = None
 
         return False
 
@@ -77,14 +76,12 @@ class IpynbDestination(Destination):
                 self.__cell_lines.pop()
                 self.__cell_lines += lines
             text = '\n'.join(self.__cell_lines)
-            html = HTML(f"<pre {attrs}>{text}</pre>")
-            self.__last_handle.update(html)
+            self.html.value = f"<pre {attrs}>{text}</pre>"
         else:
             self.__cell_lines = lines
             text = '\n'.join(self.__cell_lines)
-            html = HTML(f"<pre {attrs}>{text}</pre>")
-            self.__last_handle = display(html, display_id=self.__last_id)
-            self.__last_id += 1
+            self.html = HTML(f"<pre  {attrs}>{text}</pre>")
+            display(self.html)
 
         # print(len(self.__cell_lines), self.__cell_lines[-1], is_new_line)
         if is_new_line:
