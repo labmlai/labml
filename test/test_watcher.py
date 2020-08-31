@@ -1,7 +1,7 @@
 import time
 
 from labml import experiment
-from labml.helpers.training_loop import TrainingLoop
+from labml_helpers.training_loop import TrainingLoop
 
 
 def main():
