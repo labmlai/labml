@@ -22,10 +22,10 @@ This is an example usage of `Tracker <http://lab-ml.com/guide/tracker.html>`_
     from labml import monit, tracker
     
     for epoch in monit.loop(50):
-    for i in monit.iterate("Train", 10):
-        time.sleep(1e-2)
-        loss = 50 - epoch + np.random.randint(100) / 100
-        tracker.save('loss.train', loss)
+        for i in monit.iterate("Train", 10):
+            time.sleep(1e-2)
+            loss = 50 - epoch + np.random.randint(100) / 100
+            tracker.save('loss.train', loss)
     
     if (epoch + 1) % 5 == 0:
         logger.log()
