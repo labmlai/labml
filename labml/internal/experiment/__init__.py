@@ -321,7 +321,9 @@ class Experiment:
                                   comment=self.run.comment)
             if self.configs_processor is not None:
                 self.web_api.set_configs(self.configs_processor.to_json())
-            self.web_api.start()
+            url = self.web_api.start()
+            if url is not None:
+                logger.log(url, Text.highlight)
 
         logger_internal().save_indicators(self.run.indicators_path)
         if self.configs_processor:
@@ -331,15 +333,14 @@ class Experiment:
 
     def finish(self, status: str, details: any = None):
         with open(str(self.run.run_log_path), 'a') as f:
-            end_time = time.localtime()
+            end_time = time.time()
             data = json.dumps({'status': status,
                                'details': details,
-                               'date': struct_time_to_date(end_time),
-                               'time': struct_time_to_time(end_time)}, indent=None)
+                               'time': end_time}, indent=None)
             f.write(data + '\n')
 
         if self.web_api is not None:
-            self.web_api.status(status, details, struct_time_to_date(end_time), struct_time_to_time(end_time))
+            self.web_api.status(status, details, end_time)
 
 
 class GlobalParams:

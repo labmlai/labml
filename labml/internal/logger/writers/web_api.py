@@ -1,8 +1,8 @@
 import json
 import ssl
 import time
-import urllib.request
 import urllib.error
+import urllib.request
 import warnings
 from typing import Dict, Optional
 
@@ -55,6 +55,7 @@ class Writer(WriteBase):
             'run_uuid': self.run_uuid,
             'name': self.name,
             'comment': self.comment,
+            'time': time.time(),
             'configs': {}
         }
 
@@ -63,7 +64,7 @@ class Writer(WriteBase):
                 data['configs'][k] = v
 
         self.last_committed = time.time()
-        self.send(data)
+        return self.send(data)
 
     def _write_indicator(self, global_step: int, indicator: Indicator):
         if indicator.is_empty():
@@ -94,11 +95,10 @@ class Writer(WriteBase):
             self.last_committed = t
             self.flush()
 
-    def status(self, status: str, details: str, date: str, time_: str):
+    def status(self, status: str, details: str, time_: float):
         self.state = {
             'status': status,
             'details': details,
-            'date': date,
             'time': time_
         }
 
@@ -133,7 +133,8 @@ class Writer(WriteBase):
         self.send({
             'run_uuid': self.run_uuid,
             'track': data,
-            'status': self.state
+            'status': self.state,
+            'time': time.time()
         })
 
     def send(self, data: Dict[str, any]):
@@ -147,13 +148,15 @@ class Writer(WriteBase):
             if self.web_api.verify_connection:
                 response = urllib.request.urlopen(req, data)
             else:
-                response = urllib.request.urlopen(req, data,
-                                                  context=ssl._create_unverified_context())
+                response = urllib.request.urlopen(req, data, context=ssl._create_unverified_context())
             content = response.read().decode('utf-8')
             result = json.loads(content)
             for e in result['errors']:
                 warnings.warn(f"WEB API error {e['error']} : {e['message']}")
+            return result.get('url', None)
         except urllib.error.HTTPError as e:
             warnings.warn(f"Failed to send message to WEB API  {self.web_api.url}: {e}")
+            return None
         except urllib.error.URLError as e:
             warnings.warn(f"Failed to connect to WEB API {self.web_api.url}: {e}")
+            return None

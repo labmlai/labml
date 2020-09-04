@@ -35,7 +35,9 @@ class SimpleAccuracy:
         return pred.eq(target).sum().item()
 
 
-class Configs(MNISTConfigs, DeviceConfigs, SeedConfigs, TrainValidConfigs):
+class Configs(MNISTConfigs, TrainValidConfigs):
+    seed = SeedConfigs()
+    device: torch.device = DeviceConfigs()
     epochs: int = 10
 
     is_save_models = True
@@ -77,10 +79,9 @@ def main():
     conf = Configs()
     experiment.create(name='mnist_latest')
     conf.optimizer = 'adam_optimizer'
-    conf.cuda_device = 1
     experiment.configs(conf,
-                       {},
-                       ['set_seed', 'run'])
+                       {'device.cuda_device': 0},
+                       ['seed', 'run'])
     experiment.add_pytorch_models(dict(model=conf.model))
     experiment.start()
     conf.run()
