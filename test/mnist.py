@@ -1,14 +1,14 @@
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
 import torch.utils.data
+from labml_helpers.datasets.mnist import MNISTConfigs
+from labml_helpers.device import DeviceConfigs
+from labml_helpers.optimizer import OptimizerConfigs
+from labml_helpers.seed import SeedConfigs
+from labml_helpers.train_valid import TrainValidConfigs
 
 from labml import experiment
 from labml.configs import option
-from labml_helpers.datasets.mnist import MNISTConfigs
-from labml_helpers.device import DeviceConfigs
-from labml_helpers.seed import SeedConfigs
-from labml_helpers.train_valid import TrainValidConfigs
 
 
 class Net(nn.Module):
@@ -66,21 +66,18 @@ def cross_entropy_loss():
 
 
 @option(Configs.optimizer)
-def sgd_optimizer(c: Configs):
-    return optim.SGD(c.model.parameters(), c.learning_rate, c.momentum)
-
-
-@option(Configs.optimizer)
-def adam_optimizer(c: Configs):
-    return optim.Adam(c.model.parameters(), c.learning_rate)
+def optimizer(c: Configs):
+    conf = OptimizerConfigs()
+    conf.parameters = c.model.parameters()
+    return conf
 
 
 def main():
     conf = Configs()
     experiment.create(name='mnist_latest')
-    conf.optimizer = 'adam_optimizer'
     experiment.configs(conf,
-                       {'device.cuda_device': 0},
+                       {'device.cuda_device': 0,
+                        'optimizer.optimizer': 'Adam'},
                        ['seed', 'run'])
     experiment.add_pytorch_models(dict(model=conf.model))
     experiment.start()

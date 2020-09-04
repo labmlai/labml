@@ -323,7 +323,7 @@ class Experiment:
                 self.web_api.set_configs(self.configs_processor.to_json())
             url = self.web_api.start()
             if url is not None:
-                logger.log(url, Text.highlight)
+                logger.log([('Monitor experiment at ', Text.meta), (url, Text.highlight)])
 
         logger_internal().save_indicators(self.run.indicators_path)
         if self.configs_processor:
