@@ -83,8 +83,7 @@ class Loop:
         if not math.isclose(self._iter_time, 0.):
             estimate = self._iter_time / (1 - self._beta_pow)
         else:
-            estimate = sum([s.get_estimated_time()
-                            for s in self.__looping_sections.values()])
+            estimate = sum([s.get_estimated_time() for s in self.__looping_sections.values() if not s.is_child])
 
         total_time = estimate * len(self.iterator) + self._init_time
         total_time = max(total_time, spent)
@@ -102,8 +101,7 @@ class Loop:
         to_print = [("  ", None)]
         if self._is_print_iteration_time:
             to_print.append((f"{estimate:,.0f}ms", Text.meta))
-        to_print.append((f"{spent_h:3d}:{spent_m:02d}m/{remain_h:3d}:{remain_m:02d}m  ",
-                         Text.meta2))
+        to_print.append((f"{spent_h:3d}:{spent_m:02d}m/{remain_h:3d}:{remain_m:02d}m  ", Text.meta2))
 
         return to_print
 

@@ -199,8 +199,13 @@ class LoopingSection(Section):
         self._last_end_time = -1.
         self._last_start_time = -1.
         self._last_step_time = 0.
+        self._last_est_time = 0
         self._is_track = is_track
         self._parents = parents
+
+    @property
+    def is_child(self) -> bool:
+        return len(self._parents) > 0
 
     def track_progress(self):
         name = '.'.join(self._parents + [self._name])
@@ -228,7 +233,7 @@ class LoopingSection(Section):
         current_estimate = ((end_time - self._start_time) /
                             (end_progress - self._start_progress))
 
-        if self._last_start_time == self._start_time:
+        if self._last_start_time == self._start_time and end_time < self._last_est_time + 2:
             # print(current_estimate)
             self._last_step_time = current_estimate
         else:
@@ -239,6 +244,7 @@ class LoopingSection(Section):
             # print(self._last_step_time, current_estimate)
             self._last_step_time = current_estimate
             self._last_start_time = self._start_time
+            self._last_est_time = end_time
 
         return self.get_estimated_time()
 
