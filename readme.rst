@@ -6,60 +6,47 @@
 LabML
 =====
 
-LabML is a library to track PyTorch experiments.
+LabML lets you monitor AI model training on mobile phones.
 
-LabML keeps track of every detail of the experiments:
-`source code <http://lab-ml.com/guide/experiment.html>`_,
-`configurations, hyper-parameters <http://lab-ml.com/guide/configs.html>`_,
-`checkpoints <http://lab-ml.com/guide/experiment.html>`_, 
-`Tensorboard logs and other statistics <http://lab-ml.com/guide/tracker.html>`_.
-LabML saves all these automatically in a clean folder structure.
-
-This is an example usage of `Tracker <http://lab-ml.com/guide/tracker.html>`_
-
-.. code-block:: python
-
-    from labml import monit, tracker
-    
-    for epoch in monit.loop(50):
-        for i in monit.iterate("Train", 10):
-            time.sleep(1e-2)
-            loss = 50 - epoch + np.random.randint(100) / 100
-            tracker.save('loss.train', loss)
-    
-    if (epoch + 1) % 5 == 0:
-        logger.log()
-	
-Here's the output,
-
-.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/logger_sample.png
+.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/mobile.png
    :width: 50%
-   :alt: Logger output
+   :alt: Mobile view 
 
-Create an experiment and save the configurations with a couple of lines of codes,
+You just need to create an `experiment <http://lab-ml.com/guide/experiment.html>`_,
+and save stats with `tracker <http://lab-ml.com/guide/tracker.html>`_.
+You can obtain a token from `LabML App <https://web.lab-ml.com>`_
+(`Githup repo <https://github.com/lab-ml/app/>`_).
 
 .. code-block:: python
 
-	from labml import experiment
-	
-	experiment.create(name='sin_wave')
-	experiment.configs(configs)
-	experiment.start()
+    from labml import tracker, experiment
+  
+    experiment.record(name='sin_wave', conf_dict=configs, lab_conf={'web_api': 'TOKEN URL FROM web.lab-ml.com'})
 
-View all your experiments locally with `Dashboard <https://github.com/vpj/lab_dashboard/>`_:
+    for i in range(50):
+        loss, accuracy = train()
+        tracker.save(i, {'loss': loss, 'accuracy': accuracy})
+
+It automatically pushes data to Tensorboard, and you can keep your old experiments organized with the 
+`LabML Dashboard <https://github.com/lab-ml/dashboard/>`_
 
 .. image:: https://raw.githubusercontent.com/lab-ml/dashboard/master/images/screenshots/dashboard_table.png
    :width: 100%
    :alt: Dashboard Screenshot
 
-You can also `monitor your experiments on Slack <https://medium.com/@labml/labml-slack-integration-79519cf9c3a4>`_. 
-When configured you will be receiving updates like following on a Slack thread.
-Join our `Slack workspace <https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/>`_ to see samples.
+All these software is open source,
+and your logs will be stored locally for Tensorboard and `LabML Dashboard <https://github.com/lab-ml/dashboard/>`_.
+You will only be sending data away for `LabML App <https://web.lab-ml.com>`_ if you include a token url.
+This can also be `locally installed <https://github.com/lab-ml/app/>`_.
 
+LabML can also do a bunch of other things like keeping track of git commits,
+ handling `configurations, hyper-parameters <http://lab-ml.com/guide/configs.html>`_,
+ saving and loading `checkpoints <http://lab-ml.com/guide/experiment.html>`_,
+ and providing pretty logs.
 
-.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/slack_chart.png
+.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/logger_sample.png
    :width: 50%
-   :alt: Example chart update on slack
+   :alt: Logger output
 
 
 Installation
