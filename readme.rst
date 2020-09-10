@@ -21,11 +21,10 @@ You can obtain a token from `LabML App <https://web.lab-ml.com>`_
 
     from labml import tracker, experiment
   
-    experiment.record(name='sin_wave', conf_dict=configs, lab_conf={'web_api': 'TOKEN URL FROM web.lab-ml.com'})
-
-    for i in range(50):
-        loss, accuracy = train()
-        tracker.save(i, {'loss': loss, 'accuracy': accuracy})
+    with experiment.record(name='sample', exp_conf=conf, web_api: 'TOKEN from web.lab-ml.com'):
+        for i in range(50):
+            loss, accuracy = train()
+            tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 
 It automatically pushes data to Tensorboard, and you can keep your old experiments organized with the 
 `LabML Dashboard <https://github.com/lab-ml/dashboard/>`_
