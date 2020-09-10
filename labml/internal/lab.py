@@ -109,7 +109,6 @@ class Lab:
         return dict(
             path=None,
             check_repo_dirty=False,
-            is_log_python_file=True,
             config_file_path=None,
             data_path='data',
             experiments_path='logs',
