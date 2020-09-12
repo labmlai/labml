@@ -21,7 +21,7 @@ You can obtain a token from `LabML App <https://web.lab-ml.com>`_
 
     from labml import tracker, experiment
   
-    with experiment.record(name='sample', exp_conf=conf, web_api: 'TOKEN from web.lab-ml.com'):
+    with experiment.record(name='sample', exp_conf=conf, token: 'TOKEN from web.lab-ml.com'):
         for i in range(50):
             loss, accuracy = train()
             tracker.save(i, {'loss': loss, 'accuracy': accuracy})

@@ -11,7 +11,7 @@ def train():
     return 0.999 ** n + np.random.random() / 10, 1 - .999 ** n + np.random.random() / 10
 
 
-with experiment.record(name='sample', exp_conf=conf, web_api='903c84fba8ca49ca9f215922833e08cf'):
+with experiment.record(name='sample', exp_conf=conf, token='903c84fba8ca49ca9f215922833e08cf'):
     for i in range(10000):
         loss, accuracy = train()
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})

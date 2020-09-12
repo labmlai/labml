@@ -314,7 +314,7 @@ def record(*,
            tags: Optional[Set[str]] = None,
            exp_conf: Dict[str, any] = None,
            lab_conf: Dict[str, any] = None,
-           web_api: str = None):
+           token: str = None):
     r"""
     This is combines :func:`create`, :func:`configs` and :func:`start`.
 
@@ -328,14 +328,15 @@ def record(*,
         lab_conf (Dict[str, any], optional): a dictionary of configurations for LabML.
          Use this if you want to change default configurations such as ``web_api``, and
          ``data_path``.
-        web_api (str, optional): a shortcut to provide web_api instead of including it in
-         ``lab_conf``
+        token (str, optional): a shortcut to provide LabML mobile app token (or url - ``web_api``)
+         instead of including it in ``lab_conf``. You can set this with :func:`labml.lab.configure`,
+         `or with a configuration file for the entire project <../guide/installation_setup.html>`_.
     """
 
-    if web_api is not None:
+    if token is not None:
         if lab_conf is None:
             lab_conf = {}
-        lab_conf['web_api'] = web_api
+        lab_conf['web_api'] = token
 
     if lab_conf is not None:
         from labml.internal.lab import lab_singleton as _internal
