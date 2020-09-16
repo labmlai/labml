@@ -312,8 +312,9 @@ def record(*,
            comment: Optional[str] = None,
            writers: Set[str] = None,
            tags: Optional[Set[str]] = None,
-           conf_dict: Dict[str, any] = None,
-           lab_conf: Dict[str, any] = None):
+           exp_conf: Dict[str, any] = None,
+           lab_conf: Dict[str, any] = None,
+           token: str = None):
     r"""
     This is combines :func:`create`, :func:`configs` and :func:`start`.
 
@@ -323,11 +324,19 @@ def record(*,
         writers (Set[str], optional): list of writers to write stat to.
             Defaults to ``{'tensorboard', 'sqlite', 'web_api'}``.
         tags (Set[str], optional): Set of tags for experiment
-        conf_dict (Dict[str, any], optional): a dictionary of configs
+        exp_conf (Dict[str, any], optional): a dictionary of experiment configurations
         lab_conf (Dict[str, any], optional): a dictionary of configurations for LabML.
          Use this if you want to change default configurations such as ``web_api``, and
          ``data_path``.
+        token (str, optional): a shortcut to provide LabML mobile app token (or url - ``web_api``)
+         instead of including it in ``lab_conf``. You can set this with :func:`labml.lab.configure`,
+         `or with a configuration file for the entire project <../guide/installation_setup.html>`_.
     """
+
+    if token is not None:
+        if lab_conf is None:
+            lab_conf = {}
+        lab_conf['web_api'] = token
 
     if lab_conf is not None:
         from labml.internal.lab import lab_singleton as _internal
@@ -340,7 +349,7 @@ def record(*,
            ignore_callers=None,
            tags=tags)
 
-    if conf_dict is not None:
-        configs(conf_dict)
+    if exp_conf is not None:
+        configs(exp_conf)
 
     return start()

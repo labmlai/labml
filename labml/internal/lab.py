@@ -85,7 +85,10 @@ class Lab:
         self.check_repo_dirty = self.configs['check_repo_dirty']
         self.indicators = self.configs['indicators']
         if self.configs['web_api']:
-            self.web_api = WebAPIConfigs(url=self.configs['web_api'],
+            web_api_url = self.configs['web_api']
+            if web_api_url[0:4] != 'http':
+                web_api_url = f"https://api.lab-ml.com/api/v1/track?labml_token={web_api_url}"
+            self.web_api = WebAPIConfigs(url=web_api_url,
                                          frequency=self.configs['web_api_frequency'],
                                          verify_connection=self.configs['web_api_verify_connection'])
 
@@ -106,7 +109,6 @@ class Lab:
         return dict(
             path=None,
             check_repo_dirty=False,
-            is_log_python_file=True,
             config_file_path=None,
             data_path='data',
             experiments_path='logs',
