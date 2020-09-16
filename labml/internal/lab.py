@@ -126,6 +126,10 @@ class Lab:
             }, {
                 'class_name': 'Scalar',
                 'is_print': False,
+                'name': 'grad.*'
+            }, {
+                'class_name': 'Scalar',
+                'is_print': False,
                 'name': 'module.*'
             }, {
                 'class_name': 'Scalar',
