@@ -82,9 +82,6 @@ class Calculator:
                 return set()
             return self.evals[key][value].dependencies
 
-        if key not in self.values:
-            raise RuntimeError(f"Cannot compute {key}")
-
         return set()
 
     def __create_graph(self):
@@ -94,20 +91,30 @@ class Calculator:
         for k in self.evals:
             self.dependencies[k] = self.__get_dependencies(k)
 
+    def __check_missing(self, key: str):
+        if key in self.values:
+            return
+
+        if key in self.evals:
+            return
+
+        raise RuntimeError(f"Cannot compute {key}, required by {self.user[key]}")
+
     def __add_to_topological_order(self, key):
         assert self.stack.pop() == key
+        self.__check_missing(key)
         self.is_top_sorted.add(key)
         self.topological_order.append(key)
 
     def __traverse(self, key):
         for d in self.dependencies[key]:
             if d not in self.is_top_sorted:
-                self.__add_to_stack(d)
+                self.__add_to_stack(d, key)
                 return
 
         self.__add_to_topological_order(key)
 
-    def __add_to_stack(self, key):
+    def __add_to_stack(self, key: str, user: Optional[str]):
         if key in self.is_top_sorted:
             return
 
@@ -115,6 +122,7 @@ class Calculator:
 
         self.visited.add(key)
         self.stack.append(key)
+        self.user[key] = user
 
     def __dfs(self):
         while len(self.stack) > 0:
@@ -126,7 +134,7 @@ class Calculator:
             assert k not in self.is_top_sorted
 
         for k in keys:
-            self.__add_to_stack(k)
+            self.__add_to_stack(k, None)
             self.__dfs()
 
     def __set_configs(self, key, value, is_direct: bool):
@@ -213,6 +221,7 @@ class Calculator:
             logger.log()
 
         self.visited = set()
+        self.user = {}
         self.stack = []
         self.is_top_sorted = set()
         self.topological_order = []

@@ -224,8 +224,6 @@ class Parser:
                 self.values[k] = k
                 continue
 
-            assert k in self.values, f"Cannot compute {k}"
-
     def __calculate_aggregates(self):
         queue = []
         for k in self.aggregates:
