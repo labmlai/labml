@@ -30,10 +30,10 @@ class ConfigProcessorDict:
             configs[k] = {
                 'name': k,
                 'type': str(type(v)),
-                'value': Value.to_yaml(v),
+                'value': Value.to_yaml_truncated(v),
                 'order': orders.get(k, -1),
                 'options': [],
-                'computed': Value.to_yaml(v),
+                'computed': Value.to_yaml_truncated(v),
                 'is_hyperparam': False,
                 'is_meta': False,
                 'is_explicitly_specified': (k in self.values)

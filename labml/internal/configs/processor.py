@@ -47,10 +47,10 @@ class ConfigProcessor:
             configs[k] = {
                 'name': k,
                 'type': str(v),
-                'value': Value.to_yaml(self.parser.values.get(k, None)),
+                'value': Value.to_yaml_truncated(self.parser.values.get(k, None)),
                 'order': orders.get(k, -1),
                 'options': self._get_options_list(k),
-                'computed': Value.to_yaml(getattr(self.calculator.configs, k, None)),
+                'computed': Value.to_yaml_truncated(getattr(self.calculator.configs, k, None)),
                 'is_hyperparam': self.parser.hyperparams.get(k, None),
                 'is_meta': self.parser.meta.get(k, None),
                 'is_explicitly_specified': (k in self.parser.explicitly_specified)
