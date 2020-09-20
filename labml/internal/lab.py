@@ -17,11 +17,14 @@ class WebAPIConfigs:
     url: str
     frequency: float
     verify_connection: bool
+    open_browser: bool
 
     def __init__(self, *,
                  url: str,
                  frequency: float,
-                 verify_connection: bool):
+                 verify_connection: bool,
+                 open_browser: bool):
+        self.open_browser = open_browser
         self.frequency = frequency
         self.verify_connection = verify_connection
         self.url = url
@@ -90,7 +93,8 @@ class Lab:
                 web_api_url = f"https://api.lab-ml.com/api/v1/track?labml_token={web_api_url}"
             self.web_api = WebAPIConfigs(url=web_api_url,
                                          frequency=self.configs['web_api_frequency'],
-                                         verify_connection=self.configs['web_api_verify_connection'])
+                                         verify_connection=self.configs['web_api_verify_connection'],
+                                         open_browser=self.configs['web_api_open_browser'])
 
     def set_configurations(self, configs: Dict[str, any]):
         self.custom_configs.append(configs)
@@ -117,6 +121,7 @@ class Lab:
             web_api=None,
             web_api_frequency=60,
             web_api_verify_connection=True,
+            web_api_open_browser=False,
             indicators=[{
                 'class_name': 'Scalar',
                 'is_print': True,

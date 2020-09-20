@@ -103,7 +103,6 @@ class Experiment:
             automatically determining ``python_file``
         tags (Set[str], optional): Set of tags for experiment
     """
-
     run: Run
     configs_processor: Optional[ConfigProcessor]
 
@@ -321,9 +320,7 @@ class Experiment:
                                   comment=self.run.comment)
             if self.configs_processor is not None:
                 self.web_api.set_configs(self.configs_processor.to_json())
-            url = self.web_api.start()
-            if url is not None:
-                logger.log([('Monitor experiment at ', Text.meta), (url, Text.highlight)])
+            self.web_api.start()
 
         logger_internal().save_indicators(self.run.indicators_path)
         if self.configs_processor:

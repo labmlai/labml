@@ -4,16 +4,20 @@ import time
 import urllib.error
 import urllib.request
 import warnings
+import webbrowser
 from typing import Dict, Optional
 
 import numpy as np
 
+from labml import logger
+from labml.logger import Text
 from . import Writer as WriteBase
 from ..store.indicators import Indicator
 from ..store.indicators.numeric import NumericIndicator
 from ...lab import lab_singleton
 
 MAX_BUFFER_SIZE = 1024
+WARMUP_COMMITS = 5
 
 
 class Writer(WriteBase):
@@ -24,6 +28,7 @@ class Writer(WriteBase):
 
         self.scalars_cache = []
         self.last_committed = time.time()
+        self.commits_count = 0
         self.indicators = {}
         self.run_uuid = None
         self.name = None
@@ -64,7 +69,14 @@ class Writer(WriteBase):
                 data['configs'][k] = v
 
         self.last_committed = time.time()
-        return self.send(data)
+        self.commits_count = 0
+        url = self.send(data)
+        if url is None:
+            return None
+
+        logger.log([('Monitor experiment at ', Text.meta), (url, Text.highlight)])
+        if self.web_api.open_browser:
+            webbrowser.open(url)
 
     def _write_indicator(self, global_step: int, indicator: Indicator):
         if indicator.is_empty():
@@ -91,8 +103,12 @@ class Writer(WriteBase):
             self._write_indicator(global_step, ind)
 
         t = time.time()
-        if t - self.last_committed > self.web_api.frequency:
+        freq = self.web_api.frequency
+        if self.commits_count < WARMUP_COMMITS:
+            freq /= 2 ** (WARMUP_COMMITS - self.commits_count)
+        if t - self.last_committed > freq:
             self.last_committed = t
+            self.commits_count += 1
             self.flush()
 
     def status(self, status: str, details: str, time_: float):
