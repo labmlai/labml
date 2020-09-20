@@ -17,6 +17,9 @@ and save stats with `tracker <http://lab-ml.com/guide/tracker.html>`_.
 You can obtain a token from `LabML App <https://web.lab-ml.com>`_
 (`Githup repo <https://github.com/lab-ml/app/>`_).
 
+PyTorch example
+^^^^^^^^^^^^^^^
+
 .. code-block:: python
 
     from labml import tracker, experiment
@@ -25,6 +28,19 @@ You can obtain a token from `LabML App <https://web.lab-ml.com>`_
         for i in range(50):
             loss, accuracy = train()
             tracker.save(i, {'loss': loss, 'accuracy': accuracy})
+
+TensorFlow 2.0 Keras example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    from labml import experiment
+    from labml.utils.keras import LabMLKerasCallback
+  
+    with experiment.record(name='sample', exp_conf=conf, token: 'TOKEN from web.lab-ml.com'):
+        for i in range(50):
+            model.fit(x_train, y_train, epochs=conf['epochs'], validation_data=(x_test, y_test),
+                      callbacks=[LabMLKerasCallback()], verbose=None)
 
 It automatically pushes data to Tensorboard, and you can keep your old experiments organized with the 
 `LabML Dashboard <https://github.com/lab-ml/dashboard/>`_
