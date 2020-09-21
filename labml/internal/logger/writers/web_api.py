@@ -1,4 +1,5 @@
 import json
+import socket
 import ssl
 import time
 import urllib.error
@@ -18,7 +19,7 @@ from ...lab import lab_singleton
 
 MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5
-
+TIMEOUT_SECONDS = 5
 
 class Writer(WriteBase):
     url: Optional[str]
@@ -162,9 +163,10 @@ class Writer(WriteBase):
 
         try:
             if self.web_api.verify_connection:
-                response = urllib.request.urlopen(req, data)
+                response = urllib.request.urlopen(req, data, timeout=TIMEOUT_SECONDS)
             else:
-                response = urllib.request.urlopen(req, data, context=ssl._create_unverified_context())
+                response = urllib.request.urlopen(req, data, timeout=TIMEOUT_SECONDS,
+                                                  context=ssl._create_unverified_context())
             content = response.read().decode('utf-8')
             result = json.loads(content)
             for e in result['errors']:
@@ -175,4 +177,7 @@ class Writer(WriteBase):
             return None
         except urllib.error.URLError as e:
             warnings.warn(f"Failed to connect to WEB API {self.web_api.url}: {e}")
+            return None
+        except socket.timeout as e:
+            warnings.warn(f"WEB API timeout {self.web_api.url}: {e}")
             return None
