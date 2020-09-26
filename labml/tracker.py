@@ -61,9 +61,9 @@ def set_indexed_scalar(name: str):
     _internal().add_indicator(IndexedScalar(name))
 
 
-def set_image(name: str, is_print: bool = False):
+def set_image(name: str, is_print: bool = False, density: Optional[float] = None):
     from labml.internal.logger.store.indicators.artifacts import Image
-    _internal().add_indicator(Image(name, is_print))
+    _internal().add_indicator(Image(name, is_print, density))
 
 
 def set_text(name: str, is_print: bool = False):

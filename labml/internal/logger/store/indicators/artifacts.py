@@ -58,14 +58,26 @@ class Artifact(Indicator, ABC):
 
 
 class _Collection(Artifact, ABC):
+    _last_add_step: int
     _values: Dict[str, Any]
 
-    def __init__(self, name: str, is_print=False):
+    def __init__(self, name: str, is_print: bool = False, density: Optional[float] = None):
         super().__init__(name=name, is_print=is_print)
         self._values = OrderedDict()
+        self._density = density
+        self._last_add_step = -1
 
     def _collect_value(self, key: str, value):
-        self._values[key] = value
+        from labml import tracker
+        if self._density is None:
+            self._values[key] = value
+        else:
+            steps = tracker.get_global_step() - self._last_add_step
+            steps *= self._density
+            if np.random.uniform() < 1 - 0.99 ** steps:
+                self._values[key] = value
+
+        self._last_add_step = tracker.get_global_step()
 
     def clear(self):
         self._values = OrderedDict()
@@ -116,14 +128,17 @@ class Image(_Collection):
                        ' not found. So cannot display images')
         images = [to_numpy(v) for v in self._values.values()]
         images = np.concatenate(images)
-        cols = 3
+        cols = min(3, len(images))
         fig: plt.Figure
         fig, axs = plt.subplots((len(images) + cols - 1) // cols, cols,
                                 sharex='all', sharey='all',
                                 figsize=(8, 10))
         fig.suptitle(self.name)
         for i, img in enumerate(images):
-            ax: plt.Axes = axs[i // cols, i % cols]
+            if len(images) > 1:
+                ax: plt.Axes = axs[i // cols, i % cols]
+            else:
+                ax = axs
             if img.shape[0] == 1:
                 img = img[0, :, :]
             else:
@@ -132,7 +147,7 @@ class Image(_Collection):
         plt.show()
 
     def copy(self, key: str):
-        return Image(key, is_print=self.is_print)
+        return Image(key, is_print=self.is_print, density=self._density)
 
 
 class Text(_Collection):
