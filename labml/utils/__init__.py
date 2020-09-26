@@ -14,7 +14,7 @@ def get_caller_file(ignore_callers: Set[str] = None):
 
     for f in frames:
         module_path = pathlib.PurePath(f.filename)
-        if str(module_path).startswith(str(lab_src)):
+        if str(module_path).startswith(str(lab_src) + '/'):
             continue
         if str(module_path) in ignore_callers:
             continue

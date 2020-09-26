@@ -3,6 +3,8 @@ from collections import OrderedDict
 from typing import Dict, Optional, Any
 from uuid import uuid1
 
+import numpy as np
+
 from labml import logger
 from labml.internal.util.values import to_numpy
 from labml.logger import Text as TextStyle
@@ -113,6 +115,7 @@ class Image(_Collection):
             logger.log(('matplotlib', logger.Text.highlight),
                        ' not found. So cannot display images')
         images = [to_numpy(v) for v in self._values.values()]
+        images = np.concatenate(images)
         cols = 3
         fig: plt.Figure
         fig, axs = plt.subplots((len(images) + cols - 1) // cols, cols,
@@ -121,6 +124,10 @@ class Image(_Collection):
         fig.suptitle(self.name)
         for i, img in enumerate(images):
             ax: plt.Axes = axs[i // cols, i % cols]
+            if img.shape[0] == 1:
+                img = img[0, :, :]
+            else:
+                img = img.transpose(1, 2, 0)
             ax.imshow(img)
         plt.show()
 

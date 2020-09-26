@@ -125,7 +125,7 @@ class ScreenWriter(Writer):
         artifacts = {}
         for ind in indicators.values():
             if not isinstance(ind, Artifact):
-                return
+                continue
             if not ind.is_print:
                 continue
             if ind.is_empty():
