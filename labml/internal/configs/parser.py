@@ -1,6 +1,6 @@
 import warnings
 from collections import OrderedDict
-from typing import List, Dict, Type, Set
+from typing import List, Dict, Type, Set, Union
 from typing import TYPE_CHECKING
 
 from labml import logger
@@ -8,11 +8,12 @@ from labml.logger import Text
 from .config_function import ConfigFunction
 from .config_item import ConfigItem
 from .eval_function import EvalFunction
+from .setup_function import SetupFunction
 
 if TYPE_CHECKING:
     from .base import Configs
 
-RESERVED = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wrap'}
+RESERVED = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wrap', 'setup'}
 _STANDARD_TYPES = {int, str, bool, float, Dict, List}
 
 
@@ -22,6 +23,7 @@ class PropertyKeys:
     hyperparams = '_hyperparams'
     aggregates = '_aggregates'
     meta = '_meta'
+    setups = '_setups'
 
 
 def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
@@ -53,7 +55,7 @@ def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
 
 class Parser:
     config_items: Dict[str, ConfigItem]
-    options: Dict[str, Dict[str, ConfigFunction]]
+    options: Dict[str, Dict[str, Union[ConfigFunction, SetupFunction]]]
     evals: Dict[str, Dict[str, EvalFunction]]
     types: Dict[str, Type]
     values: Dict[str, any]
@@ -98,6 +100,14 @@ class Parser:
                         f"{k} calculator is present but the config declaration is missing"
                     for v in calculators:
                         self.__collect_calculator(k, v)
+
+        for c in classes:
+            if PropertyKeys.setups in c.__dict__:
+                for k, setups in c.__dict__[PropertyKeys.setups].items():
+                    if k not in self.types:
+                        raise RuntimeError(f"{k} calculator is present but the config declaration is missing")
+                    for v in setups:
+                        self.__collect_setup(k, v)
 
         for c in classes:
             if PropertyKeys.evaluators in c.__dict__:
@@ -198,6 +208,16 @@ class Parser:
 
         self.options[k][v.option_name] = v
 
+    def __collect_setup(self, k, v: SetupFunction):
+        if k not in self.options:
+            self.options[k] = OrderedDict()
+        if v.option_name in self.options[k]:
+            if v != self.options[k][v.option_name]:
+                warnings.warn(f"Overriding option for {k}: {v.option_name}", Warning,
+                              stacklevel=5)
+
+        self.options[k][v.option_name] = v
+
     def __collect_evaluator(self, k, v: EvalFunction):
         if k not in self.evals:
             self.evals[k] = OrderedDict()
@@ -218,10 +238,10 @@ class Parser:
                     continue
 
                 self.options[k] = OrderedDict()
-                self.options[k][k] = ConfigFunction(self.types[k],
-                                                    config_names=self.config_items[k],
-                                                    option_name=k)
-                self.values[k] = k
+                self.options[k]['from_type'] = ConfigFunction(self.types[k],
+                                                              config_names=self.config_items[k],
+                                                              option_name='from_type')
+                self.values[k] = 'from_type'
                 continue
 
     def __calculate_aggregates(self):

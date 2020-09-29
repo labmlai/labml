@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 from .config_function import ConfigFunction
 from .eval_function import EvalFunction
+from .setup_function import SetupFunction
 from ... import logger
 from ... import monit
 
@@ -28,6 +29,7 @@ class Calculator:
     is_top_sorted: Set[str]
     config_processors: Dict[str, 'ConfigProcessor']
     secondary_attributes: Dict[str, Set[str]]
+    saved_configs: Dict[str, Any]
 
     def __init__(self, *,
                  configs: 'Configs',
@@ -52,15 +54,24 @@ class Calculator:
         self.is_computed = set()
         self.config_processors = {}
         self.secondary_attributes = {}
+        self.saved_configs = {}
+        self.cached = {}
 
-    def __get_property(self, key) -> Tuple[Any, Union[None, ConfigFunction, List[ConfigFunction]]]:
+    def __get_property(self, key: str) -> Tuple[Any, Optional[str], Optional[Union[ConfigFunction, SetupFunction]]]:
         if key in self.options:
             value = self.values[key]
             if value not in self.options[key]:
-                return value, None
-            return None, self.options[key][value]
+                return value, None, None
+            return None, value, self.options[key][value]
 
-        return self.values[key], None
+        return self.values[key], None, None
+
+    def __cache_calculated(self, key: str, option: Optional[str], value: any):
+        if key not in self.cached:
+            self.cached[key] = {}
+
+        if option is not None:
+            self.cached[key][option] = value
 
     def __get_dependencies(self, key) -> Set[str]:
         if key in self.options:
@@ -118,7 +129,8 @@ class Calculator:
         if key in self.is_top_sorted:
             return
 
-        assert key not in self.visited, f"Cyclic dependency: {key}"
+        if key in self.visited:
+            raise RuntimeError(f"Cyclic dependency: {key}", self.stack)
 
         self.visited.add(key)
         self.stack.append(key)
@@ -156,6 +168,7 @@ class Calculator:
 
         self.is_computed.add(key)
         self.configs.__setattr__(key, value)
+        self.saved_configs[key] = value
 
     def __compute(self, key):
         if key in self.is_computed:
@@ -164,31 +177,53 @@ class Calculator:
         if key in self.evals:
             return
 
-        value, funcs = self.__get_property(key)
-        if funcs is None:
+        value, option, func = self.__get_property(key)
+
+        if option is None:
             self.__set_configs(key, value, is_direct=True)
-        elif type(funcs) == list:
-            self.__set_configs(key, [f(self.configs) for f in funcs], is_direct=False)
-        else:
+        elif key in self.cached and option in self.cached[key]:
+            self.__set_configs(key, self.cached[key][option], is_direct=False)
+        elif isinstance(func, ConfigFunction):
             s = monit.section(f'Prepare {key}', is_new_line=False)
             with s:
-                value = funcs(self.configs)
+                value = func(self.configs)
             if s.get_estimated_time() >= 0.01:
                 logger.log()
             else:
                 logger.log(' ' * 100, is_new_line=False)
 
-            if type(funcs.config_names) == str:
+            if type(func.config_names) == str:
                 self.__set_configs(key, value, is_direct=False)
             else:
                 if not isinstance(value, tuple) and not isinstance(value, list):
-                    raise RuntimeError(f"Expect a tuple or a list as results for {funcs.config_names}")
-                if len(value) != len(funcs.config_names):
-                    raise RuntimeError(f"Number of items in results {funcs.config_names}"
+                    raise RuntimeError(f"Expect a tuple or a list as results for {func.config_names}")
+                if len(value) != len(func.config_names):
+                    raise RuntimeError(f"Number of items in results {func.config_names}"
                                        f" for should match the number of configs")
 
-                for i, k in enumerate(funcs.config_names):
-                    self.__set_configs(k, value[i], is_direct=False)
+                for i, k in enumerate(func.config_names):
+                    if k == key:
+                        self.__set_configs(k, value[i], is_direct=False)
+                    else:
+                        self.__cache_calculated(k, option, value[i])
+        elif isinstance(func, SetupFunction):
+            s = monit.section(f'Prepare {key}', is_new_line=False)
+            with s:
+                func(self.configs)
+            if s.get_estimated_time() >= 0.01:
+                logger.log()
+            else:
+                logger.log(' ' * 100, is_new_line=False)
+
+            for i, k in enumerate(func.config_names):
+                if k == key:
+                    self.__set_configs(k, self.configs.__getattribute__(k), is_direct=False)
+                elif k in self.is_computed:
+                    self.configs.__setattr__(k, self.saved_configs[k])
+                else:
+                    self.__cache_calculated(k, option, self.configs.__getattribute__(k))
+        else:
+            raise RuntimeError(f"Unknown calculator function for {key}", func)
 
     def __compute_values(self):
         for k in self.topological_order:

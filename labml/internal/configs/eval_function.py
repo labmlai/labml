@@ -20,7 +20,8 @@ class EvalFunction:
             elif p.kind == p.KEYWORD_ONLY:
                 key += 1
             else:
-                assert False, "Only positional or keyword only arguments should be accepted"
+                raise RuntimeError(f"Only positional or keyword only arguments should be accepted: "
+                                   f"{self.config_name} - {self.func.__name__}")
 
         assert pos >= 1
 

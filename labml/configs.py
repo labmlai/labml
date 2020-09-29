@@ -1,4 +1,4 @@
-from typing import List, Callable, overload, Union, Tuple
+from typing import List, Callable, overload, Union, Tuple, Optional
 
 from labml.internal.configs.base import Configs as _Configs
 from labml.internal.configs.config_item import ConfigItem
@@ -86,6 +86,37 @@ def option(name: Union[any, List[any]], *args: any):
             pass_params = arg
 
     return config_class.calc(name, option_name, pass_params)
+
+
+@overload
+def setup(name: Union[any, List[any]]):
+    ...
+
+
+@overload
+def setup(name: Union[any, List[any]], option_name: str):
+    ...
+
+
+def setup(name: Union[any, List[any]], option_name: Optional[str] = None):
+    r"""
+    Use this as a decorator to register a setup function that calculates multiple configurations.
+    This function should accept the configurations object and assign the values of the
+    configurations specified.
+
+    Arguments:
+        name: the configuration item or a list of items.
+
+        option_name (str, optional): name of the option.
+            If not provided it will be derived from the
+            function name.
+    """
+    config_class = _get_config_class(name)
+    if config_class is None:
+        raise ConfigsError('You need to pass config items to option')
+
+    option_name = None
+    return config_class.setup(name, option_name)
 
 
 @overload

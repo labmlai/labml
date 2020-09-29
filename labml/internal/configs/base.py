@@ -5,6 +5,7 @@ from labml.internal.configs.eval_function import EvalFunction
 from .config_function import ConfigFunction
 from .config_item import ConfigItem
 from .parser import Parser, PropertyKeys
+from .setup_function import SetupFunction
 
 
 def _is_class_method(func: Callable):
@@ -31,6 +32,7 @@ def _is_class_method(func: Callable):
 class Configs:
     _calculators: Dict[str, List[ConfigFunction]] = {}
     _evaluators: Dict[str, List[EvalFunction]] = {}
+    _setups: Dict[str, List[SetupFunction]] = {}
 
     def __init__(self, *, _primary: str = None):
         self._primary = _primary
@@ -49,6 +51,10 @@ class Configs:
                                     value=cls.__dict__.get(k, None))
 
         evals = []
+
+        if PropertyKeys.setups not in cls.__dict__:
+            cls._setups = {}
+
         for k, v in cls.__dict__.items():
             if not Parser.is_valid(k):
                 continue
@@ -107,6 +113,24 @@ class Configs:
         cls._evaluators[name].append(calc)
 
     @classmethod
+    def _add_setup_function(cls,
+                            func: Callable,
+                            config_names: List[ConfigItem],
+                            option_name: Optional[str]):
+        if PropertyKeys.setups not in cls.__dict__:
+            cls._setups = {}
+
+        calc = SetupFunction(func,
+                             option_name=option_name,
+                             config_names=config_names)
+        config_names = calc.config_names
+
+        for n in config_names:
+            if n not in cls._setups:
+                cls._setups[n] = []
+            cls._setups[n].append(calc)
+
+    @classmethod
     def _calc(cls,
               name: Union[ConfigItem, List[ConfigItem]] = None,
               option: Optional[str] = None,
@@ -127,6 +151,17 @@ class Configs:
         cls._add_config_function(func, name, option_name, pass_params)
 
         return func
+
+    @classmethod
+    def setup(cls, names: Union[List[ConfigItem], ConfigItem], option_name: Optional[str]):
+        if not isinstance(names, list):
+            names: List[ConfigItem] = [names]
+
+        def wrapper(func: Callable):
+            cls._add_setup_function(func, names, option_name)
+            return func
+
+        return wrapper
 
     @classmethod
     def calc(cls,
