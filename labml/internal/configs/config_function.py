@@ -116,9 +116,12 @@ class ConfigFunction:
             init_func = cast(object, self.func).__init__
             spec: inspect.Signature = inspect.signature(init_func)
             params: List[inspect.Parameter] = list(spec.parameters.values())
-            assert len(params) > 0
-            assert params[0].kind == inspect.Parameter.POSITIONAL_OR_KEYWORD, self.config_names
-            assert params[0].name == 'self'
+            if len(params) == 0:
+                raise ConfigsError(f'Not a valid config function {self.config_names}', self.func)
+            if params[0].kind != inspect.Parameter.POSITIONAL_OR_KEYWORD:
+                raise ConfigsError(f'Not a valid config function {self.config_names}', self.func)
+            if params[0].name != 'self':
+                raise ConfigsError(f'Not a valid config function {self.config_names}', self.func)
             return params[1:]
         else:
             spec: inspect.Signature = inspect.signature(self.func)

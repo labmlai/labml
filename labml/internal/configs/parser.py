@@ -3,6 +3,8 @@ from collections import OrderedDict
 from typing import List, Dict, Type, Set, Union
 from typing import TYPE_CHECKING
 
+from labml.utils.errors import ConfigsError
+
 from labml import logger
 from labml.logger import Text
 from .config_function import ConfigFunction
@@ -237,10 +239,15 @@ class Parser:
                 if self.types[k] in _STANDARD_TYPES:
                     continue
 
+                try:
+                    config_function = ConfigFunction(self.types[k],
+                                                     config_names=self.config_items[k],
+                                                     option_name='from_type')
+                except ConfigsError as e:
+                    continue
+
                 self.options[k] = OrderedDict()
-                self.options[k]['from_type'] = ConfigFunction(self.types[k],
-                                                              config_names=self.config_items[k],
-                                                              option_name='from_type')
+                self.options[k]['from_type'] = config_function
                 self.values[k] = 'from_type'
                 continue
 
