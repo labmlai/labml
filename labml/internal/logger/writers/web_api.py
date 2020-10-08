@@ -1,11 +1,13 @@
 import json
 import socket
 import ssl
+import threading
 import time
 import urllib.error
 import urllib.request
 import warnings
 import webbrowser
+from queue import Queue
 from typing import Dict, Optional
 
 import numpy as np
@@ -21,8 +23,62 @@ MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5
 TIMEOUT_SECONDS = 5
 
+
+class WebApiThread(threading.Thread):
+    def __init__(self, url: str, verify_connection: bool):
+        super().__init__(daemon=False)
+        self.verify_connection = verify_connection
+        self.url = url
+        self.queue = Queue()
+
+    def push(self, data: any):
+        self.queue.put(data)
+
+    def run(self):
+        while True:
+            data = self.queue.get()
+            if data == 'done':
+                return
+            else:
+                self._process(data)
+
+    def _process(self, data: Dict[str, any]):
+        res = self._send(data['packet'])
+        if 'accept' in data:
+            data['accept'](res)
+
+    def _send(self, data: Dict[str, any]):
+        req = urllib.request.Request(self.url)
+        req.add_header('Content-Type', 'application/json; charset=utf-8')
+        data = json.dumps(data)
+        data = data.encode('utf-8')
+        req.add_header('Content-Length', str(len(data)))
+
+        try:
+            if self.verify_connection:
+                response = urllib.request.urlopen(req, data, timeout=TIMEOUT_SECONDS)
+            else:
+                response = urllib.request.urlopen(req, data, timeout=TIMEOUT_SECONDS,
+                                                  context=ssl._create_unverified_context())
+            content = response.read().decode('utf-8')
+            result = json.loads(content)
+            for e in result['errors']:
+                warnings.warn(f"WEB API error {e['error']} : {e['message']}")
+            return result.get('url', None)
+        except urllib.error.HTTPError as e:
+            warnings.warn(f"Failed to send message to WEB API  {self.url}: {e}")
+            return None
+        except urllib.error.URLError as e:
+            warnings.warn(f"Failed to connect to WEB API {self.url}: {e}")
+            return None
+        except socket.timeout as e:
+            warnings.warn(f"WEB API timeout {self.url}: {e}")
+            return None
+
+
 class Writer(WriteBase):
     url: Optional[str]
+    thread: Optional[WebApiThread]
 
     def __init__(self):
         super().__init__()
@@ -37,6 +93,11 @@ class Writer(WriteBase):
         self.configs = None
         self.web_api = lab_singleton().web_api
         self.state = None
+
+        if self.web_api is not None:
+            self.thread = WebApiThread(self.web_api.url, self.web_api.verify_connection)
+        else:
+            self.thread = None
 
     @staticmethod
     def _parse_key(key: str):
@@ -71,7 +132,12 @@ class Writer(WriteBase):
 
         self.last_committed = time.time()
         self.commits_count = 0
-        url = self.send(data)
+        self.thread.push({'packet': data,
+                          'accept': self._started})
+        if not self.thread.is_alive():
+            self.thread.start()
+
+    def _started(self, url):
         if url is None:
             return None
 
@@ -120,6 +186,8 @@ class Writer(WriteBase):
         }
 
         self.flush()
+        # TODO: Will have to fix this when there are other statuses than 'done'
+        self.thread.push('done')
 
     def flush(self):
         if self.web_api is None:
@@ -147,37 +215,9 @@ class Writer(WriteBase):
 
         self.indicators = {}
 
-        self.send({
+        self.thread.push({'packet': {
             'run_uuid': self.run_uuid,
             'track': data,
             'status': self.state,
             'time': time.time()
-        })
-
-    def send(self, data: Dict[str, any]):
-        req = urllib.request.Request(self.web_api.url)
-        req.add_header('Content-Type', 'application/json; charset=utf-8')
-        data = json.dumps(data)
-        data = data.encode('utf-8')
-        req.add_header('Content-Length', str(len(data)))
-
-        try:
-            if self.web_api.verify_connection:
-                response = urllib.request.urlopen(req, data, timeout=TIMEOUT_SECONDS)
-            else:
-                response = urllib.request.urlopen(req, data, timeout=TIMEOUT_SECONDS,
-                                                  context=ssl._create_unverified_context())
-            content = response.read().decode('utf-8')
-            result = json.loads(content)
-            for e in result['errors']:
-                warnings.warn(f"WEB API error {e['error']} : {e['message']}")
-            return result.get('url', None)
-        except urllib.error.HTTPError as e:
-            warnings.warn(f"Failed to send message to WEB API  {self.web_api.url}: {e}")
-            return None
-        except urllib.error.URLError as e:
-            warnings.warn(f"Failed to connect to WEB API {self.web_api.url}: {e}")
-            return None
-        except socket.timeout as e:
-            warnings.warn(f"WEB API timeout {self.web_api.url}: {e}")
-            return None
+        }})

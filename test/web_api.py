@@ -8,7 +8,7 @@ def train(i):
 
 
 conf = {'batch_size': 20}
-with experiment.record(name='sample', exp_conf=conf, token='903c84fba8ca49ca9f215922833e08cf'):
+with experiment.record(name='sample', exp_conf=conf, token='49d688f6624d468394ca029ecabc8a84'):
     for i in range(10000):
         loss, accuracy = train(i)
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})
