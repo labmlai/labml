@@ -34,7 +34,7 @@ PyTorch example
             loss, accuracy = train()
             tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 
-TensorFlow 2.0 Keras example
+TensorFlow 2.X Keras example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -78,8 +78,6 @@ Links
 `💬 Slack workspace for discussions <https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/>`_
 
 `📗 Documentation <http://lab-ml.com/>`_
-
-`📑 Articles & Tutorials <https://medium.com/@labml/>`_
 
 `👨‍🏫 Samples <https://github.com/lab-ml/samples>`_
 
