@@ -186,6 +186,9 @@ class Experiment:
         if 'tensorboard' in writers:
             from labml.internal.logger.writers import tensorboard
             logger_internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
+        if 'file' in writers:
+            from labml.internal.logger.writers import file
+            logger_internal().add_writer(file.Writer(self.run.log_file))
         if 'web_api' in writers:
             from labml.internal.logger.writers import web_api
             self.web_api = web_api.Writer()

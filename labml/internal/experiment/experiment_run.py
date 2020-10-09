@@ -65,6 +65,7 @@ class RunInfo:
         self.sqlite_path = self.run_path / "sqlite.db"
         self.artifacts_folder = self.run_path / "artifacts"
         self.tensorboard_log_path = self.run_path / "tensorboard"
+        self.log_file = self.run_path / 'log.jsonl'
 
         self.info_path = self.run_path / "run.yaml"
         self.indicators_path = self.run_path / "indicators.yaml"
