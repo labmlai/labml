@@ -21,7 +21,7 @@ class Logger:
     """
 
     def __init__(self):
-        self.__store = Store()
+        self.__store = None
         self.__writers: List[Writer] = []
 
         self.__loop: Optional[Loop] = None
@@ -38,6 +38,13 @@ class Logger:
 
         self.__destination = create_destination()
         self.__inspect = Inspect(self)
+
+    @property
+    def _store(self):
+        if self.__store is None:
+            self.__store = Store()
+
+        return self.__store
 
     @property
     def global_step(self) -> int:
@@ -71,16 +78,16 @@ class Logger:
         self.__store = Store()
 
     def add_indicator(self, indicator: Indicator):
-        self.__store.add_indicator(indicator)
+        self._store.add_indicator(indicator)
 
     def save_indicators(self, file: PurePath):
-        self.__store.save_indicators(file)
+        self._store.save_indicators(file)
 
     def store(self, key: str, value: any):
-        self.__store.store(key, value)
+        self._store.store(key, value)
 
     def store_namespace(self, name: str):
-        return self.__store.create_namespace(name)
+        return self._store.create_namespace(name)
 
     def set_global_step(self, global_step: Optional[int]):
         self.__global_step = global_step
@@ -112,9 +119,9 @@ class Logger:
 
         for w in self.__writers:
             if w != self.__screen_writer:
-                self.__store.write(w, global_step)
-        self.__indicators_print = self.__store.write(self.__screen_writer, global_step)
-        self.__store.clear()
+                self._store.write(w, global_step)
+        self.__indicators_print = self._store.write(self.__screen_writer, global_step)
+        self._store.clear()
 
         parts = [(f"{self.global_step :8,}:  ", Text.highlight)]
         if self.__is_looping():
