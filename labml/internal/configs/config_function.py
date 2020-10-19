@@ -60,8 +60,9 @@ class ConfigFunction:
         elif pos == 0 and key == 0:
             return FunctionKind.pass_nothing
         else:
-            warnings.warn("Use configs object, because it's easier to refactor, find usage etc",
-                          FutureWarning, stacklevel=4)
+            warnings.warn(f"Use configs object, because it's easier to refactor, find usage etc: "
+                          f"{self.config_names}: {self.option_name}",
+                          FutureWarning, stacklevel=5)
             if pos != 0:
                 raise ConfigsError(
                     f"{self.config_names} - {self.option_name}")

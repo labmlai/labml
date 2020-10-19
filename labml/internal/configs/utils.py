@@ -84,13 +84,14 @@ class Value:
 
     @staticmethod
     def to_str(value):
-        if str(value) == Value.default_repr(value):
+        str_value = str(value)
+        if str_value == Value.default_repr(value):
             if value.__class__.__module__ == '__main__':
                 return value.__class__.__name__
             else:
                 return f"{value.__class__.__module__}.{value.__class__.__name__}"
         else:
-            return str(value)
+            return str_value
 
     @staticmethod
     def default_repr(value):
