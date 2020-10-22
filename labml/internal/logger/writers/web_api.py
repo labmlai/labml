@@ -30,9 +30,14 @@ class WebApiThread(threading.Thread):
         self.verify_connection = verify_connection
         self.url = url
         self.queue = Queue()
+        self.is_stopped = False
 
     def push(self, data: any):
         self.queue.put(data)
+
+    def stop(self):
+        self.is_stopped = True
+        self.push('done')
 
     def run(self):
         while True:
@@ -40,6 +45,8 @@ class WebApiThread(threading.Thread):
             if data == 'done':
                 return
             else:
+                if self.is_stopped:
+                    print('Updating web api...')
                 self._process(data)
 
     def _process(self, data: Dict[str, any]):
@@ -137,6 +144,20 @@ class Writer(WriteBase):
         if not self.thread.is_alive():
             self.thread.start()
 
+    def save_indicators(self, dot_indicators: Dict[str, Indicator], indicators: Dict[str, Indicator]):
+        if self.web_api is None:
+            return
+
+        wildcards = {k: ind.to_dict() for k, ind in dot_indicators.items()}
+        inds = {k: ind.to_dict() for k, ind in indicators.items()}
+        data = {
+            'run_uuid': self.run_uuid,
+            'wildcard_indicators': wildcards,
+            'indicators': inds
+        }
+
+        self.thread.push({'packet': data})
+
     def _started(self, url):
         if url is None:
             return None
@@ -186,8 +207,9 @@ class Writer(WriteBase):
         }
 
         self.flush()
-        # TODO: Will have to fix this when there are other statuses than 'done'
-        self.thread.push('done')
+
+        # TODO: Will have to fix this when there are other statuses that dont stop the experiment
+        self.thread.stop()
 
     def flush(self):
         if self.web_api is None:

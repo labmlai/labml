@@ -1,5 +1,5 @@
 from pathlib import PurePath
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from labml.internal.logger.store.indicators import Indicator
 from labml.internal.logger.store.indicators.artifacts import Artifact
@@ -31,15 +31,25 @@ class Store:
 
         self.is_indicators_updated = True
 
-    def save_indicators(self, file: PurePath):
+    def save_indicators(self, writers: List[Writer], file: Optional[PurePath] = None):
+        if not self.is_indicators_updated:
+            return
         self.is_indicators_updated = False
-        self.__indicators_file = file
+        if file is None:
+            if self.__indicators_file is None:
+                return
+            file = self.__indicators_file
+        else:
+            self.__indicators_file = file
 
         wildcards = {k: ind.to_dict() for k, ind in self.dot_indicators.items()}
         inds = {k: ind.to_dict() for k, ind in self.indicators.items()}
         with open(str(file), "w") as file:
             file.write(util.yaml_dump({'wildcards': wildcards,
                                        'indicators': inds}))
+
+        for w in writers:
+            w.save_indicators(self.dot_indicators, self.indicators)
 
     def __assert_name(self, name: str, value: any):
         if name.endswith("."):
@@ -82,9 +92,6 @@ class Store:
             v.clear()
 
     def write(self, writer: Writer, global_step):
-        if self.is_indicators_updated and self.__indicators_file is not None:
-            self.save_indicators(self.__indicators_file)
-
         return writer.write(global_step=global_step,
                             indicators=self.indicators)
 

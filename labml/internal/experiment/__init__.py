@@ -317,8 +317,6 @@ class Experiment:
         if self.configs_processor is not None:
             self.configs_processor.save(self.run.configs_path)
 
-        logger_internal().save_indicators(self.run.indicators_path)
-
         if self.web_api is not None:
             self.web_api.set_info(run_uuid=self.run.uuid,
                                   name=self.name,
@@ -327,6 +325,7 @@ class Experiment:
                 self.web_api.set_configs(self.configs_processor.to_json())
             self.web_api.start()
 
+        logger_internal().save_indicators(self.run.indicators_path)
         if self.configs_processor:
             logger_internal().write_h_parameters(self.configs_processor.get_hyperparams())
 

@@ -80,8 +80,8 @@ def main():
                         'optimizer.optimizer': 'Adam'},
                        ['seed', 'run'])
     experiment.add_pytorch_models(dict(model=conf.model))
-    experiment.start()
-    conf.run()
+    with experiment.start():
+        conf.run()
 
 
 if __name__ == '__main__':

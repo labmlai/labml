@@ -81,7 +81,7 @@ class Logger:
         self._store.add_indicator(indicator)
 
     def save_indicators(self, file: PurePath):
-        self._store.save_indicators(file)
+        self._store.save_indicators(self.__writers, file)
 
     def store(self, key: str, value: any):
         self._store.store(key, value)
@@ -116,6 +116,8 @@ class Logger:
 
     def write(self):
         global_step = self.global_step
+
+        self._store.save_indicators(self.__writers)
 
         for w in self.__writers:
             if w != self.__screen_writer:
