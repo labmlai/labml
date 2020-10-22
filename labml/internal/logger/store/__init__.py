@@ -68,16 +68,14 @@ class Store:
         if key.endswith('.'):
             key = '.'.join([key[:-1]] + [ns.name for ns in self.namespaces])
 
-        if key in self.indicators:
-            self.indicators[key].collect_value(value)
-        else:
+        if key not in self.indicators:
             ind_key, ind_score = strings.find_best_pattern(key, self.dot_indicators.keys())
             if ind_key is None:
                 raise ValueError(f"Cannot find matching indicator for {key}")
             self.indicators[key] = self.dot_indicators[ind_key].copy(key)
             self.is_indicators_updated = True
 
-            self.store(key, value)
+        self.indicators[key].collect_value(value)
 
     def clear(self):
         for k, v in self.indicators.items():
