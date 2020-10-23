@@ -72,9 +72,9 @@ and providing pretty logs.
    :alt: Logger output
 
 We also have an `API <https://lab-ml.com/guide/analytics.html>`_
- to create `custom <https://github.com/lab-ml/samples/blob/master/labml_samples/pytorch/stocks/analysis.ipynb>`_
- `visualizations <https://github.com/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb>`_
-  from artifacts and logs on Jupyter notebooks.
+to create `custom <https://github.com/lab-ml/samples/blob/master/labml_samples/pytorch/stocks/analysis.ipynb>`_
+`visualizations <https://github.com/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb>`_
+from artifacts and logs on Jupyter notebooks.
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png
    :width: 50%
