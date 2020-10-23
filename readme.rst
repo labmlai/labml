@@ -62,15 +62,22 @@ and your logs will be stored locally for Tensorboard and `LabML Dashboard <https
 You will only be sending data away for `web.lab-ml.com <https://web.lab-ml.com>`_ if you include a token url.
 This can also be `locally installed <https://github.com/lab-ml/app/>`_.
 
-LabML can also do a bunch of other things like keeping track of git commits,
-handling `configurations, hyper-parameters <http://lab-ml.com/guide/configs.html>`_,
-saving and loading `checkpoints <http://lab-ml.com/guide/experiment.html>`_,
+LabML can also keep track of git commits,
+handle `configurations, hyper-parameters <http://lab-ml.com/guide/configs.html>`_,
+save and load `checkpoints <http://lab-ml.com/guide/experiment.html>`_,
 and providing pretty logs.
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/logger_sample.png
    :width: 50%
    :alt: Logger output
 
+We also have an [API](https://lab-ml.com/guide/analytics.html)
+ to create [custom](https://github.com/lab-ml/samples/blob/master/labml_samples/pytorch/stocks/analysis.ipynb)
+ [visualizations](https://github.com/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb) from artifacts and logs on Jupyter notebooks.
+
+.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png
+   :width: 50%
+   :alt: Analytics
 
 Links
 -----
