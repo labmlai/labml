@@ -200,6 +200,9 @@ class Writer(WriteBase):
             self.flush()
 
     def status(self, status: str, details: str, time_: float):
+        if self.web_api is None:
+            return
+
         self.state = {
             'status': status,
             'details': details,
