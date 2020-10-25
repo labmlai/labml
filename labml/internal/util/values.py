@@ -7,24 +7,18 @@ except ImportError:
 
 
 def to_numpy(value):
-    type_ = type(value)
-
-    if type_ == float or type_ == int:
+    if isinstance(value, int) or isinstance(value, float):
         return np.array(value)
-
-    if isinstance(value, np.number):
+    elif isinstance(value, np.number):
         return np.array(value.item())
-
-    if type_ == list:
+    elif isinstance(value, list):
         return np.array(value)
-
-    if type_ == np.ndarray:
+    elif isinstance(value, np.ndarray):
         return value
-
-    if torch is not None:
-        if type_ == torch.nn.parameter.Parameter:
+    elif torch is not None:
+        if isinstance(value, torch.nn.parameter.Parameter):
             return value.data.cpu().numpy()
-        if type_ == torch.Tensor:
+        elif isinstance(value, torch.Tensor):
             return value.data.cpu().numpy()
 
-    assert False, f"Unknown type {type_}"
+    raise ValueError(f"Unknown type {type(value)}")

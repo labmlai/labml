@@ -32,4 +32,4 @@ def find_best_pattern(key: str, patterns: Iterable[str]):
                 max_score = s
                 best = p
 
-    return best, max_score
+    return best, max_score / len(key)

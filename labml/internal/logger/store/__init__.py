@@ -4,8 +4,8 @@ from typing import Dict, List, Optional
 from labml.internal.logger.store.indicators import Indicator
 from labml.internal.logger.store.indicators.artifacts import Artifact
 from labml.internal.logger.store.indicators.numeric import Scalar
-from .indicators.factory import load_indicator_from_dict
 
+from .indicators.factory import load_indicator_from_dict, create_default_indicator
 from .namespace import Namespace
 from ..writers import Writer
 from ... import util
@@ -74,17 +74,25 @@ class Store:
         self.dot_indicators[indicator.name] = indicator
         self.is_indicators_updated = True
 
+    def _create_indicator(self, key: str, value: any):
+        if key in self.indicators:
+            return
+
+        ind_key, ind_score = strings.find_best_pattern(key, self.dot_indicators.keys())
+        if ind_key is None:
+            raise ValueError(f"Cannot find matching indicator for {key}")
+        if ind_score == 0:
+            is_print = self.dot_indicators[ind_key].is_print
+            self.indicators[key] = create_default_indicator(key, value, is_print)
+        else:
+            self.indicators[key] = self.dot_indicators[ind_key].copy(key)
+        self.is_indicators_updated = True
+
     def store(self, key: str, value: any):
         if key.endswith('.'):
             key = '.'.join([key[:-1]] + [ns.name for ns in self.namespaces])
 
-        if key not in self.indicators:
-            ind_key, ind_score = strings.find_best_pattern(key, self.dot_indicators.keys())
-            if ind_key is None:
-                raise ValueError(f"Cannot find matching indicator for {key}")
-            self.indicators[key] = self.dot_indicators[ind_key].copy(key)
-            self.is_indicators_updated = True
-
+        self._create_indicator(key, value)
         self.indicators[key].collect_value(value)
 
     def clear(self):
