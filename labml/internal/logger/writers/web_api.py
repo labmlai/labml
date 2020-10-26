@@ -185,9 +185,6 @@ class Writer(WriteBase):
             return
 
         for ind in indicators.values():
-            if not ind.is_print:
-                continue
-
             self._write_indicator(global_step, ind)
 
         t = time.time()
