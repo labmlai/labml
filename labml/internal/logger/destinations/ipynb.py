@@ -38,7 +38,7 @@ class IpynbDestination(Destination):
 
         if color is None:
             return text
-        elif type(color) is list:
+        elif isinstance(color, list):
             open_tags = ''.join([c.html_open() for c in color])
             close_tags = ''.join([c.html_close() for c in reversed(color)])
         else:

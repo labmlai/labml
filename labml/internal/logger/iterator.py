@@ -28,7 +28,7 @@ class Iterator:
         if is_enumerate:
             total_steps = len(iterable)
             iterable = enumerate(iterable)
-        if type(iterable) is int:
+        if isinstance(iterable, int):
             total_steps = iterable
             iterable = range(total_steps)
         if total_steps is None:

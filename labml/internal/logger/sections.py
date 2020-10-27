@@ -133,7 +133,7 @@ class OuterSection(Section):
         self._is_new_line = is_new_line
 
     def get_estimated_time(self):
-        if self._state is 'entered':
+        if self._state == 'entered':
             if self._progress == 0.:
                 return time.time() - self._start_time
             else:
@@ -145,7 +145,7 @@ class OuterSection(Section):
         if self.is_silent:
             return
 
-        if self._state is 'none':
+        if self._state == 'none':
             return
 
         parts = [("  " * self._level + f"{self._name}", None)]
