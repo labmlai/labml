@@ -20,7 +20,7 @@ You can install this package using PIP.
 
 
 To push to mobile website, you need obtain a token from `web.lab-ml.com <https://web.lab-ml.com>`_
-(`Githup lab-ml/app <https://github.com/lab-ml/app/>`_), and save statistics with `tracker.save`.
+(Github `lab-ml/app <https://github.com/lab-ml/app/>`_), and save statistics with ``tracker.save``.
 
 PyTorch example
 ^^^^^^^^^^^^^^^
@@ -57,7 +57,7 @@ It automatically pushes data to Tensorboard, and you can keep your old experimen
    :width: 100%
    :alt: Dashboard Screenshot
 
-All these software is open source,
+All these software is 100% open source,
 and your logs will be stored locally for Tensorboard and `LabML Dashboard <https://github.com/lab-ml/dashboard/>`_.
 You will only be sending data away for `web.lab-ml.com <https://web.lab-ml.com>`_ if you include a token url.
 This can also be `locally installed <https://github.com/lab-ml/app/>`_.
