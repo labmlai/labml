@@ -31,6 +31,7 @@ class WebApiThread(threading.Thread):
         self.url = url
         self.queue = Queue()
         self.is_stopped = False
+        self.warned_updating = False
 
     def push(self, data: any):
         self.queue.put(data)
@@ -45,8 +46,9 @@ class WebApiThread(threading.Thread):
             if data == 'done':
                 return
             else:
-                if self.is_stopped:
-                    print('Updating web api...')
+                if self.is_stopped and not self.warned_updating:
+                    logger.log('Still updating LabML app, please wait for it to complete..', Text.highlight)
+                    self.warned_updating = True
                 self._process(data)
 
     def _process(self, data: Dict[str, any]):
