@@ -34,6 +34,7 @@ class CheckpointSaver:
     def __init__(self, path: pathlib.PurePath):
         self.path = path
         self.model_savers = {}
+        self.__no_savers_warned = False
 
     def add_savers(self, models: Dict[str, ModelSaver]):
         """
@@ -47,6 +48,11 @@ class CheckpointSaver:
         """
 
         if not self.model_savers:
+            if not self.__no_savers_warned:
+                labml_notice(["No models were registered for saving\n",
+                              "You can register models with ",
+                              ('experiment.add_pytorch_models', Text.value)])
+                self.__no_savers_warned = True
             return
 
         checkpoints_path = pathlib.Path(self.path)
