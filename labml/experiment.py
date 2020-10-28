@@ -246,6 +246,8 @@ def load_configs(run_uuid: str, *, is_only_hyperparam: bool = True):
     """
 
     conf = _get_configs(run_uuid)
+    if not conf:
+        return {}
     values = {}
     for k, c in conf.items():
         is_hyperparam = c.get('is_hyperparam', None)

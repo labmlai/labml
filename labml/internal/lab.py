@@ -4,7 +4,9 @@ from typing import List, Optional, Dict
 
 from labml.internal import util
 from labml.internal.util import is_colab, is_kaggle
+from labml.logger import Text
 from labml.utils import get_caller_file
+from labml.utils.notice import labml_notice
 
 _CONFIG_FILE_NAME = '.labml.yaml'
 
@@ -48,21 +50,27 @@ class Lab:
         self.configs = self.__default_config()
         self.custom_configs = []
         self.__update_configs()
+        self.__current_path = None
 
         python_file = get_caller_file()
-        self.__load_configs(python_file)
+        self.__load_configs(Path(python_file).resolve())
 
     def set_path(self, path: str):
-        self.__load_configs(path)
+        self.__load_configs(Path(path).resolve())
 
-    def __load_configs(self, path: str):
+    def __load_configs(self, path: Path):
+        if path == self.__current_path:
+            return
+        self.__current_path = path
         config_files = self.__load_config_files(path)
 
         if not config_files:
             if not is_colab() and not is_kaggle():
-                warnings.warn(f"No '.labml.yaml' config file found. "
-                              f"Looking in {path}",
-                              UserWarning, stacklevel=4)
+                labml_notice([(".labml.yaml", Text.value),
+                              " config file could not be found. Looking in path: ",
+                              (path, Text.meta)])
+                while path.exists() and not path.is_dir():
+                    path = path.parent
 
         for c in config_files:
             self.__merge_configs(c)
@@ -71,7 +79,7 @@ class Lab:
             self.__merge_configs(c)
 
         if not config_files and self.configs['path'] is None:
-            self.configs['path'] = path
+            self.configs['path'] = str(path)
 
         self.__update_configs()
 
@@ -160,8 +168,7 @@ class Lab:
                 self.configs[k] = v
 
     @staticmethod
-    def __load_config_files(path: str):
-        path = Path(path).resolve()
+    def __load_config_files(path: Path):
         configs = []
 
         while path.exists():

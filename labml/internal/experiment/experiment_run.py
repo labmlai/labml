@@ -10,6 +10,7 @@ from labml.internal.lab import lab_singleton
 
 from .. import util
 from ...logger import Text
+from ...utils.notice import labml_notice
 
 
 def struct_time_to_time(t: time.struct_time):
@@ -286,7 +287,8 @@ def get_run_checkpoint(run_uuid: str,
 def get_configs(run_uuid: str):
     exp_name = find_experiment(run_uuid)
     if exp_name is None:
-        logger.log("Couldn't find a previous run")
+        labml_notice(["Couldn't find a previous run to load configurations: ",
+                      (run_uuid, Text.value)], is_danger=True)
         return None
 
     run_path = lab_singleton().experiments / exp_name / run_uuid
