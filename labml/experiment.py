@@ -56,14 +56,30 @@ def create(*,
         writers = {'sqlite', 'tensorboard', 'web_api'}
 
     if ignore_callers is None:
-        ignore_callers = {}
+        ignore_callers = set()
 
     _create_experiment(name=name,
                        python_file=python_file,
                        comment=comment,
                        writers=writers,
                        ignore_callers=ignore_callers,
-                       tags=tags)
+                       tags=tags,
+                       is_evaluate=False)
+
+
+def evaluate():
+    r"""
+    This should be used for evaluation of a saved experiment.
+    This will not record anything.
+    """
+
+    _create_experiment(name=None,
+                       python_file=None,
+                       comment=None,
+                       writers=set(),
+                       ignore_callers=set(),
+                       tags=None,
+                       is_evaluate=True)
 
 
 def add_model_savers(savers: Dict[str, ModelSaver]):

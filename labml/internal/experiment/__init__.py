@@ -135,7 +135,8 @@ class Experiment:
                  comment: Optional[str],
                  writers: Set[str],
                  ignore_callers: Set[str],
-                 tags: Optional[Set[str]]):
+                 tags: Optional[Set[str]],
+                 is_evaluate: bool):
         if python_file is None:
             python_file = get_caller_file(ignore_callers)
 
@@ -165,10 +166,6 @@ class Experiment:
         self.check_repo_dirty = lab_singleton().check_repo_dirty
 
         self.configs_processor = None
-
-        experiment_path = pathlib.Path(self.experiment_path)
-        if not experiment_path.exists():
-            experiment_path.mkdir(parents=True)
 
         if tags is None:
             tags = set(name.split('_'))
@@ -216,6 +213,7 @@ class Experiment:
             self.web_api = None
 
         self.checkpoint_saver = CheckpointSaver(self.run.checkpoint_path)
+        self.is_evaluate = is_evaluate
 
     def __print_info(self):
         """
@@ -329,10 +327,13 @@ class Experiment:
         if self.configs_processor is not None:
             self.configs_processor.print()
 
-        self.run.save_info()
+        if not self.is_evaluate:
+            self.run.save_info()
 
-        if self.configs_processor is not None:
-            self.configs_processor.save(self.run.configs_path)
+            if self.configs_processor is not None:
+                self.configs_processor.save(self.run.configs_path)
+
+            logger_internal().save_indicators(self.run.indicators_path)
 
         if self.web_api is not None:
             self.web_api.set_info(run_uuid=self.run.uuid,
@@ -342,19 +343,19 @@ class Experiment:
                 self.web_api.set_configs(self.configs_processor.to_json())
             self.web_api.start()
 
-        logger_internal().save_indicators(self.run.indicators_path)
         if self.configs_processor:
             logger_internal().write_h_parameters(self.configs_processor.get_hyperparams())
 
         return ExperimentWatcher(self)
 
     def finish(self, status: str, details: any = None):
-        with open(str(self.run.run_log_path), 'a') as f:
-            end_time = time.time()
-            data = json.dumps({'status': status,
-                               'details': details,
-                               'time': end_time}, indent=None)
-            f.write(data + '\n')
+        if not self.is_evaluate:
+            with open(str(self.run.run_log_path), 'a') as f:
+                end_time = time.time()
+                data = json.dumps({'status': status,
+                                   'details': details,
+                                   'time': end_time}, indent=None)
+                f.write(data + '\n')
 
         if self.web_api is not None:
             self.web_api.status(status, details, end_time)
@@ -393,7 +394,8 @@ def create_experiment(*,
                       comment: Optional[str],
                       writers: Set[str],
                       ignore_callers: Set[str],
-                      tags: Optional[Set[str]]):
+                      tags: Optional[Set[str]],
+                      is_evaluate: bool):
     global _internal
 
     _internal = Experiment(name=name,
@@ -401,4 +403,5 @@ def create_experiment(*,
                            comment=comment,
                            writers=writers,
                            ignore_callers=ignore_callers,
-                           tags=tags)
+                           tags=tags,
+                           is_evaluate=is_evaluate)
