@@ -18,6 +18,7 @@ from labml.internal.logger import logger_singleton as logger_internal
 from labml.internal.util import is_ipynb, is_colab, is_kaggle
 from labml.logger import Text
 from labml.utils import get_caller_file
+from labml.utils.notice import labml_notice
 
 
 class ModelSaver:
@@ -92,25 +93,22 @@ class CheckpointSaver:
             if name not in models:
                 not_loaded.append(name)
 
-        if missing:
-            logger.log([('\n' + '-' * 50, Text.subtle),
-                        ('\nLABML WARNING\n', [Text.danger, Text.title]),
-                        (f'{missing} ', Text.highlight),
-                        ('model(s) could not be found.\n'),
-                        ('-' * 50, Text.subtle)])
-        if not_loaded:
-            logger.log([('\n' + '-' * 50, Text.subtle),
-                        ('\nLABML WARNING\n', [Text.warning, Text.title]),
-                        (f'{not_loaded} ', Text.none),
-                        ('models were not loaded.\n', Text.none),
-                        'Models to be loaded should be specified with: ',
-                        ('experiment.add_pytorch_models\n', Text.value),
-                        ('-' * 50, Text.subtle)])
-
         # Load each model
         for name in to_load:
             saver = self.model_savers[name]
             saver.load(checkpoint_path, info[name])
+
+        if missing:
+            labml_notice([(f'{missing} ', Text.highlight),
+                          ('model(s) could not be found.\n'),
+                          (f'{to_load} ', Text.none),
+                          ('models were loaded.', Text.none)
+                          ], is_danger=True)
+        if not_loaded:
+            labml_notice([(f'{not_loaded} ', Text.none),
+                          ('models were not loaded.\n', Text.none),
+                          'Models to be loaded should be specified with: ',
+                          ('experiment.add_pytorch_models', Text.value)])
 
         return True
 
