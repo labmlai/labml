@@ -130,10 +130,10 @@ def log(*args, is_new_line: bool = True):
         message = args[0]
         if isinstance(message, str):
             _internal().log([(message, None)], is_new_line=is_new_line)
-        elif type(message) == list:
+        elif isinstance(message, list):
             _internal().log(message, is_new_line=is_new_line)
         else:
-            assert False
+            raise TypeError(f'Unrecognized type: {type(message)}', message)
     elif len(args) == 2 and isinstance(args[0], str) and isinstance(args[1], StyleCode):
         _internal().log([(args[0], args[1])], is_new_line=is_new_line)
     else:

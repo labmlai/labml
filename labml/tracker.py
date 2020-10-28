@@ -114,17 +114,21 @@ def add(*args, **kwargs):
     .. function:: add(**kwargs: any)
         :noindex:
     """
-    assert len(args) <= 2
+    if len(args) >= 2:
+        raise TypeError('tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)')
 
     if len(args) == 0:
         _add_dict(kwargs)
     elif len(args) == 1:
-        assert not kwargs
-        assert isinstance(args[0], dict)
-        _add_dict(args[0])
+        if kwargs:
+            raise TypeError('tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)')
+        if not isinstance(args[0], dict):
+            raise TypeError('tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)')
     elif len(args) == 2:
-        assert not kwargs
-        assert isinstance(args[0], str)
+        if kwargs:
+            raise TypeError('tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)')
+        if not isinstance(args[0], str):
+            raise TypeError('tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)')
         _internal().store(args[0], args[1])
 
 

@@ -95,7 +95,9 @@ def get_run(uuid: str):
 
 
 def set_preferred_db(db: str):
-    assert db in ['tensorboard', 'sqlite']
+    if db not in ['tensorboard', 'sqlite']:
+        raise ValueError('db should be one of tensorboard or sqlite')
+    _cache.set_preferred_db(db)
 
 
 @overload

@@ -25,4 +25,4 @@ def main():
     if args.command == 'dashboard':
         _open_dashboard()
     else:
-        assert False
+        raise ValueError('Unknown command', args.command)
