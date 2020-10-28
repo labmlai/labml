@@ -42,23 +42,27 @@ class SetupFunction:
 
     def __get_config_names(self, config_names: Union[str, ConfigItem, List[ConfigItem], List[str]]):
         if config_names is None:
-            warnings.warn("Use @Config.[name]", FutureWarning, 4)
+            warnings.warn(f"Decorate your function with @setup(Config.{self.func.__name__})", FutureWarning, 4)
             return self.func.__name__
         elif type(config_names) == str:
             if self.check_string_names:
-                warnings.warn("Use @Config.[name] instead of '[name]'", FutureWarning, 4)
+                warnings.warn(f"Use Config.{config_names} instead of '{config_names}'.", FutureWarning, 4)
             return config_names
         elif type(config_names) == ConfigItem:
             return config_names.key
         else:
             assert type(config_names) == list
             assert len(config_names) > 0
-            if type(config_names[0]) == str:
-                warnings.warn("Use @Config.[name] instead of '[name]'", FutureWarning, 4)
-                return config_names
-            else:
-                assert type(config_names[0]) == ConfigItem
-                return [c.key for c in config_names]
+            keys = []
+            for c in config_names:
+                if isinstance(c, str):
+                    warnings.warn(f"Use Config.{c} instead of '{c}'", FutureWarning, 4)
+                    keys.append(c)
+                elif isinstance(c, ConfigItem):
+                    keys.append(c.key)
+                else:
+                    raise ValueError('Cannot determine config item', c)
+            return keys
 
     def __get_option_name(self, option_name: str):
         if option_name is not None:

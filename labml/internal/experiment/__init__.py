@@ -2,7 +2,6 @@ import json
 import os
 import pathlib
 import time
-import warnings
 from typing import Optional, List, Set, Dict, Union
 
 import git
@@ -72,9 +71,6 @@ class CheckpointSaver:
         ## Load model as a set of numpy arrays
         """
 
-        if not self.model_savers:
-            return False
-
         if not models:
             models = list(self.model_savers.keys())
 
@@ -109,8 +105,6 @@ class CheckpointSaver:
                           ('models were not loaded.\n', Text.none),
                           'Models to be loaded should be specified with: ',
                           ('experiment.add_pytorch_models', Text.value)])
-
-        return True
 
 
 class Experiment:
@@ -195,8 +189,8 @@ class Experiment:
             self.run.diff = repo.git.diff()
         except git.InvalidGitRepositoryError:
             if not is_colab() and not is_kaggle():
-                warnings.warn(f"Not a valid git repository",
-                              UserWarning, stacklevel=4)
+                labml_notice(["Not a valid git repository: ",
+                              (lab_singleton().path, Text.value)])
             self.run.commit = 'unknown'
             self.run.commit_message = ''
             self.run.is_dirty = True
@@ -255,8 +249,7 @@ class Experiment:
             ])
 
     def _load_checkpoint(self, checkpoint_path: pathlib.Path):
-        if not self.checkpoint_saver.load(checkpoint_path):
-            logger.log('No models registered', Text.warning)
+        self.checkpoint_saver.load(checkpoint_path)
 
     def save_checkpoint(self):
         self.checkpoint_saver.save(logger_internal().global_step)
@@ -308,8 +301,7 @@ class Experiment:
             checkpoint)
 
         if global_step is None:
-            warnings.warn(f"Could not find checkpoint",
-                          UserWarning, stacklevel=4)
+            labml_notice(['Could not find saved checkpoint'], is_danger=True)
             return
 
         with monit.section("Loading checkpoint"):

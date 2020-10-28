@@ -5,7 +5,6 @@ import threading
 import time
 import urllib.error
 import urllib.request
-import warnings
 import webbrowser
 from queue import Queue
 from typing import Dict, Optional
@@ -14,6 +13,7 @@ import numpy as np
 
 from labml import logger
 from labml.logger import Text
+from labml.utils.notice import labml_notice
 from . import Writer as WriteBase
 from ..store.indicators import Indicator
 from ..store.indicators.numeric import NumericIndicator
@@ -69,17 +69,26 @@ class WebApiThread(threading.Thread):
                                                   context=ssl._create_unverified_context())
             content = response.read().decode('utf-8')
             result = json.loads(content)
-            for e in result['errors']:
-                warnings.warn(f"WEB API error {e['error']} : {e['message']}")
+
+            if result['errors']:
+                err_log = ['LabML App errors:']
+                for e in result['errors']:
+                    err_log += [(e['error'] + ': ', Text.key),
+                                (e['message'], Text.value)]
+                labml_notice(err_log)
             return result.get('url', None)
         except urllib.error.HTTPError as e:
-            warnings.warn(f"Failed to send message to WEB API  {self.url}: {e}")
+            labml_notice([f'Failed to send to {self.url}: ',
+                          (str(e.code), Text.value),
+                          '\n' + str(e.reason)])
             return None
         except urllib.error.URLError as e:
-            warnings.warn(f"Failed to connect to WEB API {self.url}: {e}")
+            labml_notice([f'Failed to connect to {self.url}\n',
+                          str(e.reason)])
             return None
         except socket.timeout as e:
-            warnings.warn(f"WEB API timeout {self.url}: {e}")
+            labml_notice([f'{self.url} timeout\n',
+                          str(e)])
             return None
 
 
