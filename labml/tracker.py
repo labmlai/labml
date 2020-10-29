@@ -114,7 +114,7 @@ def add(*args, **kwargs):
     .. function:: add(**kwargs: any)
         :noindex:
     """
-    if len(args) >= 2:
+    if len(args) > 2:
         raise TypeError('tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)')
 
     if len(args) == 0:
@@ -124,6 +124,7 @@ def add(*args, **kwargs):
             raise TypeError('tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)')
         if not isinstance(args[0], dict):
             raise TypeError('tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)')
+        _add_dict(args[0])
     elif len(args) == 2:
         if kwargs:
             raise TypeError('tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)')
