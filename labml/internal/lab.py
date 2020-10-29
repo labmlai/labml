@@ -125,10 +125,10 @@ class Lab:
             experiments_path='logs',
             analytics_path='analytics',
             analytics_templates={},
-            web_api=None,
+            web_api='https://api.lab-ml.com/api/v1/track',
             web_api_frequency=60,
             web_api_verify_connection=True,
-            web_api_open_browser=False,
+            web_api_open_browser=True,
             indicators=[{
                 'class_name': 'Scalar',
                 'is_print': True,

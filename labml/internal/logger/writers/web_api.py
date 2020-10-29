@@ -44,10 +44,12 @@ class WebApiThread(threading.Thread):
         while True:
             data = self.queue.get()
             if data == 'done':
+                if self.warned_updating:
+                    logger.log('Finished updating LabML App.', Text.highlight)
                 return
             else:
                 if self.is_stopped and not self.warned_updating:
-                    logger.log('Still updating LabML app, please wait for it to complete..', Text.highlight)
+                    logger.log('Still updating LabML App, please wait for it to complete..', Text.highlight)
                     self.warned_updating = True
                 self._process(data)
 
@@ -73,7 +75,7 @@ class WebApiThread(threading.Thread):
             result = json.loads(content)
 
             if result['errors']:
-                err_log = ['LabML App errors:']
+                err_log = ['LabML App errors\n']
                 for e in result['errors']:
                     err_log += [(e['error'] + ': ', Text.key),
                                 (e['message'], Text.value)]
