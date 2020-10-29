@@ -102,6 +102,8 @@ class Lab:
                                          frequency=self.configs['web_api_frequency'],
                                          verify_connection=self.configs['web_api_verify_connection'],
                                          open_browser=self.configs['web_api_open_browser'])
+        else:
+            self.web_api = None
 
     def set_configurations(self, configs: Dict[str, any]):
         self.custom_configs.append(configs)
