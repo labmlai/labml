@@ -51,7 +51,10 @@ _ANSI_CODES = dict(
     bg_bright_blue=104,
     bg_bright_purple=105,
     bg_bright_cyan=106,
-    bg_bright_white=107
+    bg_bright_white=107,
+
+    link_href=4,
+    link_title=34
 )
 
 ANSI_RESET = "\33[0m"
@@ -70,7 +73,10 @@ _HTML_STYLES = dict(
     blue=('<span style="color: #208FFB">', '</span>'),
     purple=('<span style="color: #D160C4">', '</span>'),
     cyan=('<span style="color: #60C6C8">', '</span>'),
-    white=('<span style="color: #C5C1B4">', '</span>')
+    white=('<span style="color: #C5C1B4">', '</span>'),
+
+    link_href=("<a href='", "' target='blank'>"),
+    link_title=('', "</a>")
 )
 
 

@@ -28,7 +28,7 @@ class IpynbDestination(Destination):
         return False
 
     @staticmethod
-    def __html_code(text: str, color: List[StyleCode] or StyleCode or None):
+    def html_code(text: str, color: List[StyleCode] or StyleCode or None):
         """
         ### Add ansi color codes
         """
@@ -62,7 +62,7 @@ class IpynbDestination(Destination):
                 tuple_parts.append(('\n', None))
             tuple_parts.append((lines[-1], style))
 
-        coded = [self.__html_code(text, color) for text, color in tuple_parts]
+        coded = [self.html_code(text, color) for text, color in tuple_parts]
 
         text = "".join(coded)
         lines = text.split('\n')

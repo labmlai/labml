@@ -175,7 +175,7 @@ class Writer(WriteBase):
         if url is None:
             return None
 
-        logger.log([('Monitor experiment at ', Text.meta), (url, Text.highlight)])
+        logger.log([(url, Text.link_href), (' Monitor experiment', Text.link_title)])
         if self.web_api.open_browser:
             webbrowser.open(url)
 

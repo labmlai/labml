@@ -5,12 +5,13 @@ from ipywidgets import HTML
 
 from labml.internal.logger import StyleCode
 from labml.internal.logger.destinations import Destination
+from labml.internal.logger.destinations.ipynb import IpynbDestination
 from labml.internal.util import is_kaggle
 
 get_ipython: Callable
 
 
-class IpynbDestination(Destination):
+class IpynbPyCharmDestination(Destination):
     def __init__(self):
         self.__cell_lines = []
         self.__cell_count = 0
@@ -25,26 +26,6 @@ class IpynbDestination(Destination):
         self.__cell_lines = []
 
         return False
-
-    @staticmethod
-    def __html_code(text: str, color: List[StyleCode] or StyleCode or None):
-        """
-        ### Add ansi color codes
-        """
-        if text == '\n':
-            assert color is None
-            return text
-
-        if color is None:
-            return text
-        elif isinstance(color, list):
-            open_tags = ''.join([c.html_open() for c in color])
-            close_tags = ''.join([c.html_close() for c in reversed(color)])
-        else:
-            open_tags = color.html_open()
-            close_tags = color.html_close()
-
-        return open_tags + text + close_tags
 
     def log(self, parts: List[Union[str, Tuple[str, Optional[StyleCode]]]], *,
             is_new_line=True):
@@ -61,7 +42,7 @@ class IpynbDestination(Destination):
                 tuple_parts.append(('\n', None))
             tuple_parts.append((lines[-1], style))
 
-        coded = [self.__html_code(text, color) for text, color in tuple_parts]
+        coded = [IpynbDestination.html_code(text, color) for text, color in tuple_parts]
 
         text = "".join(coded)
         lines = text.split('\n')
