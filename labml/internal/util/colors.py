@@ -53,8 +53,7 @@ _ANSI_CODES = dict(
     bg_bright_cyan=106,
     bg_bright_white=107,
 
-    link_href=4,
-    link_title=34
+    link=4,
 )
 
 ANSI_RESET = "\33[0m"
@@ -75,8 +74,7 @@ _HTML_STYLES = dict(
     cyan=('<span style="color: #60C6C8">', '</span>'),
     white=('<span style="color: #C5C1B4">', '</span>'),
 
-    link_href=("<a href='", "' target='blank'>"),
-    link_title=('', "</a>")
+    link=("<a href='{}' target='blank'>", "</a>"),
 )
 
 
@@ -95,23 +93,23 @@ class StyleCode(Enum):
         else:
             assert False
 
-    def html_open(self):
+    def html_open(self, text: str):
         if self.value is None:
             return ""
         elif type(self.value) == str:
-            return _HTML_STYLES[self.value][0]
+            return _HTML_STYLES[self.value][0].format(text)
         elif type(self.value) == list:
-            return ''.join([_HTML_STYLES[v][0] for v in self.value])
+            return ''.join([_HTML_STYLES[v][0].format(text) for v in self.value])
         else:
             assert False
 
-    def html_close(self):
+    def html_close(self, text):
         if self.value is None:
             return ""
         elif type(self.value) == str:
-            return _HTML_STYLES[self.value][1]
+            return _HTML_STYLES[self.value][1].format(text)
         elif type(self.value) == list:
-            return ''.join([_HTML_STYLES[v][1] for v in reversed(self.value)])
+            return ''.join([_HTML_STYLES[v][1].format(text) for v in reversed(self.value)])
         else:
             assert False
 

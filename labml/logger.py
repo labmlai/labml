@@ -48,8 +48,7 @@ class Text(StyleCode):
     value = Style.bold.value
     highlight = [Style.bold.value, Color.orange.value]
     subtle = [Style.light.value, Color.white.value]
-    link_href = 'link_href'
-    link_title = 'link_title'
+    link = 'link'
 
 
 @overload
