@@ -1,11 +1,12 @@
 import setuptools
+import labml
 
 with open("readme.rst", "r") as f:
     long_description = f.read()
 
 setuptools.setup(
     name='labml',
-    version='0.4.52',
+    version=labml.__version__,
     author="Varuna Jayasiri, Nipun Wijerathne",
     author_email="vpjayasiri@gmail.com, hnipun@gmail.com",
     description="Organize Machine Learning Experiments",

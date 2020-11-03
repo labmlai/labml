@@ -11,6 +11,7 @@ from typing import Dict, Optional
 
 import numpy as np
 
+import labml
 from labml import logger
 from labml.logger import Text
 from labml.utils.notice import labml_notice
@@ -32,6 +33,7 @@ class WebApiThread(threading.Thread):
         self.queue = Queue()
         self.is_stopped = False
         self.warned_updating = False
+        self.error = False
 
     def push(self, data: any):
         self.queue.put(data)
@@ -75,11 +77,20 @@ class WebApiThread(threading.Thread):
             result = json.loads(content)
 
             if result['errors']:
-                err_log = ['LabML App errors\n']
                 for e in result['errors']:
-                    err_log += [(e['error'] + ': ', Text.key),
-                                (e['message'], Text.value)]
-                labml_notice(err_log)
+                    if 'error' in e:
+                        labml_notice(['LabML App Error: ', (e['error'] + '', Text.key), '\n',
+                                      (e['message'], Text.value),
+                                      f'App URL: {self.url}'],
+                                     is_danger=True)
+                        self.error = True
+                        raise RuntimeError('LabML App Error', e)
+                    elif 'warning' in e:
+                        labml_notice(
+                            ['LabML App Warning: ', (e['warning'] + ': ', Text.key), (e['message'], Text.value)])
+                    else:
+                        self.error = True
+                        raise RuntimeError('Unknown error from LabML App', e)
             return result.get('url', None)
         except urllib.error.HTTPError as e:
             labml_notice([f'Failed to send to {self.url}: ',
@@ -113,11 +124,7 @@ class Writer(WriteBase):
         self.configs = None
         self.web_api = lab_singleton().web_api
         self.state = None
-
-        if self.web_api is not None:
-            self.thread = WebApiThread(self.web_api.url, self.web_api.verify_connection)
-        else:
-            self.thread = None
+        self.thread = None
 
     @staticmethod
     def _parse_key(key: str):
@@ -131,6 +138,15 @@ class Writer(WriteBase):
         self.name = name
         self.comment = comment
 
+    def push(self, data):
+        if self.thread is None:
+            url = f'{self.web_api.url}run_uuid={self.run_uuid}&labml_version={labml.__version__}'
+            self.thread = WebApiThread(url, self.web_api.verify_connection)
+
+        self.thread.push(data)
+        if not self.thread.is_alive():
+            self.thread.start()
+
     def set_configs(self, configs: Dict[str, any]):
         self.configs = configs
 
@@ -139,7 +155,6 @@ class Writer(WriteBase):
             return
 
         data = {
-            'run_uuid': self.run_uuid,
             'name': self.name,
             'comment': self.comment,
             'time': time.time(),
@@ -152,10 +167,8 @@ class Writer(WriteBase):
 
         self.last_committed = time.time()
         self.commits_count = 0
-        self.thread.push({'packet': data,
-                          'accept': self._started})
-        if not self.thread.is_alive():
-            self.thread.start()
+
+        self.push({'packet': data, 'accept': self._started})
 
     def save_indicators(self, dot_indicators: Dict[str, Indicator], indicators: Dict[str, Indicator]):
         if self.web_api is None:
@@ -164,12 +177,11 @@ class Writer(WriteBase):
         wildcards = {k: ind.to_dict() for k, ind in dot_indicators.items()}
         inds = {k: ind.to_dict() for k, ind in indicators.items()}
         data = {
-            'run_uuid': self.run_uuid,
             'wildcard_indicators': wildcards,
             'indicators': inds
         }
 
-        self.thread.push({'packet': data})
+        self.push({'packet': data})
 
     def _started(self, url):
         if url is None:
@@ -196,6 +208,9 @@ class Writer(WriteBase):
               indicators: Dict[str, Indicator]):
         if self.web_api is None:
             return
+
+        if self.thread.error:
+            raise RuntimeError('LabML App error: See above for error details')
 
         for ind in indicators.values():
             self._write_indicator(global_step, ind)
@@ -250,8 +265,7 @@ class Writer(WriteBase):
 
         self.indicators = {}
 
-        self.thread.push({'packet': {
-            'run_uuid': self.run_uuid,
+        self.push({'packet': {
             'track': data,
             'status': self.state,
             'time': time.time()

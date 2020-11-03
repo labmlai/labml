@@ -201,22 +201,23 @@ class Experiment:
 
         logger_internal().reset_writers()
 
-        if 'sqlite' in writers:
-            from labml.internal.logger.writers import sqlite
-            logger_internal().add_writer(
-                sqlite.Writer(self.run.sqlite_path, self.run.artifacts_folder))
-        if 'tensorboard' in writers:
-            from labml.internal.logger.writers import tensorboard
-            logger_internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
-        if 'file' in writers:
-            from labml.internal.logger.writers import file
-            logger_internal().add_writer(file.Writer(self.run.log_file))
-        if 'web_api' in writers:
-            from labml.internal.logger.writers import web_api
-            self.web_api = web_api.Writer()
-            logger_internal().add_writer(self.web_api)
-        else:
-            self.web_api = None
+        if not is_evaluate:
+            if 'sqlite' in writers:
+                from labml.internal.logger.writers import sqlite
+                logger_internal().add_writer(
+                    sqlite.Writer(self.run.sqlite_path, self.run.artifacts_folder))
+            if 'tensorboard' in writers:
+                from labml.internal.logger.writers import tensorboard
+                logger_internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
+            if 'file' in writers:
+                from labml.internal.logger.writers import file
+                logger_internal().add_writer(file.Writer(self.run.log_file))
+            if 'web_api' in writers:
+                from labml.internal.logger.writers import web_api
+                self.web_api = web_api.Writer()
+                logger_internal().add_writer(self.web_api)
+            else:
+                self.web_api = None
 
         self.checkpoint_saver = CheckpointSaver(self.run.checkpoint_path)
         self.is_evaluate = is_evaluate
@@ -339,15 +340,15 @@ class Experiment:
             if self.configs_processor is not None:
                 self.configs_processor.save(self.run.configs_path)
 
-            logger_internal().save_indicators(self.run.indicators_path)
+            if self.web_api is not None:
+                self.web_api.set_info(run_uuid=self.run.uuid,
+                                      name=self.name,
+                                      comment=self.run.comment)
+                if self.configs_processor is not None:
+                    self.web_api.set_configs(self.configs_processor.to_json())
+                self.web_api.start()
 
-        if self.web_api is not None:
-            self.web_api.set_info(run_uuid=self.run.uuid,
-                                  name=self.name,
-                                  comment=self.run.comment)
-            if self.configs_processor is not None:
-                self.web_api.set_configs(self.configs_processor.to_json())
-            self.web_api.start()
+            logger_internal().save_indicators(self.run.indicators_path)
 
         if self.configs_processor:
             logger_internal().write_h_parameters(self.configs_processor.get_hyperparams())

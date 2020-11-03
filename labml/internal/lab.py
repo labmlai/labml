@@ -97,7 +97,7 @@ class Lab:
         if self.configs['web_api']:
             web_api_url = self.configs['web_api']
             if web_api_url[0:4] != 'http':
-                web_api_url = f"https://api.lab-ml.com/api/v1/track?labml_token={web_api_url}"
+                web_api_url = f"https://api.lab-ml.com/api/v1/track?labml_token={web_api_url}&"
             self.web_api = WebAPIConfigs(url=web_api_url,
                                          frequency=self.configs['web_api_frequency'],
                                          verify_connection=self.configs['web_api_verify_connection'],
@@ -127,7 +127,7 @@ class Lab:
             experiments_path='logs',
             analytics_path='analytics',
             analytics_templates={},
-            web_api='https://api.lab-ml.com/api/v1/track',
+            web_api='https://api.lab-ml.com/api/v1/track?',
             web_api_frequency=60,
             web_api_verify_connection=True,
             web_api_open_browser=True,
