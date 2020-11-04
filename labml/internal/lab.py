@@ -37,6 +37,10 @@ class Lab:
 
     Lab contains the labml specific properties.
     """
+    experiments: Optional[Path]
+    data_path: Optional[Path]
+    check_repo_dirty: Optional[bool]
+    path: Optional[Path]
     web_api: Optional[WebAPIConfigs]
 
     def __init__(self):
@@ -88,9 +92,9 @@ class Lab:
             self.experiments = None
             self.data_path = None
         else:
-            self.path = PurePath(self.configs['path'])
-            self.data_path = self.path / self.configs['data_path']
-            self.experiments = self.path / self.configs['experiments_path']
+            self.path = Path(self.configs['path'])
+            self.data_path = (self.path / self.configs['data_path']).resolve()
+            self.experiments = (self.path / self.configs['experiments_path']).resolve()
 
         self.check_repo_dirty = self.configs['check_repo_dirty']
         self.indicators = self.configs['indicators']
