@@ -3,9 +3,9 @@ from typing import Dict
 import numpy as np
 
 from labml import logger
-from labml.internal.logger import Writer, Indicator
-from labml.internal.logger.store import Artifact
-from labml.internal.logger.store.indicators.numeric import NumericIndicator
+from .. import Writer, Indicator
+from ..indicators.artifacts import Artifact
+from ..indicators.numeric import NumericIndicator
 from labml.logger import Text
 
 

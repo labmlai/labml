@@ -1,7 +1,7 @@
 from typing import Union, List, Tuple
 
 from labml import logger
-from labml.internal.util.colors import StyleCode
+from labml.internal.logger.colors import StyleCode
 from labml.logger import Text
 
 

@@ -16,9 +16,9 @@ from labml import logger
 from labml.logger import Text
 from labml.utils.notice import labml_notice
 from . import Writer as WriteBase
-from ..store.indicators import Indicator
-from ..store.indicators.numeric import NumericIndicator
-from ...lab import lab_singleton
+from ..indicators import Indicator
+from ..indicators.numeric import NumericIndicator
+from labml.internal.lab import lab_singleton
 
 MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5

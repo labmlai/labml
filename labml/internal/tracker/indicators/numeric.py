@@ -5,7 +5,7 @@ from typing import Dict
 import numpy as np
 
 from . import Indicator
-from ....util.values import to_numpy
+from labml.internal.util.values import to_numpy
 
 
 class NumericIndicator(Indicator, ABC):
