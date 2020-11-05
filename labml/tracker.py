@@ -215,7 +215,7 @@ def namespace(name: str):
     r"""
     Set a namespace for tracking
     """
-    return _internal().store_namespace(name)
+    return _internal().namespace(name)
 
 
 def reset():

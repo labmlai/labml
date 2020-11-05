@@ -16,25 +16,112 @@ from ... import logger
 from ...logger import Text
 
 
-class Store:
+class Tracker:
+    __loop_counter: int
+    __set_looping_indicators: Optional[Callable[[List[Union[str, Tuple[str, Optional[StyleCode]]]]], None]]
+
     dot_indicators: Dict[str, Indicator]
     namespaces: List[Namespace]
     indicators: Dict[str, Indicator]
 
     def __init__(self):
+        self.__store = None
+        self.__writers: List[Writer] = []
+
+        self.__start_global_step: Optional[int] = None
+        self.__global_step: Optional[int] = None
+        self.__last_global_step: Optional[int] = None
+
+        self.__screen_writer = ScreenWriter()
+        self.__writers.append(self.__screen_writer)
+        self.__set_looping_indicators = None
+        self.__loop_counter = 0
+
         self.indicators = {}
         self.dot_indicators = {}
         self.__indicators_file = None
         self.namespaces = []
+        self.is_indicators_updated = True
+        self.reset_store()
+
+    def __assert_name(self, name: str, value: any):
+        if name.endswith("."):
+            if name in self.dot_indicators:
+                assert self.dot_indicators[name].equals(value)
+
+        assert name not in self.indicators, f"{name} already used"
+
+    def add_writer(self, writer: Writer):
+        self.__writers.append(writer)
+
+    def reset_writers(self):
+        self.__writers = []
+        self.__writers.append(self.__screen_writer)
+
+    def write_h_parameters(self, hparams: Dict[str, any]):
+        for w in self.__writers:
+            w.write_h_parameters(hparams)
+
+    def _write_writer(self, writer: Writer, global_step):
+        return writer.write(global_step=global_step,
+                            indicators=self.indicators)
+
+    def clear(self):
+        for k, v in self.indicators.items():
+            v.clear()
+
+    def write(self):
+        global_step = self.global_step
+
+        self.save_indicators()
+
+        for w in self.__writers:
+            if w != self.__screen_writer:
+                self._write_writer(w, global_step)
+        indicators_print = self._write_writer(self.__screen_writer, global_step)
+        self.clear()
+
+        if self.__is_looping:
+            self.__set_looping_indicators(indicators_print)
+        else:
+            parts = [(f"{self.global_step :8,}:  ", Text.highlight)]
+            parts += indicators_print
+            logger.log(parts, is_new_line=False)
+
+    @property
+    def global_step(self) -> int:
+        if self.__global_step is not None:
+            return self.__global_step
+
+        global_step = 0
+        if self.__start_global_step is not None:
+            global_step = self.__start_global_step
+
+        if self.__is_looping:
+            return global_step + self.__loop_counter
+
+        if self.__last_global_step is not None:
+            return self.__last_global_step
+
+        return global_step
+
+    def reset_store(self):
+        self.indicators = {}
+        self.dot_indicators = {}
+        self.__indicators_file = None
+        self.namespaces = []
+        self.is_indicators_updated = True
         try:
             for ind in lab_singleton().indicators:
                 self.add_indicator(load_indicator_from_dict(ind))
         except LabYamlNotfoundError:
             pass
 
+    def add_indicator(self, indicator: Indicator):
+        self.dot_indicators[indicator.name] = indicator
         self.is_indicators_updated = True
 
-    def save_indicators(self, writers: List[Writer], file: Optional[PurePath] = None):
+    def save_indicators(self, file: Optional[PurePath] = None):
         if not self.is_indicators_updated:
             return
         self.is_indicators_updated = False
@@ -51,31 +138,8 @@ class Store:
             file.write(util.yaml_dump({'wildcards': wildcards,
                                        'indicators': inds}))
 
-        for w in writers:
+        for w in self.__writers:
             w.save_indicators(self.dot_indicators, self.indicators)
-
-    def __assert_name(self, name: str, value: any):
-        if name.endswith("."):
-            if name in self.dot_indicators:
-                assert self.dot_indicators[name].equals(value)
-
-        assert name not in self.indicators, f"{name} already used"
-
-    def namespace_enter(self, ns: Namespace):
-        self.namespaces.append(ns)
-
-    def namespace_exit(self, ns: Namespace):
-        if len(self.namespaces) == 0:
-            raise RuntimeError("Impossible")
-
-        if ns is not self.namespaces[-1]:
-            raise RuntimeError("Impossible")
-
-        self.namespaces.pop(-1)
-
-    def add_indicator(self, indicator: Indicator):
-        self.dot_indicators[indicator.name] = indicator
-        self.is_indicators_updated = True
 
     def _create_indicator(self, key: str, value: any):
         if key in self.indicators:
@@ -98,103 +162,20 @@ class Store:
         self._create_indicator(key, value)
         self.indicators[key].collect_value(value)
 
-    def clear(self):
-        for k, v in self.indicators.items():
-            v.clear()
+    def namespace(self, name: str):
+        return Namespace(tracker=self, name=name)
 
-    def write(self, writer: Writer, global_step):
-        return writer.write(global_step=global_step,
-                            indicators=self.indicators)
+    def namespace_enter(self, ns: Namespace):
+        self.namespaces.append(ns)
 
-    def create_namespace(self, name: str):
-        return Namespace(store=self,
-                         name=name)
+    def namespace_exit(self, ns: Namespace):
+        if len(self.namespaces) == 0:
+            raise RuntimeError("Impossible")
 
+        if ns is not self.namespaces[-1]:
+            raise RuntimeError("Impossible")
 
-class Tracker:
-    __loop_counter: int
-    __set_looping_indicators: Optional[Callable[[List[Union[str, Tuple[str, Optional[StyleCode]]]]], None]]
-
-    def __init__(self):
-        self.__store = None
-        self.__writers: List[Writer] = []
-
-        self.__start_global_step: Optional[int] = None
-        self.__global_step: Optional[int] = None
-        self.__last_global_step: Optional[int] = None
-
-        self.__screen_writer = ScreenWriter()
-        self.__writers.append(self.__screen_writer)
-        self.__set_looping_indicators = None
-        self.__loop_counter = 0
-
-    def add_writer(self, writer: Writer):
-        self.__writers.append(writer)
-
-    def reset_writers(self):
-        self.__writers = []
-        self.__writers.append(self.__screen_writer)
-
-    def write_h_parameters(self, hparams: Dict[str, any]):
-        for w in self.__writers:
-            w.write_h_parameters(hparams)
-
-    def write(self):
-        global_step = self.global_step
-
-        self._store.save_indicators(self.__writers)
-
-        for w in self.__writers:
-            if w != self.__screen_writer:
-                self._store.write(w, global_step)
-        indicators_print = self._store.write(self.__screen_writer, global_step)
-        self._store.clear()
-
-        if self.__is_looping:
-            self.__set_looping_indicators(indicators_print)
-        else:
-            parts = [(f"{self.global_step :8,}:  ", Text.highlight)]
-            parts += indicators_print
-            logger.log(parts, is_new_line=False)
-
-    @property
-    def _store(self):
-        if self.__store is None:
-            self.__store = Store()
-
-        return self.__store
-
-    @property
-    def global_step(self) -> int:
-        if self.__global_step is not None:
-            return self.__global_step
-
-        global_step = 0
-        if self.__start_global_step is not None:
-            global_step = self.__start_global_step
-
-        if self.__is_looping:
-            return global_step + self.__loop_counter
-
-        if self.__last_global_step is not None:
-            return self.__last_global_step
-
-        return global_step
-
-    def reset_store(self):
-        self.__store = Store()
-
-    def add_indicator(self, indicator: Indicator):
-        self._store.add_indicator(indicator)
-
-    def save_indicators(self, file: PurePath):
-        self._store.save_indicators(self.__writers, file)
-
-    def store(self, key: str, value: any):
-        self._store.store(key, value)
-
-    def store_namespace(self, name: str):
-        return self._store.create_namespace(name)
+        self.namespaces.pop(-1)
 
     def set_global_step(self, global_step: Optional[int]):
         self.__global_step = global_step

@@ -1,20 +1,20 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from . import Store
+    from . import Tracker
 
 
 class Namespace:
     def __init__(self, *,
-                 store: 'Store',
+                 tracker: 'Trakcer',
                  name: str):
-        self._store = store
+        self.tracker = tracker
         self.name = name
 
     def __enter__(self):
-        self._store.namespace_enter(self)
+        self.tracker.namespace_enter(self)
 
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._store.namespace_exit(self)
+        self.tracker.namespace_exit(self)
