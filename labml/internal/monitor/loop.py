@@ -33,6 +33,7 @@ class Loop:
         self.__looping_sections: Dict[str, LoopingSection] = {}
         self._is_print_iteration_time = is_print_iteration_time
         self._is_track = is_track
+        self._started = False
 
     def __iter__(self):
         self.iterator_iter = iter(self.iterator)
@@ -40,6 +41,7 @@ class Loop:
         self._init_time = 0.
         self._iter_time = 0.
         self._iter_start_step = tracker().global_step
+        self._started = False
         self.monitor.start_loop()
         return self
 
@@ -110,7 +112,7 @@ class Loop:
                     parents: List[str]):
         key = '.'.join(parents + [name])
         if key not in self.__looping_sections:
-            self.__looping_sections[key] = LoopingSection(logger=self.monitor,
+            self.__looping_sections[key] = LoopingSection(monitor=self.monitor,
                                                           name=name,
                                                           is_silent=is_silent,
                                                           is_timed=is_timed,

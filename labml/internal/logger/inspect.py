@@ -1,7 +1,9 @@
 from typing import TYPE_CHECKING, List, Tuple
 
 import numpy as np
-from ...logger import Text, StyleCode
+
+from labml.internal.util.colors import StyleCode
+from ...logger import Text
 
 if TYPE_CHECKING:
     from . import Logger

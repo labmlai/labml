@@ -3,6 +3,7 @@ import time
 from typing import TYPE_CHECKING, List
 
 from labml.logger import Text
+from ..tracker import tracker_singleton as tracker
 
 if TYPE_CHECKING:
     from ..monitor import Monitor
@@ -15,7 +16,7 @@ class Section:
     """
 
     def __init__(self, *,
-                 logger: 'Monitor',
+                 monitor: 'Monitor',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,
@@ -23,7 +24,7 @@ class Section:
                  is_children_silent: bool,
                  total_steps: float):
         self.is_children_silent = is_children_silent
-        self._logger = logger
+        self._monitor = monitor
         self._name = name
         self.is_silent = is_silent
         self._is_timed = is_timed
@@ -63,7 +64,7 @@ class Section:
         if self._is_timed:
             self._start_time = time.time()
 
-        self._logger.section_enter(self)
+        self._monitor.section_enter(self)
 
         return self
 
@@ -79,7 +80,7 @@ class Section:
 
         self.track_progress()
 
-        self._logger.section_exit(self)
+        self._monitor.section_exit(self)
 
     def track_progress(self):
         pass
@@ -109,7 +110,7 @@ class Section:
 
 class OuterSection(Section):
     def __init__(self, *,
-                 logger: 'Monitor',
+                 monitor: 'Monitor',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,
@@ -121,7 +122,7 @@ class OuterSection(Section):
         if is_partial:
             raise RuntimeError("Only sections within the loop can be partial.")
 
-        super().__init__(logger=logger,
+        super().__init__(monitor=monitor,
                          name=name,
                          is_silent=is_silent,
                          is_timed=is_timed,
@@ -177,7 +178,7 @@ class OuterSection(Section):
 
 class LoopingSection(Section):
     def __init__(self, *,
-                 logger: 'Monitor',
+                 monitor: 'Monitor',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,
@@ -185,7 +186,7 @@ class LoopingSection(Section):
                  is_partial: bool,
                  total_steps: float,
                  parents: List[str]):
-        super().__init__(logger=logger,
+        super().__init__(monitor=monitor,
                          name=name,
                          is_silent=is_silent,
                          is_timed=is_timed,
@@ -209,7 +210,7 @@ class LoopingSection(Section):
 
     def track_progress(self):
         name = '.'.join(self._parents + [self._name])
-        self._logger.store(f'time.{name}', self._calc_estimated_time())
+        tracker().store(f'time.{name}', self._calc_estimated_time())
 
     def get_estimated_time(self):
         et = self._estimated_time * self._beta

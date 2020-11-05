@@ -1,6 +1,6 @@
 from typing import List, Union, Tuple, Optional
 
-from labml.internal.logger.colors import StyleCode, ANSI_RESET
+from labml.internal.util.colors import StyleCode, ANSI_RESET
 from labml.internal.logger.destinations import Destination
 
 

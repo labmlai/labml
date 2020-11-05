@@ -11,7 +11,7 @@ from .namespace import Namespace
 from .writers import Writer
 from .writers.screen import ScreenWriter
 from ..logger import LogPart
-from labml.internal.logger.colors import StyleCode
+from labml.internal.util.colors import StyleCode
 from ... import logger
 from ...logger import Text
 

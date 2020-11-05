@@ -13,7 +13,6 @@ from labml.internal.configs.processor_dict import ConfigProcessorDict
 from labml.internal.experiment.experiment_run import Run, struct_time_to_time, struct_time_to_date
 from labml.internal.experiment.watcher import ExperimentWatcher
 from labml.internal.lab import lab_singleton
-from labml.internal.logger import logger_singleton as logger
 from labml.internal.tracker import tracker_singleton as tracker
 from labml.internal.util import is_ipynb, is_colab, is_kaggle
 from labml.logger import Text
