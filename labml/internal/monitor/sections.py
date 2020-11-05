@@ -2,10 +2,10 @@ import math
 import time
 from typing import TYPE_CHECKING, List
 
-from ...logger import Text
+from labml.logger import Text
 
 if TYPE_CHECKING:
-    from . import Logger
+    from ..monitor import Monitor
 
 
 class Section:
@@ -15,7 +15,7 @@ class Section:
     """
 
     def __init__(self, *,
-                 logger: 'Logger',
+                 logger: 'Monitor',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,
@@ -109,7 +109,7 @@ class Section:
 
 class OuterSection(Section):
     def __init__(self, *,
-                 logger: 'Logger',
+                 logger: 'Monitor',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,
@@ -177,7 +177,7 @@ class OuterSection(Section):
 
 class LoopingSection(Section):
     def __init__(self, *,
-                 logger: 'Logger',
+                 logger: 'Monitor',
                  name: str,
                  is_silent: bool,
                  is_timed: bool,

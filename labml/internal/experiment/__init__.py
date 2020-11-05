@@ -13,7 +13,8 @@ from labml.internal.configs.processor_dict import ConfigProcessorDict
 from labml.internal.experiment.experiment_run import Run, struct_time_to_time, struct_time_to_date
 from labml.internal.experiment.watcher import ExperimentWatcher
 from labml.internal.lab import lab_singleton
-from labml.internal.logger import logger_singleton as logger_internal
+from labml.internal.logger import logger_singleton as logger
+from labml.internal.tracker import tracker_singleton as tracker
 from labml.internal.util import is_ipynb, is_colab, is_kaggle
 from labml.logger import Text
 from labml.utils import get_caller_file
@@ -199,23 +200,23 @@ class Experiment:
             self.run.is_dirty = True
             self.run.diff = ''
 
-        logger_internal().reset_writers()
+        tracker().reset_writers()
 
         if not is_evaluate:
             if 'sqlite' in writers:
-                from labml.internal.logger.writers import sqlite
-                logger_internal().add_writer(
+                from labml.internal.tracker.writers import sqlite
+                tracker().add_writer(
                     sqlite.Writer(self.run.sqlite_path, self.run.artifacts_folder))
             if 'tensorboard' in writers:
-                from labml.internal.logger.writers import tensorboard
-                logger_internal().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
+                from labml.internal.tracker.writers import tensorboard
+                tracker().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
             if 'file' in writers:
-                from labml.internal.logger.writers import file
-                logger_internal().add_writer(file.Writer(self.run.log_file))
+                from labml.internal.tracker.writers import file
+                tracker().add_writer(file.Writer(self.run.log_file))
             if 'web_api' in writers:
-                from labml.internal.logger.writers import web_api
+                from labml.internal.tracker.writers import web_api
                 self.web_api = web_api.Writer()
-                logger_internal().add_writer(self.web_api)
+                tracker().add_writer(self.web_api)
             else:
                 self.web_api = None
 
@@ -257,7 +258,7 @@ class Experiment:
         self.checkpoint_saver.load(checkpoint_path)
 
     def save_checkpoint(self):
-        self.checkpoint_saver.save(logger_internal().global_step)
+        self.checkpoint_saver.save(tracker().global_step)
 
     def calc_configs(self,
                      configs: Configs,
@@ -323,7 +324,7 @@ class Experiment:
             global_step = 0
 
         self.run.start_step = global_step
-        logger_internal().set_start_global_step(global_step)
+        tracker().set_start_global_step(global_step)
 
         self.__print_info()
         if self.check_repo_dirty and self.run.is_dirty:
@@ -348,10 +349,10 @@ class Experiment:
                     self.web_api.set_configs(self.configs_processor.to_json())
                 self.web_api.start()
 
-            logger_internal().save_indicators(self.run.indicators_path)
+            tracker().save_indicators(self.run.indicators_path)
 
         if self.configs_processor:
-            logger_internal().write_h_parameters(self.configs_processor.get_hyperparams())
+            tracker().write_h_parameters(self.configs_processor.get_hyperparams())
 
         return ExperimentWatcher(self)
 

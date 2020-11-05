@@ -8,8 +8,8 @@ from typing import Dict, Optional
 import numpy as np
 
 from . import Writer as WriteBase
-from ..store.indicators import Indicator
-from ..store.indicators.numeric import NumericIndicator
+from ..indicators import Indicator
+from ..indicators.numeric import NumericIndicator
 
 MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5

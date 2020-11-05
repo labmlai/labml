@@ -2,16 +2,17 @@ import math
 import time
 from typing import Optional, Dict, TYPE_CHECKING, List, Collection
 
-from labml.internal.logger.sections import LoopingSection
-from ...logger import Text
+from labml.internal.monitor.sections import LoopingSection
+from labml.logger import Text
+from ..tracker import tracker_singleton as tracker
 
 if TYPE_CHECKING:
-    from . import Logger
+    from ..monitor import Monitor
 
 
 class Loop:
     def __init__(self, iterator: Collection, *,
-                 logger: 'Logger',
+                 monitor: 'Monitor',
                  is_track: bool,
                  is_print_iteration_time: bool):
         """
@@ -27,30 +28,26 @@ class Loop:
         self._iter_time = 0.
         self._beta_pow = 1.
         self._beta = 0.9
-        self.counter = 0
-        self.logger = logger
+        self.monitor = monitor
         self.__global_step: Optional[int] = None
         self.__looping_sections: Dict[str, LoopingSection] = {}
         self._is_print_iteration_time = is_print_iteration_time
         self._is_track = is_track
-        self.is_started = False
 
     def __iter__(self):
-        self.is_started = True
         self.iterator_iter = iter(self.iterator)
         self._start_time = time.time()
         self._init_time = 0.
         self._iter_time = 0.
-        self.counter = 0
-        self._iter_start_step = self.logger.global_step
-        self._started = False
+        self._iter_start_step = tracker().global_step
+        self.monitor.start_loop()
         return self
 
     def __next__(self):
         try:
             next_value = next(self.iterator_iter)
         except StopIteration as e:
-            self.logger.finish_loop()
+            self.monitor.finish_loop()
             raise e
 
         now = time.time()
@@ -61,15 +58,15 @@ class Loop:
             self._iter_time *= self._beta
             self._iter_time += (1 - self._beta) * (now - self._iter_start_time)
             if self._is_track:
-                self.logger.store('time.loop',
-                                  (now - self._iter_start_time) /
-                                  max(1, self.logger.global_step - self._iter_start_step))
+                tracker().store('time.loop',
+                                (now - self._iter_start_time) /
+                                max(1, tracker().global_step - self._iter_start_step))
 
         self._iter_start_time = now
-        self._iter_start_step = self.logger.global_step
+        self._iter_start_step = tracker().global_step
         self._started = True
 
-        self.counter = next_value
+        tracker().loop_count(next_value)
 
         return next_value
 
@@ -113,7 +110,7 @@ class Loop:
                     parents: List[str]):
         key = '.'.join(parents + [name])
         if key not in self.__looping_sections:
-            self.__looping_sections[key] = LoopingSection(logger=self.logger,
+            self.__looping_sections[key] = LoopingSection(logger=self.monitor,
                                                           name=name,
                                                           is_silent=is_silent,
                                                           is_timed=is_timed,

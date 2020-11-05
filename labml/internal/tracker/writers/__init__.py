@@ -1,6 +1,6 @@
 from typing import Dict
 
-from labml.internal.logger.store.indicators import Indicator
+from ..indicators import Indicator
 
 
 class Writer:

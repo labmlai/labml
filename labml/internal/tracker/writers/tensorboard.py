@@ -1,12 +1,12 @@
 from pathlib import PurePath
 from typing import Dict
 
-from labml.internal.logger.store.indicators import Indicator
-from labml.internal.logger.store.indicators.artifacts import Image
-from labml.internal.logger.store.indicators.numeric import NumericIndicator
+from ..indicators import Indicator
+from ..indicators.artifacts import Image
+from ..indicators.numeric import NumericIndicator
 
 from . import Writer as WriteBase
-from ...util.tensorboard_writer import get_tensorboard_writer
+from labml.internal.util.tensorboard_writer import get_tensorboard_writer
 
 
 class Writer(WriteBase):

@@ -2,9 +2,9 @@ from typing import List, Union, Tuple, Callable, Optional
 
 from IPython.core.display import display, HTML
 
-from labml.internal.logger import StyleCode
 from labml.internal.logger.destinations import Destination
 from labml.internal.util import is_kaggle
+from labml.internal.logger.colors import StyleCode
 
 get_ipython: Callable
 

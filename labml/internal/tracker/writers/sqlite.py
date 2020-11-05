@@ -4,10 +4,10 @@ from pathlib import PurePath, Path
 from typing import Dict, Optional
 
 import numpy as np
-from ..store.indicators import Indicator
-from ..store.indicators.artifacts import Tensor
-from ..store.indicators.indexed import IndexedIndicator
-from ..store.indicators.numeric import NumericIndicator
+from ..indicators import Indicator
+from ..indicators.artifacts import Tensor
+from ..indicators.indexed import IndexedIndicator
+from ..indicators.numeric import NumericIndicator
 
 from . import Writer as WriteBase
 

@@ -1,7 +1,7 @@
 from typing import Iterable, Sized, Collection
 from typing import Union, Optional, overload
 
-from labml.internal.logger import logger_singleton as _internal
+from labml.internal.monitor import monitor_singleton as _internal
 
 
 def iterate(name, iterable: Union[Iterable, Sized, int],
