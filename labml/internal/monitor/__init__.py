@@ -7,7 +7,7 @@ from .sections import Section, OuterSection
 from ..logger import logger_singleton as logger
 from ..logger.types import LogPart
 from ..tracker import tracker_singleton as tracker
-from labml.internal.logger.colors import StyleCode
+from labml.internal.util.colors import StyleCode
 from ...logger import Text
 
 
@@ -72,7 +72,7 @@ class Monitor:
                 if self.__sections[-1].is_silent or self.__sections[-1].is_children_silent:
                     is_silent = True
                     is_children_silent = True
-            self.__sections.append(OuterSection(logger=self,
+            self.__sections.append(OuterSection(monitor=self,
                                                 name=name,
                                                 is_silent=is_silent,
                                                 is_timed=is_timed,

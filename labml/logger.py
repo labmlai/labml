@@ -1,6 +1,6 @@
 from typing import Union, List, Tuple, overload, Dict
 
-from labml.internal.logger.colors import StyleCode
+from labml.internal.util.colors import StyleCode
 
 
 class Style(StyleCode):

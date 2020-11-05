@@ -3,7 +3,7 @@ from typing import List, Union, Tuple, Callable, Optional
 from IPython.core.display import display
 from ipywidgets import HTML
 
-from labml.internal.logger.colors import StyleCode
+from labml.internal.util.colors import StyleCode
 from labml.internal.logger.destinations import Destination
 from labml.internal.logger.destinations.ipynb import IpynbDestination
 from labml.internal.util import is_kaggle

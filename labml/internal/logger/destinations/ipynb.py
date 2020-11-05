@@ -4,7 +4,7 @@ from IPython.core.display import display, HTML
 
 from labml.internal.logger.destinations import Destination
 from labml.internal.util import is_kaggle
-from labml.internal.logger.colors import StyleCode
+from labml.internal.util.colors import StyleCode
 
 get_ipython: Callable
 
