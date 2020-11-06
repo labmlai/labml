@@ -143,9 +143,6 @@ class Calculator:
 
     def __topological_sort(self, keys: List[str]):
         for k in keys:
-            assert k not in self.is_top_sorted
-
-        for k in keys:
             self.__add_to_stack(k, None)
             self.__dfs()
 

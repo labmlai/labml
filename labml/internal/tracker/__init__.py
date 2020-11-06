@@ -191,7 +191,7 @@ class Tracker:
 
     @property
     def __is_looping(self):
-        return self.__set_looping_indicators is None
+        return self.__set_looping_indicators is not None
 
     def start_loop(self, set_looping_indicators: Callable[[List[LogPart]], None]):
         self.__set_looping_indicators = set_looping_indicators
