@@ -81,6 +81,14 @@ class CheckpointSaver:
         ## Load model as a set of numpy arrays
         """
 
+        if not self.model_savers:
+            if not self.__no_savers_warned:
+                labml_notice(["No models were registered for loading or saving\n",
+                              "You can register models with ",
+                              ('experiment.add_pytorch_models', Text.value)])
+                self.__no_savers_warned = True
+            return
+
         if not models:
             models = list(self.model_savers.keys())
 
