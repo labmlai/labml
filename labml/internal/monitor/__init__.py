@@ -31,7 +31,8 @@ class Monitor:
                 total_steps: Optional[int], *,
                 is_silent: bool,
                 is_children_silent: bool,
-                is_timed: bool):
+                is_timed: bool,
+                section: Optional[Section]):
         return Iterator(logger=self,
                         name=name,
                         iterable=iterable,
@@ -39,12 +40,14 @@ class Monitor:
                         is_timed=is_timed,
                         total_steps=total_steps,
                         is_children_silent=is_children_silent,
-                        is_enumerate=False)
+                        is_enumerate=False,
+                        section=section)
 
     def enum(self, name, iterable: typing.Sized, *,
              is_silent: bool,
              is_children_silent: bool,
-             is_timed: bool):
+             is_timed: bool,
+             section: Optional[Section]):
         return Iterator(logger=self,
                         name=name,
                         iterable=iterable,
@@ -52,7 +55,8 @@ class Monitor:
                         is_timed=is_timed,
                         total_steps=None,
                         is_children_silent=is_children_silent,
-                        is_enumerate=True)
+                        is_enumerate=True,
+                        section=section)
 
     def section(self, name, *,
                 is_silent: bool,
@@ -60,8 +64,7 @@ class Monitor:
                 is_partial: bool,
                 is_new_line: bool,
                 is_children_silent: bool,
-                total_steps: float):
-
+                total_steps: float) -> Section:
         if self.__is_looping:
             if len(self.__sections) != 0:
                 is_silent = True

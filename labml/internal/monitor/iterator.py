@@ -25,7 +25,8 @@ class Iterator:
                  is_timed: bool,
                  total_steps: Optional[int],
                  is_children_silent: bool,
-                 is_enumerate: bool):
+                 is_enumerate: bool,
+                 section: Optional[Section]):
         if is_enumerate:
             total_steps = len(iterable)
             iterable = enumerate(iterable)
@@ -42,10 +43,11 @@ class Iterator:
         self._iterable: Iterable = iterable
         self._iterator = Optional[typing.Iterator]
         self._total_steps = total_steps
-        self._section = None
+        self._section = section
         self._is_silent = is_silent
         self._is_timed = is_timed
         self._counter = -1
+        self.is_section_specified = section is not None
 
     def get_estimated_time(self) -> float:
         if self._section:
@@ -54,16 +56,18 @@ class Iterator:
             return 0
 
     def __iter__(self):
-        self._section = self._logger.section(
-            self._name,
-            is_silent=self._is_silent,
-            is_timed=self._is_timed,
-            is_partial=False,
-            total_steps=self._total_steps,
-            is_children_silent=self.is_children_silent,
-            is_new_line=True)
+        if not self.is_section_specified:
+            self._section = self._logger.section(
+                self._name,
+                is_silent=self._is_silent,
+                is_timed=self._is_timed,
+                is_partial=False,
+                total_steps=self._total_steps,
+                is_children_silent=self.is_children_silent,
+                is_new_line=True)
         self._iterator = iter(self._iterable)
-        self._section.__enter__()
+        if not self.is_section_specified:
+            self._section.__enter__()
 
         return self
 
@@ -73,7 +77,8 @@ class Iterator:
             self._logger.progress(self._counter)
             next_value = next(self._iterator)
         except StopIteration as e:
-            self._section.__exit__(None, None, None)
+            if not self.is_section_specified:
+                self._section.__exit__(None, None, None)
             raise e
 
         return next_value

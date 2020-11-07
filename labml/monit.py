@@ -6,27 +6,31 @@ from labml.internal.monitor import monitor_singleton as _internal
 
 def clear():
     _internal().clear()
-    
+
 
 def iterate(name, iterable: Union[Iterable, Sized, int],
             total_steps: Optional[int] = None, *,
             is_silent: bool = False,
             is_children_silent: bool = False,
-            is_timed: bool = True):
+            is_timed: bool = True,
+            context=None):
     return _internal().iterate(name, iterable, total_steps,
                                is_silent=is_silent,
                                is_children_silent=is_children_silent,
-                               is_timed=is_timed)
+                               is_timed=is_timed,
+                               section=context)
 
 
 def enum(name, iterable: Sized, *,
          is_silent: bool = False,
          is_children_silent: bool = False,
-         is_timed: bool = True):
+         is_timed: bool = True,
+         context=None):
     return _internal().enum(name, iterable,
                             is_silent=is_silent,
                             is_children_silent=is_children_silent,
-                            is_timed=is_timed)
+                            is_timed=is_timed,
+                            section=context)
 
 
 def section(name, *,
