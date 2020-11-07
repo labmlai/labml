@@ -1,24 +1,24 @@
-from pathlib import PurePath
+from pathlib import PurePath, Path
 from typing import Dict
 
 from labml.internal.lab import lab_singleton as _internal
 
 
-def get_path() -> PurePath:
+def get_path() -> Path:
     r"""
     Get the path to the root of the project
     """
     return _internal().path
 
 
-def get_data_path() -> PurePath:
+def get_data_path() -> Path:
     r"""
     Get the path to the data folder
     """
     return _internal().data_path
 
 
-def get_experiments_path() -> PurePath:
+def get_experiments_path() -> Path:
     r"""
     Get the path to the root of experiment logs
     """
