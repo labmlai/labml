@@ -40,6 +40,10 @@ class CheckpointSaver:
         """
         ## Set variable for saving and loading
         """
+        if experiment_singleton().is_started:
+            raise RuntimeError('Cannot register models with the experiment after experiment has started.'
+                               'Register models before calling experiment.start')
+
         self.model_savers.update(models)
 
     def save(self, global_step):
@@ -128,6 +132,7 @@ class Experiment:
             automatically determining ``python_file``
         tags (Set[str], optional): Set of tags for experiment
     """
+    is_started: bool
     run: Run
     configs_processor: Optional[ConfigProcessor]
 
@@ -221,6 +226,7 @@ class Experiment:
 
         self.checkpoint_saver = CheckpointSaver(self.run.checkpoint_path)
         self.is_evaluate = is_evaluate
+        self.is_started = False
 
     def __print_info(self):
         """
@@ -353,6 +359,7 @@ class Experiment:
         if self.configs_processor:
             tracker().write_h_parameters(self.configs_processor.get_hyperparams())
 
+        self.is_started = True
         return ExperimentWatcher(self)
 
     def finish(self, status: str, details: any = None):
