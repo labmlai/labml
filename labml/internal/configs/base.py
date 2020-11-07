@@ -131,19 +131,6 @@ class Configs:
             cls._setups[n].append(calc)
 
     @classmethod
-    def _calc(cls,
-              name: Union[ConfigItem, List[ConfigItem]] = None,
-              option: Optional[str] = None,
-              pass_params: Optional[List[ConfigItem]] = None):
-
-        def wrapper(func: Callable):
-            cls._add_config_function(func, name, option, pass_params)
-
-            return func
-
-        return wrapper
-
-    @classmethod
     def calc_wrap(cls, func: Callable,
                   name: Union[ConfigItem, List[ConfigItem]],
                   option_name: Optional[str] = None,
@@ -168,7 +155,13 @@ class Configs:
              name: Union[ConfigItem, List[ConfigItem]] = None,
              option_name: Optional[str] = None,
              pass_params: Optional[List[ConfigItem]] = None):
-        return cls._calc(name, option_name, pass_params)
+
+        def wrapper(func: Callable):
+            cls._add_config_function(func, name, option_name, pass_params)
+
+            return func
+
+        return wrapper
 
     @classmethod
     def set_hyperparams(cls, *args: ConfigItem, is_hyperparam=True):
