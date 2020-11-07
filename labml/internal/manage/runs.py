@@ -35,7 +35,7 @@ def get_runs_by_experiment_path(exp_path: Path) -> Generator[Path, None, None]:
         yield run_path
 
 
-def get_checkpoints_by_path(run_path: Path) -> Generator[Path, None, None]:
+def get_checkpoints(run_path: Path) -> Generator[Path, None, None]:
     checkpoints_path = run_path / "checkpoints"
     if not checkpoints_path.exists():
         return
@@ -44,14 +44,23 @@ def get_checkpoints_by_path(run_path: Path) -> Generator[Path, None, None]:
         yield chk_path
 
 
-def get_checkpoints_by_uuid(run_uuid: str) -> Generator[Path, None, None]:
-    run_path = get_run_by_uuid(run_uuid)
-    if run_path is None:
-        return
+def remove_run(run_path: Path):
+    from labml.internal.util import rm_tree
+    rm_tree(run_path)
 
-    return get_checkpoints_by_path(run_path)
+
+# ===TESTS===
+def _test_checkpoints_by_uuid(run_uuid: str):
+    run_path = get_run_by_uuid(run_uuid)
+    inspect(list(get_checkpoints(run_path)))
+
+
+def _test_remove_run_by_uuid(run_uuid: str):
+    run_path = get_run_by_uuid(run_uuid)
+    remove_run(run_path)
 
 
 if __name__ == '__main__':
-    # inspect(get_runs())
-    inspect(list(get_checkpoints_by_uuid('794ca6f21c1f11ebba97acde48001122')))
+    inspect(list(get_runs()))
+    # _test_checkpoints_by_uuid('794ca6f21c1f11ebba97acde48001122')
+    # _test_remove_run_by_uuid('1443e69c1c2111eb8e8bacde48001122')

@@ -6,9 +6,8 @@ import numpy as np
 
 from labml import logger
 from labml.internal.configs.processor import load_configs
-from labml.internal.lab import lab_singleton
 from .. import util
-from ..manage.runs import get_run_by_uuid, get_checkpoints_by_path
+from ..manage.runs import get_run_by_uuid, get_checkpoints
 from ...logger import Text
 from ...utils.notice import labml_notice
 
@@ -206,7 +205,7 @@ class Run(RunInfo):
 
 
 def _get_run_checkpoint(run_path: Path, checkpoint: int = -1):
-    checkpoints = list(get_checkpoints_by_path(run_path))
+    checkpoints = list(get_checkpoints(run_path))
     if not checkpoints:
         return None
 
