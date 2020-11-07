@@ -364,8 +364,9 @@ class Experiment:
 
             tracker().save_indicators(self.run.indicators_path)
 
-        if self.configs_processor:
-            tracker().write_h_parameters(self.configs_processor.get_hyperparams())
+            if self.configs_processor:
+                # PERF: Writing to tensorboard takes about 4 seconds
+                tracker().write_h_parameters(self.configs_processor.get_hyperparams())
 
         self.is_started = True
         return ExperimentWatcher(self)
