@@ -1,4 +1,5 @@
-from typing import Iterable, Sized, Collection
+import functools
+from typing import Iterable, Sized, Collection, Callable
 from typing import Union, Optional, overload
 
 from labml.internal.monitor import monitor_singleton as _internal
@@ -6,6 +7,30 @@ from labml.internal.monitor import monitor_singleton as _internal
 
 def clear():
     _internal().clear()
+
+
+def func(name, *,
+         is_silent: bool = False,
+         is_timed: bool = True,
+         is_partial: bool = False,
+         is_new_line: bool = True,
+         is_children_silent: bool = False,
+         total_steps: float = 1.0):
+    def decorator_func(f: Callable):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            with section(name,
+                         is_silent=is_silent,
+                         is_timed=is_timed,
+                         is_partial=is_partial,
+                         is_new_line=is_new_line,
+                         is_children_silent=is_children_silent,
+                         total_steps=total_steps):
+                f(*args, **kwargs)
+
+        return wrapper
+
+    return decorator_func
 
 
 def iterate(name, iterable: Union[Iterable, Sized, int],
