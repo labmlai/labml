@@ -4,6 +4,10 @@ from typing import Union, Optional, overload
 from labml.internal.monitor import monitor_singleton as _internal
 
 
+def clear():
+    _internal().clear()
+    
+
 def iterate(name, iterable: Union[Iterable, Sized, int],
             total_steps: Optional[int] = None, *,
             is_silent: bool = False,

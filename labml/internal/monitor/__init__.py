@@ -21,6 +21,12 @@ class Monitor:
         self.__is_looping = False
         self.__loop_indicators = []
 
+    def clear(self):
+        self.__loop: Optional[Loop] = None
+        self.__sections: List[Section] = []
+        self.__is_looping = False
+        self.__loop_indicators = []
+
     def iterate(self, name, iterable: Union[typing.Iterable, typing.Sized, int],
                 total_steps: Optional[int], *,
                 is_silent: bool,
