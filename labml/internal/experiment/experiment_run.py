@@ -8,6 +8,7 @@ from labml import logger
 from labml.internal.configs.processor import load_configs
 from labml.internal.lab import lab_singleton
 from .. import util
+from ..manage.runs import get_run_by_uuid, get_checkpoints_by_path
 from ...logger import Text
 from ...utils.notice import labml_notice
 
@@ -204,47 +205,21 @@ class Run(RunInfo):
                 f.write(self.diff)
 
 
-def get_checkpoints(run_path: PurePath):
-    checkpoint_path = Path(run_path / "checkpoints")
-    if not checkpoint_path.exists():
-        return set()
-
-    return {int(child.name) for child in Path(checkpoint_path).iterdir()}
-
-
-def get_runs(experiment_path: PurePath):
-    return {child.name for child in Path(experiment_path).iterdir()}
-
-
-def get_experiments(experiments_path: PurePath):
-    return {child.name
-            for child in Path(experiments_path).iterdir()
-            if not child.name.startswith('_')}
-
-
-def find_experiment(run_uuid: str) -> Optional[str]:
-    experiments_path = lab_singleton().experiments
-    experiments = get_experiments(experiments_path)
-    for exp_name in experiments:
-        run_path = experiments_path / exp_name / run_uuid
-        if Path(run_path).exists():
-            return exp_name
-
-    return None
-
-
-def _get_run_checkpoint(run_path: PurePath, checkpoint: int = -1):
-    checkpoints = get_checkpoints(run_path)
-    if len(checkpoints) == 0:
+def _get_run_checkpoint(run_path: Path, checkpoint: int = -1):
+    checkpoints = list(get_checkpoints_by_path(run_path))
+    if not checkpoints:
         return None
 
+    checkpoint_steps = [c.name for c in checkpoints]
     if checkpoint < 0:
-        required_ci = np.max(list(checkpoints)) + checkpoint + 1
+        required_ci = np.max(checkpoint_steps) + checkpoint + 1
     else:
         required_ci = checkpoint
 
+    checkpoint_steps = set(checkpoint_steps)
+
     for ci in range(required_ci, -1, -1):
-        if ci not in checkpoints:
+        if ci not in checkpoint_steps:
             continue
 
         return ci
@@ -252,15 +227,12 @@ def _get_run_checkpoint(run_path: PurePath, checkpoint: int = -1):
 
 def get_run_checkpoint(run_uuid: str,
                        checkpoint: int = -1):
-    exp_name = find_experiment(run_uuid)
-    if exp_name is None:
+    run_path = get_run_by_uuid(run_uuid)
+    if run_path is None:
         logger.log("Couldn't find a previous run")
         return None, None
 
-    run_path = lab_singleton().experiments / exp_name / run_uuid
-
-    checkpoint = _get_run_checkpoint(run_path,
-                                     checkpoint)
+    checkpoint = _get_run_checkpoint(run_path, checkpoint)
 
     if checkpoint is None:
         logger.log("Couldn't find checkpoints")
@@ -269,7 +241,7 @@ def get_run_checkpoint(run_uuid: str,
     logger.log(["Selected ",
                 ("experiment", Text.key),
                 " = ",
-                (exp_name, Text.value),
+                (run_path.parent.name, Text.value),
                 " ",
                 ("run", Text.key),
                 " = ",
@@ -284,13 +256,12 @@ def get_run_checkpoint(run_uuid: str,
 
 
 def get_configs(run_uuid: str):
-    exp_name = find_experiment(run_uuid)
-    if exp_name is None:
+    run_path = get_run_by_uuid(run_uuid)
+    if run_path is None:
         labml_notice(["Couldn't find a previous run to load configurations: ",
                       (run_uuid, Text.value)], is_danger=True)
         return None
 
-    run_path = lab_singleton().experiments / exp_name / run_uuid
     configs_path = run_path / "configs.yaml"
     configs = load_configs(configs_path)
 

@@ -191,8 +191,7 @@ class ConfigProcessor:
         logger.log()
 
 
-def load_configs(configs_path: PurePath):
-    configs_path = Path(configs_path)
+def load_configs(configs_path: Path):
     if not configs_path.exists():
         return None
 
