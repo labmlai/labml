@@ -1,5 +1,5 @@
 import time
-from pathlib import Path, PurePath
+from pathlib import Path
 from typing import List, Dict, Optional
 
 import numpy as np
@@ -39,7 +39,7 @@ class RunInfo:
                  commit: Optional[str] = None,
                  commit_message: Optional[str] = None,
                  is_dirty: bool = True,
-                 experiment_path: PurePath,
+                 experiment_path: Path,
                  start_step: int = 0,
                  notes: str = '',
                  load_run: Optional[str] = None,
@@ -59,6 +59,7 @@ class RunInfo:
 
         self.experiment_path = experiment_path
         self.run_path = experiment_path / str(uuid)
+        self.pids_path = self.run_path / 'pids'
         self.checkpoint_path = self.run_path / "checkpoints"
         self.numpy_path = self.run_path / "numpy"
 
@@ -77,7 +78,7 @@ class RunInfo:
         self.tags = tags
 
     @classmethod
-    def from_dict(cls, experiment_path: PurePath, data: Dict[str, any]):
+    def from_dict(cls, experiment_path: Path, data: Dict[str, any]):
         """
         ## Create a new trial from a dictionary
         """
@@ -168,7 +169,7 @@ class Run(RunInfo):
                  commit: Optional[str] = None,
                  commit_message: Optional[str] = None,
                  is_dirty: bool = True,
-                 experiment_path: PurePath,
+                 experiment_path: Path,
                  start_step: int = 0,
                  notes: str = '',
                  tags: List[str]):
@@ -179,7 +180,7 @@ class Run(RunInfo):
 
     @classmethod
     def create(cls, *,
-               experiment_path: PurePath,
+               experiment_path: Path,
                python_file: str,
                trial_time: time.struct_time,
                name: str,

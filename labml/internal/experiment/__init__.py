@@ -315,16 +315,24 @@ class Experiment:
                     checkpoint: Optional[int] = None):
         if checkpoint is None:
             checkpoint = -1
-        checkpoint_path, global_step = experiment_run.get_run_checkpoint(
-            run_uuid,
-            checkpoint)
+        checkpoint_path, global_step = experiment_run.get_run_checkpoint(run_uuid, checkpoint)
 
         if global_step is None:
             labml_notice(['Could not find saved checkpoint'], is_danger=True)
             return
 
         with monit.section("Loading checkpoint"):
-            _ = self.checkpoint_saver.load(checkpoint_path, models)
+            self.checkpoint_saver.load(checkpoint_path, models)
+
+    def _save_pid(self):
+        if not self.run.pids_path.exists():
+            self.run.pids_path.mkdir()
+
+        pid_path = self.run.pids_path / '0.pid'
+        assert not pid_path.exists()
+
+        with open(str(pid_path), 'w') as f:
+            f.write(f'{os.getpid()}')
 
     def start(self, *,
               run_uuid: Optional[str] = None,
@@ -350,6 +358,7 @@ class Experiment:
 
         if not self.is_evaluate:
             self.run.save_info()
+            self._save_pid()
 
             if self.configs_processor is not None:
                 self.configs_processor.save(self.run.configs_path)
