@@ -258,9 +258,9 @@ class Inspect:
         elif len(args) == 1:
             assert len(kwargs.keys()) == 0
             arg = args[0]
-            if type(arg) == list:
+            if isinstance(arg, list):
                 self._log_key_value([(i, v) for i, v in enumerate(arg)])
-            elif type(arg) == dict:
+            elif isinstance(arg, dict):
                 keys = list(arg.keys())
                 keys.sort()
                 self._log_key_value([(k, arg[k]) for k in keys])
