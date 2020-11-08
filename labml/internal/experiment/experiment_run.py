@@ -34,6 +34,7 @@ class RunInfo:
                  python_file: str,
                  trial_date: str,
                  trial_time: str,
+                 name: str,
                  comment: str,
                  commit: Optional[str] = None,
                  commit_message: Optional[str] = None,
@@ -43,6 +44,7 @@ class RunInfo:
                  notes: str = '',
                  load_run: Optional[str] = None,
                  tags: List[str]):
+        self.name = name
         self.uuid = uuid
         self.commit = commit
         self.is_dirty = is_dirty
@@ -88,6 +90,7 @@ class RunInfo:
         ## Convert trial to a dictionary for saving
         """
         return dict(
+            name=self.name,
             uuid=self.uuid,
             python_file=self.python_file,
             trial_date=self.trial_date,
@@ -160,6 +163,7 @@ class Run(RunInfo):
                  python_file: str,
                  trial_date: str,
                  trial_time: str,
+                 name: str,
                  comment: str,
                  commit: Optional[str] = None,
                  commit_message: Optional[str] = None,
@@ -169,7 +173,7 @@ class Run(RunInfo):
                  notes: str = '',
                  tags: List[str]):
         super().__init__(python_file=python_file, trial_date=trial_date, trial_time=trial_time,
-                         comment=comment, uuid=uuid, experiment_path=experiment_path,
+                         name=name, comment=comment, uuid=uuid, experiment_path=experiment_path,
                          commit=commit, commit_message=commit_message, is_dirty=is_dirty,
                          start_step=start_step, notes=notes, tags=tags)
 
@@ -178,6 +182,7 @@ class Run(RunInfo):
                experiment_path: PurePath,
                python_file: str,
                trial_time: time.struct_time,
+               name: str,
                comment: str,
                tags: List[str]):
         """
@@ -188,6 +193,7 @@ class Run(RunInfo):
                    trial_time=struct_time_to_time(trial_time),
                    uuid=_generate_uuid(),
                    experiment_path=experiment_path,
+                   name=name,
                    comment=comment,
                    tags=tags)
 

@@ -179,7 +179,6 @@ class Experiment:
         if global_params_singleton().comment is not None:
             comment = global_params_singleton().comment
 
-        self.name = name
         self.experiment_path = lab_singleton().experiments / name
 
         self.check_repo_dirty = lab_singleton().check_repo_dirty
@@ -193,6 +192,7 @@ class Experiment:
             experiment_path=self.experiment_path,
             python_file=python_file,
             trial_time=time.localtime(),
+            name=name,
             comment=comment,
             tags=list(tags))
 
@@ -243,7 +243,7 @@ class Experiment:
 
         logger.log()
         logger.log([
-            (self.name, Text.title),
+            (self.run.name, Text.title),
             ': ',
             (str(self.run.uuid), Text.meta)
         ])
@@ -356,7 +356,7 @@ class Experiment:
 
             if self.web_api is not None:
                 self.web_api.set_info(run_uuid=self.run.uuid,
-                                      name=self.name,
+                                      name=self.run.name,
                                       comment=self.run.comment)
                 if self.configs_processor is not None:
                     self.web_api.set_configs(self.configs_processor.to_json())
