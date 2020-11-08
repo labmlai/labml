@@ -209,7 +209,7 @@ def _get_run_checkpoint(run_path: Path, checkpoint: int = -1):
     if not checkpoints:
         return None
 
-    checkpoint_steps = [c.name for c in checkpoints]
+    checkpoint_steps = [int(c.name) for c in checkpoints]
     if checkpoint < 0:
         required_ci = np.max(checkpoint_steps) + checkpoint + 1
     else:
