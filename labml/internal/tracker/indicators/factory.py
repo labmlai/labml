@@ -38,7 +38,7 @@ def create_default_indicator(name: str, value: any, is_print: bool):
         elif isinstance(value, torch.Tensor):
             return Scalar(name, is_print)
         elif isinstance(value, torch.nn.Module):
-            from labml.internal.store.indicators import PyTorchModule
+            from labml.internal.tracker.indicators.aggregate import PyTorchModule
             return PyTorchModule(name, is_print)
 
     raise ValueError(f"Unknown type {type(value)}")
