@@ -13,12 +13,12 @@ import numpy as np
 
 import labml
 from labml import logger
+from labml.internal.lab import lab_singleton
 from labml.logger import Text
 from labml.utils.notice import labml_notice
 from . import Writer as WriteBase
 from ..indicators import Indicator
 from ..indicators.numeric import NumericIndicator
-from labml.internal.lab import lab_singleton
 
 MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5
@@ -103,6 +103,10 @@ class WebApiThread(threading.Thread):
             return None
         except socket.timeout as e:
             labml_notice([f'{self.url} timeout\n',
+                          str(e)])
+            return None
+        except ConnectionResetError as e:
+            labml_notice([f'Connection reset by LabML App server {self.url}\n',
                           str(e)])
             return None
 
