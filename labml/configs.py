@@ -115,7 +115,6 @@ def setup(name: Union[any, List[any]], option_name: Optional[str] = None):
     if config_class is None:
         raise ConfigsError('You need to pass config items to option')
 
-    option_name = None
     return config_class.setup(name, option_name)
 
 
