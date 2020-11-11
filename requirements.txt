@@ -7,5 +7,4 @@ torch
 torchvision
 pandas
 matplotlib
-joblib
 altair
