@@ -32,8 +32,6 @@ class Tracker:
         self.__global_step: Optional[int] = None
         self.__last_global_step: Optional[int] = None
 
-        self.__screen_writer = ScreenWriter()
-        self.__writers.append(self.__screen_writer)
         self.__set_looping_indicators = None
         self.__loop_counter = 0
 
@@ -56,7 +54,6 @@ class Tracker:
 
     def reset_writers(self):
         self.__writers = []
-        self.__writers.append(self.__screen_writer)
 
     def write_h_parameters(self, hparams: Dict[str, any]):
         for w in self.__writers:
@@ -75,18 +72,22 @@ class Tracker:
 
         self.save_indicators()
 
+        indicators_print = None
+
         for w in self.__writers:
-            if w != self.__screen_writer:
+            if isinstance(w, ScreenWriter):
+                indicators_print = self._write_writer(w, global_step)
+            else:
                 self._write_writer(w, global_step)
-        indicators_print = self._write_writer(self.__screen_writer, global_step)
         self.clear()
 
-        if self.__is_looping:
-            self.__set_looping_indicators(indicators_print)
-        else:
-            parts = [(f"{self.global_step :8,}:  ", Text.highlight)]
-            parts += indicators_print
-            logger.log(parts, is_new_line=False)
+        if indicators_print is not None:
+            if self.__is_looping:
+                self.__set_looping_indicators(indicators_print)
+            else:
+                parts = [(f"{self.global_step :8,}:  ", Text.highlight)]
+                parts += indicators_print
+                logger.log(parts, is_new_line=False)
 
     @property
     def global_step(self) -> int:
@@ -161,6 +162,11 @@ class Tracker:
 
         self._create_indicator(key, value)
         self.indicators[key].collect_value(value)
+
+    def new_line(self):
+        for w in self.__writers:
+            if isinstance(w, ScreenWriter):
+                logger.log()
 
     def namespace(self, name: str):
         return Namespace(tracker=self, name=name)

@@ -23,11 +23,6 @@ def struct_time_to_date(t: time.struct_time):
 _GLOBAL_STEP = 'global_step'
 
 
-def _generate_uuid() -> str:
-    from uuid import uuid1
-    return uuid1().hex
-
-
 class RunInfo:
     def __init__(self, *,
                  uuid: str,
@@ -180,6 +175,7 @@ class Run(RunInfo):
 
     @classmethod
     def create(cls, *,
+               uuid: str,
                experiment_path: Path,
                python_file: str,
                trial_time: time.struct_time,
@@ -192,16 +188,19 @@ class Run(RunInfo):
         return cls(python_file=python_file,
                    trial_date=struct_time_to_date(trial_time),
                    trial_time=struct_time_to_time(trial_time),
-                   uuid=_generate_uuid(),
+                   uuid=uuid,
                    experiment_path=experiment_path,
                    name=name,
                    comment=comment,
                    tags=tags)
 
-    def save_info(self):
+    def make_path(self):
         run_path = Path(self.run_path)
         if not run_path.exists():
             run_path.mkdir(parents=True)
+
+    def save_info(self):
+        self.make_path()
 
         with open(str(self.info_path), "w") as file:
             file.write(util.yaml_dump(self.to_dict()))

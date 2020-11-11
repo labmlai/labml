@@ -148,7 +148,11 @@ class Experiment:
     check_repo_dirty: bool
     checkpoint_saver: CheckpointSaver
 
+    distributed_rank: int
+    distributed_world_size: int
+
     def __init__(self, *,
+                 uuid: str,
                  name: Optional[str],
                  python_file: Optional[str],
                  comment: Optional[str],
@@ -189,6 +193,7 @@ class Experiment:
             tags = set(name.split('_'))
 
         self.run = Run.create(
+            uuid=uuid,
             experiment_path=self.experiment_path,
             python_file=python_file,
             trial_time=time.localtime(),
@@ -212,29 +217,13 @@ class Experiment:
             self.run.is_dirty = True
             self.run.diff = ''
 
-        tracker().reset_writers()
-
-        if not is_evaluate:
-            if 'sqlite' in writers:
-                from labml.internal.tracker.writers import sqlite
-                tracker().add_writer(
-                    sqlite.Writer(self.run.sqlite_path, self.run.artifacts_folder))
-            if 'tensorboard' in writers:
-                from labml.internal.tracker.writers import tensorboard
-                tracker().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
-            if 'file' in writers:
-                from labml.internal.tracker.writers import file
-                tracker().add_writer(file.Writer(self.run.log_file))
-            if 'web_api' in writers:
-                from labml.internal.tracker.writers import web_api
-                self.web_api = web_api.Writer()
-                tracker().add_writer(self.web_api)
-            else:
-                self.web_api = None
-
         self.checkpoint_saver = CheckpointSaver(self.run.checkpoint_path)
         self.is_evaluate = is_evaluate
+        self.web_api = None
+        self.writers = writers
         self.is_started = False
+        self.distributed_rank = 0
+        self.distributed_world_size = -1
 
     def __print_info(self):
         """
@@ -285,7 +274,8 @@ class Experiment:
         self.configs_processor = ConfigProcessor(configs, configs_override)
         self.configs_processor(run_order)
 
-        logger.log()
+        if self.distributed_rank == 0:
+            logger.log()
 
     def calc_configs_dict(self,
                           configs: Dict[str, any],
@@ -293,7 +283,8 @@ class Experiment:
         self.configs_processor = ConfigProcessorDict(configs, configs_override)
         self.configs_processor()
 
-        logger.log()
+        if self.distributed_rank == 0:
+            logger.log()
 
     def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):
         checkpoint_path, global_step = experiment_run.get_run_checkpoint(
@@ -328,11 +319,50 @@ class Experiment:
         if not self.run.pids_path.exists():
             self.run.pids_path.mkdir()
 
-        pid_path = self.run.pids_path / '0.pid'
+        pid_path = self.run.pids_path / f'{self.distributed_rank}.pid'
         assert not pid_path.exists()
 
         with open(str(pid_path), 'w') as f:
             f.write(f'{os.getpid()}')
+
+    def distributed(self, rank: int, world_size: int):
+        self.distributed_rank = rank
+        self.distributed_world_size = world_size
+
+        # to make sure we have the path to save pid
+        self.run.make_path()
+
+    def _start_tracker(self):
+        tracker().reset_writers()
+
+        if self.is_evaluate:
+            return
+
+        if self.distributed_rank != 0:
+            return
+
+        if 'screen' in self.writers:
+            from labml.internal.tracker.writers import screen
+            tracker().add_writer(screen.ScreenWriter())
+
+        if 'sqlite' in self.writers:
+            from labml.internal.tracker.writers import sqlite
+            tracker().add_writer(sqlite.Writer(self.run.sqlite_path, self.run.artifacts_folder))
+
+        if 'tensorboard' in self.writers:
+            from labml.internal.tracker.writers import tensorboard
+            tracker().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
+
+        if 'file' in self.writers:
+            from labml.internal.tracker.writers import file
+            tracker().add_writer(file.Writer(self.run.log_file))
+
+        if 'web_api' in self.writers:
+            from labml.internal.tracker.writers import web_api
+            self.web_api = web_api.Writer()
+            tracker().add_writer(self.web_api)
+        else:
+            self.web_api = None
 
     def start(self, *,
               run_uuid: Optional[str] = None,
@@ -345,37 +375,42 @@ class Experiment:
             global_step = 0
 
         self.run.start_step = global_step
+
+        self._start_tracker()
         tracker().set_start_global_step(global_step)
 
-        self.__print_info()
-        if self.check_repo_dirty and self.run.is_dirty:
-            logger.log([("[FAIL]", Text.danger),
-                        " Cannot trial an experiment with uncommitted changes."])
-            exit(1)
-
-        if self.configs_processor is not None:
-            self.configs_processor.print()
-
-        if not self.is_evaluate:
-            self.run.save_info()
-            self._save_pid()
+        if self.distributed_rank == 0:
+            self.__print_info()
+            if self.check_repo_dirty and self.run.is_dirty:
+                logger.log([("[FAIL]", Text.danger),
+                            " Cannot trial an experiment with uncommitted changes."])
+                exit(1)
 
             if self.configs_processor is not None:
-                self.configs_processor.save(self.run.configs_path)
+                self.configs_processor.print()
 
-            if self.web_api is not None:
-                self.web_api.set_info(run_uuid=self.run.uuid,
-                                      name=self.run.name,
-                                      comment=self.run.comment)
+        if not self.is_evaluate:
+            if self.distributed_rank == 0:
+                self.run.save_info()
+            self._save_pid()
+
+            if self.distributed_rank == 0:
                 if self.configs_processor is not None:
-                    self.web_api.set_configs(self.configs_processor.to_json())
-                self.web_api.start()
+                    self.configs_processor.save(self.run.configs_path)
 
-            tracker().save_indicators(self.run.indicators_path)
+                if self.web_api is not None:
+                    self.web_api.set_info(run_uuid=self.run.uuid,
+                                          name=self.run.name,
+                                          comment=self.run.comment)
+                    if self.configs_processor is not None:
+                        self.web_api.set_configs(self.configs_processor.to_json())
+                    self.web_api.start()
 
-            if self.configs_processor:
-                # PERF: Writing to tensorboard takes about 4 seconds
-                tracker().write_h_parameters(self.configs_processor.get_hyperparams())
+                tracker().save_indicators(self.run.indicators_path)
+
+                if self.configs_processor:
+                    # PERF: Writing to tensorboard takes about 4 seconds
+                    tracker().write_h_parameters(self.configs_processor.get_hyperparams())
 
         self.is_started = True
         return ExperimentWatcher(self)
@@ -385,12 +420,13 @@ class Experiment:
             with open(str(self.run.run_log_path), 'a') as f:
                 end_time = time.time()
                 data = json.dumps({'status': status,
+                                   'rank': self.distributed_rank,
                                    'details': details,
                                    'time': end_time}, indent=None)
                 f.write(data + '\n')
 
         if self.web_api is not None:
-            self.web_api.status(status, details, end_time)
+            self.web_api.status(self.distributed_rank, status, details, end_time)
 
 
 class GlobalParams:
@@ -421,6 +457,7 @@ def experiment_singleton() -> Experiment:
 
 
 def create_experiment(*,
+                      uuid: str,
                       name: Optional[str],
                       python_file: Optional[str],
                       comment: Optional[str],
@@ -430,7 +467,8 @@ def create_experiment(*,
                       is_evaluate: bool):
     global _internal
 
-    _internal = Experiment(name=name,
+    _internal = Experiment(uuid=uuid,
+                           name=name,
                            python_file=python_file,
                            comment=comment,
                            writers=writers,

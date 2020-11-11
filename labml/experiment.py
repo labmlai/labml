@@ -15,6 +15,11 @@ if TYPE_CHECKING:
     import torch
 
 
+def generate_uuid() -> str:
+    from uuid import uuid1
+    return uuid1().hex
+
+
 def save_checkpoint():
     r"""
     Saves model checkpoints
@@ -31,6 +36,7 @@ def get_uuid():
 
 
 def create(*,
+           uuid: Optional[str] = None,
            name: Optional[str] = None,
            python_file: Optional[str] = None,
            comment: Optional[str] = None,
@@ -53,12 +59,16 @@ def create(*,
     """
 
     if writers is None:
-        writers = {'sqlite', 'tensorboard', 'web_api'}
+        writers = {'screen', 'sqlite', 'tensorboard', 'web_api'}
 
     if ignore_callers is None:
         ignore_callers = set()
 
-    _create_experiment(name=name,
+    if uuid is None:
+        uuid = generate_uuid()
+
+    _create_experiment(uuid=uuid,
+                       name=name,
                        python_file=python_file,
                        comment=comment,
                        writers=writers,
@@ -80,6 +90,10 @@ def evaluate():
                        ignore_callers=set(),
                        tags=None,
                        is_evaluate=True)
+
+
+def distributed(rank: int, world_size: int):
+    _experiment_singleton().distributed(rank, world_size)
 
 
 def add_model_savers(savers: Dict[str, ModelSaver]):

@@ -211,6 +211,15 @@ def save(*args, **kwargs):
     _internal().write()
 
 
+def new_line():
+    r"""
+    Prints a new line.
+
+    Equivalent to ``logger.log``, but handles distributed training where only the rank=0
+    process is tracking data.
+    """
+    _internal().new_line()
+
 def namespace(name: str):
     r"""
     Set a namespace for tracking

@@ -228,11 +228,12 @@ class Writer(WriteBase):
             self.commits_count += 1
             self.flush()
 
-    def status(self, status: str, details: str, time_: float):
+    def status(self, rank: int, status: str, details: str, time_: float):
         if self.web_api is None:
             return
 
         self.state = {
+            'rank': rank,
             'status': status,
             'details': details,
             'time': time_
