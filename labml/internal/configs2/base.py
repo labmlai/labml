@@ -36,13 +36,14 @@ RESERVED = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wr
 _STANDARD_TYPES = {int, str, bool, float, Dict, List}
 
 
-class PropertyKeys:
-    calculators = '_calculators'
-    evaluators = '_evaluators'
-    hyperparams = '_hyperparams'
-    aggregates = '_aggregates'
-    meta = '_meta'
-    setups = '_setups'
+def _is_valid(key):
+    if key.startswith('_'):
+        return False
+
+    if key in RESERVED:
+        return False
+
+    return True
 
 
 def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
@@ -72,9 +73,21 @@ def _get_base_classes(class_: Type['Configs']) -> List[Type['Configs']]:
     return unique_classes
 
 
+class PropertyKeys:
+    calculators = '_calculators'
+    evaluators = '_evaluators'
+    hyperparams = '_hyperparams'
+    aggregates = '_aggregates'
+    meta = '_meta'
+    setups = '_setups'
+
+
 class Configs:
     _calculators: Dict[str, List[ConfigFunction]] = {}
     _evaluators: Dict[str, List[EvalFunction]] = {}
+    _hyperparams: Dict[str, bool]
+    _aggregates: Dict[str, Dict[str, Tuple[ConfigItem, any]]]
+    _meta: Dict[str, bool]
     _setups: Dict[str, List[SetupFunction]] = {}
 
     __config_items: Dict[str, ConfigItem]
@@ -96,7 +109,6 @@ class Configs:
 
         classes = _get_base_classes(type(self))
 
-        self.__values = {}
         self.__types = {}
         self.__options = {}
         self.__evals = {}
@@ -108,37 +120,10 @@ class Configs:
         self.__aggregate_parent = {}
         self.__secondary_values = {}
 
-        for c in classes:
-            # for k, v in c.__annotations__.items():
-            #     self.__collect_annotation(k, v)
-            #
-            for k, v in c.__dict__.items():
-                if (PropertyKeys.evaluators in c.__dict__ and
-                        k in c.__dict__[PropertyKeys.evaluators]):
-                    continue
-                self.__collect_config_item(k, v)
-
-        for c in classes:
-            if PropertyKeys.calculators in c.__dict__:
-                for k, calculators in c.__dict__[PropertyKeys.calculators].items():
-                    assert k in self.__types, \
-                        f"{k} calculator is present but the config declaration is missing"
-                    for v in calculators:
-                        self.__collect_calculator(k, v)
-
-        for c in classes:
-            if PropertyKeys.setups in c.__dict__:
-                for k, setups in c.__dict__[PropertyKeys.setups].items():
-                    if k not in self.__types:
-                        raise RuntimeError(f"{k} calculator is present but the config declaration is missing")
-                    for v in setups:
-                        self.__collect_setup(k, v)
-
-        for c in classes:
-            if PropertyKeys.evaluators in c.__dict__:
-                for k, evaluators in c.__dict__[PropertyKeys.evaluators].items():
-                    for v in evaluators:
-                        self.__collect_evaluator(k, v)
+        self.__collect_config_items(classes)
+        self.__collect_calculator(classes)
+        self.__collect_setup(classes)
+        self.__collect_evaluator(classes)
 
         for c in classes:
             if PropertyKeys.hyperparams in c.__dict__:
@@ -182,23 +167,70 @@ class Configs:
         self.__calculate_aggregates()
         self.__calculate_missing_values()
 
-    def __collect_config_item(self, k, v: ConfigItem):
-        if not is_valid(k):
-            return
+    def __collect_config_items(self, classes: List[Type['Configs']]):
+        for c in classes:
+            for k, v in c.__dict__.items():
+                if PropertyKeys.evaluators in c.__dict__ and k in c.__dict__[PropertyKeys.evaluators]:
+                    continue
+                if not _is_valid(k):
+                    continue
 
-        if v.has_value:
-            self.__values[k] = v.value
+                if v.has_value:
+                    self.__values[k] = v.value
 
-        if k in self.__config_items:
-            self.__config_items[k].update(v)
-        else:
-            self.__config_items[k] = v
+                if k in self.__config_items:
+                    self.__config_items[k].update(v)
+                else:
+                    self.__config_items[k] = v
 
-        if k not in self.__types:
-            self.__types[k] = v.annotation
+                if k not in self.__types:
+                    self.__types[k] = v.annotation
+
+    def __collect_calculator(self, classes: List[Type['Configs']]):
+        for c in classes:
+            if PropertyKeys.calculators not in c.__dict__:
+                continue
+            for k, calculators in c.__dict__[PropertyKeys.calculators].items():
+                if k not in self.__types:
+                    raise RuntimeError(f"{k} calculator is present but the config declaration is missing")
+                for v in calculators:
+                    if k not in self.__options:
+                        self.__options[k] = OrderedDict()
+                    if v.option_name in self.__options[k]:
+                        if v != self.__options[k][v.option_name]:
+                            warnings.warn(f"Overriding option for {k}: {v.option_name}", Warning, stacklevel=5)
+
+                    self.__options[k][v.option_name] = v
+
+    def __collect_setup(self, classes: List[Type['Configs']]):
+        for c in classes:
+            if PropertyKeys.setups not in c.__dict__:
+                continue
+            for k, setups in c.__dict__[PropertyKeys.setups].items():
+                if k not in self.__types:
+                    raise RuntimeError(f"{k} setup is present but the config declaration is missing")
+                for v in setups:
+                    if k not in self.__options:
+                        self.__options[k] = OrderedDict()
+                    if v.option_name in self.__options[k]:
+                        if v != self.__options[k][v.option_name]:
+                            warnings.warn(f"Overriding option for {k}: {v.option_name}", Warning, stacklevel=5)
+
+                    self.__options[k][v.option_name] = v
+
+    def __collect_evaluator(self, classes: List[Type['Configs']]):
+        for c in classes:
+            if PropertyKeys.evaluators not in c.__dict__:
+                continue
+            for k, evaluators in c.__dict__[PropertyKeys.evaluators].items():
+                for v in evaluators:
+                    if k not in self.__evals:
+                        self.__evals[k] = OrderedDict()
+
+                    self.__evals[k]['default'] = v
 
     def __collect_value(self, k, v):
-        if not is_valid(k):
+        if not _is_valid(k):
             return
 
         self.__explicitly_specified.add(k)
@@ -206,36 +238,6 @@ class Configs:
         self.__values[k] = v
         if k not in self.__types:
             self.__types[k] = type(v)
-
-    def __collect_annotation(self, k, v):
-        if not is_valid(k):
-            return
-
-        self.__types[k] = v
-
-    def __collect_calculator(self, k, v: ConfigFunction):
-        if k not in self.__options:
-            self.__options[k] = OrderedDict()
-        if v.option_name in self.__options[k]:
-            if v != self.__options[k][v.option_name]:
-                warnings.warn(f"Overriding option for {k}: {v.option_name}", Warning, stacklevel=5)
-
-        self.__options[k][v.option_name] = v
-
-    def __collect_setup(self, k, v: SetupFunction):
-        if k not in self.__options:
-            self.__options[k] = OrderedDict()
-        if v.option_name in self.__options[k]:
-            if v != self.__options[k][v.option_name]:
-                warnings.warn(f"Overriding option for {k}: {v.option_name}", Warning, stacklevel=5)
-
-        self.__options[k][v.option_name] = v
-
-    def __collect_evaluator(self, k, v: EvalFunction):
-        if k not in self.__evals:
-            self.__evals[k] = OrderedDict()
-
-        self.__evals[k]['default'] = v
 
     def __calculate_missing_values(self):
         for k in self.__types:
@@ -324,7 +326,7 @@ class Configs:
         configs = {}
 
         for k, v in cls.__annotations__.items():
-            if not is_valid(k):
+            if not _is_valid(k):
                 continue
 
             configs[k] = ConfigItem(key=k,
@@ -339,7 +341,7 @@ class Configs:
             cls._setups = {}
 
         for k, v in cls.__dict__.items():
-            if not is_valid(k):
+            if not _is_valid(k):
                 continue
 
             if _is_class_method(v):
@@ -475,14 +477,3 @@ class Configs:
 
         pairs = {p[0].key: p[1] for p in args}
         cls._aggregates[name.key][option] = pairs
-
-
-def is_valid(key):
-    if key.startswith('_'):
-        return False
-
-    if key in RESERVED:
-        return False
-
-    return True
-
