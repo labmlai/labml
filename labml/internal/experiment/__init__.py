@@ -14,6 +14,7 @@ from labml.internal.experiment.experiment_run import Run, struct_time_to_time, s
 from labml.internal.experiment.watcher import ExperimentWatcher
 from labml.internal.lab import lab_singleton
 from labml.internal.tracker import tracker_singleton as tracker
+from labml.internal.monitor import monitor_singleton as monitor
 from labml.internal.util import is_ipynb, is_colab, is_kaggle
 from labml.logger import Text
 from labml.utils import get_caller_file
@@ -260,6 +261,11 @@ class Experiment:
         self.checkpoint_saver.load(checkpoint_path)
 
     def save_checkpoint(self):
+        if self.is_evaluate:
+            return
+        if self.distributed_rank != 0:
+            return
+
         self.checkpoint_saver.save(tracker().global_step)
 
     def calc_configs(self,
@@ -328,6 +334,9 @@ class Experiment:
     def distributed(self, rank: int, world_size: int):
         self.distributed_rank = rank
         self.distributed_world_size = world_size
+
+        if self.distributed_rank != 0:
+            monitor().silent()
 
         # to make sure we have the path to save pid
         self.run.make_path()

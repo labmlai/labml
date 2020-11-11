@@ -197,7 +197,11 @@ class Run(RunInfo):
     def make_path(self):
         run_path = Path(self.run_path)
         if not run_path.exists():
-            run_path.mkdir(parents=True)
+            try:
+                run_path.mkdir(parents=True)
+            except FileExistsError:
+                pass
+
 
     def save_info(self):
         self.make_path()

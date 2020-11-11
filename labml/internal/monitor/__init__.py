@@ -20,12 +20,16 @@ class Monitor:
         self.__sections: List[Section] = []
         self.__is_looping = False
         self.__loop_indicators = []
+        self.__is_silent = False
 
     def clear(self):
         self.__loop: Optional[Loop] = None
         self.__sections: List[Section] = []
         self.__is_looping = False
         self.__loop_indicators = []
+
+    def silent(self, is_silent: bool = True):
+        self.__is_silent = is_silent
 
     def iterate(self, name, iterable: Union[typing.Iterable, typing.Sized, int],
                 total_steps: Optional[int], *,
@@ -141,7 +145,7 @@ class Monitor:
 
         if len(self.__sections) > 1 and not self.__sections[-2].is_parented:
             self.__sections[-2].make_parent()
-            if not self.__sections[-1].is_silent:
+            if not self.__is_silent and not self.__sections[-1].is_silent:
                 logger().log([])
 
         self.__log_line()
@@ -152,7 +156,8 @@ class Monitor:
         parts += self.__loop_indicators
         parts += self.__loop.log_progress()
 
-        logger().log(parts, is_new_line=False)
+        if not self.__is_silent:
+            logger().log(parts, is_new_line=False)
 
     def __log_line(self):
         if self.__is_looping:
@@ -166,7 +171,8 @@ class Monitor:
         if parts is None:
             return
 
-        logger().log(parts, is_new_line=False)
+        if not self.__is_silent:
+            logger().log(parts, is_new_line=False)
 
     def set_looping_indicators(self, indicators: List[LogPart]):
         self.__loop_indicators = indicators
