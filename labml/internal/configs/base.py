@@ -6,7 +6,6 @@ from typing import Dict, List, Callable, Union, Tuple, Optional, Type, Set
 from .config_function import ConfigFunction
 from .config_item import ConfigItem
 from .eval_function import EvalFunction
-from .setup_function import SetupFunction
 from .utils import Value
 from ... import monit
 
@@ -32,7 +31,7 @@ def _is_class_method(func: Callable):
     return True
 
 
-RESERVED_CLASS = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wrap', 'setup'}
+RESERVED_CLASS = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wrap'}
 RESERVED_INSTANCE = {'_to_json', '_reset_explicitly_specified'}
 
 _STANDARD_TYPES = {int, str, bool, float, Dict, List}
@@ -81,7 +80,6 @@ class PropertyKeys:
     hyperparams = '_hyperparams'
     aggregates = '_aggregates'
     meta = '_meta'
-    setups = '_setups'
 
 
 class Configs:
@@ -90,17 +88,15 @@ class Configs:
     _hyperparams: Dict[str, bool]
     _aggregates: Dict[str, Dict[str, Dict[ConfigItem, any]]]
     _meta: Dict[str, bool]
-    _setups: Dict[str, List[SetupFunction]] = {}
 
     __config_items: Dict[str, ConfigItem]
-    __options: Dict[str, Dict[str, Union[ConfigFunction, SetupFunction]]]
+    __options: Dict[str, Dict[str, ConfigFunction]]
     __evals: Dict[str, Dict[str, EvalFunction]]
     __types: Dict[str, Type]
     __explicitly_specified: Set[str]
     __hyperparams: Dict[str, bool]
     __meta: Dict[str, bool]
-    __aggregates: Dict[str, Dict[str, Dict[str, str]]]
-    __aggregate_parent: Dict[str, str]
+    __aggregates: Dict[str, Dict[str, Dict[str, any]]]
     __secondary_values: Dict[str, Dict[str, any]]
 
     __values: Dict[str, any]
@@ -128,7 +124,6 @@ class Configs:
         self.__hyperparams = {}
         self.__meta = {}
         self.__aggregates = {}
-        self.__aggregate_parent = {}
         self.__secondary_values = {}
 
         self.__order = {}
@@ -136,8 +131,8 @@ class Configs:
 
         self.__collect_config_items(classes)
         self.__collect_calculator(classes)
-        self.__collect_setup(classes)
         self.__collect_evaluator(classes)
+        self.__collect_aggregates(classes)
 
         for c in classes:
             if PropertyKeys.hyperparams in c.__dict__:
@@ -148,13 +143,6 @@ class Configs:
             if PropertyKeys.meta in c.__dict__:
                 for k, is_meta in c.__dict__[PropertyKeys.meta].items():
                     self.__meta[k] = is_meta
-
-        for c in classes:
-            if PropertyKeys.aggregates in c.__dict__:
-                for k, aggregates in c.__dict__[PropertyKeys.aggregates].items():
-                    self.__aggregates[k] = aggregates
-
-        self.__calculate_aggregates()
 
     def __collect_config_items(self, classes: List[Type['Configs']]):
         for c in classes:
@@ -191,22 +179,6 @@ class Configs:
 
                     self.__options[k][v.option_name] = v
 
-    def __collect_setup(self, classes: List[Type['Configs']]):
-        for c in classes:
-            if PropertyKeys.setups not in c.__dict__:
-                continue
-            for k, setups in c.__dict__[PropertyKeys.setups].items():
-                if k not in self.__types:
-                    raise RuntimeError(f"{k} setup is present but the config declaration is missing")
-                for v in setups:
-                    if k not in self.__options:
-                        self.__options[k] = OrderedDict()
-                    if v.option_name in self.__options[k]:
-                        if v != self.__options[k][v.option_name]:
-                            warnings.warn(f"Overriding option for {k}: {v.option_name}", Warning, stacklevel=5)
-
-                    self.__options[k][v.option_name] = v
-
     def __collect_evaluator(self, classes: List[Type['Configs']]):
         for c in classes:
             if PropertyKeys.evaluators not in c.__dict__:
@@ -218,30 +190,18 @@ class Configs:
 
                     self.__evals[k]['default'] = v
 
-    def __calculate_aggregates(self):
-        queue = []
-        for k in self.__aggregates:
-            if k not in self.__values or self.__values[k] not in self.__aggregates[k]:
+    def __collect_aggregates(self, classes: List[Type['Configs']]):
+        for c in classes:
+            if PropertyKeys.aggregates not in c.__dict__:
                 continue
-
-            queue.append(k)
-
-        while queue:
-            k = queue.pop()
-            assert k in self.__values
-            option = self.__values[k]
-            assert option in self.__aggregates[k]
-            pairs = self.__aggregates[k][option]
-
-            for name, opt in pairs.items():
-                if name in self.__values and self.__values[name] != '__none__':
-                    continue
-
-                self.__aggregate_parent[name] = k
-                self.__values[name] = opt
-
-                if name in self.__aggregates and opt in self.__aggregates[name]:
-                    queue.append(name)
+            for key, aggregates in c.__dict__[PropertyKeys.aggregates].items():
+                for option, pairs in aggregates.items():
+                    for name, value in pairs.items():
+                        if name not in self.__aggregates:
+                            self.__aggregates[name] = {}
+                        if key not in self.__aggregates[name]:
+                            self.__aggregates[name][key] = {}
+                        self.__aggregates[name][key][option] = value
 
     def __setattr__(self, key, value):
         if key.startswith('_'):
@@ -263,16 +223,51 @@ class Configs:
             self.__calculate(item)
         return self.__cached[item]
 
+    def __get_value_aggregate(self, item):
+        if item not in self.__aggregates:
+            return None, False
+
+        for k, options in self.__aggregates[item].items():
+            v, has = self.__get_value(k)
+            if has and v in options:
+                return options[v], True
+
+        return None, False
+
+    def __get_value_direct(self, item):
+        if item in self.__values_override:
+            return self.__values_override[item], True
+        elif item in self.__values:
+            return self.__values[item], True
+        else:
+            return None, False
+
+    def __get_value(self, item):
+        if item in self.__cached:
+            return self.__cached[item]
+        
+        value, has = self.__get_value_direct(item)
+
+        if has and value != '__aggregate__':
+            return value, has
+
+        value, has = self.__get_value_aggregate(item)
+        if has:
+            return value, has
+
+        if item in self.__options:
+            return next(iter(self.__options[item].keys())), True
+
+        return None, False
+
     def __calculate(self, item):
         self.__order[item] = self.__n_calculated
         self.__n_calculated += 1
 
-        if item in self.__values_override:
-            value = self.__values_override[item]
-        elif item in self.__values:
-            value = self.__values[item]
-        elif item in self.__options:
-            value = next(iter(self.__options[item].keys()))
+        value, has = self.__get_value(item)
+
+        if has:
+            pass
         elif item not in self.__types:
             raise AttributeError(f"{self.__class__.__name__} has no attribute `{item}`")
         elif type(self.__types[item]) == type and self.__types[item] not in _STANDARD_TYPES:
@@ -318,9 +313,6 @@ class Configs:
                                     value=cls.__dict__.get(k, None))
 
         evals = []
-
-        if PropertyKeys.setups not in cls.__dict__:
-            cls._setups = {}
 
         for k, v in cls.__dict__.items():
             if not _is_valid(k):
@@ -380,24 +372,6 @@ class Configs:
         cls._evaluators[name].append(calc)
 
     @classmethod
-    def _add_setup_function(cls,
-                            func: Callable,
-                            config_names: List[ConfigItem],
-                            option_name: Optional[str]):
-        if PropertyKeys.setups not in cls.__dict__:
-            cls._setups = {}
-
-        calc = SetupFunction(func,
-                             option_name=option_name,
-                             config_names=config_names)
-        config_names = calc.config_names
-
-        for n in config_names:
-            if n not in cls._setups:
-                cls._setups[n] = []
-            cls._setups[n].append(calc)
-
-    @classmethod
     def calc_wrap(cls, func: Callable,
                   name: Union[ConfigItem, List[ConfigItem]],
                   option_name: Optional[str] = None,
@@ -405,17 +379,6 @@ class Configs:
         cls._add_config_function(func, name, option_name, pass_params)
 
         return func
-
-    @classmethod
-    def setup(cls, names: Union[List[ConfigItem], ConfigItem], option_name: Optional[str]):
-        if not isinstance(names, list):
-            names: List[ConfigItem] = [names]
-
-        def wrapper(func: Callable):
-            cls._add_setup_function(func, names, option_name)
-            return func
-
-        return wrapper
 
     @classmethod
     def calc(cls,
