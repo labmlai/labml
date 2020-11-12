@@ -1,8 +1,8 @@
-import itertools
 from typing import Tuple
 
 TRUNCATED_TOKEN = '[[...]]'
 MIN_STR_LIMIT = 5
+
 
 class Value:
     @staticmethod
