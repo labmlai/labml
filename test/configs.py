@@ -1,4 +1,4 @@
-from labml.configs import option
+from labml.configs import option, hyperparams, aggregate
 from labml.internal.configs.base import Configs
 
 
@@ -60,6 +60,10 @@ class MyConfigs(ParentConfigs):
 
     o1: str
 
+    a: str
+    a1: str
+    a2: str
+
 
 @option(MyConfigs.v2)
 def v2_calc(c: MyConfigs):
@@ -86,6 +90,11 @@ def v_module():
     return conf
 
 
+aggregate(MyConfigs.a, 'test',
+          (MyConfigs.a1, 'test1'),
+          (MyConfigs.a2, 'test2'))
+
+
 # TEST: This should fail
 # @option(MyConfigs.undefined)
 # def undefined_config(c: MyConfigs):
@@ -93,6 +102,7 @@ def v_module():
 
 
 def test():
+    hyperparams(MyConfigs.o1)
     configs = MyConfigs()
     configs.p2 = 'p2_set'
 
@@ -132,8 +142,12 @@ def test():
     configs._set_values({'o1': 'overridden'})
     assert configs.o1 == 'overridden'
 
-    print(configs.v_module.m_calc)
+    configs.a = 'test'
+    configs.a2 = 'custom'
+    assert configs.a1 == 'test1'
+    assert configs.a2 == 'custom'
 
+    # import yaml
     # print(yaml.dump(configs._to_json()))
 
 

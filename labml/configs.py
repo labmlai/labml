@@ -99,23 +99,7 @@ def setup(name: Union[any, List[any]], option_name: str):
 
 
 def setup(name: Union[any, List[any]], option_name: Optional[str] = None):
-    r"""
-    Use this as a decorator to register a setup function that calculates multiple configurations.
-    This function should accept the configurations object and assign the values of the
-    configurations specified.
-
-    Arguments:
-        name: the configuration item or a list of items.
-
-        option_name (str, optional): name of the option.
-            If not provided it will be derived from the
-            function name.
-    """
-    config_class = _get_config_class(name)
-    if config_class is None:
-        raise ConfigsError('You need to pass config items to option')
-
-    return config_class.setup(name, option_name)
+    raise NotImplementedError
 
 
 @overload
