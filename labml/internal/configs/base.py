@@ -97,6 +97,7 @@ class Configs:
     __hyperparams: Dict[str, bool]
     __meta: Dict[str, bool]
     __aggregates: Dict[str, Dict[str, Dict[str, any]]]
+    __aggregates_options: Dict[str, Set[str]]
     __secondary_values: Dict[str, Dict[str, any]]
 
     __values: Dict[str, any]
@@ -124,6 +125,7 @@ class Configs:
         self.__hyperparams = {}
         self.__meta = {}
         self.__aggregates = {}
+        self.__aggregates_options = {}
         self.__secondary_values = {}
 
         self.__order = {}
@@ -196,6 +198,9 @@ class Configs:
                 continue
             for key, aggregates in c.__dict__[PropertyKeys.aggregates].items():
                 for option, pairs in aggregates.items():
+                    if key not in self.__aggregates_options:
+                        self.__aggregates_options[key] = set()
+                    self.__aggregates_options[key].add(option)
                     for name, value in pairs.items():
                         if name not in self.__aggregates:
                             self.__aggregates[name] = {}
@@ -245,7 +250,7 @@ class Configs:
     def __get_value(self, item):
         if item in self.__cached:
             return self.__cached[item]
-        
+
         value, has = self.__get_value_direct(item)
 
         if has and value != '__aggregate__':
@@ -426,7 +431,7 @@ class Configs:
     def __get_options_list(self, key: str):
         opts = list(self.__options.get(key, {}).keys())
         if not opts:
-            opts = list((self.__aggregates.get(key, {}).keys()))
+            opts = list((self.__aggregates_options.get(key, set())))
 
         return opts
 

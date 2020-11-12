@@ -147,8 +147,8 @@ def test():
     assert configs.a1 == 'test1'
     assert configs.a2 == 'custom'
 
-    # import yaml
-    # print(yaml.dump(configs._to_json()))
+    import yaml
+    print(yaml.dump(configs._to_json()))
 
 
 if __name__ == '__main__':
