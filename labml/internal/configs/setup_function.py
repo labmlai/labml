@@ -44,5 +44,5 @@ class SetupFunction:
 
         self.__check_type()
 
-    def __call__(self, configs: Configs):
+    def __call__(self, configs: 'Configs'):
         self.func(configs)
