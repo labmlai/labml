@@ -1,11 +1,10 @@
 import inspect
 import warnings
 from enum import Enum
-from typing import List, Callable, cast, Set, Union, Optional
+from typing import List, Callable, cast, Union, Optional
 from typing import TYPE_CHECKING
 
 from .config_item import ConfigItem
-from .dependency_parser import DependencyParser
 from ...utils.errors import ConfigsError
 
 if TYPE_CHECKING:
@@ -22,7 +21,6 @@ class FunctionKind(Enum):
 class ConfigFunction:
     func: Callable
     kind: FunctionKind
-    dependencies: Set[str]
     config_names: Union[str, List[str]]
     option_name: str
     params: List[inspect.Parameter]
@@ -68,22 +66,6 @@ class ConfigFunction:
                 raise ConfigsError(
                     f"{self.config_names} - {self.option_name}")
             return FunctionKind.pass_kwargs
-
-    def __get_dependencies(self):
-        if self.kind == FunctionKind.pass_configs:
-            parser = DependencyParser(self.func)
-            assert not parser.is_referenced, \
-                f"{self.func.__name__} should only use attributes of configs"
-            self.secondary_attributes = parser.secondary_attributes
-            return parser.required
-        elif self.kind == FunctionKind.pass_kwargs:
-            return {p.name for p in self.params}
-        elif self.kind == FunctionKind.pass_params:
-            return {p.key for p in self.pass_params}
-        elif self.kind == FunctionKind.pass_nothing:
-            return set()
-        else:
-            assert False
 
     def __get_option_name(self, option_name: str):
         if option_name is not None:
@@ -139,7 +121,6 @@ class ConfigFunction:
                  option_name: str,
                  pass_params: Optional[List[ConfigItem]] = None,
                  check_string_names: bool = True):
-        self.secondary_attributes = {}
         self.func = func
         self.check_string_names = check_string_names
         self.pass_params = pass_params
@@ -149,7 +130,6 @@ class ConfigFunction:
         self.params = self.__get_params()
 
         self.kind = self.__get_type()
-        self.dependencies = self.__get_dependencies()
 
     def __call__(self, configs: 'Configs'):
         if self.kind == FunctionKind.pass_configs:

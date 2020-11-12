@@ -1,15 +1,12 @@
 import inspect
 import warnings
-from typing import List, Callable, Set, Union, Optional
+from typing import List, Callable, Union, Optional
 
 from labml.internal.configs.config_item import ConfigItem
-
-from labml.internal.configs.dependency_parser import DependencyParser
 
 
 class SetupFunction:
     func: Callable
-    dependencies: Set[str]
     config_name: str
 
     def __check_type(self):
@@ -27,18 +24,6 @@ class SetupFunction:
                                    f"{self.config_name} - {self.func.__name__}")
 
         assert pos >= 1
-
-    def __get_dependencies(self):
-        parser = DependencyParser(self.func)
-        if parser.is_referenced:
-            raise RuntimeError(f"{self.func.__name__} should only use attributes of configs")
-        required = set(parser.required)
-
-        for c in self.config_names:
-            if c in required:
-                required.remove(c)
-
-        return required
 
     def __get_config_names(self, config_names: Union[str, ConfigItem, List[ConfigItem], List[str]]):
         if config_names is None:
@@ -80,7 +65,6 @@ class SetupFunction:
         self.config_names = self.__get_config_names(config_names)
 
         self.__check_type()
-        self.dependencies = self.__get_dependencies()
 
     def __call__(self, configs: 'Configs'):
         self.func(configs)

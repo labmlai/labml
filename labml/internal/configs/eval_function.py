@@ -1,12 +1,9 @@
 import inspect
-from typing import List, Callable, Set
-
-from labml.internal.configs.dependency_parser import DependencyParser
+from typing import List, Callable
 
 
 class EvalFunction:
     func: Callable
-    dependencies: Set[str]
     config_name: str
 
     def __check_type(self):
@@ -25,16 +22,9 @@ class EvalFunction:
 
         assert pos >= 1
 
-    def __get_dependencies(self):
-        parser = DependencyParser(self.func)
-        if parser.is_referenced:
-            raise RuntimeError(f"{self.func.__name__} should only use attributes of configs")
-        return parser.required
-
     def __init__(self, func, *,
                  config_name: str):
         self.func = func
         self.config_name = config_name
 
         self.__check_type()
-        self.dependencies = self.__get_dependencies()
