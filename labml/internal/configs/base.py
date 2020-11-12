@@ -89,7 +89,7 @@ class Configs:
     _calculators: Dict[str, List[ConfigFunction]] = {}
     _evaluators: Dict[str, List[EvalFunction]] = {}
     _hyperparams: Dict[str, bool]
-    _aggregates: Dict[str, Dict[str, Tuple[ConfigItem, any]]]
+    _aggregates: Dict[str, Dict[str, Dict[ConfigItem, any]]]
     _meta: Dict[str, bool]
     _setups: Dict[str, List[SetupFunction]] = {}
 
@@ -265,7 +265,7 @@ class Configs:
                     config_function = ConfigFunction(self.__types[k],
                                                      config_names=self.__config_items[k],
                                                      option_name='from_type')
-                except ConfigsError as e:
+                except ConfigsError:
                     continue
 
                 self.__options[k] = OrderedDict()

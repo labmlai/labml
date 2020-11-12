@@ -1,4 +1,8 @@
-from typing import Tuple
+import warnings
+from typing import Tuple, Union, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from labml.internal.configs.config_item import ConfigItem
 
 TRUNCATED_TOKEN = '[[...]]'
 MIN_STR_LIMIT = 5
@@ -100,3 +104,29 @@ class Value:
             value.__class__.__name__,
             hex(id(value))
         )
+
+
+def get_config_names(decorator_name: str, function_name: str, config_names: Union[str, ConfigItem, List[ConfigItem], List[str]], *,
+                     is_check_string_names: bool = True):
+    if config_names is None:
+        warnings.warn(f"Decorate your function with @{decorator_name}(Config.{function_name})", FutureWarning, 4)
+        return function_name
+    elif type(config_names) == str:
+        if is_check_string_names:
+            warnings.warn(f"Use Config.{config_names} instead of '{config_names}'.", FutureWarning, 4)
+        return config_names
+    elif type(config_names) == ConfigItem:
+        return config_names.key
+    else:
+        assert type(config_names) == list
+        assert len(config_names) > 0
+        keys = []
+        for c in config_names:
+            if isinstance(c, str):
+                warnings.warn(f"Use Config.{c} instead of '{c}'", FutureWarning, 4)
+                keys.append(c)
+            elif isinstance(c, ConfigItem):
+                keys.append(c.key)
+            else:
+                raise ValueError('Cannot determine config item', c)
+        return keys

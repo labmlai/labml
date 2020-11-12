@@ -5,6 +5,7 @@ from typing import List, Callable, cast, Union, Optional
 from typing import TYPE_CHECKING
 
 from .config_item import ConfigItem
+from .utils import get_config_names
 from ...utils.errors import ConfigsError
 
 if TYPE_CHECKING:
@@ -73,30 +74,6 @@ class ConfigFunction:
         else:
             return self.func.__name__
 
-    def __get_config_names(self, config_names: Union[str, ConfigItem, List[ConfigItem], List[str]]):
-        if config_names is None:
-            warnings.warn(f"Decorate your function with @option(Config.{self.func.__name__})", FutureWarning, 4)
-            return self.func.__name__
-        elif type(config_names) == str:
-            if self.check_string_names:
-                warnings.warn(f"Use Config.{config_names} instead of '{config_names}'.", FutureWarning, 4)
-            return config_names
-        elif type(config_names) == ConfigItem:
-            return config_names.key
-        else:
-            assert type(config_names) == list
-            assert len(config_names) > 0
-            keys = []
-            for c in config_names:
-                if isinstance(c, str):
-                    warnings.warn(f"Use Config.{c} instead of '{c}'", FutureWarning, 4)
-                    keys.append(c)
-                elif isinstance(c, ConfigItem):
-                    keys.append(c.key)
-                else:
-                    raise ValueError('Cannot determine config item', c)
-            return keys
-
     def __get_params(self):
         func_type = type(self.func)
 
@@ -119,12 +96,10 @@ class ConfigFunction:
     def __init__(self, func, *,
                  config_names: Union[str, ConfigItem, List[ConfigItem], List[str]],
                  option_name: str,
-                 pass_params: Optional[List[ConfigItem]] = None,
-                 check_string_names: bool = True):
+                 pass_params: Optional[List[ConfigItem]] = None):
         self.func = func
-        self.check_string_names = check_string_names
         self.pass_params = pass_params
-        self.config_names = self.__get_config_names(config_names)
+        self.config_names = get_config_names('option', self.func.__name__, config_names)
         self.option_name = self.__get_option_name(option_name)
 
         self.params = self.__get_params()
