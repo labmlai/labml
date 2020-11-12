@@ -14,7 +14,7 @@ class ConfigProcessor:
         self.configs = configs
 
     def to_json(self):
-        return self.configs.to_json()
+        return self.configs._to_json()
 
     def save(self, configs_path: PurePath):
         with open(str(configs_path), "w") as file:

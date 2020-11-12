@@ -9,7 +9,6 @@ from .eval_function import EvalFunction
 from .setup_function import SetupFunction
 from .utils import Value
 from ... import monit
-from ...utils.errors import ConfigsError
 
 
 def _is_class_method(func: Callable):
@@ -34,7 +33,7 @@ def _is_class_method(func: Callable):
 
 
 RESERVED_CLASS = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wrap', 'setup'}
-RESERVED_INSTANCE = {'to_json', 'reset_explicitly_specified'}
+RESERVED_INSTANCE = {'_to_json', '_reset_explicitly_specified'}
 
 _STANDARD_TYPES = {int, str, bool, float, Dict, List}
 
@@ -153,32 +152,7 @@ class Configs:
                 for k, aggregates in c.__dict__[PropertyKeys.aggregates].items():
                     self.__aggregates[k] = aggregates
 
-        # for k, v in configs.__dict__.items():
-        #     if k.startswith('_'):
-        #         continue
-        #
-        #     if k not in self.__types:
-        #         raise RuntimeError(f"Unknown key :{k}")
-        #     self.__collect_value(k, v)
-
-        # if not is_directly_specified:
-        #     self.__explicitly_specified = set()
-        #
-        # if values is not None:
-        #     for k, v in values.items():
-        #         if k in self.__types:
-        #             self.__collect_value(k, v)
-        #         else:
-        #             parts = k.split('.')
-        #             if parts[0] in self.__types:
-        #                 if parts[0] not in self.__secondary_values:
-        #                     self.__secondary_values[parts[0]] = {}
-        #                 self.__secondary_values[parts[0]][k[len(parts[0]) + 1:]] = v
-        #             else:
-        #                 logger.log(f'Ignoring config: {k} = {str(v)}', Text.warning)
-
         self.__calculate_aggregates()
-        self.__calculate_missing_values()
 
     def __collect_config_items(self, classes: List[Type['Configs']]):
         for c in classes:
@@ -242,41 +216,6 @@ class Configs:
 
                     self.__evals[k]['default'] = v
 
-    def __collect_value(self, k, v):
-        if not _is_valid(k):
-            return
-
-        self.__explicitly_specified.add(k)
-
-        self.__values[k] = v
-        if k not in self.__types:
-            self.__types[k] = type(v)
-
-    def __calculate_missing_values(self):
-        for k in self.__types:
-            if k in self.__values:
-                continue
-
-            if k in self.__options:
-                self.__values[k] = next(iter(self.__options[k].keys()))
-                continue
-
-            if type(self.__types[k]) == type:
-                if self.__types[k] in _STANDARD_TYPES:
-                    continue
-
-                try:
-                    config_function = ConfigFunction(self.__types[k],
-                                                     config_names=self.__config_items[k],
-                                                     option_name='from_type')
-                except ConfigsError:
-                    continue
-
-                self.__options[k] = OrderedDict()
-                self.__options[k]['from_type'] = config_function
-                self.__values[k] = 'from_type'
-                continue
-
     def __calculate_aggregates(self):
         queue = []
         for k in self.__aggregates:
@@ -330,19 +269,30 @@ class Configs:
             value = self.__values[item]
         elif item in self.__options:
             value = next(iter(self.__options[item].keys()))
+        elif item not in self.__types:
+            raise AttributeError(f"{self.__class__.__name__} has no attribute `{item}`")
+        elif type(self.__types[item]) == type and self.__types[item] not in _STANDARD_TYPES:
+            config_function = ConfigFunction(self.__types[item],
+                                             config_names=self.__config_items[item],
+                                             option_name='from_type')
+
+            self.__options[item] = OrderedDict()
+            self.__options[item]['from_type'] = config_function
+            self.__values[item] = 'from_type'
+            value = 'from_type'
         else:
-            # TODO: check whether not annotated even
             raise AttributeError(f"{self.__class__.__name__} cannot calculate config `{item}`")
 
-        if item in self.__options:
-            if value in self.__options[item]:
-                func = self.__options[item][value]
-                with monit.section(f'Prepare {item}'):
-                    value = func(self)
+        if item in self.__options and value in self.__options[item]:
+            func = self.__options[item][value]
+            with monit.section(f'Prepare {item}'):
+                value = func(self)
 
         if isinstance(value, Configs):
             self.__cached_configs[item] = value
-            value.reset_explicitly_specified()
+            value._reset_explicitly_specified()
+            if item in self.__secondary_values:
+                value._set_values(self.__secondary_values[item])
 
             primary = value.__dict__.get('_primary', None)
             if primary is not None:
@@ -513,7 +463,24 @@ class Configs:
 
         return opts
 
-    def to_json(self):
+    def _set_values(self, values: Dict[str, any]):
+        for k, v in values.items():
+            if not _is_valid(k):
+                raise KeyError(f"Invalid attribute name '{k}'")
+            if k in self.__types:
+                self.__explicitly_specified.add(k)
+
+                self.__values[k] = v
+            else:
+                tk, *_ = k.split('.')
+                if tk not in self.__types:
+                    raise KeyError(f"Invalid attribute name '{tk}' (taken from '{k}')")
+
+                if tk not in self.__secondary_values:
+                    self.__secondary_values[tk] = {}
+                self.__secondary_values[tk][k[len(tk) + 1:]] = v
+
+    def _to_json(self):
         configs = {}
         for k, v in self.__types.items():
             configs[k] = {
@@ -529,13 +496,13 @@ class Configs:
             }
 
         for k, c in self.__cached_configs.items():
-            sub_configs = c.to_json()
+            sub_configs = c._to_json()
             for sk, v in sub_configs.items():
                 configs[f"{k}.{sk}"] = v
 
         return configs
 
-    def reset_explicitly_specified(self):
+    def _reset_explicitly_specified(self):
         self.__explicitly_specified = set()
         for k, v in self.__cached_configs:
-            v.reset_explicitly_specified()
+            v._reset_explicitly_specified()

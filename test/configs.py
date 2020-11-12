@@ -1,7 +1,3 @@
-import json
-
-import yaml
-
 from labml.configs import option
 from labml.internal.configs.base import Configs
 
@@ -40,11 +36,32 @@ def sample_m_calc(c: Module):
     return c.p1_m1 + ' main no primary'
 
 
+class FromTypeNoParam:
+    def __init__(self):
+        self.value = 'default'
+
+
+class FromTypeWithParam:
+    def __init__(self, c: 'MyConfigs'):
+        self.value = c.no_default + " calc"
+
+
 class MyConfigs(ParentConfigs):
     p2: str = 'p2_default'
     no_default: str
     with_primary: ModuleWithPrimary
     without_primary: Module
+    from_type_no_param: FromTypeNoParam
+    from_type_with_param: FromTypeWithParam
+
+    v1: str
+    v2: str
+    v_module: Module
+
+
+@option(MyConfigs.v2)
+def v2_calc(c: MyConfigs):
+    return c.v1 + ' calc'
 
 
 @option(MyConfigs.with_primary)
@@ -60,6 +77,11 @@ def module_without_primary(c: MyConfigs):
     conf.p1_m1 = c.p1 + ' m1'
     return conf
 
+
+@option(MyConfigs.v_module)
+def v_module():
+    conf = Module()
+    return conf
 
 # TEST: This should fail
 # @option(MyConfigs.undefined)
@@ -94,7 +116,18 @@ def test():
     assert configs.with_primary == 'p1_defaultset m1 main'
     assert configs.without_primary.m_calc == 'p1_default m1 main no primary'
 
-    print(yaml.dump(configs.to_json()))
+    assert configs.from_type_no_param.value == 'default'
+    assert configs.from_type_with_param.value == 'set calc'
+
+    configs._set_values({'v1': 'v1 custom'})
+    assert configs.v2 == 'v1 custom calc'
+
+    configs._set_values({'v_module.p1_m1': 'p1_m1 custom'})
+    assert configs.v_module.m_calc == 'p1_m1 custom main no primary'
+
+    print(configs.v_module.m_calc)
+
+    # print(yaml.dump(configs._to_json()))
 
 
 if __name__ == '__main__':
