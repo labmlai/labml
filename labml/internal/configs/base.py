@@ -33,7 +33,9 @@ def _is_class_method(func: Callable):
     return True
 
 
-RESERVED = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wrap', 'setup', 'to_json'}
+RESERVED_CLASS = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wrap', 'setup'}
+RESERVED_INSTANCE = {'to_json', 'reset_explicitly_specified'}
+
 _STANDARD_TYPES = {int, str, bool, float, Dict, List}
 
 
@@ -41,7 +43,7 @@ def _is_valid(key):
     if key.startswith('_'):
         return False
 
-    if key in RESERVED:
+    if key in RESERVED_CLASS or key in RESERVED_INSTANCE:
         return False
 
     return True
@@ -305,6 +307,8 @@ class Configs:
     def __getattribute__(self, item):
         if item.startswith('_'):
             return object.__getattribute__(self, item)
+        if item in RESERVED_INSTANCE:
+            return object.__getattribute__(self, item)
         if item in self.__evals:
             return object.__getattribute__(self, item)
 
@@ -329,6 +333,12 @@ class Configs:
                 func = self.__options[item][value]
                 with monit.section(f'Prepare {item}'):
                     value = func(self)
+
+        if isinstance(value, Configs):
+            primary = value.__dict__.get('_primary', None)
+            value.reset_explicitly_specified()
+            if primary is not None:
+                value = getattr(value, primary)
 
         self.__cached[item] = value
 
@@ -519,3 +529,9 @@ class Configs:
 
         return configs
 
+    def reset_explicitly_specified(self):
+        self.__explicitly_specified = set()
+        for k, v in self.__cached:
+            if not isinstance(v, Configs):
+                continue
+            v.reset_explicitly_specified()
