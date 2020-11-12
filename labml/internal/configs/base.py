@@ -3,13 +3,13 @@ import warnings
 from collections import OrderedDict
 from typing import Dict, List, Callable, Union, Tuple, Optional, Type, Set
 
-from .eval_function import EvalFunction
 from .config_function import ConfigFunction
 from .config_item import ConfigItem
+from .eval_function import EvalFunction
 from .setup_function import SetupFunction
+from .utils import Value
 from ... import monit
 from ...utils.errors import ConfigsError
-from .utils import Value
 
 
 def _is_class_method(func: Callable):
@@ -301,8 +301,10 @@ class Configs:
     def __setattr__(self, key, value):
         if key.startswith('_'):
             self.__dict__[key] = value
-        else:
+        elif key in self.__types:
             self.__values[key] = value
+        else:
+            raise AttributeError(f"{self.__class__.__name__} has no annotation for attribute '{key}'")
 
     def __getattribute__(self, item):
         if item.startswith('_'):
@@ -325,8 +327,8 @@ class Configs:
         elif item in self.__options:
             value = next(iter(self.__options[item].keys()))
         else:
-            # Handle getting from type
-            raise RuntimeError(f'Cannot calculate config: {item}')
+            # TODO: check whether not annotated even
+            raise AttributeError(f"{self.__class__.__name__} cannot calculate config `{item}`")
 
         if item in self.__options:
             if value in self.__options[item]:
