@@ -97,13 +97,16 @@ class Configs:
     __options: Dict[str, Dict[str, Union[ConfigFunction, SetupFunction]]]
     __evals: Dict[str, Dict[str, EvalFunction]]
     __types: Dict[str, Type]
-    __values: Dict[str, any]
     __explicitly_specified: Set[str]
     __hyperparams: Dict[str, bool]
     __meta: Dict[str, bool]
     __aggregates: Dict[str, Dict[str, Dict[str, str]]]
     __aggregate_parent: Dict[str, str]
     __secondary_values: Dict[str, Dict[str, any]]
+
+    __values: Dict[str, any]
+    __cached: Dict[str, any]
+    __cached_configs: Dict[str, 'Configs']
 
     __order: Dict[str, int]
     __n_calculated: int
@@ -112,6 +115,7 @@ class Configs:
         self._primary = _primary
         self.__values = {}
         self.__cached = {}
+        self.__cached_configs = {}
 
         classes = _get_base_classes(type(self))
 
@@ -337,8 +341,10 @@ class Configs:
                     value = func(self)
 
         if isinstance(value, Configs):
-            primary = value.__dict__.get('_primary', None)
+            self.__cached_configs[item] = value
             value.reset_explicitly_specified()
+
+            primary = value.__dict__.get('_primary', None)
             if primary is not None:
                 value = getattr(value, primary)
 
@@ -522,9 +528,7 @@ class Configs:
                 'is_explicitly_specified': (k in self.__explicitly_specified)
             }
 
-        for k, c in self.__cached.items():
-            if not isinstance(c, Configs):
-                continue
+        for k, c in self.__cached_configs.items():
             sub_configs = c.to_json()
             for sk, v in sub_configs.items():
                 configs[f"{k}.{sk}"] = v
@@ -533,7 +537,5 @@ class Configs:
 
     def reset_explicitly_specified(self):
         self.__explicitly_specified = set()
-        for k, v in self.__cached:
-            if not isinstance(v, Configs):
-                continue
+        for k, v in self.__cached_configs:
             v.reset_explicitly_specified()
