@@ -9,7 +9,6 @@ import git
 from labml import logger, monit
 from labml.internal.configs.base import Configs
 from labml.internal.configs.processor import ConfigProcessor
-from labml.internal.configs.processor_dict import ConfigProcessorDict
 from labml.internal.experiment.experiment_run import Run, struct_time_to_time, struct_time_to_date
 from labml.internal.experiment.watcher import ExperimentWatcher
 from labml.internal.lab import lab_singleton
@@ -270,15 +269,13 @@ class Experiment:
 
     def calc_configs(self,
                      configs: Configs,
-                     configs_override: Optional[Dict[str, any]],
-                     run_order: Optional[List[Union[List[str], str]]]):
+                     configs_override: Optional[Dict[str, any]]):
         if configs_override is None:
             configs_override = {}
         if global_params_singleton().configs is not None:
             configs_override.update(global_params_singleton().configs)
 
         self.configs_processor = ConfigProcessor(configs, configs_override)
-        self.configs_processor(run_order)
 
         if self.distributed_rank == 0:
             logger.log()
@@ -286,11 +283,12 @@ class Experiment:
     def calc_configs_dict(self,
                           configs: Dict[str, any],
                           configs_override: Optional[Dict[str, any]]):
-        self.configs_processor = ConfigProcessorDict(configs, configs_override)
-        self.configs_processor()
-
-        if self.distributed_rank == 0:
-            logger.log()
+        raise NotImplementedError
+        # self.configs_processor = ConfigProcessorDict(configs, configs_override)
+        # self.configs_processor()
+        #
+        # if self.distributed_rank == 0:
+        #     logger.log()
 
     def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):
         checkpoint_path, global_step = experiment_run.get_run_checkpoint(
@@ -394,9 +392,6 @@ class Experiment:
                 logger.log([("[FAIL]", Text.danger),
                             " Cannot trial an experiment with uncommitted changes."])
                 exit(1)
-
-            if self.configs_processor is not None:
-                self.configs_processor.print()
 
         if not self.is_evaluate:
             if self.distributed_rank == 0:

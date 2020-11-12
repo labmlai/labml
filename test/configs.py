@@ -1,6 +1,5 @@
 from labml.configs import option
 from labml.internal.configs.base import Configs
-from labml.internal.configs.processor import ConfigProcessor
 
 
 class SampleModel:
@@ -8,10 +7,13 @@ class SampleModel:
         self.prop2 = prop2
         self.prop1 = prop1
 
+    def __str__(self):
+        return f'{self.prop1} - {self.prop2}'
+
 
 class SampleConfigsModule(Configs):
     prop1: int
-    prop2: int
+    prop2: int = 3
     prop3: int = 10
     model: SampleModel
 
@@ -43,12 +45,7 @@ def run_model(c: SampleConfigs):
 def test():
     configs = SampleConfigs()
 
-    processor = ConfigProcessor(configs, {'module.prop2': 20})
-    processor()
-    processor.print()
-
-    print(configs.__dict__)
-    print(configs.module.__dict__)
+    print(configs.module.model)
 
 
 if __name__ == '__main__':

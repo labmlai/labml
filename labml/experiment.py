@@ -83,7 +83,8 @@ def evaluate():
     This will not record anything.
     """
 
-    _create_experiment(name=None,
+    _create_experiment(uuid=generate_uuid(),
+                       name=None,
                        python_file=None,
                        comment=None,
                        writers=set(),
@@ -147,27 +148,7 @@ def configs(conf: BaseConfigs):
 
 
 @overload
-def configs(conf: BaseConfigs, run_order: List[Union[List[str], str]]):
-    ...
-
-
-@overload
-def configs(conf: BaseConfigs, *run_order: str):
-    ...
-
-
-@overload
 def configs(conf: BaseConfigs, conf_override: Dict[str, any]):
-    ...
-
-
-@overload
-def configs(conf: BaseConfigs, conf_override: Dict[str, any], run_order: List[Union[List[str], str]]):
-    ...
-
-
-@overload
-def configs(conf: BaseConfigs, conf_override: Dict[str, any], *run_order: str):
     ...
 
 
@@ -206,12 +187,8 @@ def configs(*args):
         conf_dict (Dict[str, any], optional): a dictionary of configs
         conf_override (Dict[str, any], optional): a dictionary of
             configs to be overridden
-        run_order (List[Union[str, List[str]]], optional): list of
-            configs to be calculated and the order in which they should be
-            calculated. If not provided all configs will be calculated.
     """
     configs_override: Optional[Dict[str, any]] = None
-    run_order: Optional[List[Union[List[str], str]]] = None
     idx = 1
 
     if isinstance(args[0], BaseConfigs):
@@ -223,16 +200,16 @@ def configs(*args):
             run_order = args[idx]
             if len(args) != idx + 1:
                 raise RuntimeError("Invalid call to calculate configs")
-            _experiment_singleton().calc_configs(args[0], configs_override, run_order)
+            _experiment_singleton().calc_configs(args[0], configs_override)
         else:
             if idx == len(args):
-                _experiment_singleton().calc_configs(args[0], configs_override, run_order)
+                _experiment_singleton().calc_configs(args[0], configs_override)
             else:
                 run_order = list(args[idx:])
                 for key in run_order:
                     if not isinstance(key, str):
                         raise RuntimeError("Invalid call to calculate configs")
-                _experiment_singleton().calc_configs(args[0], configs_override, run_order)
+                _experiment_singleton().calc_configs(args[0], configs_override)
     elif isinstance(args[0], dict):
         if idx < len(args) and isinstance(args[idx], dict):
             configs_override = args[idx]
