@@ -58,6 +58,8 @@ class MyConfigs(ParentConfigs):
     v2: str
     v_module: Module
 
+    o1: str
+
 
 @option(MyConfigs.v2)
 def v2_calc(c: MyConfigs):
@@ -82,6 +84,7 @@ def module_without_primary(c: MyConfigs):
 def v_module():
     conf = Module()
     return conf
+
 
 # TEST: This should fail
 # @option(MyConfigs.undefined)
@@ -124,6 +127,10 @@ def test():
 
     configs._set_values({'v_module.p1_m1': 'p1_m1 custom'})
     assert configs.v_module.m_calc == 'p1_m1 custom main no primary'
+
+    configs.o1 = 'override'
+    configs._set_values({'o1': 'overridden'})
+    assert configs.o1 == 'overridden'
 
     print(configs.v_module.m_calc)
 
