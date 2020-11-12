@@ -104,6 +104,7 @@ class Configs:
     __secondary_values: Dict[str, Dict[str, any]]
 
     __values: Dict[str, any]
+    __values_override: Dict[str, any]
     __cached: Dict[str, any]
     __cached_configs: Dict[str, 'Configs']
 
@@ -113,6 +114,7 @@ class Configs:
     def __init__(self, *, _primary: str = None):
         self._primary = _primary
         self.__values = {}
+        self.__values_override = {}
         self.__cached = {}
         self.__cached_configs = {}
 
@@ -265,7 +267,9 @@ class Configs:
         self.__order[item] = self.__n_calculated
         self.__n_calculated += 1
 
-        if item in self.__values:
+        if item in self.__values_override:
+            value = self.__values_override[item]
+        elif item in self.__values:
             value = self.__values[item]
         elif item in self.__options:
             value = next(iter(self.__options[item].keys()))
@@ -470,7 +474,7 @@ class Configs:
             if k in self.__types:
                 self.__explicitly_specified.add(k)
 
-                self.__values[k] = v
+                self.__values_override[k] = v
             else:
                 tk, *_ = k.split('.')
                 if tk not in self.__types:
