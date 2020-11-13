@@ -216,6 +216,8 @@ class Configs:
         if key.startswith('_'):
             self.__dict__[key] = value
         elif key in self.__types:
+            if key in self.__cached:
+                raise ValueError(f"Cannot set {self.__class__.__name__}:{key} after it was accessed")
             self.__values[key] = value
         else:
             raise AttributeError(f"{self.__class__.__name__} has no annotation for attribute '{key}'")
@@ -303,6 +305,7 @@ class Configs:
             value._reset_explicitly_specified()
             if item in self.__secondary_values:
                 value._set_values(self.__secondary_values[item])
+                del self.__secondary_values[item]
 
             primary = value.__dict__.get('_primary', None)
             if primary is not None:
@@ -442,21 +445,31 @@ class Configs:
         return opts
 
     def _set_values(self, values: Dict[str, any]):
+        sub_modules = set()
         for k, v in values.items():
             if not _is_valid(k):
                 raise KeyError(f"Invalid attribute name '{k}'")
             if k in self.__types:
+                if k in self.__cached:
+                    raise ValueError(f"Cannot set {self.__class__.__name__}:{k} after it was accessed")
+
                 self.__explicitly_specified.add(k)
 
                 self.__values_override[k] = v
             else:
                 tk, *_ = k.split('.')
+                sub_modules.add(tk)
                 if tk not in self.__types:
                     raise KeyError(f"Invalid attribute name '{tk}' (taken from '{k}')")
 
                 if tk not in self.__secondary_values:
                     self.__secondary_values[tk] = {}
                 self.__secondary_values[tk][k[len(tk) + 1:]] = v
+
+        for k in sub_modules:
+            if k in self.__cached_configs:
+                self.__cached_configs[k]._set_values(self.__secondary_values[k])
+                del self.__secondary_values[k]
 
     def _to_json(self):
         configs = {}
