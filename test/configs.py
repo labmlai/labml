@@ -167,7 +167,7 @@ def test():
     else:
         assert False
     configs._set_values({'v_module2.m2': 'o2'})
-    print(configs.v_module2.m2)
+    assert configs.v_module2.m2 == 'o2'
 
     # import yaml
     # print(yaml.dump(configs._to_json()))
