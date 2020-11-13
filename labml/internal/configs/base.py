@@ -304,8 +304,9 @@ class Configs:
             self.__cached_configs[item] = value
             value._reset_explicitly_specified()
             if item in self.__secondary_values:
-                value._set_values(self.__secondary_values[item])
+                s_values = self.__secondary_values[item]
                 del self.__secondary_values[item]
+                value._set_values(s_values)
 
             primary = value.__dict__.get('_primary', None)
             if primary is not None:
@@ -468,8 +469,9 @@ class Configs:
 
         for k in sub_modules:
             if k in self.__cached_configs:
-                self.__cached_configs[k]._set_values(self.__secondary_values[k])
+                s_values = self.__secondary_values[k]
                 del self.__secondary_values[k]
+                self.__cached_configs[k]._set_values(s_values)
 
     def _to_json(self):
         configs = {}
