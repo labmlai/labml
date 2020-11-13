@@ -188,37 +188,21 @@ def configs(*args):
         conf_override (Dict[str, any], optional): a dictionary of
             configs to be overridden
     """
-    configs_override: Optional[Dict[str, any]] = None
+    conf_override: Optional[Dict[str, any]] = None
+    conf = args[0]
     idx = 1
 
-    if isinstance(args[0], BaseConfigs):
-        if idx < len(args) and isinstance(args[idx], dict):
-            configs_override = args[idx]
-            idx += 1
+    if idx < len(args) and isinstance(args[idx], dict):
+        conf_override = args[idx]
+        idx += 1
 
-        if idx < len(args) and isinstance(args[idx], list):
-            run_order = args[idx]
-            if len(args) != idx + 1:
-                raise RuntimeError("Invalid call to calculate configs")
-            _experiment_singleton().calc_configs(args[0], configs_override)
-        else:
-            if idx == len(args):
-                _experiment_singleton().calc_configs(args[0], configs_override)
-            else:
-                run_order = list(args[idx:])
-                for key in run_order:
-                    if not isinstance(key, str):
-                        raise RuntimeError("Invalid call to calculate configs")
-                _experiment_singleton().calc_configs(args[0], configs_override)
-    elif isinstance(args[0], dict):
-        if idx < len(args) and isinstance(args[idx], dict):
-            configs_override = args[idx]
-            idx += 1
+    if len(args) != idx:
+        raise RuntimeError("Invalid call to calculate configs")
 
-        if idx != len(args):
-            raise RuntimeError("Invalid call to calculate configs")
-
-        _experiment_singleton().calc_configs_dict(args[0], configs_override)
+    if isinstance(conf, BaseConfigs):
+        _experiment_singleton().calc_configs(conf, conf_override)
+    elif isinstance(conf, dict):
+        _experiment_singleton().calc_configs(conf, conf_override)
     else:
         raise RuntimeError("Invalid call to calculate configs")
 

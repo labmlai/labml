@@ -2,13 +2,13 @@ import json
 import os
 import pathlib
 import time
-from typing import Optional, List, Set, Dict, Union
+from typing import Optional, List, Set, Dict, Union, TYPE_CHECKING
 
 import git
 
 from labml import logger, monit
 from labml.internal.configs.base import Configs
-from labml.internal.configs.processor import ConfigProcessor
+from labml.internal.configs.processor import ConfigProcessor, FileConfigsSaver
 from labml.internal.experiment.experiment_run import Run, struct_time_to_time, struct_time_to_date
 from labml.internal.experiment.watcher import ExperimentWatcher
 from labml.internal.lab import lab_singleton
@@ -19,6 +19,8 @@ from labml.logger import Text
 from labml.utils import get_caller_file
 from labml.utils.notice import labml_notice
 
+if TYPE_CHECKING:
+    from labml.internal.tracker.writers.web_api import Writer as WebApiWriter
 
 class ModelSaver:
     def save(self, checkpoint_path: pathlib.Path) -> any:
@@ -140,6 +142,7 @@ class Experiment:
             automatically determining ``python_file``
         tags (Set[str], optional): Set of tags for experiment
     """
+    web_api: Optional['WebApiWriter']
     is_started: bool
     run: Run
     configs_processor: Optional[ConfigProcessor]
@@ -268,7 +271,7 @@ class Experiment:
         self.checkpoint_saver.save(tracker().global_step)
 
     def calc_configs(self,
-                     configs: Configs,
+                     configs: Union[Configs, Dict[str, any]],
                      configs_override: Optional[Dict[str, any]]):
         if configs_override is None:
             configs_override = {}
@@ -280,15 +283,6 @@ class Experiment:
         if self.distributed_rank == 0:
             logger.log()
 
-    def calc_configs_dict(self,
-                          configs: Dict[str, any],
-                          configs_override: Optional[Dict[str, any]]):
-        raise NotImplementedError
-        # self.configs_processor = ConfigProcessorDict(configs, configs_override)
-        # self.configs_processor()
-        #
-        # if self.distributed_rank == 0:
-        #     logger.log()
 
     def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):
         checkpoint_path, global_step = experiment_run.get_run_checkpoint(
@@ -400,21 +394,22 @@ class Experiment:
 
             if self.distributed_rank == 0:
                 if self.configs_processor is not None:
-                    self.configs_processor.save(self.run.configs_path)
+                    self.configs_processor.add_saver(FileConfigsSaver(self.run.configs_path))
 
                 if self.web_api is not None:
                     self.web_api.set_info(run_uuid=self.run.uuid,
                                           name=self.run.name,
                                           comment=self.run.comment)
-                    if self.configs_processor is not None:
-                        self.web_api.set_configs(self.configs_processor.to_json())
                     self.web_api.start()
+                    if self.configs_processor is not None:
+                        self.configs_processor.add_saver(self.web_api.get_configs_saver())
 
                 tracker().save_indicators(self.run.indicators_path)
 
-                if self.configs_processor:
-                    # PERF: Writing to tensorboard takes about 4 seconds
-                    tracker().write_h_parameters(self.configs_processor.get_hyperparams())
+                # PERF: Writing to tensorboard takes about 4 seconds
+                # Also wont work when configs are updated live
+                # if self.configs_processor:
+                #     tracker().write_h_parameters(self.configs_processor.get_hyperparams())
 
         self.is_started = True
         return ExperimentWatcher(self)
