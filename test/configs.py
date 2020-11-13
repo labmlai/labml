@@ -36,6 +36,11 @@ def sample_m_calc(c: Module):
     return c.p1_m1 + ' main no primary'
 
 
+class Module2(Configs):
+    m1: str = 'default'
+    m2: str
+
+
 class FromTypeNoParam:
     def __init__(self):
         self.value = 'default'
@@ -57,6 +62,7 @@ class MyConfigs(ParentConfigs):
     v1: str
     v2: str
     v_module: Module
+    v_module2: Module2 = Module2()
 
     o1: str
 
@@ -86,8 +92,7 @@ def module_without_primary(c: MyConfigs):
 
 @option(MyConfigs.v_module)
 def v_module():
-    conf = Module()
-    return conf
+    return Module()
 
 
 aggregate(MyConfigs.a, 'test',
@@ -147,8 +152,25 @@ def test():
     assert configs.a1 == 'test1'
     assert configs.a2 == 'custom'
 
-    import yaml
-    print(yaml.dump(configs._to_json()))
+    try:
+        configs.a1 = 'this should fail'
+    except ValueError:
+        pass
+    else:
+        assert False
+
+    assert configs.v_module2.m1 == 'default'
+    try:
+        configs._set_values({'v_module2.m1': 'overridden'})
+    except ValueError:
+        pass
+    else:
+        assert False
+    configs._set_values({'v_module2.m2': 'o2'})
+    print(configs.v_module2.m2)
+
+    # import yaml
+    # print(yaml.dump(configs._to_json()))
 
 
 if __name__ == '__main__':
