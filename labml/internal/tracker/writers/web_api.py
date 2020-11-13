@@ -19,6 +19,7 @@ from labml.utils.notice import labml_notice
 from . import Writer as WriteBase
 from ..indicators import Indicator
 from ..indicators.numeric import NumericIndicator
+from ...configs.processor import ConfigsSaver
 
 MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5
@@ -111,7 +112,16 @@ class WebApiThread(threading.Thread):
             return None
 
 
+class WebApiConfigsSaver(ConfigsSaver):
+    def __init__(self, writer: 'Writer'):
+        self.writer = writer
+
+    def save(self, configs: Dict):
+        self.writer.save_configs(configs)
+
+
 class Writer(WriteBase):
+    configs_saver: Optional[WebApiConfigsSaver]
     url: Optional[str]
     thread: Optional[WebApiThread]
 
@@ -129,6 +139,7 @@ class Writer(WriteBase):
         self.web_api = lab_singleton().web_api
         self.state = None
         self.thread = None
+        self.configs_saver = None
 
     @staticmethod
     def _parse_key(key: str):
@@ -151,8 +162,18 @@ class Writer(WriteBase):
         if not self.thread.is_alive():
             self.thread.start()
 
-    def set_configs(self, configs: Dict[str, any]):
-        self.configs = configs
+    def get_configs_saver(self):
+        if self.configs_saver is None:
+            self.configs_saver = WebApiConfigsSaver(self)
+        return self.configs_saver
+
+    def save_configs(self, configs: Dict[str, any]):
+        if self.web_api is None:
+            return
+
+        data = {'configs': configs}
+
+        self.push({'packet': data})
 
     def start(self):
         if self.web_api is None:
@@ -164,10 +185,6 @@ class Writer(WriteBase):
             'time': time.time(),
             'configs': {}
         }
-
-        if self.configs is not None:
-            for k, v in self.configs.items():
-                data['configs'][k] = v
 
         self.last_committed = time.time()
         self.commits_count = 0

@@ -108,6 +108,8 @@ class Configs:
     __order: Dict[str, int]
     __n_calculated: int
 
+    __update_callback: Optional[Callable]
+
     def __init__(self, *, _primary: str = None):
         self._primary = _primary
         self.__values = {}
@@ -130,6 +132,8 @@ class Configs:
 
         self.__order = {}
         self.__n_calculated = 0
+
+        self.__update_callback = None
 
         self.__collect_config_items(classes)
         self.__collect_calculator(classes)
@@ -226,6 +230,8 @@ class Configs:
 
         if item not in self.__cached:
             self.__calculate(item)
+            if self.__update_callback is not None:
+                self.__update_callback()
         return self.__cached[item]
 
     def __get_value_aggregate(self, item):
@@ -478,3 +484,6 @@ class Configs:
         self.__explicitly_specified = set()
         for k, v in self.__cached_configs:
             v._reset_explicitly_specified()
+
+    def _set_update_callback(self, update_callback: Callable):
+        self.__update_callback = update_callback

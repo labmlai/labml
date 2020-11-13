@@ -1,30 +1,32 @@
+import time
+
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.data
-from labml_helpers.datasets.mnist import MNISTConfigs
-from labml_helpers.device import DeviceConfigs
-from labml_helpers.optimizer import OptimizerConfigs
-from labml_helpers.seed import SeedConfigs
-from labml_helpers.train_valid import TrainValidConfigs
 
 from labml import experiment
 from labml.configs import option
+from labml_helpers.datasets.mnist import MNISTConfigs
+from labml_helpers.device import DeviceConfigs
+from labml_helpers.seed import SeedConfigs
+from labml_helpers.train_valid import TrainValidConfigs
 
 
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5, 1)
-        self.conv2 = nn.Conv2d(20, 50, 5, 1)
-        self.fc1 = nn.Linear(4 * 4 * 50, 500)
-        self.fc2 = nn.Linear(500, 10)
+        self.conv1 = nn.Conv2d(1, 2, 5, 1)
+        self.conv2 = nn.Conv2d(2, 5, 5, 1)
+        self.fc1 = nn.Linear(4 * 4 * 5, 50)
+        self.fc2 = nn.Linear(50, 10)
 
     def forward(self, x):
+        time.sleep(0.01)
         x = F.relu(self.conv1(x))
         x = F.max_pool2d(x, 2, 2)
         x = F.relu(self.conv2(x))
         x = F.max_pool2d(x, 2, 2)
-        x = x.view(-1, 4 * 4 * 50)
+        x = x.view(-1, 4 * 4 * 5)
         x = F.relu(self.fc1(x))
         return self.fc2(x)
 
@@ -39,6 +41,8 @@ class Configs(MNISTConfigs, TrainValidConfigs):
     seed = SeedConfigs()
     device: torch.device = DeviceConfigs()
     epochs: int = 10
+    train_batch_size = 1
+    valid_batch_size = 1
 
     is_save_models = True
     model: nn.Module
