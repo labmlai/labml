@@ -69,6 +69,8 @@ class Section:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_val is not None:
+            self.is_successful = False
         self._state = 'exited'
         if self._is_timed:
             self._end_time = time.time()
