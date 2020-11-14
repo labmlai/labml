@@ -1,7 +1,7 @@
 import types
 import warnings
 from collections import OrderedDict
-from typing import Dict, List, Callable, Union, Tuple, Optional, Type, Set
+from typing import Dict, List, Callable, Union, Tuple, Optional, Type, Set, Iterable
 
 from .config_function import ConfigFunction
 from .config_item import ConfigItem
@@ -32,7 +32,7 @@ def _is_class_method(func: Callable):
 
 
 RESERVED_CLASS = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wrap'}
-RESERVED_INSTANCE = {'_to_json', '_reset_explicitly_specified'}
+RESERVED_INSTANCE = {'_to_json', '_reset_explicitly_specified', '_set_update_callback', '_set_values', '_get_type'}
 
 _STANDARD_TYPES = {int, str, bool, float, Dict, List}
 
@@ -211,6 +211,9 @@ class Configs:
                         if key not in self.__aggregates[name]:
                             self.__aggregates[name][key] = {}
                         self.__aggregates[name][key][option] = value
+
+    def __dir__(self) -> Iterable[str]:
+        return [k for k in self.__types]
 
     def __setattr__(self, key, value):
         if key.startswith('_'):
@@ -438,13 +441,6 @@ class Configs:
         pairs = {p[0].key: p[1] for p in args}
         cls._aggregates[name.key][option] = pairs
 
-    def __get_options_list(self, key: str):
-        opts = list(self.__options.get(key, {}).keys())
-        if not opts:
-            opts = list((self.__aggregates_options.get(key, set())))
-
-        return opts
-
     def _set_values(self, values: Dict[str, any]):
         sub_modules = set()
         for k, v in values.items():
@@ -472,6 +468,13 @@ class Configs:
                 s_values = self.__secondary_values[k]
                 del self.__secondary_values[k]
                 self.__cached_configs[k]._set_values(s_values)
+
+    def __get_options_list(self, key: str):
+        opts = list(self.__options.get(key, {}).keys())
+        if not opts:
+            opts = list((self.__aggregates_options.get(key, set())))
+
+        return opts
 
     def _to_json(self):
         configs = {}
@@ -502,3 +505,6 @@ class Configs:
 
     def _set_update_callback(self, update_callback: Callable):
         self.__update_callback = update_callback
+
+    def _get_type(self, item: str) -> Type:
+        return self.__types[item]
