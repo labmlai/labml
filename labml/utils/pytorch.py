@@ -25,9 +25,9 @@ def get_modules(configs: BaseConfigs):
 
     modules = {}
     for k in keys:
-        value = getattr(configs, k)
-        if isinstance(value, torch.nn.Module):
-            modules[k] = value
+        type_ = configs._get_type(k)
+        if issubclass(type_, torch.nn.Module):
+            modules[k] = getattr(configs, k)
 
     return modules
 

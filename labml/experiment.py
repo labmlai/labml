@@ -101,7 +101,17 @@ def add_model_savers(savers: Dict[str, ModelSaver]):
     _experiment_singleton().checkpoint_saver.add_savers(savers)
 
 
+@overload
+def add_pytorch_models(**kwargs: 'torch.nn.Module'):
+    ...
+
+
+@overload
 def add_pytorch_models(models: Dict[str, 'torch.nn.Module']):
+    ...
+
+
+def add_pytorch_models(*args, **kwargs):
     """
     Set variables for saving and loading
 
@@ -113,7 +123,13 @@ def add_pytorch_models(models: Dict[str, 'torch.nn.Module']):
     """
 
     from labml.internal.experiment.pytorch import add_models as _add_pytorch_models
-    _add_pytorch_models(models)
+
+    if len(args) > 0:
+        assert len(args) == 1
+        assert isinstance(args[0], dict)
+        _add_pytorch_models(args[0])
+    else:
+        _add_pytorch_models(kwargs)
 
 
 def add_sklearn_models(models: Dict[str, any]):
