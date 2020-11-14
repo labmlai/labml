@@ -1,4 +1,4 @@
-from typing import List, Callable, overload, Union, Tuple, Optional
+from typing import List, Callable, overload, Union, Tuple
 
 from labml.internal.configs.base import Configs as _Configs
 from labml.internal.configs.config_item import ConfigItem
@@ -86,20 +86,6 @@ def option(name: Union[any, List[any]], *args: any):
             pass_params = arg
 
     return config_class.calc(name, option_name, pass_params)
-
-
-@overload
-def setup(name: Union[any, List[any]]):
-    ...
-
-
-@overload
-def setup(name: Union[any, List[any]], option_name: str):
-    ...
-
-
-def setup(name: Union[any, List[any]], option_name: Optional[str] = None):
-    raise NotImplementedError
 
 
 @overload
