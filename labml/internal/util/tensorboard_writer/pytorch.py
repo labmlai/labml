@@ -38,4 +38,8 @@ class PyTorchTensorboardWriter(TensorboardWriter):
 
     def add_image(self, key: str, img: any, global_step: int):
         self.__connect()
-        self.__writer.add_image(key, img, global_step)
+        if len(img.shape) == 4:
+            for i in range(len(img)):
+                self.__writer.add_image(key, img[i], global_step)
+        else:
+            self.__writer.add_image(key, img, global_step)
