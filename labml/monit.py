@@ -25,8 +25,7 @@ def func(name, *,
                          is_new_line=is_new_line,
                          is_children_silent=is_children_silent,
                          total_steps=total_steps):
-                r = f(*args, **kwargs)
-            return r
+                return f(*args, **kwargs)
 
         return wrapper
 
