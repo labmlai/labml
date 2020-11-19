@@ -26,7 +26,7 @@ MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5
 TIMEOUT_SECONDS = 5
 
-_STATIC_ATTRIBUTES = ['configs', 'wildcard_indicators', 'indicators']
+_STATIC_ATTRIBUTES = {'configs', 'wildcard_indicators', 'indicators'}
 
 
 @dataclass
@@ -75,7 +75,7 @@ class WebApiThread(threading.Thread):
 
     def _process(self, packet: Packet):
         data = packet.data
-        remove = [k for k in data if self.key_idx[k] != packet.idx]
+        remove = [k for k in data if k in _STATIC_ATTRIBUTES and self.key_idx[k] != packet.idx]
         for k in remove:
             del data[k]
 
@@ -94,7 +94,15 @@ class WebApiThread(threading.Thread):
         data_json = data_json.encode('utf-8')
         req.add_header('Content-Length', str(len(data)))
 
+        # _steps = data.get('track', {}).get('loss.train', {}).get('step', [])
         try:
+            # print('=' * 20 + '\n')
+            # if _steps:
+            #     print(_steps[0], _steps[-1])
+            # for i in range(len(_steps) - 1):
+            #     assert _steps[i] <= _steps[i+1]
+            # print('send', data.keys())
+            # print('=' * 20 + '\n')
             if self.verify_connection:
                 response = urllib.request.urlopen(req, data_json, timeout=TIMEOUT_SECONDS)
             else:
