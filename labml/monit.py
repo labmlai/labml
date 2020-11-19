@@ -17,7 +17,6 @@ def func(name, *,
          is_children_silent: bool = False,
          total_steps: float = 1.0):
     def decorator_func(f: Callable):
-        @functools.wraps(f)
         def wrapper(*args, **kwargs):
             with section(name,
                          is_silent=is_silent,
@@ -26,7 +25,8 @@ def func(name, *,
                          is_new_line=is_new_line,
                          is_children_silent=is_children_silent,
                          total_steps=total_steps):
-                f(*args, **kwargs)
+                r = f(*args, **kwargs)
+            return r
 
         return wrapper
 
