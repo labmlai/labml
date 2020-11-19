@@ -95,7 +95,6 @@ class WebApiThread(threading.Thread):
         req.add_header('Content-Length', str(len(data)))
 
         try:
-            print('sending', data.keys())
             if self.verify_connection:
                 response = urllib.request.urlopen(req, data_json, timeout=TIMEOUT_SECONDS)
             else:
