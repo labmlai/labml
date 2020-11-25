@@ -24,7 +24,7 @@ from ...configs.processor import ConfigsSaver
 
 MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5
-TIMEOUT_SECONDS = 5
+TIMEOUT_SECONDS = 15
 
 _STATIC_ATTRIBUTES = {'configs', 'wildcard_indicators', 'indicators'}
 
