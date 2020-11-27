@@ -28,7 +28,8 @@ class IpynbPyCharmDestination(Destination):
         return False
 
     def log(self, parts: List[Union[str, Tuple[str, Optional[StyleCode]]]], *,
-            is_new_line=True):
+            is_new_line: bool,
+            is_reset: bool):
         tuple_parts = []
         for p in parts:
             if type(p) == str:
@@ -54,8 +55,11 @@ class IpynbPyCharmDestination(Destination):
 
         if self.is_same_cell():
             if coded:
-                self.__cell_lines.pop()
-                self.__cell_lines += lines
+                last = self.__cell_lines.pop()
+                if is_reset:
+                    self.__cell_lines += lines
+                else:
+                    self.__cell_lines += [last + lines[0]] + lines[1:]
             text = '\n'.join(self.__cell_lines)
             self.html.value = f"<pre {attrs}>{text}</pre>"
         else:

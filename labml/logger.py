@@ -57,38 +57,38 @@ def log():
 
 
 @overload
-def log(message: str, *, is_new_line: bool = True):
+def log(message: str, *, is_new_line: bool = True, is_reset: bool = True):
     ...
 
 
 @overload
 def log(message: str, color: StyleCode,
         *,
-        is_new_line: bool = True):
+        is_new_line: bool = True, is_reset: bool = True):
     ...
 
 
 @overload
 def log(message: str, colors: List[StyleCode],
         *,
-        is_new_line: bool = True):
+        is_new_line: bool = True, is_reset: bool = True):
     ...
 
 
 @overload
 def log(messages: List[Union[str, Tuple[str, StyleCode]]],
         *,
-        is_new_line: bool = True):
+        is_new_line: bool = True, is_reset: bool = True):
     ...
 
 
 @overload
 def log(*args: Union[str, Tuple[str, StyleCode]],
-        is_new_line: bool = True):
+        is_new_line: bool = True, is_reset: bool = True):
     ...
 
 
-def log(*args, is_new_line: bool = True):
+def log(*args, is_new_line: bool = True, is_reset: bool = True):
     r"""
     This has multiple overloads
 
@@ -125,20 +125,20 @@ def log(*args, is_new_line: bool = True):
     from labml.internal.logger import logger_singleton as _internal
 
     if len(args) == 0:
-        assert is_new_line == True
-        _internal().log([], is_new_line=True)
+        assert is_new_line
+        _internal().log([], is_new_line=is_new_line, is_reset=is_reset)
     elif len(args) == 1:
         message = args[0]
         if isinstance(message, str):
-            _internal().log([(message, None)], is_new_line=is_new_line)
+            _internal().log([(message, None)], is_new_line=is_new_line, is_reset=is_reset)
         elif isinstance(message, list):
-            _internal().log(message, is_new_line=is_new_line)
+            _internal().log(message, is_new_line=is_new_line, is_reset=is_reset)
         else:
             raise TypeError(f'Unrecognized type: {type(message)}', message)
     elif len(args) == 2 and isinstance(args[0], str) and isinstance(args[1], StyleCode):
-        _internal().log([(args[0], args[1])], is_new_line=is_new_line)
+        _internal().log([(args[0], args[1])], is_new_line=is_new_line, is_reset=is_reset)
     else:
-        _internal().log(args, is_new_line=is_new_line)
+        _internal().log(args, is_new_line=is_new_line, is_reset=is_reset)
 
 
 @overload

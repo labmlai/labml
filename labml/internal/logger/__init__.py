@@ -15,8 +15,9 @@ class Logger:
         self.__inspect = Inspect(self)
 
     def log(self, parts: List[LogPart], *,
-            is_new_line=True):
-        self.__destination.log(parts, is_new_line=is_new_line)
+            is_new_line: bool = True,
+            is_reset: bool = True):
+        self.__destination.log(parts, is_new_line=is_new_line, is_reset=is_reset)
 
     def info(self, *args, **kwargs):
         self.__inspect.info(*args, **kwargs)

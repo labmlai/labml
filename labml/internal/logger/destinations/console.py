@@ -1,7 +1,7 @@
 from typing import List, Union, Tuple, Optional
 
-from labml.internal.util.colors import StyleCode, ANSI_RESET
 from labml.internal.logger.destinations import Destination
+from labml.internal.util.colors import StyleCode, ANSI_RESET
 
 
 class ConsoleDestination(Destination):
@@ -18,7 +18,8 @@ class ConsoleDestination(Destination):
             return f"{color.ansi()}{text}{ANSI_RESET}"
 
     def log(self, parts: List[Union[str, Tuple[str, Optional[StyleCode]]]], *,
-            is_new_line=True):
+            is_new_line: bool,
+            is_reset: bool):
         tuple_parts = []
         for p in parts:
             if type(p) == str:
@@ -34,4 +35,7 @@ class ConsoleDestination(Destination):
 
         text = "".join(coded)
 
-        print("\r" + text, end=end_char, flush=True)
+        if is_reset:
+            print("\r" + text, end=end_char, flush=True)
+        else:
+            print(text, end=end_char, flush=True)

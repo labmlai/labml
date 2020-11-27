@@ -48,7 +48,8 @@ class IpynbDestination(Destination):
         return open_tags + text + close_tags
 
     def log(self, parts: List[Union[str, Tuple[str, Optional[StyleCode]]]], *,
-            is_new_line=True):
+            is_new_line: bool,
+            is_reset: bool):
         tuple_parts = []
         for p in parts:
             if type(p) == str:
@@ -74,8 +75,11 @@ class IpynbDestination(Destination):
 
         if self.is_same_cell():
             if coded:
-                self.__cell_lines.pop()
-                self.__cell_lines += lines
+                last = self.__cell_lines.pop()
+                if is_reset:
+                    self.__cell_lines += lines
+                else:
+                    self.__cell_lines += [last + lines[0]] + lines[1:]
             text = '\n'.join(self.__cell_lines)
             html = HTML(f"<pre {attrs}>{text}</pre>")
             self.__last_handle.update(html)
