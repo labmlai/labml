@@ -57,7 +57,7 @@ def track():
     track_memory()
     track_cpu()
     track_disk()
-    track_processes()
+    # track_processes()
 
     tracker.save()
 

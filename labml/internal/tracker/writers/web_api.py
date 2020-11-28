@@ -71,9 +71,16 @@ class WebApiThread(threading.Thread):
                 if self.is_stopped and not self.warned_updating:
                     logger.log('Still updating LabML App, please wait for it to complete..', Text.highlight)
                     self.warned_updating = True
-                self._process(packet)
+                retries = 0
+                while True:
+                    if self._process(packet):
+                        break
+                    else:
+                        logger.log(f'Retrying again in 10 seconds ({retries})...', Text.highlight)
+                        time.sleep(10)
+                        retries += 1
 
-    def _process(self, packet: Packet):
+    def _process(self, packet: Packet) -> bool:
         data = packet.data
         remove = [k for k in data if k in _STATIC_ATTRIBUTES and self.key_idx[k] != packet.idx]
         for k in remove:
@@ -81,11 +88,32 @@ class WebApiThread(threading.Thread):
 
         if not data:
             assert packet.callback is None
-            return
+            return True
 
-        res = self._send(data)
+        try:
+            run_url = self._send(data)
+        except urllib.error.HTTPError as e:
+            labml_notice([f'Failed to send to {self.url}: ',
+                          (str(e.code), Text.value),
+                          '\n' + str(e.reason)])
+            return False
+        except urllib.error.URLError as e:
+            labml_notice([f'Failed to connect to {self.url}\n',
+                          str(e.reason)])
+            return False
+        except socket.timeout as e:
+            labml_notice([f'{self.url} timeout\n',
+                          str(e)])
+            return False
+        except ConnectionResetError as e:
+            labml_notice([f'Connection reset by LabML App server {self.url}\n',
+                          str(e)])
+            return False
+
         if packet.callback is not None:
-            packet.callback(res)
+            packet.callback(run_url)
+
+        return True
 
     def _send(self, data: Dict[str, any]):
         req = urllib.request.Request(self.url)
@@ -94,56 +122,30 @@ class WebApiThread(threading.Thread):
         data_json = data_json.encode('utf-8')
         req.add_header('Content-Length', str(len(data)))
 
-        # _steps = data.get('track', {}).get('loss.train', {}).get('step', [])
-        try:
-            # print('=' * 20 + '\n')
-            # if _steps:
-            #     print(_steps[0], _steps[-1])
-            # for i in range(len(_steps) - 1):
-            #     assert _steps[i] <= _steps[i+1]
-            # print('send', data.keys())
-            # print('=' * 20 + '\n')
-            if self.verify_connection:
-                response = urllib.request.urlopen(req, data_json, timeout=TIMEOUT_SECONDS)
-            else:
-                response = urllib.request.urlopen(req, data_json, timeout=TIMEOUT_SECONDS,
-                                                  context=ssl._create_unverified_context())
-            content = response.read().decode('utf-8')
-            result = json.loads(content)
+        if self.verify_connection:
+            response = urllib.request.urlopen(req, data_json, timeout=TIMEOUT_SECONDS)
+        else:
+            response = urllib.request.urlopen(req, data_json, timeout=TIMEOUT_SECONDS,
+                                              context=ssl._create_unverified_context())
+        content = response.read().decode('utf-8')
+        result = json.loads(content)
 
-            if result['errors']:
-                for e in result['errors']:
-                    if 'error' in e:
-                        labml_notice(['LabML App Error: ', (e['error'] + '', Text.key), '\n',
-                                      (e['message'], Text.value),
-                                      f'App URL: {self.url}'],
-                                     is_danger=True)
-                        self.error = True
-                        raise RuntimeError('LabML App Error', e)
-                    elif 'warning' in e:
-                        labml_notice(
-                            ['LabML App Warning: ', (e['warning'] + ': ', Text.key), (e['message'], Text.value)])
-                    else:
-                        self.error = True
-                        raise RuntimeError('Unknown error from LabML App', e)
-            return result.get('url', None)
-        except urllib.error.HTTPError as e:
-            labml_notice([f'Failed to send to {self.url}: ',
-                          (str(e.code), Text.value),
-                          '\n' + str(e.reason)])
-            return None
-        except urllib.error.URLError as e:
-            labml_notice([f'Failed to connect to {self.url}\n',
-                          str(e.reason)])
-            return None
-        except socket.timeout as e:
-            labml_notice([f'{self.url} timeout\n',
-                          str(e)])
-            return None
-        except ConnectionResetError as e:
-            labml_notice([f'Connection reset by LabML App server {self.url}\n',
-                          str(e)])
-            return None
+        for e in result.get('errors', []):
+            if 'error' in e:
+                labml_notice(['LabML App Error: ', (e['error'] + '', Text.key), '\n',
+                              (e['message'], Text.value),
+                              f'App URL: {self.url}'],
+                             is_danger=True)
+                self.error = True
+                raise RuntimeError('LabML App Error', e)
+            elif 'warning' in e:
+                labml_notice(
+                    ['LabML App Warning: ', (e['warning'] + ': ', Text.key), (e['message'], Text.value)])
+            else:
+                self.error = True
+                raise RuntimeError('Unknown error from LabML App', e)
+
+        return result.get('url', None)
 
 
 class WebApiConfigsSaver(ConfigsSaver):
