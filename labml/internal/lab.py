@@ -154,7 +154,7 @@ class Lab:
             }, {
                 'class_name': 'Scalar',
                 'is_print': False,
-                'name': 'optimizer.*'
+                'name': 'optim.*'
             }, {
                 'class_name': 'Scalar',
                 'is_print': False,
