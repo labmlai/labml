@@ -33,6 +33,7 @@ def create_default_indicator(name: str, value: any, is_print: bool):
     elif isinstance(value, np.ndarray):
         return Scalar(name, is_print)
     elif torch is not None:
+        from torch.optim.optimizer import Optimizer
         if isinstance(value, torch.nn.parameter.Parameter):
             return Scalar(name, is_print)
         elif isinstance(value, torch.Tensor):
@@ -40,5 +41,11 @@ def create_default_indicator(name: str, value: any, is_print: bool):
         elif isinstance(value, torch.nn.Module):
             from labml.internal.tracker.indicators.aggregate import PyTorchModule
             return PyTorchModule(name, is_print)
+        elif isinstance(value, Optimizer):
+            from labml.internal.tracker.indicators.aggregate import PyTorchOptimizer
+            return PyTorchOptimizer(name, is_print)
+        elif isinstance(value, tuple) and isinstance(value[0], Optimizer):
+            from labml.internal.tracker.indicators.aggregate import PyTorchOptimizer
+            return PyTorchOptimizer(name, is_print)
 
     raise ValueError(f"Unknown type {type(value)}")

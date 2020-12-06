@@ -154,6 +154,10 @@ class Lab:
             }, {
                 'class_name': 'Scalar',
                 'is_print': False,
+                'name': 'optim.*'
+            }, {
+                'class_name': 'Scalar',
+                'is_print': False,
                 'name': 'time.*'
             }
             ]
