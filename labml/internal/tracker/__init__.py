@@ -42,6 +42,9 @@ class Tracker:
         self.is_indicators_updated = True
         self.reset_store()
 
+        from labml.internal.tracker.writers import screen
+        self.add_writer(screen.ScreenWriter())
+
     def __assert_name(self, name: str, value: any):
         if name.endswith("."):
             if name in self.dot_indicators:

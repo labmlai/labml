@@ -18,7 +18,10 @@ class IpynbPyCharmDestination(Destination):
         self.html: Optional[HTML] = None
 
     def is_same_cell(self):
-        cells = get_ipython().ev('len(In)')
+        try:
+            cells = get_ipython().ev('len(In)')
+        except NameError:
+            return False
         if cells == self.__cell_count:
             return True
 
@@ -49,9 +52,9 @@ class IpynbPyCharmDestination(Destination):
         lines = text.split('\n')
 
         if is_kaggle():
-            attrs = 'style="color: #444;'
+            attrs = 'style="color: #444; overflow-x: scroll;"'
         else:
-            attrs = ''
+            attrs = 'style="overflow-x: scroll;"'
 
         if self.is_same_cell():
             if coded:
