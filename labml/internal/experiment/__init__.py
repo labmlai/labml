@@ -12,8 +12,8 @@ from labml.internal.configs.processor import ConfigProcessor, FileConfigsSaver
 from labml.internal.experiment.experiment_run import Run, struct_time_to_time, struct_time_to_date
 from labml.internal.experiment.watcher import ExperimentWatcher
 from labml.internal.lab import lab_singleton
-from labml.internal.tracker import tracker_singleton as tracker
 from labml.internal.monitor import monitor_singleton as monitor
+from labml.internal.tracker import tracker_singleton as tracker
 from labml.internal.util import is_ipynb, is_colab, is_kaggle
 from labml.logger import Text
 from labml.utils import get_caller_file
@@ -21,6 +21,7 @@ from labml.utils.notice import labml_notice
 
 if TYPE_CHECKING:
     from labml.internal.tracker.writers.web_api import Writer as WebApiWriter
+
 
 class ModelSaver:
     def save(self, checkpoint_path: pathlib.Path) -> any:
@@ -283,7 +284,6 @@ class Experiment:
         if self.distributed_rank == 0:
             logger.log()
 
-
     def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):
         checkpoint_path, global_step = experiment_run.get_run_checkpoint(
             run_uuid,
@@ -359,9 +359,17 @@ class Experiment:
             tracker().add_writer(file.Writer(self.run.log_file))
 
         if 'web_api' in self.writers:
-            from labml.internal.tracker.writers import web_api
-            self.web_api = web_api.Writer()
-            tracker().add_writer(self.web_api)
+            web_api_conf = lab_singleton().web_api
+            if web_api_conf is not None:
+                from labml.internal.tracker.writers import web_api
+                from labml.internal.api import ApiCaller
+                self.web_api = web_api.Writer(ApiCaller(web_api_conf.url,
+                                                        {'run_uuid': self.run.uuid},
+                                                        web_api.STATIC_ATTRIBUTES,
+                                                        15),
+                                              frequency=web_api_conf.frequency,
+                                              open_browser=web_api_conf.open_browser)
+                tracker().add_writer(self.web_api)
         else:
             self.web_api = None
 
@@ -445,6 +453,12 @@ def global_params_singleton() -> GlobalParams:
         _global_params = GlobalParams()
 
     return _global_params
+
+
+def has_experiment() -> bool:
+    global _internal
+
+    return _internal is not None
 
 
 def experiment_singleton() -> Experiment:
