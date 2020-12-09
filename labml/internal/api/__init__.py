@@ -6,7 +6,7 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass
 from queue import Queue
-from typing import Dict, Optional, Callable, List
+from typing import Dict, Optional, Callable, Set
 
 import labml
 from labml import logger
@@ -23,8 +23,9 @@ class Packet:
 
 
 class _WebApiThread(threading.Thread):
-    def __init__(self, url: str, static_attributes: List[str], timeout_seconds: int):
+    def __init__(self, url: str, state_attributes: Set[str], timeout_seconds: int):
         super().__init__(daemon=False)
+        self.please_wait_count = 0
         self.timeout_seconds = timeout_seconds
         self.url = url
         self.queue: Queue[Packet] = Queue()
@@ -32,7 +33,7 @@ class _WebApiThread(threading.Thread):
         self.errored = False
         self.key_idx = {}
         self.data_idx = 0
-        self.static_attributes = static_attributes
+        self.state_attributes = state_attributes
 
     def push(self, packet: Packet):
         for k in packet.data:
@@ -44,15 +45,21 @@ class _WebApiThread(threading.Thread):
     def stop(self):
         self.is_stopped = True
         self.push(Packet(data={}, program_completed=True))
-        logger.log('Still updating LabML App, please wait for it to complete..', Text.highlight)
+        logger.log('Still updating LabML App, please wait for it to complete...', Text.highlight)
+        self.please_wait_count = 1
 
     def run(self):
         while True:
             packet = self.queue.get()
             if packet.program_completed:
+                logger.log()
                 logger.log('Finished updating LabML App.', Text.highlight)
                 return
             else:
+                if self.is_stopped:
+                    logger.log('Please wait' + '...' * self.please_wait_count, Text.meta,
+                               is_new_line=False)
+                    self.please_wait_count += 1
                 retries = 0
                 while True:
                     if self._process(packet):
@@ -64,7 +71,7 @@ class _WebApiThread(threading.Thread):
 
     def _process(self, packet: Packet) -> bool:
         data = packet.data
-        remove = [k for k in data if k in self.static_attributes and self.key_idx[k] != packet.idx]
+        remove = [k for k in data if k in self.state_attributes and self.key_idx[k] != packet.idx]
         for k in remove:
             del data[k]
 
@@ -130,9 +137,10 @@ class ApiCaller:
     web_api_url: str
     params: Dict[str, str]
     thread: Optional[_WebApiThread]
+    state_attributes: Set[str]
 
     def __init__(self, web_api_url: str, params: Dict[str, str],
-                 static_attributes: List[str], timeout_seconds: int = 15):
+                 timeout_seconds: int = 15):
         super().__init__()
 
         params.copy()
@@ -141,12 +149,15 @@ class ApiCaller:
 
         self.web_api_url = f'{web_api_url}{params}'
         self.timeout_seconds = timeout_seconds
-        self.static_attributes = static_attributes
+        self.state_attributes = set()
         self.thread = None
+
+    def add_state_attribute(self, attr: str):
+        self.state_attributes.add(attr)
 
     def push(self, data: Packet):
         if self.thread is None:
-            self.thread = _WebApiThread(self.web_api_url, self.static_attributes, self.timeout_seconds)
+            self.thread = _WebApiThread(self.web_api_url, self.state_attributes, self.timeout_seconds)
 
         if self.thread.errored:
             raise RuntimeError('LabML App error: See above for error details')

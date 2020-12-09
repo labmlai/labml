@@ -5,7 +5,6 @@ import time
 from typing import Optional, List, Set, Dict, Union, TYPE_CHECKING
 
 import git
-
 from labml import logger, monit
 from labml.internal.configs.base import Configs
 from labml.internal.configs.processor import ConfigProcessor, FileConfigsSaver
@@ -20,7 +19,7 @@ from labml.utils import get_caller_file
 from labml.utils.notice import labml_notice
 
 if TYPE_CHECKING:
-    from labml.internal.tracker.writers.web_api import Writer as WebApiWriter
+    from labml.internal.api.experiment import ApiExperiment
 
 
 class ModelSaver:
@@ -143,7 +142,7 @@ class Experiment:
             automatically determining ``python_file``
         tags (Set[str], optional): Set of tags for experiment
     """
-    web_api: Optional['WebApiWriter']
+    web_api: Optional['ApiExperiment']
     is_started: bool
     run: Run
     configs_processor: Optional[ConfigProcessor]
@@ -363,13 +362,13 @@ class Experiment:
             if web_api_conf is not None:
                 from labml.internal.tracker.writers import web_api
                 from labml.internal.api import ApiCaller
-                self.web_api = web_api.Writer(ApiCaller(web_api_conf.url,
-                                                        {'run_uuid': self.run.uuid},
-                                                        web_api.STATIC_ATTRIBUTES,
-                                                        15),
-                                              frequency=web_api_conf.frequency,
-                                              open_browser=web_api_conf.open_browser)
-                tracker().add_writer(self.web_api)
+                from labml.internal.api.experiment import ApiExperiment
+                api_caller = ApiCaller(web_api_conf.url,
+                                       {'run_uuid': self.run.uuid},
+                                       15)
+                self.web_api = ApiExperiment(api_caller,
+                                             open_browser=web_api_conf.open_browser)
+                tracker().add_writer(web_api.Writer(api_caller, frequency=web_api_conf.frequency))
         else:
             self.web_api = None
 
