@@ -131,8 +131,6 @@ class Writer(WriteBase):
             'time': time_
         }
 
-        self.flush()
-
         # TODO: Will have to fix this when there are other statuses that dont stop the experiment
         # This will stop the thread after sending all the data
         self.api_caller.stop()

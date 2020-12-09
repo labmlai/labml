@@ -29,7 +29,6 @@ class _WebApiThread(threading.Thread):
         self.url = url
         self.queue: Queue[Packet] = Queue()
         self.is_stopped = False
-        self.warned_updating = False
         self.errored = False
         self.key_idx = {}
         self.data_idx = 0
@@ -45,18 +44,15 @@ class _WebApiThread(threading.Thread):
     def stop(self):
         self.is_stopped = True
         self.push(Packet(data={}, program_completed=True))
+        logger.log('Still updating LabML App, please wait for it to complete..', Text.highlight)
 
     def run(self):
         while True:
             packet = self.queue.get()
             if packet.program_completed:
-                if self.warned_updating:
-                    logger.log('Finished updating LabML App.', Text.highlight)
+                logger.log('Finished updating LabML App.', Text.highlight)
                 return
             else:
-                if self.is_stopped and not self.warned_updating:
-                    logger.log('Still updating LabML App, please wait for it to complete..', Text.highlight)
-                    self.warned_updating = True
                 retries = 0
                 while True:
                     if self._process(packet):

@@ -432,6 +432,8 @@ class Experiment:
                                    'time': end_time}, indent=None)
                 f.write(data + '\n')
 
+        tracker().finish_loop()
+
         if self.web_api is not None:
             self.web_api.status(self.distributed_rank, status, details, end_time)
 
