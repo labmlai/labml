@@ -367,8 +367,10 @@ class Experiment:
                                        {'run_uuid': self.run.uuid},
                                        15)
                 self.web_api = ApiExperiment(api_caller,
+                                             frequency=web_api_conf.frequency,
                                              open_browser=web_api_conf.open_browser)
-                tracker().add_writer(web_api.Writer(api_caller, frequency=web_api_conf.frequency))
+                tracker().add_writer(web_api.Writer(api_caller,
+                                                    frequency=web_api_conf.frequency))
         else:
             self.web_api = None
 

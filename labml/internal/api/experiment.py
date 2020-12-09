@@ -19,12 +19,13 @@ class WebApiConfigsSaver(ConfigsSaver):
 
 class ApiExperiment:
     configs_saver: Optional[WebApiConfigsSaver]
-    url: Optional[str]
 
     def __init__(self, api_caller: ApiCaller, *,
+                 frequency: float,
                  open_browser: bool):
         super().__init__()
 
+        self.frequency = frequency
         self.open_browser = open_browser
         self.api_caller = api_caller
         self.run_uuid = None
@@ -58,6 +59,9 @@ class ApiExperiment:
         }
 
         self.api_caller.push(Packet(data, callback=self._started))
+
+        from labml.internal.api.logs import API_LOGS
+        API_LOGS.set_api(self.api_caller, frequency=self.frequency)
 
     def _started(self, url):
         if url is None:
