@@ -1,15 +1,16 @@
 import sys
 import time
 from io import StringIO
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
-from labml.internal.api import ApiCaller, Packet
+if TYPE_CHECKING:
+    from labml.internal.api import ApiCaller
 
 WARMUP_COMMITS = 5
 
 
 class ApiLogs:
-    api_caller: Optional[ApiCaller]
+    api_caller: Optional['ApiCaller']
     frequency: float
 
     def __init__(self):
@@ -23,7 +24,7 @@ class ApiLogs:
         self.stderr = None
         self.logger = None
 
-    def set_api(self, api_caller: ApiCaller, *,
+    def set_api(self, api_caller: 'ApiCaller', *,
                 frequency: float):
         self.api_caller = api_caller
         self.frequency = frequency
@@ -76,6 +77,8 @@ class ApiLogs:
         if self.logger is not None:
             data['logger'] = self.logger
             self.logger = None
+
+        from labml.internal.api import Packet
         self.api_caller.push(Packet(data))
 
 

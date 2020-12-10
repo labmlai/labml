@@ -3,6 +3,7 @@ from typing import Optional, List
 from .destinations.factory import create_destination
 from .inspect import Inspect
 from .types import LogPart
+from ..api.logs import API_LOGS as _
 
 
 class Logger:
