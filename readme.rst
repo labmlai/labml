@@ -8,8 +8,8 @@ LabML
 
 LabML lets you monitor AI model training on mobile phones.
 
-.. image:: https://raw.githubusercontent.com/vpj/lab/master/images/mobile.png
-   :width: 50%
+.. image:: https://github.com/lab-ml/app/blob/master/images/labml-app.gif
+   :width: 300px
    :alt: Mobile view 
 
 You can install this package using PIP.
