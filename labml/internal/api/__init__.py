@@ -6,7 +6,7 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass
 from queue import Queue
-from typing import Dict, Optional, Callable, Set
+from typing import Dict, Optional, Callable, Set, List
 
 import labml
 from labml import logger
@@ -50,34 +50,43 @@ class _WebApiThread(threading.Thread):
 
     def run(self):
         while True:
-            packet = self.queue.get()
-            if packet.program_completed:
+            packets = [self.queue.get()]
+            while not self.queue.empty():
+                packets.append(self.queue.get())
+            if self.is_stopped:
+                logger.log('Updating App. Please wait' + '...' * self.please_wait_count, Text.meta,
+                           is_new_line=False)
+                self.please_wait_count += 1
+            retries = 0
+            while True:
+                if self._process(packets):
+                    break
+                else:
+                    logger.log(f'Retrying again in 10 seconds ({retries})...', Text.highlight)
+                    time.sleep(10)
+                    retries += 1
+            if self.is_stopped and self.queue.empty():
                 logger.log()
                 logger.log('Finished updating LabML App.', Text.highlight)
                 return
-            else:
-                if self.is_stopped:
-                    logger.log('Please wait' + '...' * self.please_wait_count, Text.meta,
-                               is_new_line=False)
-                    self.please_wait_count += 1
-                retries = 0
-                while True:
-                    if self._process(packet):
-                        break
-                    else:
-                        logger.log(f'Retrying again in 10 seconds ({retries})...', Text.highlight)
-                        time.sleep(10)
-                        retries += 1
 
-    def _process(self, packet: Packet) -> bool:
-        data = packet.data
-        remove = [k for k in data if k in self.state_attributes and self.key_idx[k] != packet.idx]
-        for k in remove:
-            del data[k]
-
-        if not data:
-            assert packet.callback is None
-            return True
+    def _process(self, packets: List[Packet]) -> bool:
+        callback = None
+        data = []
+        for p in packets:
+            if p.program_completed:
+                continue
+            if p.callback is not None:
+                if callback is not None:
+                    raise RuntimeError('Multiple callbacks')
+                callback = p.callback
+            d = p.data
+            remove = [k for k in d if k in self.state_attributes and self.key_idx[k] != p.idx]
+            for k in remove:
+                del d[k]
+            if not d and p.callback is not None:
+                raise RuntimeError('No data to be sent for a packet with a callback')
+            data.append(d)
 
         try:
             run_url = self._send(data)
@@ -99,12 +108,12 @@ class _WebApiThread(threading.Thread):
                           str(e)])
             return False
 
-        if packet.callback is not None:
-            packet.callback(run_url)
+        if callback is not None:
+            callback(run_url)
 
         return True
 
-    def _send(self, data: Dict[str, any]):
+    def _send(self, data: List[Dict[str, any]]):
         req = urllib.request.Request(self.url)
         req.add_header('Content-Type', 'application/json; charset=utf-8')
         data_json = json.dumps(data)

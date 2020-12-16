@@ -39,7 +39,7 @@ class ApiLogs:
         freq = self.frequency
         if self.commits_count < WARMUP_COMMITS:
             freq /= 2 ** (WARMUP_COMMITS - self.commits_count)
-        if self.commits_count == 0 or t - self.last_committed > freq:
+        if self.stderr is not None or self.commits_count == 0 or t - self.last_committed > freq:
             self.last_committed = t
             self.commits_count += 1
             self.flush()
