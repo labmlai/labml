@@ -220,6 +220,7 @@ def new_line():
     """
     _internal().new_line()
 
+
 def namespace(name: str):
     r"""
     Set a namespace for tracking
