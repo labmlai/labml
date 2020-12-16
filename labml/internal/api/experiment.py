@@ -5,8 +5,9 @@ from typing import Dict, Optional
 from labml import logger
 from labml.internal.api import ApiCaller, Packet
 from labml.logger import Text
-
 from ..configs.processor import ConfigsSaver
+
+LOGS_FREQUENCY = 0
 
 
 class WebApiConfigsSaver(ConfigsSaver):
@@ -61,7 +62,7 @@ class ApiExperiment:
         self.api_caller.push(Packet(data, callback=self._started))
 
         from labml.internal.api.logs import API_LOGS
-        API_LOGS.set_api(self.api_caller, frequency=self.frequency)
+        API_LOGS.set_api(self.api_caller, frequency=LOGS_FREQUENCY)
 
     def _started(self, url):
         if url is None:
