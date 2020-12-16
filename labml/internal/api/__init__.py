@@ -13,13 +13,14 @@ from labml import logger
 from labml.logger import Text
 from labml.utils.notice import labml_notice
 
+UPDATING_APP_MESSAGE = 'Updating App. Please wait'
+
 
 @dataclass
 class Packet:
     data: Dict[str, any]
     callback: Optional[Callable] = None
     idx: int = -1
-    program_completed: bool = False
 
 
 class _WebApiThread(threading.Thread):
@@ -36,6 +37,9 @@ class _WebApiThread(threading.Thread):
         self.state_attributes = state_attributes
 
     def push(self, packet: Packet):
+        if self._is_updating_notification(packet):
+            return
+
         for k in packet.data:
             self.key_idx[k] = self.data_idx
         packet.idx = self.data_idx
@@ -44,9 +48,21 @@ class _WebApiThread(threading.Thread):
 
     def stop(self):
         self.is_stopped = True
-        self.push(Packet(data={}, program_completed=True))
+        self.push(Packet(data={}))
         logger.log('Still updating LabML App, please wait for it to complete...', Text.highlight)
         self.please_wait_count = 1
+
+    @staticmethod
+    def _is_updating_notification(packet: Packet):
+        data = packet.data
+        if set(data.keys()) != {'stdout', 'time'}:
+            return False
+
+        lines = data['stdout'].split('\n')
+        if len(lines) == 1 and lines[0].find(UPDATING_APP_MESSAGE) != -1:
+            return True
+
+        return False
 
     def run(self):
         while True:
@@ -54,7 +70,7 @@ class _WebApiThread(threading.Thread):
             while not self.queue.empty():
                 packets.append(self.queue.get())
             if self.is_stopped:
-                logger.log('Updating App. Please wait' + '...' * self.please_wait_count, Text.meta,
+                logger.log(UPDATING_APP_MESSAGE + '...' * self.please_wait_count, Text.meta,
                            is_new_line=False)
                 self.please_wait_count += 1
             retries = 0
@@ -66,16 +82,16 @@ class _WebApiThread(threading.Thread):
                     time.sleep(10)
                     retries += 1
             if self.is_stopped and self.queue.empty():
-                logger.log()
-                logger.log('Finished updating LabML App.', Text.highlight)
-                return
+                time.sleep(0.5)
+                if self.queue.empty():
+                    logger.log()
+                    logger.log('Finished updating LabML App.', Text.highlight)
+                    return
 
     def _process(self, packets: List[Packet]) -> bool:
         callback = None
         data = []
         for p in packets:
-            if p.program_completed:
-                continue
             if p.callback is not None:
                 if callback is not None:
                     raise RuntimeError('Multiple callbacks')
@@ -87,6 +103,9 @@ class _WebApiThread(threading.Thread):
             if not d and p.callback is not None:
                 raise RuntimeError('No data to be sent for a packet with a callback')
             data.append(d)
+
+        if not data:
+            return True
 
         try:
             run_url = self._send(data)

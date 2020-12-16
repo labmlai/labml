@@ -20,9 +20,9 @@ class ApiLogs:
         self.frequency = 1
         self.last_committed = time.time()
         self.commits_count = 0
-        self.stdout = None
-        self.stderr = None
-        self.logger = None
+        self.stdout = ''
+        self.stderr = ''
+        self.logger = ''
 
     def set_api(self, api_caller: 'ApiCaller', *,
                 frequency: float):
@@ -33,50 +33,41 @@ class ApiLogs:
     def check_and_flush(self):
         if self.api_caller is None:
             return
-        if self.stdout is None and self.stderr is None and self.logger is None:
+        if self.stdout == '' and self.stderr == '' and self.logger == '':
             return
         t = time.time()
         freq = self.frequency
         if self.commits_count < WARMUP_COMMITS:
             freq /= 2 ** (WARMUP_COMMITS - self.commits_count)
-        if self.stderr is not None or self.commits_count == 0 or t - self.last_committed > freq:
+        if self.stderr != '' or self.commits_count == 0 or t - self.last_committed > freq:
             self.last_committed = t
             self.commits_count += 1
             self.flush()
 
     def outputs(self, *,
-                stdout_: Optional[str] = None,
-                stderr_: Optional[str] = None,
-                logger_: Optional[str] = None):
-        if stdout_ is not None:
-            if self.stdout is None:
-                self.stdout = stdout_
-            else:
-                self.stdout += stdout_
-        if stderr_ is not None:
-            if self.stderr is None:
-                self.stderr = stderr_
-            else:
-                self.stderr += stderr_
-        if logger_ is not None:
-            if self.logger is None:
-                self.logger = logger_
-            else:
-                self.logger += logger_
+                stdout_: str = '',
+                stderr_: str = '',
+                logger_: str = ''):
+        if stdout_ != '':
+            self.stdout += stdout_
+        if stderr_ != '':
+            self.stderr += stderr_
+        if logger_ != '':
+            self.logger += logger_
 
         self.check_and_flush()
 
     def flush(self):
         data = {'time': time.time()}
-        if self.stdout is not None:
+        if self.stdout != '':
             data['stdout'] = self.stdout
-            self.stdout = None
-        if self.stderr is not None:
+            self.stdout = ''
+        if self.stderr != '':
             data['stderr'] = self.stderr
-            self.stderr = None
-        if self.logger is not None:
+            self.stderr = ''
+        if self.logger != '':
             data['logger'] = self.logger
-            self.logger = None
+            self.logger = ''
 
         from labml.internal.api import Packet
         self.api_caller.push(Packet(data))
