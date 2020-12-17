@@ -42,7 +42,8 @@ def create(*,
            comment: Optional[str] = None,
            writers: Set[str] = None,
            ignore_callers: Set[str] = None,
-           tags: Optional[Set[str]] = None):
+           tags: Optional[Set[str]] = None,
+           disable_screen: bool = False):
     r"""
     Create an experiment
 
@@ -60,6 +61,9 @@ def create(*,
 
     if writers is None:
         writers = {'screen', 'sqlite', 'tensorboard', 'web_api'}
+
+    if disable_screen and 'screen' in writers:
+        writers.remove('screen')
 
     if ignore_callers is None:
         ignore_callers = set()
@@ -323,7 +327,8 @@ def record(*,
            tags: Optional[Set[str]] = None,
            exp_conf: Dict[str, any] = None,
            lab_conf: Dict[str, any] = None,
-           token: str = None):
+           token: str = None,
+           disable_screen: bool = False):
     r"""
     This is combines :func:`create`, :func:`configs` and :func:`start`.
 
@@ -356,7 +361,8 @@ def record(*,
            comment=comment,
            writers=writers,
            ignore_callers=None,
-           tags=tags)
+           tags=tags,
+           disable_screen=disable_screen)
 
     if exp_conf is not None:
         configs(exp_conf)
