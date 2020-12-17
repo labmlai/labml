@@ -29,10 +29,23 @@ PyTorch example
 
     from labml import tracker, experiment
   
-    with experiment.record(name='sample', exp_conf=conf, token: 'TOKEN from web.lab-ml.com'):
+    with experiment.record(name='sample', exp_conf=conf):
         for i in range(50):
             loss, accuracy = train()
             tracker.save(i, {'loss': loss, 'accuracy': accuracy})
+
+Pytorch Lightening example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    from labml import experiment
+    from labml.utils.lightening import LabMLLighteningLogger
+
+    trainer = pl.Trainer(gpus=1, max_epochs=5, progress_bar_refresh_rate=20, logger=LabMLLighteningLogger())
+
+    with experiment.record(name='sample', exp_conf=conf, disable_screen=True):
+        trainer.fit(model, data_loader)
 
 TensorFlow 2.X Keras example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -42,7 +55,7 @@ TensorFlow 2.X Keras example
     from labml import experiment
     from labml.utils.keras import LabMLKerasCallback
   
-    with experiment.record(name='sample', exp_conf=conf, token: 'TOKEN from web.lab-ml.com'):
+    with experiment.record(name='sample', exp_conf=conf):
         for i in range(50):
             model.fit(x_train, y_train, epochs=conf['epochs'], validation_data=(x_test, y_test),
                       callbacks=[LabMLKerasCallback()], verbose=None)
