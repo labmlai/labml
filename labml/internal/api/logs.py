@@ -24,8 +24,7 @@ class ApiLogs:
         self.stderr = ''
         self.logger = ''
 
-    def set_api(self, api_caller: 'ApiCaller', *,
-                frequency: float):
+    def set_api(self, api_caller: 'ApiCaller', *, frequency: float):
         self.api_caller = api_caller
         self.frequency = frequency
         self.check_and_flush()
