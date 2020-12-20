@@ -1,22 +1,22 @@
 import os
-import pathlib
+from  pathlib import Path
 from typing import Set, List
 
 
-def get_caller_file(ignore_callers: Set[str] = None):
+def get_caller_file(ignore_callers: Set[str] = None) -> str:
     if ignore_callers is None:
         ignore_callers = {}
 
     import inspect
 
     frames: List[inspect.FrameInfo] = inspect.stack()
-    lab_src = pathlib.PurePath(__file__).parent.parent
+    lab_src = Path(__file__).absolute().parent.parent
 
     for f in frames:
-        module_path = pathlib.PurePath(f.filename)
+        module_path = Path(f.filename).absolute()
         if str(module_path).startswith(str(lab_src) + '/'):
             continue
-        if str(module_path).find('/dist-packages/'):
+        if str(module_path).find('/dist-packages/') != -1:
             continue
         if str(module_path) in ignore_callers:
             continue
@@ -24,4 +24,4 @@ def get_caller_file(ignore_callers: Set[str] = None):
             break
         return str(module_path)
 
-    return os.path.abspath('')
+    return str(Path('').absolute())
