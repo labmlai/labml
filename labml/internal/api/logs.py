@@ -89,9 +89,27 @@ class OutputStream(StringIO):
         self.original = original
 
 
+_original_stdout_write = sys.stdout.write
+_original_stderr_write = sys.stderr.write
+
+
+def _write_stdout(*args, **kwargs):
+    _original_stdout_write(*args, **kwargs)
+    save = StringIO()
+    save.write(*args, **kwargs)
+    API_LOGS.outputs(stdout_=save.getvalue())
+
+
+def _write_stderr(*args, **kwargs):
+    _original_stderr_write(*args, **kwargs)
+    save = StringIO()
+    save.write(*args, **kwargs)
+    API_LOGS.outputs(stderr_=save.getvalue())
+
+
 def capture():
-    sys.stderr = OutputStream(sys.stderr, 'stderr_')
-    sys.stdout = OutputStream(sys.stdout, 'stdout_')
+    sys.stdout.write = _write_stdout
+    sys.stderr.write = _write_stderr
 
 
 capture()

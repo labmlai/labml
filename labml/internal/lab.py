@@ -132,7 +132,7 @@ class Lab:
             analytics_path='analytics',
             analytics_templates={},
             web_api='https://api.lab-ml.com/api/v1/track?',
-            web_api_frequency=0,
+            web_api_frequency=60,
             web_api_verify_connection=True,
             web_api_open_browser=True,
             indicators=[{
