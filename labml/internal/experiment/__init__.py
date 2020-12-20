@@ -163,18 +163,21 @@ class Experiment:
                  ignore_callers: Set[str],
                  tags: Optional[Set[str]],
                  is_evaluate: bool):
-        if python_file is None:
-            python_file = get_caller_file(ignore_callers)
 
-        if python_file.startswith('<ipython'):
-            assert is_ipynb()
+        if is_ipynb():
             if name is None:
                 raise ValueError("You must specify python_file or experiment name"
                                  " when creating an experiment from a python notebook.")
 
             lab_singleton().set_path(os.getcwd())
-            python_file = 'notebook.ipynb'
+            if python_file is None:
+                python_file = 'notebook.ipynb'
+            if name is None:
+                name = 'Notebook Experiment'
         else:
+            if python_file is None:
+                python_file = get_caller_file(ignore_callers)
+
             lab_singleton().set_path(python_file)
 
             if name is None:
