@@ -34,7 +34,7 @@ PyTorch example
             loss, accuracy = train()
             tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 
-Pytorch Lightening example
+PyTorch Lightning example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
