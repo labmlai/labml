@@ -40,9 +40,9 @@ PyTorch Lightning example
 .. code-block:: python
 
     from labml import experiment
-    from labml.utils.lightning import LabMLLighteningLogger
+    from labml.utils.lightning import LabMLLightningLogger
 
-    trainer = pl.Trainer(gpus=1, max_epochs=5, progress_bar_refresh_rate=20, logger=LabMLLighteningLogger())
+    trainer = pl.Trainer(gpus=1, max_epochs=5, progress_bar_refresh_rate=20, logger=LabMLLightningLogger())
 
     with experiment.record(name='sample', exp_conf=conf, disable_screen=True):
         trainer.fit(model, data_loader)

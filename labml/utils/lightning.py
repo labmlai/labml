@@ -9,7 +9,7 @@ from labml import experiment, tracker, lab
 from labml.internal.experiment import experiment_singleton
 
 
-class LabMLLighteningLogger(LightningLoggerBase):
+class LabMLLightningLogger(LightningLoggerBase):
     def __init__(self):
         super().__init__()
 
