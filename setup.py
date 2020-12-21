@@ -16,7 +16,9 @@ setuptools.setup(
     project_urls={
         'Documentation': 'https://lab-ml.com/'
     },
-    packages=setuptools.find_packages(exclude=('test',
+    packages=setuptools.find_packages(exclude=('labml_helpers',
+                                               'labml_helpers.*',
+                                               'test',
                                                'test.*')),
     install_requires=['gitpython',
                       'pyyaml>=5.3.1',
