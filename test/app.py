@@ -5,7 +5,7 @@ from numpy.random import random
 def main():
     conf = {'batch_size': 20}
 
-    with experiment.record(name='sample', exp_conf=conf, writers={'web_api'}):
+    with experiment.record(name='sample', exp_conf=conf, writers={'web_api', 'screen'}):
         for i in range(10_000):
             values = {'loss': random()}
             # if i > 1000:

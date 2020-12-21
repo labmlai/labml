@@ -23,32 +23,36 @@ class Packet:
     idx: int = -1
 
 
+class ApiDataSource:
+    def get_data_packet(self) -> Packet:
+        raise NotImplementedError
+
+
+class SimpleApiDataSource(ApiDataSource):
+    def __init__(self, data: Dict[str, any], callback: Optional[Callable] = None):
+        self.data = data
+        self.callback = callback
+
+    def get_data_packet(self) -> Packet:
+        return Packet(data=self.data, callback=self.callback)
+
+
 class _WebApiThread(threading.Thread):
     def __init__(self, url: str, state_attributes: Set[str], timeout_seconds: int):
         super().__init__(daemon=False)
         self.please_wait_count = 0
         self.timeout_seconds = timeout_seconds
         self.url = url
-        self.queue: Queue[Packet] = Queue()
+        self.queue: Queue[ApiDataSource] = Queue()
         self.is_stopped = False
         self.errored = False
-        self.key_idx = {}
-        self.data_idx = 0
         self.state_attributes = state_attributes
 
-    def push(self, packet: Packet):
-        if self._is_updating_notification(packet):
-            return
-
-        for k in packet.data:
-            self.key_idx[k] = self.data_idx
-        packet.idx = self.data_idx
-        self.queue.put(packet)
-        self.data_idx += 1
+    def push_data_source(self, data_source: ApiDataSource):
+        self.queue.put(data_source)
 
     def stop(self):
         self.is_stopped = True
-        self.push(Packet(data={}))
         logger.log('Still updating LabML App, please wait for it to complete...', Text.highlight)
         self.please_wait_count = 1
 
@@ -64,12 +68,30 @@ class _WebApiThread(threading.Thread):
 
         return False
 
+    def get_packets(self) -> List[Packet]:
+        sources = [self.queue.get()]
+        while not self.queue.empty():
+            sources.append(self.queue.get())
+
+        sources_set = set()
+        filtered = []
+        for s in sources:
+            if s not in sources_set:
+                filtered.append(s)
+                sources_set.add(s)
+
+        packets = [s.get_data_packet() for s in filtered]
+        return [p for p in packets if not self._is_updating_notification(p)]
+
     def run(self):
         while True:
-            packets = [self.queue.get()]
-            while not self.queue.empty():
-                packets.append(self.queue.get())
+            packets = self.get_packets()
             if self.is_stopped:
+                if not packets:
+                    logger.log()
+                    logger.log('Finished updating LabML App.', Text.highlight)
+                    return
+
                 logger.log(UPDATING_APP_MESSAGE + '...' * self.please_wait_count, Text.meta,
                            is_new_line=False)
                 self.please_wait_count += 1
@@ -96,13 +118,7 @@ class _WebApiThread(threading.Thread):
                 if callback is not None:
                     raise RuntimeError('Multiple callbacks')
                 callback = p.callback
-            d = p.data
-            remove = [k for k in d if k in self.state_attributes and self.key_idx[k] != p.idx]
-            for k in remove:
-                del d[k]
-            if not d and p.callback is not None:
-                raise RuntimeError('No data to be sent for a packet with a callback')
-            data.append(d)
+            data.append(p.data)
 
         if not data:
             return True
@@ -146,8 +162,7 @@ class _WebApiThread(threading.Thread):
         for e in result.get('errors', []):
             if 'error' in e:
                 labml_notice(['LabML App Error: ', (e['error'] + '', Text.key), '\n',
-                              (e['message'], Text.value),
-                              f'App URL: {self.url}'],
+                              (e['message'], Text.value)],
                              is_danger=True)
                 self.errored = True
                 raise RuntimeError('LabML App Error', e)
@@ -183,14 +198,14 @@ class ApiCaller:
     def add_state_attribute(self, attr: str):
         self.state_attributes.add(attr)
 
-    def push(self, data: Packet):
+    def has_data(self, source: ApiDataSource):
         if self.thread is None:
             self.thread = _WebApiThread(self.web_api_url, self.state_attributes, self.timeout_seconds)
 
         if self.thread.errored:
             raise RuntimeError('LabML App error: See above for error details')
 
-        self.thread.push(data)
+        self.thread.push_data_source(source)
         if not self.thread.is_alive():
             self.thread.start()
 

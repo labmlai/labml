@@ -9,7 +9,7 @@ from typing.io import IO
 
 from labml import logger
 from labml.experiment import generate_uuid
-from labml.internal.api import ApiCaller, Packet
+from labml.internal.api import ApiCaller, Packet, SimpleApiDataSource
 from labml.internal.api.logs import ApiLogs
 from labml.logger import Text
 
@@ -80,7 +80,7 @@ def _capture(args: List[str]):
         logger.log([('Monitor experiment at ', Text.meta), (url, Text.link)])
         webbrowser.open(url)
 
-    api_caller.push(Packet(data, callback=_started))
+    api_caller.has_data(SimpleApiDataSource(data, callback=_started))
     api_logs.set_api(api_caller, frequency=0)
 
     thread = ExecutorThread(' '.join(args), api_logs)
@@ -93,7 +93,7 @@ def _capture(args: List[str]):
         'time': time.time()
     }
 
-    api_caller.push(Packet({
+    api_caller.has_data(SimpleApiDataSource({
         'status': data,
         'time': time.time()
     }))

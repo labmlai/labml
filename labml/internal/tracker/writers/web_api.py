@@ -1,9 +1,10 @@
+import threading
 import time
 from typing import Dict
 
 import numpy as np
-from labml.internal.api import ApiCaller, Packet
 
+from labml.internal.api import ApiCaller, Packet, ApiDataSource
 from . import Writer as WriteBase
 from ..indicators import Indicator
 from ..indicators.numeric import NumericIndicator
@@ -12,7 +13,7 @@ MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5
 
 
-class Writer(WriteBase):
+class Writer(WriteBase, ApiDataSource):
     def __init__(self, api_caller: ApiCaller, *,
                  frequency: float):
         super().__init__()
@@ -24,6 +25,8 @@ class Writer(WriteBase):
         self.indicators = {}
         self.api_caller.add_state_attribute('wildcard_indicators')
         self.api_caller.add_state_attribute('indicators')
+        self.data = {}
+        self.lock = threading.Lock()
 
     @staticmethod
     def _parse_key(key: str):
@@ -32,8 +35,10 @@ class Writer(WriteBase):
     def save_indicators(self, dot_indicators: Dict[str, Indicator], indicators: Dict[str, Indicator]):
         wildcards = {k: ind.to_dict() for k, ind in dot_indicators.items()}
         inds = {k: ind.to_dict() for k, ind in indicators.items()}
-
-        self.api_caller.push(Packet({'wildcard_indicators': wildcards, 'indicators': inds}))
+        with self.lock:
+            self.data['wildcard_indicators'] = wildcards
+            self.data['indicators'] = inds
+        self.api_caller.has_data(self)
 
     def _write_indicator(self, global_step: int, indicator: Indicator):
         if indicator.is_empty():
@@ -58,11 +63,26 @@ class Writer(WriteBase):
         if self.commits_count < WARMUP_COMMITS:
             freq /= 2 ** (WARMUP_COMMITS - self.commits_count)
         if t - self.last_committed > freq:
-            self.last_committed = t
             self.commits_count += 1
             self.flush()
 
+    def get_data_packet(self) -> Packet:
+        with self.lock:
+            self.last_committed = time.time()
+            self.data['track'] = self.get_and_clear_indicators()
+            self.data['time'] = time.time()
+            packet = Packet(self.data)
+            self.data = {}
+            return packet
+
     def flush(self):
+        with self.lock:
+            if not self.indicators:
+                return
+
+        self.api_caller.has_data(self)
+
+    def get_and_clear_indicators(self):
         data = {}
 
         for key, value in self.indicators.items():
@@ -85,7 +105,4 @@ class Writer(WriteBase):
 
         self.indicators = {}
 
-        self.api_caller.push(Packet({
-            'track': data,
-            'time': time.time()
-        }))
+        return data
