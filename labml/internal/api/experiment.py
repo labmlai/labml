@@ -87,7 +87,7 @@ class ApiExperiment(ApiDataSource):
 
     def status(self, rank: int, status: str, details: str, time_: float):
         with self.lock:
-            self.data['state'] = {
+            self.data['status'] = {
                 'rank': rank,
                 'status': status,
                 'details': details,

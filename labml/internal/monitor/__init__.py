@@ -9,6 +9,7 @@ from ..logger.types import LogPart
 from ..tracker import tracker_singleton as tracker
 from labml.internal.util.colors import StyleCode
 from ...logger import Text
+from ...utils.notice import labml_notice
 
 
 class Monitor:
@@ -115,7 +116,13 @@ class Monitor:
              is_track: bool,
              is_print_iteration_time: bool):
         if len(self.__sections) != 0:
-            raise RuntimeError("Cannot start a loop within a section")
+            labml_notice(['LabML Loop: ', ('Starting loop inside sections', Text.key), '\n',
+                          ('This could be because some iterators crashed in a previous cell in a notebook.', Text.meta)],
+                         is_danger=False)
+            err = RuntimeError('Section outside loop')
+            for s in reversed(self.__sections):
+                s.__exit__(type(err), err, err.__traceback__)
+            # raise RuntimeError("Cannot start a loop within a section")
 
         self.__loop = Loop(iterator=iterator_,
                            monitor=self,

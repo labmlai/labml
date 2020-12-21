@@ -71,7 +71,7 @@ class Lab:
             if not is_colab() and not is_kaggle():
                 labml_notice([(".labml.yaml", Text.value),
                               " config file could not be found. Looking in path: ",
-                              (path, Text.meta)])
+                              (str(path), Text.meta)])
                 while path.exists() and not path.is_dir():
                     path = path.parent
 

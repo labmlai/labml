@@ -1,5 +1,6 @@
 /data
 .ipynb_checkpoints/
+test/.ipynb_checkpoints
 __pycache__/
 /logs
 /analytics
