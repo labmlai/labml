@@ -40,7 +40,7 @@ PyTorch Lightning example
 .. code-block:: python
 
     from labml import experiment
-    from labml.utils.lightening import LabMLLighteningLogger
+    from labml.utils.lightning import LabMLLighteningLogger
 
     trainer = pl.Trainer(gpus=1, max_epochs=5, progress_bar_refresh_rate=20, logger=LabMLLighteningLogger())
 
