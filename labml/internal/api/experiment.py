@@ -34,7 +34,6 @@ class ApiExperiment(ApiDataSource):
         self.name = None
         self.comment = None
         self.configs_saver = None
-        self.api_caller.add_state_attribute('configs')
         self.data = {}
         self.callback = None
         self.lock = threading.Lock()

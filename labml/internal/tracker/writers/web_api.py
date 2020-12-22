@@ -23,8 +23,6 @@ class Writer(WriteBase, ApiDataSource):
         self.last_committed = time.time()
         self.commits_count = 0
         self.indicators = {}
-        self.api_caller.add_state_attribute('wildcard_indicators')
-        self.api_caller.add_state_attribute('indicators')
         self.data = {}
         self.lock = threading.Lock()
 

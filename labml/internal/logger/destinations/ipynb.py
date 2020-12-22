@@ -1,3 +1,4 @@
+import threading
 from typing import List, Union, Tuple, Callable, Optional
 
 from IPython.core.display import display, HTML
@@ -15,6 +16,7 @@ class IpynbDestination(Destination):
         self.__last_id = 1
         self.__cell_lines = []
         self.__cell_count = 0
+        self.lock = threading.Lock()
 
     def is_same_cell(self):
         try:
@@ -77,23 +79,24 @@ class IpynbDestination(Destination):
         else:
             attrs = 'style="overflow-x: scroll;"'
 
-        if self.is_same_cell():
-            if coded:
-                last = self.__cell_lines.pop()
-                if is_reset:
-                    self.__cell_lines += lines
-                else:
-                    self.__cell_lines += [last + lines[0]] + lines[1:]
-            text = '\n'.join(self.__cell_lines)
-            html = HTML(f"<pre {attrs}>{text}</pre>")
-            self.__last_handle.update(html)
-        else:
-            self.__cell_lines = lines
-            text = '\n'.join(self.__cell_lines)
-            html = HTML(f"<pre {attrs}>{text}</pre>")
-            self.__last_handle = display(html, display_id=self.__last_id)
-            self.__last_id += 1
+        with self.lock:
+            if self.is_same_cell():
+                if coded:
+                    last = self.__cell_lines.pop()
+                    if is_reset:
+                        self.__cell_lines += lines
+                    else:
+                        self.__cell_lines += [last + lines[0]] + lines[1:]
+                text = '\n'.join(self.__cell_lines)
+                html = HTML(f"<pre {attrs}>{text}</pre>")
+                self.__last_handle.update(html)
+            else:
+                self.__cell_lines = lines
+                text = '\n'.join(self.__cell_lines)
+                html = HTML(f"<pre {attrs}>{text}</pre>")
+                self.__last_handle = display(html, display_id=self.__last_id)
+                self.__last_id += 1
 
-        # print(len(self.__cell_lines), self.__cell_lines[-1], is_new_line)
-        if is_new_line:
-            self.__cell_lines.append('')
+            # print(len(self.__cell_lines), self.__cell_lines[-1], is_new_line)
+            if is_new_line:
+                self.__cell_lines.append('')

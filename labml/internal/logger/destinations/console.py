@@ -1,10 +1,14 @@
 from typing import List, Union, Tuple, Optional
 
+from labml.internal.api.logs import API_LOGS
 from labml.internal.logger.destinations import Destination
 from labml.internal.util.colors import StyleCode, ANSI_RESET
 
 
 class ConsoleDestination(Destination):
+    def __init__(self, is_screen: bool):
+        self.is_screen = is_screen
+
     @staticmethod
     def __ansi_code(text: str, color: List[StyleCode] or StyleCode or None):
         """
@@ -36,6 +40,12 @@ class ConsoleDestination(Destination):
         text = "".join(coded)
 
         if is_reset:
-            print("\r" + text, end=end_char, flush=True)
+            self.print("\r" + text, end_char)
         else:
+            print(text, end_char)
+
+    def print(self, text: str, end_char: str):
+        if self.is_screen:
             print(text, end=end_char, flush=True)
+        else:
+            API_LOGS.outputs(logger_=text + end_char)

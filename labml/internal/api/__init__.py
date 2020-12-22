@@ -38,7 +38,7 @@ class SimpleApiDataSource(ApiDataSource):
 
 
 class _WebApiThread(threading.Thread):
-    def __init__(self, url: str, state_attributes: Set[str], timeout_seconds: int):
+    def __init__(self, url: str, timeout_seconds: int):
         super().__init__(daemon=False)
         self.please_wait_count = 0
         self.timeout_seconds = timeout_seconds
@@ -46,7 +46,6 @@ class _WebApiThread(threading.Thread):
         self.queue: Queue[ApiDataSource] = Queue()
         self.is_stopped = False
         self.errored = False
-        self.state_attributes = state_attributes
 
     def push_data_source(self, data_source: ApiDataSource):
         self.queue.put(data_source)
@@ -59,10 +58,14 @@ class _WebApiThread(threading.Thread):
     @staticmethod
     def _is_updating_notification(packet: Packet):
         data = packet.data
-        if set(data.keys()) != {'stdout', 'time'}:
+        if set(data.keys()) != {'stdout', 'time'} and set(data.keys()) != {'logger', 'time'}:
             return False
 
-        lines = data['stdout'].split('\n')
+        if 'stdout' in data:
+            lines = data['stdout'].split('\n')
+        else:
+            lines = data['logger'].split('\n')
+
         if len(lines) == 1 and lines[0].find(UPDATING_APP_MESSAGE) != -1:
             return True
 
@@ -192,15 +195,15 @@ class ApiCaller:
 
         self.web_api_url = f'{web_api_url}{params}'
         self.timeout_seconds = timeout_seconds
-        self.state_attributes = set()
         self.thread = None
-
-    def add_state_attribute(self, attr: str):
-        self.state_attributes.add(attr)
+        self.stopped = False
 
     def has_data(self, source: ApiDataSource):
+        if self.stopped:
+            return
+
         if self.thread is None:
-            self.thread = _WebApiThread(self.web_api_url, self.state_attributes, self.timeout_seconds)
+            self.thread = _WebApiThread(self.web_api_url, self.timeout_seconds)
 
         if self.thread.errored:
             raise RuntimeError('LabML App error: See above for error details')
@@ -210,4 +213,5 @@ class ApiCaller:
             self.thread.start()
 
     def stop(self):
+        self.stopped = True
         self.thread.stop()

@@ -1,3 +1,4 @@
+import threading
 from typing import List, Union, Tuple, Callable, Optional
 
 from IPython.core.display import display
@@ -16,6 +17,7 @@ class IpynbPyCharmDestination(Destination):
         self.__cell_lines = []
         self.__cell_count = 0
         self.html: Optional[HTML] = None
+        self.lock = threading.Lock()
 
     def is_same_cell(self):
         try:
@@ -56,21 +58,22 @@ class IpynbPyCharmDestination(Destination):
         else:
             attrs = 'style="overflow-x: scroll;"'
 
-        if self.is_same_cell():
-            if coded:
-                last = self.__cell_lines.pop()
-                if is_reset:
-                    self.__cell_lines += lines
-                else:
-                    self.__cell_lines += [last + lines[0]] + lines[1:]
-            text = '\n'.join(self.__cell_lines)
-            self.html.value = f"<pre {attrs}>{text}</pre>"
-        else:
-            self.__cell_lines = lines
-            text = '\n'.join(self.__cell_lines)
-            self.html = HTML(f"<pre  {attrs}>{text}</pre>")
-            display(self.html)
+        with self.lock:
+            if self.is_same_cell():
+                if coded:
+                    last = self.__cell_lines.pop()
+                    if is_reset:
+                        self.__cell_lines += lines
+                    else:
+                        self.__cell_lines += [last + lines[0]] + lines[1:]
+                text = '\n'.join(self.__cell_lines)
+                self.html.value = f"<pre {attrs}>{text}</pre>"
+            else:
+                self.__cell_lines = lines
+                text = '\n'.join(self.__cell_lines)
+                self.html = HTML(f"<pre  {attrs}>{text}</pre>")
+                display(self.html)
 
-        # print(len(self.__cell_lines), self.__cell_lines[-1], is_new_line)
-        if is_new_line:
-            self.__cell_lines.append('')
+            # print(len(self.__cell_lines), self.__cell_lines[-1], is_new_line)
+            if is_new_line:
+                self.__cell_lines.append('')

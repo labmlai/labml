@@ -28,6 +28,9 @@ def main():
             #     # values[f'time.fc.{j}.mean'] = random()
             tracker.save(i, values)
 
+            if i % 1000 == 0:
+                tracker.new_line()
+
 
 if __name__ == '__main__':
     main()
