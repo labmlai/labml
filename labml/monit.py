@@ -1,4 +1,3 @@
-import functools
 from typing import Iterable, Sized, Collection, Callable
 from typing import Union, Optional, overload
 

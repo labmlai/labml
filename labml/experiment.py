@@ -8,6 +8,7 @@ from labml.internal.experiment import \
     create_experiment as _create_experiment, \
     experiment_singleton as _experiment_singleton, \
     ModelSaver
+from labml.internal.monitor import monitor_singleton as monitor
 from labml.internal.experiment.experiment_run import \
     get_configs as _get_configs
 
@@ -71,6 +72,7 @@ def create(*,
     if uuid is None:
         uuid = generate_uuid()
 
+    monitor().clear()
     _create_experiment(uuid=uuid,
                        name=name,
                        python_file=python_file,
@@ -87,6 +89,7 @@ def evaluate():
     This will not record anything.
     """
 
+    monitor().clear()
     _create_experiment(uuid=generate_uuid(),
                        name=None,
                        python_file=None,
