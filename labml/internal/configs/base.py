@@ -482,7 +482,7 @@ class Configs:
             configs[k] = {
                 'name': k,
                 'type': str(v),
-                'value': Value.to_yaml_truncated(self.__values.get(k, None)),
+                'value': Value.to_yaml_truncated(self.__values_override.get(k, self.__values.get(k, None))),
                 'order': self.__order.get(k, -1),
                 'options': self.__get_options_list(k),
                 'computed': Value.to_yaml_truncated(self.__cached.get(k, None)),
