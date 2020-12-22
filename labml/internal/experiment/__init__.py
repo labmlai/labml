@@ -165,10 +165,6 @@ class Experiment:
                  is_evaluate: bool):
 
         if is_ipynb():
-            if name is None:
-                raise ValueError("You must specify python_file or experiment name"
-                                 " when creating an experiment from a python notebook.")
-
             lab_singleton().set_path(os.getcwd())
             if python_file is None:
                 python_file = 'notebook.ipynb'
