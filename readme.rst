@@ -19,9 +19,6 @@ You can install this package using PIP.
     pip install labml
 
 
-To push to mobile website, you need obtain a token from `web.lab-ml.com <https://web.lab-ml.com>`_
-(Github `lab-ml/app <https://github.com/lab-ml/app/>`_), and save statistics with ``tracker.save``.
-
 PyTorch example
 ^^^^^^^^^^^^^^^
 
@@ -63,19 +60,17 @@ TensorFlow 2.X Keras example
 You can read the guides about creating an  `experiment <http://lab-ml.com/guide/experiment.html>`_,
 and saving statistics with `tracker <http://lab-ml.com/guide/tracker.html>`_ for details.
 
-It automatically pushes data to Tensorboard, and you can keep your old experiments organized with the 
+LabML automatically pushes data to Tensorboard, and you can keep your old experiments organized locally with the 
 `LabML Dashboard <https://github.com/lab-ml/dashboard/>`_
 
 .. image:: https://raw.githubusercontent.com/lab-ml/dashboard/master/images/screenshots/dashboard_table.png
    :width: 100%
    :alt: Dashboard Screenshot
 
-All these software is 100% open source,
-and your logs will be stored locally for Tensorboard and `LabML Dashboard <https://github.com/lab-ml/dashboard/>`_.
-You will only be sending data away for `web.lab-ml.com <https://web.lab-ml.com>`_ if you include a token url.
-This can also be `locally installed <https://github.com/lab-ml/app/>`_.
+All these software is 100% open source. By default, the library will send experiment data to our hosted server
+`web.lab-ml.com <https://web.lab-ml.com>`_ you can run this on `your own too <https://github.com/lab-ml/app/>`_.
 
-LabML can also keep track of git commits,
+LabML also keeps track of git commits,
 handle `configurations, hyper-parameters <http://lab-ml.com/guide/configs.html>`_,
 save and load `checkpoints <http://lab-ml.com/guide/experiment.html>`_,
 and providing pretty logs.
