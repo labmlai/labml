@@ -3,11 +3,11 @@ import subprocess
 import threading
 import time
 import webbrowser
-from typing import List
+from typing import List, Optional, Dict
 
 from typing.io import IO
 
-from labml import logger
+from labml import logger, experiment
 from labml.experiment import generate_uuid
 from labml.internal.api import ApiCaller, Packet, SimpleApiDataSource
 from labml.internal.api.logs import ApiLogs
@@ -101,9 +101,38 @@ def _capture(args: List[str]):
     api_caller.stop()
 
 
+def _launch(args: List[str]):
+    import sys
+    import os
+    
+    if 'RUN_UUID' not in os.environ:
+        os.environ['RUN_UUID'] = experiment.generate_uuid()
+
+    cwd = os.getcwd()
+    if 'PYTHONPATH' in os.environ:
+        python_path = os.environ['PYTHONPATH']
+        print(python_path)
+        os.environ['PYTHONPATH'] = f"{python_path}:{cwd}:{cwd}/src"
+    else:
+        os.environ['PYTHONPATH'] = f"{cwd}:{cwd}/src"
+
+    cmd = [sys.executable, '-u', '-m', 'torch.distributed.launch', *args]
+    print(cmd)
+    try:
+        process = subprocess.Popen(cmd, env=os.environ)
+        process.wait()
+    except Exception as e:
+        logger.log('Error starting launcher', Text.danger)
+        raise e
+
+    if process.returncode != 0:
+        logger.log('Launcher failed', Text.danger)
+        raise subprocess.CalledProcessError(returncode=process.returncode, cmd=cmd)
+
+
 def main():
     parser = argparse.ArgumentParser(description='LabML CLI')
-    parser.add_argument('command', choices=['dashboard', 'capture'])
+    parser.add_argument('command', choices=['dashboard', 'capture', 'launch'])
     parser.add_argument('args', nargs=argparse.REMAINDER)
 
     args = parser.parse_args()
@@ -112,5 +141,7 @@ def main():
         _open_dashboard()
     elif args.command == 'capture':
         _capture(args.args)
+    elif args.command == 'launch':
+        _launch(args.args)
     else:
         raise ValueError('Unknown command', args.command)
