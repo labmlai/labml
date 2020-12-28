@@ -1,13 +1,14 @@
 import typing
 from typing import Optional, List, Union, Tuple
 
+from labml.internal.util.colors import StyleCode
 from .iterator import Iterator
 from .loop import Loop
+from .mix import Mix
 from .sections import Section, OuterSection
 from ..logger import logger_singleton as logger
 from ..logger.types import LogPart
 from ..tracker import tracker_singleton as tracker
-from labml.internal.util.colors import StyleCode
 from ...logger import Text
 from ...utils.notice import labml_notice
 
@@ -31,6 +32,12 @@ class Monitor:
 
     def silent(self, is_silent: bool = True):
         self.__is_silent = is_silent
+
+    def mix(self, total_iterations, iterators: List[Tuple[str, typing.Sized]],
+            is_monit: bool):
+        return Mix(total_iterations=total_iterations,
+                   iterators=iterators,
+                   is_monit=is_monit, logger=self)
 
     def iterate(self, name, iterable: Union[typing.Iterable, typing.Sized, int],
                 total_steps: Optional[int], *,
@@ -117,7 +124,9 @@ class Monitor:
              is_print_iteration_time: bool):
         if len(self.__sections) != 0:
             labml_notice(['LabML Loop: ', ('Starting loop inside sections', Text.key), '\n',
-                          ('This could be because some iterators crashed in a previous cell in a notebook.', Text.meta)],
+                          (
+                              'This could be because some iterators crashed in a previous cell in a notebook.',
+                              Text.meta)],
                          is_danger=False)
             err = RuntimeError('Section outside loop')
             for s in reversed(self.__sections):

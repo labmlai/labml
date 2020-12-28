@@ -1,4 +1,4 @@
-from typing import Iterable, Sized, Collection, Callable
+from typing import Iterable, Sized, Collection, Callable, Tuple
 from typing import Union, Optional, overload
 
 from labml.internal.monitor import monitor_singleton as _internal
@@ -121,6 +121,14 @@ def loop(iterator_: Union[Collection, range, int], *,
         return _internal().loop(iterator_,
                                 is_track=is_track,
                                 is_print_iteration_time=is_print_iteration_time)
+
+
+def mix(total_iterations, *iterators: Tuple[str, Sized],
+        is_monit: bool = True):
+    """
+    Mix a set of iterators
+    """
+    return _internal().mix(total_iterations, list(iterators), is_monit=is_monit)
 
 
 def finish_loop():
