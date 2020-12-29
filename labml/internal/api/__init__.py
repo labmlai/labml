@@ -127,7 +127,7 @@ class _WebApiThread(threading.Thread):
             return True
 
         try:
-            run_url = self._send(data)
+            callback_url = self._send(data)
         except urllib.error.HTTPError as e:
             labml_notice([f'Failed to send to {self.url}: ',
                           (str(e.code), Text.value),
@@ -147,7 +147,7 @@ class _WebApiThread(threading.Thread):
             return False
 
         if callback is not None:
-            callback(run_url)
+            callback(callback_url)
 
         return True
 
