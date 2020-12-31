@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict
 
 import psutil
+from labml import monit
 
 from labml.internal.api import ApiCaller
 from labml.internal.computer.configs import computer_singleton
@@ -96,8 +97,9 @@ def main():
     })
 
     while True:
-        m.track()
-        time.sleep(5)
+        with monit.section('Track'):
+            m.track()
+        time.sleep(60)
 
 
 if __name__ == '__main__':
