@@ -179,6 +179,7 @@ class Run(RunInfo):
                          repo_remotes=repo_remotes,
                          commit=commit, commit_message=commit_message, is_dirty=is_dirty,
                          start_step=start_step, notes=notes, tags=tags)
+        self.diff = None
 
     @classmethod
     def create(cls, *,

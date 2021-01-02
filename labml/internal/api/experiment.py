@@ -1,12 +1,15 @@
 import threading
 import time
 import webbrowser
-from typing import Dict, Optional
+from typing import Dict, Optional, TYPE_CHECKING
 
 from labml import logger
 from labml.internal.api import ApiCaller, Packet, ApiDataSource
 from labml.logger import Text
 from ..configs.processor import ConfigsSaver
+
+if TYPE_CHECKING:
+    from ..experiment.experiment_run import Run
 
 LOGS_FREQUENCY = 0
 
@@ -30,21 +33,10 @@ class ApiExperiment(ApiDataSource):
         self.frequency = frequency
         self.open_browser = open_browser
         self.api_caller = api_caller
-        self.run_uuid = None
-        self.name = None
-        self.comment = None
         self.configs_saver = None
         self.data = {}
         self.callback = None
         self.lock = threading.Lock()
-
-    def set_info(self, *,
-                 run_uuid: str,
-                 name: str,
-                 comment: str):
-        self.run_uuid = run_uuid
-        self.name = name
-        self.comment = comment
 
     def get_configs_saver(self):
         if self.configs_saver is None:
@@ -65,10 +57,21 @@ class ApiExperiment(ApiDataSource):
             self.callback = None
             return packet
 
-    def start(self):
+    def start(self, run: 'Run'):
         with self.lock:
-            self.data['name'] = self.name
-            self.data['comment'] = self.comment
+            self.data.update(dict(
+                name=run.name,
+                comment=run.comment,
+                python_file=run.python_file,
+                repo_remotes=run.repo_remotes,
+                commit=run.commit,
+                commit_message=run.commit_message,
+                is_dirty=run.is_dirty,
+                start_step=run.start_step,
+                load_run=run.load_run,
+                tags=run.tags,
+                notes=run.notes
+            ))
             self.callback = self._started
 
         self.api_caller.has_data(self)

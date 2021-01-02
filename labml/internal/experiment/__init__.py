@@ -406,10 +406,7 @@ class Experiment:
                     self.configs_processor.add_saver(FileConfigsSaver(self.run.configs_path))
 
                 if self.web_api is not None:
-                    self.web_api.set_info(run_uuid=self.run.uuid,
-                                          name=self.run.name,
-                                          comment=self.run.comment)
-                    self.web_api.start()
+                    self.web_api.start(self.run)
                     if self.configs_processor is not None:
                         self.configs_processor.add_saver(self.web_api.get_configs_saver())
 
