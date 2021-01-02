@@ -33,6 +33,7 @@ class RunInfo:
                  comment: str,
                  commit: Optional[str] = None,
                  commit_message: Optional[str] = None,
+                 repo_remotes: List[str] = None,
                  is_dirty: bool = True,
                  experiment_path: Path,
                  start_step: int = 0,
@@ -41,6 +42,9 @@ class RunInfo:
                  tags: List[str]):
         self.name = name
         self.uuid = uuid
+        if repo_remotes is None:
+            repo_remotes = []
+        self.repo_remotes = repo_remotes
         self.commit = commit
         self.is_dirty = is_dirty
         self.python_file = python_file
@@ -92,6 +96,7 @@ class RunInfo:
             trial_date=self.trial_date,
             trial_time=self.trial_time,
             comment=self.comment,
+            repo_remotes=self.repo_remotes,
             commit=self.commit,
             commit_message=self.commit_message,
             is_dirty=self.is_dirty,
@@ -161,6 +166,7 @@ class Run(RunInfo):
                  trial_time: str,
                  name: str,
                  comment: str,
+                 repo_remotes: List[str] = None,
                  commit: Optional[str] = None,
                  commit_message: Optional[str] = None,
                  is_dirty: bool = True,
@@ -170,6 +176,7 @@ class Run(RunInfo):
                  tags: List[str]):
         super().__init__(python_file=python_file, trial_date=trial_date, trial_time=trial_time,
                          name=name, comment=comment, uuid=uuid, experiment_path=experiment_path,
+                         repo_remotes=repo_remotes,
                          commit=commit, commit_message=commit_message, is_dirty=is_dirty,
                          start_step=start_step, notes=notes, tags=tags)
 
@@ -201,7 +208,6 @@ class Run(RunInfo):
                 run_path.mkdir(parents=True)
             except FileExistsError:
                 pass
-
 
     def save_info(self):
         self.make_path()

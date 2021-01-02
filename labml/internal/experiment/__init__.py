@@ -206,6 +206,7 @@ class Experiment:
         try:
             repo = git.Repo(lab_singleton().path)
 
+            self.run.repo_remotes = list(repo.remote().urls)
             self.run.commit = repo.head.commit.hexsha
             self.run.commit_message = repo.head.commit.message.strip()
             self.run.is_dirty = repo.is_dirty()
