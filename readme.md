@@ -65,10 +65,11 @@ LabML automatically pushes data to Tensorboard, and you can keep your old experi
 All these software is 100% open source . By default, the library will send experiment data to our hosted server
 [web.lab-ml.com](https://web.lab-ml.com), you can also host and run [📱 LabML App server](https://github.com/lab-ml/app/>).
 
+
 LabML also keeps track of git commits,
 handle [configurations, hyper-parameters](https://lab-ml.com/guide/configs.html>),
 save and load [checkpoints](https://lab-ml.com/guide/experiment.html),
-and providing pretty logs.
+and provide pretty logs.
 
 <img src="https://raw.githubusercontent.com/vpj/lab/master/images/logger_sample.png" alt="Sample Logs"/>
 
