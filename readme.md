@@ -54,33 +54,42 @@ with experiment.record(name='sample', exp_conf=conf):
                   callbacks=[LabMLKerasCallback()], verbose=None)
 ```
 
-You can read the guides about creating an [🧪 experiment](https://lab-ml.com/guide/experiment.html),
-and saving statistics with [📈 tracker](https://lab-ml.com/guide/tracker.html) for details.
+### 🔥 Features
 
-LabML automatically pushes data to Tensorboard, and you can keep your old experiments organized locally with the 
-[🎛 LabML Dashboard](https://github.com/lab-ml/dashboard/).
+* Monitor running experiments from [mobile phone](https://github.com/lab-ml/app)
+[![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://web.lab-ml.com/run?uuid=9e7f39e047e811ebbaff2b26e3148b3d)
+* Keeps track of experiments including infomation like git commit, configurations and hyper-parameters
+* Keep Tensorboard logs organized
+* [Dashboard](https://github.com/lab-ml/dashboard/)) to browse and manage experiment runs
+* Save and load checkpoints
+* Api to analyse the logs
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lab-ml/samples/blob/master/labml_samples/pytorch/stocks/analysis.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
+* Pretty training loop logs
+* Open source! we also have a small hosted server for the mobile web app
+
+### 📚 Documentation
+
+* [API to create experiments](https://lab-ml.com/guide/experiment.html)
+* [Track training metrics](https://lab-ml.com/guide/tracker.html)
+* [Monitored training loop and other iterators](https://lab-ml.com/guide/monit.html)
+* [API for custom visualizations](https://lab-ml.com/guide/analytics.html)
+* [Configurations management API](https://lab-ml.com/guide/configs.html)
+* [Logger for stylized logging](https://lab-ml.com/guide/logger.html)
+
+### 🖥 Screenshots
+
+#### Dashboard
 
 <img src="https://raw.githubusercontent.com/lab-ml/dashboard/master/images/screenshots/dashboard_table.png" alt="Dashboard Screenshot"/>
 
-All these software is 100% open source . By default, the library will send experiment data to our hosted server
-[web.lab-ml.com](https://web.lab-ml.com), you can also host and run [📱 LabML App server](https://github.com/lab-ml/app/>).
-
-
-LabML also keeps track of git commits,
-handle [configurations, hyper-parameters](https://lab-ml.com/guide/configs.html>),
-save and load [checkpoints](https://lab-ml.com/guide/experiment.html),
-and provide pretty logs.
+#### Formatted training loop output
 
 <img src="https://raw.githubusercontent.com/vpj/lab/master/images/logger_sample.png" alt="Sample Logs"/>
 
-We also have an [📊analytics API](https://lab-ml.com/guide/analytics.html)
-to create custom visualizations from artifacts and logs on Jupyter notebooks.
-Samples:
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lab-ml/samples/blob/master/labml_samples/pytorch/stocks/analysis.ipynb)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
+#### Custom visualizations
 
 <img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" width="500px" alt="Analytics"/>
-
 
 ## Links
 
