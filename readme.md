@@ -89,7 +89,7 @@ with experiment.record(name='sample', exp_conf=conf):
 
 #### Custom visualizations
 
-<img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" width="500px" alt="Analytics"/>
+<img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" width="500" alt="Analytics"/>
 
 ## Links
 
