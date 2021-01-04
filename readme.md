@@ -81,15 +81,21 @@ with experiment.record(name='sample', exp_conf=conf):
 
 #### Dashboard
 
-<img src="https://raw.githubusercontent.com/lab-ml/dashboard/master/images/screenshots/dashboard_table.png" alt="Dashboard Screenshot"/>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/lab-ml/dashboard/master/images/screenshots/dashboard_table.png" alt="Dashboard Screenshot"/>
+</div>
 
 #### Formatted training loop output
 
-<img src="https://raw.githubusercontent.com/vpj/lab/master/images/logger_sample.png" alt="Sample Logs"/>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/vpj/lab/master/images/logger_sample.png" alt="Sample Logs"/>
+</div>
 
 #### Custom visualizations
 
-<img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" width="500" alt="Analytics"/>
+<div align="center">
+    <img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" width="500" alt="Analytics"/>
+</div>
 
 ## Links
 
