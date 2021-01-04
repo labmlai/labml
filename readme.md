@@ -2,7 +2,7 @@
 <h1>LabML</h1>
 <h2>Organize machine learning experiments and monitor training progress from mobile.</h2>
 
-<img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="200px" alt="">
+<img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="150" alt="">
 
 [![PyPI - Python Version](https://badge.fury.io/py/labml.svg)](https://badge.fury.io/py/labml)
 [![PyPI Status](https://pepy.tech/badge/labml)](https://pepy.tech/project/labml)
@@ -62,7 +62,7 @@ with experiment.record(name='sample', exp_conf=conf):
 * Keep Tensorboard logs organized
 * [Dashboard](https://github.com/lab-ml/dashboard/)) to browse and manage experiment runs
 * Save and load checkpoints
-* Api to analyse the logs
+* API for custom visualizations
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lab-ml/samples/blob/master/labml_samples/pytorch/stocks/analysis.ipynb)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
 * Pretty training loop logs
