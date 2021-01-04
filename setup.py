@@ -1,7 +1,7 @@
 import setuptools
 import labml
 
-with open("readme.rst", "r") as f:
+with open("readme.md", "r") as f:
     long_description = f.read()
 
 setuptools.setup(
@@ -11,7 +11,7 @@ setuptools.setup(
     author_email="vpjayasiri@gmail.com, hnipun@gmail.com",
     description="Organize Machine Learning Experiments",
     long_description=long_description,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     url="https://github.com/lab-ml/labml",
     project_urls={
         'Documentation': 'https://lab-ml.com/'
