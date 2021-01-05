@@ -464,7 +464,10 @@ def has_experiment() -> bool:
 def experiment_singleton() -> Experiment:
     global _internal
 
-    assert _internal is not None
+    if _internal is None:
+        raise RuntimeError('Experiment not created. '
+                           'Create an experiment first with `experiment.create`'
+                           ' or `experiment.record`')
 
     return _internal
 

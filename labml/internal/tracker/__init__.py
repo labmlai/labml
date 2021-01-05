@@ -4,6 +4,7 @@ from typing import Dict, List, Optional, Callable, Union, Tuple
 from labml.internal import util
 from labml.internal.lab import lab_singleton, LabYamlNotfoundError
 from labml.internal.util import strings
+from labml.internal.util.colors import StyleCode
 from .indicators import Indicator
 from .indicators.factory import load_indicator_from_dict, create_default_indicator
 from .indicators.numeric import Scalar
@@ -11,7 +12,6 @@ from .namespace import Namespace
 from .writers import Writer
 from .writers.screen import ScreenWriter
 from ..logger import LogPart
-from labml.internal.util.colors import StyleCode
 from ... import logger
 from ...logger import Text
 
@@ -57,6 +57,7 @@ class Tracker:
 
     def reset_writers(self):
         self.__writers = []
+        self.is_indicators_updated = True
 
     def write_h_parameters(self, hparams: Dict[str, any]):
         for w in self.__writers:
