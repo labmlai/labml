@@ -14,6 +14,24 @@
 </div>
 
 
+### 🔥 Features
+
+* Monitor running experiments from [mobile phone](https://github.com/lab-ml/app)
+[![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://web.lab-ml.com/run?uuid=9e7f39e047e811ebbaff2b26e3148b3d)
+* Integrate with just 2 lines of code (see examples below)
+* Keeps track of experiments including infomation like git commit, configurations and hyper-parameters
+* Keep Tensorboard logs organized
+* [Dashboard](https://github.com/lab-ml/dashboard/) to locally browse and manage experiment runs
+* Save and load checkpoints
+* API for custom visualizations
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lab-ml/samples/blob/master/labml_samples/pytorch/stocks/analysis.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
+* Pretty logs of training progress
+* Open source! we also have a small hosted server for the mobile web app
+
+
+### Installation
+
 You can install this package using PIP.
 
 ```bash
@@ -55,19 +73,6 @@ with experiment.record(name='sample', exp_conf=conf):
                   callbacks=[LabMLKerasCallback()], verbose=None)
 ```
 
-### 🔥 Features
-
-* Monitor running experiments from [mobile phone](https://github.com/lab-ml/app)
-[![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://web.lab-ml.com/run?uuid=9e7f39e047e811ebbaff2b26e3148b3d)
-* Keeps track of experiments including infomation like git commit, configurations and hyper-parameters
-* Keep Tensorboard logs organized
-* [Dashboard](https://github.com/lab-ml/dashboard/)) to browse and manage experiment runs
-* Save and load checkpoints
-* API for custom visualizations
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lab-ml/samples/blob/master/labml_samples/pytorch/stocks/analysis.ipynb)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
-* Pretty training loop logs
-* Open source! we also have a small hosted server for the mobile web app
 
 ### 📚 Documentation
 
@@ -92,7 +97,7 @@ with experiment.record(name='sample', exp_conf=conf):
     <img src="https://raw.githubusercontent.com/vpj/lab/master/images/logger_sample.png" alt="Sample Logs"/>
 </div>
 
-#### Custom visualizations
+#### Custom visualizations based on Tensorboard logs
 
 <div align="center">
     <img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" width="500" alt="Analytics"/>
