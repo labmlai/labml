@@ -10,7 +10,7 @@
 [![Docs](https://img.shields.io/badge/labml-docs-blue)](https://lab-ml.com/)
 [![Twitter](https://img.shields.io/twitter/url.svg?label=Follow%20%40LabML&style=social&url=https%3A%2F%2Ftwitter.com%2FLabML)](https://twitter.com/LabML1?ref_src=twsrc%5Etfw)
 
-<img src="https://github.com/lab-ml/app/blob/master/images/labml-app.gif" width="300" alt=""/>
+<img src="https://github.com/lab-ml/lab/blob/master/images/cover.png" alt=""/>
 </div>
 
 
