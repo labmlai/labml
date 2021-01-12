@@ -3,9 +3,8 @@ from typing import Optional
 
 from labml import monit
 from labml.internal import util
+from labml.internal.computer import CONFIGS_FOLDER
 from labml.internal.lab import WebAPIConfigs
-
-_CONFIG_FILE_NAME = '.labml'
 
 
 class Computer:
@@ -16,6 +15,7 @@ class Computer:
     """
     web_api: WebAPIConfigs
     uuid: str
+    config_folder: Path
 
     def __init__(self):
         self.home = Path.home()
@@ -23,18 +23,27 @@ class Computer:
         self.__load_configs()
 
     def __load_configs(self):
-        config_file = self.home / _CONFIG_FILE_NAME
+        self.config_folder = self.home / CONFIGS_FOLDER
 
-        if config_file.exists():
-            with open(str(config_file)) as f:
+        print(self.config_folder, self.config_folder.exists())
+        if self.config_folder.is_file():
+            self.config_folder.unlink()
+
+        if not self.config_folder.exists():
+            self.config_folder.mkdir(parents=True)
+
+        configs_file = self.config_folder / 'configs.yaml'
+
+        if configs_file.exists():
+            with open(str(configs_file)) as f:
                 config = util.yaml_load(f.read())
                 if config is None:
                     config = {}
         else:
-            with monit.section('Creating a .labml config'):
+            with monit.section('Creating a .labml/config.yaml'):
                 from uuid import uuid1
                 config = {'uuid': uuid1().hex}
-                with open(str(config_file), 'w') as f:
+                with open(str(configs_file), 'w') as f:
                     f.write(util.yaml_dump(config))
 
         default_config = self.__default_config()

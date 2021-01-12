@@ -365,7 +365,7 @@ class Experiment:
                 from labml.internal.api.experiment import ApiExperiment
                 api_caller = ApiCaller(web_api_conf.url,
                                        {'run_uuid': self.run.uuid},
-                                       15)
+                                       timeout_seconds=15)
                 self.web_api = ApiExperiment(api_caller,
                                              frequency=web_api_conf.frequency,
                                              open_browser=web_api_conf.open_browser)

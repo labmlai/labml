@@ -38,8 +38,8 @@ class SimpleApiDataSource(ApiDataSource):
 
 
 class _WebApiThread(threading.Thread):
-    def __init__(self, url: str, timeout_seconds: int):
-        super().__init__(daemon=False)
+    def __init__(self, url: str, *, timeout_seconds: int, daemon: bool):
+        super().__init__(daemon=daemon)
         self.please_wait_count = 0
         self.timeout_seconds = timeout_seconds
         self.url = url
@@ -185,10 +185,12 @@ class ApiCaller:
     thread: Optional[_WebApiThread]
     state_attributes: Set[str]
 
-    def __init__(self, web_api_url: str, params: Dict[str, str],
-                 timeout_seconds: int = 15):
+    def __init__(self, web_api_url: str, params: Dict[str, str], *,
+                 timeout_seconds: int = 15,
+                 daemon: bool = False):
         super().__init__()
 
+        self.daemon = daemon
         params.copy()
         params['labml_version'] = labml.__version__
         params = '&'.join([f'{k}={v}' for k, v in params.items()])
@@ -203,7 +205,9 @@ class ApiCaller:
             return
 
         if self.thread is None:
-            self.thread = _WebApiThread(self.web_api_url, self.timeout_seconds)
+            self.thread = _WebApiThread(self.web_api_url,
+                                        timeout_seconds=self.timeout_seconds,
+                                        daemon=self.daemon)
 
         if self.thread.errored:
             raise RuntimeError('LabML App error: See above for error details')

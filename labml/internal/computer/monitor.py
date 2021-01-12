@@ -3,18 +3,19 @@ from pathlib import Path
 from typing import Dict
 
 import psutil
-from labml import monit
 
+from labml import monit
 from labml.internal.api import ApiCaller
 from labml.internal.computer.configs import computer_singleton
 from labml.internal.computer.writer import Writer, Header
 
 
 class MonitorComputer:
-    def __init__(self):
+    def __init__(self, session_uuid: str):
         api_caller = ApiCaller(computer_singleton().web_api.url,
-                               {'computer_uuid': computer_singleton().uuid},
-                               15)
+                               {'computer_uuid': computer_singleton().uuid, 'session_uuid': session_uuid},
+                               timeout_seconds=15,
+                               daemon=True)
         self.writer = Writer(api_caller, frequency=computer_singleton().web_api.frequency)
         self.header = Header(api_caller,
                              frequency=computer_singleton().web_api.frequency,
@@ -76,7 +77,7 @@ class MonitorComputer:
         self.data = {}
 
 
-def _get_os():
+def get_os():
     if psutil.MACOS:
         return 'macos'
     elif psutil.LINUX:
@@ -86,21 +87,3 @@ def _get_os():
     else:
         return 'unknown'
 
-
-def main():
-    m = MonitorComputer()
-
-    m.start({
-        'os': _get_os(),
-        'cpu.logical': psutil.cpu_count(),
-        'cpu.physical': psutil.cpu_count(logical=False)
-    })
-
-    while True:
-        with monit.section('Track'):
-            m.track()
-        time.sleep(60)
-
-
-if __name__ == '__main__':
-    main()

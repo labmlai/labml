@@ -3,13 +3,13 @@ import subprocess
 import threading
 import time
 import webbrowser
-from typing import List, Optional, Dict
+from typing import List
 
 from typing.io import IO
 
 from labml import logger, experiment
 from labml.experiment import generate_uuid
-from labml.internal.api import ApiCaller, Packet, SimpleApiDataSource
+from labml.internal.api import ApiCaller, SimpleApiDataSource
 from labml.internal.api.logs import ApiLogs
 from labml.logger import Text
 
@@ -104,7 +104,7 @@ def _capture(args: List[str]):
 def _launch(args: List[str]):
     import sys
     import os
-    
+
     if 'RUN_UUID' not in os.environ:
         os.environ['RUN_UUID'] = experiment.generate_uuid()
 
@@ -130,9 +130,15 @@ def _launch(args: List[str]):
         raise subprocess.CalledProcessError(returncode=process.returncode, cmd=cmd)
 
 
+def _monitor():
+    from labml.internal.computer import process
+
+    process.run()
+
+
 def main():
     parser = argparse.ArgumentParser(description='LabML CLI')
-    parser.add_argument('command', choices=['dashboard', 'capture', 'launch'])
+    parser.add_argument('command', choices=['dashboard', 'capture', 'launch', 'monitor'])
     parser.add_argument('args', nargs=argparse.REMAINDER)
 
     args = parser.parse_args()
@@ -143,5 +149,7 @@ def main():
         _capture(args.args)
     elif args.command == 'launch':
         _launch(args.args)
+    elif args.command == 'monitor':
+        _monitor()
     else:
         raise ValueError('Unknown command', args.command)
