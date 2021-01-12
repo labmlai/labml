@@ -36,7 +36,7 @@ def get_running_process():
             pid = int(pid)
         except ValueError:
             return 0
-        
+
         if is_pid_running(pid):
             return pid
         else:
