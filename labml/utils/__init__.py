@@ -18,6 +18,10 @@ def get_caller_file(ignore_callers: Set[str] = None) -> str:
             continue
         if str(module_path) in ignore_callers:
             continue
+        if not module_path.exists():
+            break
+        if str(module_path).startswith('<stdin'):
+            break
         if str(module_path).startswith('<ipython'):
             break
         if str(module_path.absolute()).find('/dist-packages/') != -1:
