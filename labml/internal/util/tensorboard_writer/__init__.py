@@ -37,3 +37,12 @@ def get_tensorboard_writer(path: PurePath) -> TensorboardWriter:
         raise ImportError("Tensorboard writer requires pytorch or tensorflow installed.\n"
                           "Install pytorch with pip install torch. Visit pytorch.org for details.\n"
                           "Install tensorflow with pip install tensorflow. Visit tensorflow.org for details")
+
+
+def has_tensorboard() -> bool:
+    try:
+        import tensorboard
+    except ImportError as e:
+        return False
+
+    return True

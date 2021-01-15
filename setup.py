@@ -21,7 +21,7 @@ setuptools.setup(
                                                'test',
                                                'test.*')),
     install_requires=['gitpython',
-                      'pyyaml>=5.3.1',
+                      'pyyaml',
                       'numpy'],
     entry_points={
         'console_scripts': ['labml=labml.cli:main'],

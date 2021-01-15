@@ -61,7 +61,10 @@ def create(*,
     """
 
     if writers is None:
-        writers = {'screen', 'sqlite', 'tensorboard', 'web_api'}
+        writers = {'screen', 'sqlite', 'web_api'}
+        from labml.internal.util.tensorboard_writer import has_tensorboard
+        if has_tensorboard():
+            writers.add('tensorboard')
 
     if disable_screen and 'screen' in writers:
         writers.remove('screen')
