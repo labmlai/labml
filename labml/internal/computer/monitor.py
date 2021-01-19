@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 from typing import Dict
 
@@ -26,13 +27,16 @@ class MonitorComputer:
 
     def track_net_io_counters(self):
         res = psutil.net_io_counters()
-        if 'net.recv' in self.cache and 'net.sent' in self.cache:
+        t = time.time()
+        if 'net.recv' in self.cache:
+            td = t - self.cache['net.time']
             self.data.update({
-                'net.recv': self.cache['net.recv'] - res.bytes_recv,
-                'net.sent': self.cache['net.sent'] - res.bytes_sent
+                'net.recv': (self.cache['net.recv'] - res.bytes_recv) / td,
+                'net.sent': (self.cache['net.sent'] - res.bytes_sent) / td,
             })
         self.cache['net.recv'] = res.bytes_recv
         self.cache['net.sent'] = res.bytes_sent
+        self.cache['net.time'] = t
 
     def track_memory(self):
         res = psutil.virtual_memory()
