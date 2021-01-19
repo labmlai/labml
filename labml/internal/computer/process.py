@@ -64,10 +64,12 @@ def run():
         'cpu.physical': psutil.cpu_count(logical=False)
     })
 
+    i = 0
     while True:
         with monit.section('Track'):
             m.track()
-        time.sleep(60)
+        time.sleep(min(60, max(1, i / 5.0)))
+        i += 1
 
 
 if __name__ == '__main__':

@@ -1,10 +1,8 @@
-import time
 from pathlib import Path
 from typing import Dict
 
 import psutil
 
-from labml import monit
 from labml.internal.api import ApiCaller
 from labml.internal.computer.configs import computer_singleton
 from labml.internal.computer.writer import Writer, Header
@@ -21,16 +19,20 @@ class MonitorComputer:
                              frequency=computer_singleton().web_api.frequency,
                              open_browser=computer_singleton().web_api.open_browser)
         self.data = {}
+        self.cache = {}
 
     def start(self, configs: Dict[str, any]):
         self.header.start(configs)
 
     def track_net_io_counters(self):
         res = psutil.net_io_counters()
-        self.data.update({
-            'net.recv': res.bytes_recv,
-            'net.sent': res.bytes_sent
-        })
+        if 'net.recv' in self.cache and 'net.sent' in self.cache:
+            self.data.update({
+                'net.recv': self.cache['net.recv'] - res.bytes_recv,
+                'net.sent': self.cache['net.sent'] - res.bytes_sent
+            })
+        self.cache['net.recv'] = res.bytes_recv
+        self.cache['net.sent'] = res.bytes_sent
 
     def track_memory(self):
         res = psutil.virtual_memory()

@@ -83,7 +83,10 @@ class Writer(WriteBase, ApiDataSource):
     def get_and_clear_indicators(self):
         data = {}
 
-        for key, value in self.indicators.items():
+        indicators = self.indicators
+        self.indicators = {}
+
+        for key, value in indicators.items():
             value = np.array(value)
             step: np.ndarray = value[:, 0]
             value: np.ndarray = value[:, 1]
@@ -100,7 +103,5 @@ class Writer(WriteBase, ApiDataSource):
                 'step': step.tolist(),
                 'value': value.tolist()
             }
-
-        self.indicators = {}
 
         return data
