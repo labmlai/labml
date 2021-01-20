@@ -19,7 +19,7 @@ class ScreenWriter(Writer):
         self._last_printed_value = {}
 
     def update_estimate(self, k, v):
-        if k not in self._estimates:
+        if k not in self._estimates or not np.isfinite(self._estimates[k]):
             self._estimates[k] = 0
             self._beta_pow[k] = 1.
 
@@ -36,16 +36,17 @@ class ScreenWriter(Writer):
             return self.get_empty_string(8, 2)
 
         estimate = self._estimates[k] / (1 - self._beta_pow[k])
-        if abs(estimate) < 1e-9 or np.isnan(estimate):
+        if abs(estimate) < 1e-9 or not np.isfinite(estimate):
             lg = 0
         else:
             lg = int(np.ceil(np.log10(abs(estimate)))) + 1
 
-        decimals = 7 - lg
-        decimals = max(1, decimals)
-        decimals = min(6, decimals)
+        if lg >= 7:
+            fmt = "{v:9.3e}"
+        else:
+            decimals = np.clip(7 - lg, 1, 6)
+            fmt = "{v:8,." + str(decimals) + "f}"
 
-        fmt = "{v:8,." + str(decimals) + "f}"
         if v is None:
             return self.get_empty_string(8, decimals)
         else:
