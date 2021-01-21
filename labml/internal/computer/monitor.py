@@ -31,8 +31,8 @@ class MonitorComputer:
         if 'net.recv' in self.cache:
             td = t - self.cache['net.time']
             self.data.update({
-                'net.recv': (self.cache['net.recv'] - res.bytes_recv) / td,
-                'net.sent': (self.cache['net.sent'] - res.bytes_sent) / td,
+                'net.recv': (res.bytes_recv - self.cache['net.recv']) / td,
+                'net.sent': (res.bytes_sent - self.cache['net.sent']) / td,
             })
         self.cache['net.recv'] = res.bytes_recv
         self.cache['net.sent'] = res.bytes_sent
