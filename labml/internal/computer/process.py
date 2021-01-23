@@ -1,8 +1,6 @@
 import os
 import time
 
-import psutil
-
 from labml import monit
 from labml.internal.computer import monitor
 from labml.internal.computer.configs import computer_singleton
@@ -58,11 +56,7 @@ def run():
 
     m = monitor.MonitorComputer(session_uuid)
 
-    m.start({
-        'os': monitor.get_os(),
-        'cpu.logical': psutil.cpu_count(),
-        'cpu.physical': psutil.cpu_count(logical=False)
-    })
+    m.start()
 
     i = 0
     while True:

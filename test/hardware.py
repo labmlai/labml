@@ -131,6 +131,6 @@ def test_psutil_processes():
 
 
 if __name__ == '__main__':
-    # test_nvidia()
-    test_psutil()
-    test_psutil_processes()
+    test_nvidia()
+    # test_psutil()
+    # test_psutil_processes()
