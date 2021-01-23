@@ -118,11 +118,12 @@ class MonitorComputer:
             'cpu.user': res.user,
         })
         res = psutil.cpu_freq()
-        self.data.update({
-            'cpu.freq': res.current,
-            'cpu.freq.min': res.min,
-            'cpu.freq.max': res.max,
-        })
+        if res is not None:
+            self.data.update({
+                'cpu.freq': res.current,
+                'cpu.freq.min': res.min,
+                'cpu.freq.max': res.max,
+            })
         res = psutil.cpu_percent(percpu=True)
         self.data.update({f'cpu.perc.{i}': p for i, p in enumerate(res)})
 

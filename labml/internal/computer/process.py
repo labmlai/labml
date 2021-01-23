@@ -41,9 +41,9 @@ def get_running_process():
             return 0
 
 
-def run():
+def run(is_check_process: bool = True):
     pid = get_running_process()
-    if pid:
+    if is_check_process and pid:
         raise RuntimeError(f'This computer is already being monitored. PID: {pid}')
 
     from uuid import uuid1
