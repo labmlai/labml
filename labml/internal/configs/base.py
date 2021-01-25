@@ -1,7 +1,7 @@
 import types
 import warnings
 from collections import OrderedDict
-from typing import Dict, List, Callable, Union, Tuple, Optional, Type, Set, Iterable
+from typing import Dict, List, Callable, Union, Tuple, Optional, Type, Set, Iterable, Any
 
 from .config_function import ConfigFunction
 from .config_item import ConfigItem
@@ -32,7 +32,7 @@ def _is_class_method(func: Callable):
 
 
 RESERVED_CLASS = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wrap'}
-RESERVED_INSTANCE = {'_to_json', '_reset_explicitly_specified', '_set_update_callback', '_set_values', '_get_type'}
+RESERVED_INSTANCE = {'set_default', '_to_json', '_reset_explicitly_specified', '_set_update_callback', '_set_values', '_get_type'}
 
 _STANDARD_TYPES = {int, str, bool, float, Dict, List}
 
@@ -129,6 +129,7 @@ class Configs:
         self.__aggregates = {}
         self.__aggregates_options = {}
         self.__secondary_values = {}
+        self.__default_overrides = {}
 
         self.__order = {}
         self.__n_calculated = 0
@@ -250,11 +251,17 @@ class Configs:
 
         return None, False
 
-    def __get_value_direct(self, item):
+    def __get_value_direct(self, item: str) -> Tuple[Any, bool]:
         if item in self.__values_override:
             return self.__values_override[item], True
         elif item in self.__values:
             return self.__values[item], True
+        elif item in self.__default_overrides:
+            v, f = self.__default_overrides[item]
+            if f is None:
+                return v, True
+            else:
+                return f(), True
         else:
             return None, False
 
@@ -500,7 +507,7 @@ class Configs:
 
     def _reset_explicitly_specified(self):
         self.__explicitly_specified = set()
-        for k, v in self.__cached_configs:
+        for k, v in self.__cached_configs.items():
             v._reset_explicitly_specified()
 
     def _set_update_callback(self, update_callback: Callable):
@@ -508,3 +515,11 @@ class Configs:
 
     def _get_type(self, item: str) -> Type:
         return self.__types[item]
+
+    def set_default(self, item: Any, value: Any = None, func: Optional[Callable] = None):
+        if isinstance(item, ConfigItem):
+            item = item.key
+        else:
+            warnings.warn(f"Use Config.{item} when setting defaults", FutureWarning, 4)
+
+        self.__default_overrides[item] = (value, func)
