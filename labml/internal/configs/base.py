@@ -251,6 +251,8 @@ class Configs:
         for k, options in self.__aggregates[item].items():
             v, has = self.__get_value(k)
             if has and v in options:
+                if k not in self.__cached:
+                    self.__calculate(k)
                 return options[v], True
 
         return None, False
@@ -273,7 +275,7 @@ class Configs:
 
     def __get_value(self, item):
         if item in self.__cached:
-            return self.__cached[item]
+            return self.__cached[item], True
 
         value, has = self.__get_value_direct(item)
 
