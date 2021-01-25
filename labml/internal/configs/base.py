@@ -32,7 +32,8 @@ def _is_class_method(func: Callable):
 
 
 RESERVED_CLASS = {'calc', 'list', 'set_hyperparams', 'set_meta', 'aggregate', 'calc_wrap'}
-RESERVED_INSTANCE = {'set_default', '_to_json', '_reset_explicitly_specified', '_set_update_callback', '_set_values', '_get_type'}
+RESERVED_INSTANCE = {'set_default', '_to_json', '_reset_explicitly_specified', '_set_update_callback',
+                     '_set_values', '_get_type'}
 
 _STANDARD_TYPES = {int, str, bool, float, Dict, List}
 
@@ -100,8 +101,10 @@ class Configs:
     __aggregates_options: Dict[str, Set[str]]
     __secondary_values: Dict[str, Dict[str, any]]
 
+    __defaults: Dict[str, any]
     __values: Dict[str, any]
     __values_override: Dict[str, any]
+    __default_overrides: Dict[str, Tuple[any, Callable]]
     __cached: Dict[str, any]
     __cached_configs: Dict[str, 'Configs']
 
@@ -112,8 +115,10 @@ class Configs:
 
     def __init__(self, *, _primary: str = None):
         self._primary = _primary
+        self.__defaults = {}
         self.__values = {}
         self.__values_override = {}
+        self.__default_overrides = {}
         self.__cached = {}
         self.__cached_configs = {}
 
@@ -129,7 +134,6 @@ class Configs:
         self.__aggregates = {}
         self.__aggregates_options = {}
         self.__secondary_values = {}
-        self.__default_overrides = {}
 
         self.__order = {}
         self.__n_calculated = 0
@@ -160,7 +164,7 @@ class Configs:
                     continue
 
                 if v.has_value:
-                    self.__values[k] = v.value
+                    self.__defaults[k] = v.value
 
                 if k in self.__config_items:
                     self.__config_items[k].update(v)
@@ -254,16 +258,18 @@ class Configs:
     def __get_value_direct(self, item: str) -> Tuple[Any, bool]:
         if item in self.__values_override:
             return self.__values_override[item], True
-        elif item in self.__values:
+
+        if item in self.__values:
             return self.__values[item], True
-        elif item in self.__default_overrides:
+
+        if item in self.__default_overrides:
             v, f = self.__default_overrides[item]
             if f is None:
                 return v, True
             else:
                 return f(), True
-        else:
-            return None, False
+
+        return None, False
 
     def __get_value(self, item):
         if item in self.__cached:
@@ -277,6 +283,9 @@ class Configs:
         value, has = self.__get_value_aggregate(item)
         if has:
             return value, has
+
+        if item in self.__defaults:
+            return self.__defaults[item], True
 
         if item in self.__options:
             return next(iter(self.__options[item].keys())), True
@@ -300,7 +309,7 @@ class Configs:
 
             self.__options[item] = OrderedDict()
             self.__options[item]['from_type'] = config_function
-            self.__values[item] = 'from_type'
+            self.__defaults[item] = 'from_type'
             value = 'from_type'
         else:
             raise AttributeError(f"{self.__class__.__name__} cannot calculate config `{item}`")
