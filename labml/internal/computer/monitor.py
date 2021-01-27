@@ -148,7 +148,6 @@ class MonitorComputer:
         self.writer.track(self.data)
         self.data = {}
 
-
     def first(self):
         # self.track_memory()
         # self.track_cpu()

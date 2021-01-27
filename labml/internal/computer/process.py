@@ -62,7 +62,7 @@ def run(is_check_process: bool = True):
     while True:
         with monit.section('Track'):
             m.track()
-        time.sleep(min(60, max(1, i / 5.0)))
+        time.sleep(min(60.0, max(1.0, i / 5.0)))
         i += 1
 
 
