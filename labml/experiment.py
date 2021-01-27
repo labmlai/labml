@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Set, Dict, List, Union, TYPE_CHECKING, overload
+from typing import Optional, Set, Dict, List, Union, TYPE_CHECKING, overload, Tuple
 
 import numpy as np
 
@@ -10,7 +10,9 @@ from labml.internal.experiment import \
     ModelSaver
 from labml.internal.monitor import monitor_singleton as monitor
 from labml.internal.experiment.experiment_run import \
-    get_configs as _get_configs
+    get_configs as _get_configs, \
+    save_bundle as _save_bundle, \
+    load_bundle as _load_bundle
 
 if TYPE_CHECKING:
     import torch
@@ -296,6 +298,22 @@ def load(run_uuid: str, checkpoint: Optional[int] = None):
 
     _load_run_uuid = run_uuid
     _load_checkpoint = checkpoint
+
+
+def save_bundle(path: Path, run_uuid: str, checkpoint: Optional[int] = None, *,
+                data_files: List[str] = None):
+    if data_files is None:
+        data_files = []
+
+    if not checkpoint:
+        checkpoint = -1
+
+    _save_bundle(path, run_uuid, checkpoint,
+                 data_files=data_files)
+
+
+def load_bundle(path: Path) -> Tuple[str, int]:
+    return _load_bundle(path)
 
 
 def load_models(models: List[str], run_uuid: str, checkpoint: Optional[int] = None):

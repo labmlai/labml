@@ -1,10 +1,13 @@
+import json
+import tarfile
+import tempfile
 import time
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 
 import numpy as np
 
-from labml import logger
+from labml import logger, lab
 from labml.internal.configs.processor import load_configs
 from .. import util
 from ..manage.runs import get_run_by_uuid, get_checkpoints
@@ -21,6 +24,7 @@ def struct_time_to_date(t: time.struct_time):
 
 
 _GLOBAL_STEP = 'global_step'
+_TAR_BUFFER_SIZE = 100_000
 
 
 class RunInfo:
@@ -241,8 +245,7 @@ def _get_run_checkpoint(run_path: Path, checkpoint: int = -1):
         return ci
 
 
-def get_run_checkpoint(run_uuid: str,
-                       checkpoint: int = -1):
+def get_run_checkpoint(run_uuid: str, checkpoint: int = -1):
     run_path = get_run_by_uuid(run_uuid)
     if run_path is None:
         logger.log("Couldn't find a previous run")
@@ -282,3 +285,81 @@ def get_configs(run_uuid: str):
     configs = load_configs(configs_path)
 
     return configs
+
+
+def save_bundle(path: Path, run_uuid: str, checkpoint: int = -1, *,
+                data_files: List[str]):
+    run_path = get_run_by_uuid(run_uuid)
+    if run_path is None:
+        raise RuntimeError(f"Couldn't find run {run_uuid}")
+
+    checkpoint = _get_run_checkpoint(run_path, checkpoint)
+
+    if checkpoint is None:
+        raise RuntimeError(f"Couldn't find checkpoint {run_uuid}:{checkpoint}")
+
+    info_path = path.parent / f'{path.stem}.info.json'
+    info = {'uuid': run_uuid, 'checkpoint': checkpoint}
+    with open(str(info_path), 'w') as f:
+        f.write(json.dumps(info))
+
+    checkpoint_path = run_path / "checkpoints" / str(checkpoint)
+
+    with tarfile.open(str(path), 'w:gz') as tar:
+        tar.add(str(checkpoint_path), 'checkpoint')
+        tar.add(str(run_path / 'run.yaml'), 'run.yaml')
+        tar.add(str(run_path / 'configs.yaml'), 'configs.yaml')
+        tar.add(str(info_path), 'info.json')
+        for f in data_files:
+            tar.add(str(lab.get_data_path() / f), f'data/{f}')
+
+    info_path.unlink()
+
+
+def _extract_tar_file(tar: tarfile.TarFile, f: tarfile.TarInfo, path: Path):
+    with tar.extractfile(f) as ef:
+        with open(str(path), 'wb') as o:
+            while True:
+                r = ef.read(_TAR_BUFFER_SIZE)
+                if r:
+                    o.write(r)
+                else:
+                    break
+
+
+def load_bundle(path: Path) -> Tuple[str, int]:
+    with tarfile.open(str(path), 'r:gz') as tar:
+        files = tar.getmembers()
+        info_member = None
+        for f in files:
+            if f.name == 'info.json':
+                info_member = f
+
+        if not info_member:
+            raise RuntimeError(f"Corrupted bundle. Missing info.json")
+
+        with tar.extractfile(info_member) as ef:
+            info = json.load(ef)
+
+        run_uuid, checkpoint = info['uuid'], info['checkpoint']
+        run_path = get_run_by_uuid(run_uuid)
+
+        if run_path is not None:
+            raise RuntimeError(f"Run {run_uuid} already exists")
+
+        run_path = lab.get_experiments_path() / 'bundled' / run_uuid
+
+        checkpoint_path = run_path / "checkpoints" / str(checkpoint)
+        if not checkpoint_path.exists():
+            checkpoint_path.mkdir(parents=True)
+
+        for f in files:
+            if f.name == 'run.yaml':
+                _extract_tar_file(tar, f, run_path / 'run.yaml')
+            elif f.name == 'configs.yaml':
+                _extract_tar_file(tar, f, run_path / 'configs.yaml')
+            elif f.name.startswith('checkpoint/'):
+                p = f.name[len('checkpoint/'):]
+                _extract_tar_file(tar, f, checkpoint_path / p)
+
+        return run_uuid, checkpoint
