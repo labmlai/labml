@@ -312,8 +312,8 @@ def save_bundle(path: Path, run_uuid: str, checkpoint: Optional[int] = None, *,
                  data_files=data_files)
 
 
-def load_bundle(path: Path) -> Tuple[str, int]:
-    return _load_bundle(path)
+def load_bundle(path: Path, *, url: Optional[str] = None) -> Tuple[str, int]:
+    return _load_bundle(path, url=url)
 
 
 def load_models(models: List[str], run_uuid: str, checkpoint: Optional[int] = None):
