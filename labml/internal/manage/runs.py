@@ -14,6 +14,9 @@ def get_runs() -> Generator[Path, None, None]:
 
 
 def get_experiments() -> Generator[Path, None, None]:
+    if not lab.get_experiments_path().exists():
+        return
+
     for exp_path in lab.get_experiments_path().iterdir():
         if exp_path.name.startswith('_') or exp_path.name.startswith('.'):
             continue
