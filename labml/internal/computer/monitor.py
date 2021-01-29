@@ -54,7 +54,7 @@ class MonitorComputer:
                 f'gpu.memory.used.{i}': self.nvml.nvmlDeviceGetMemoryInfo(handle).used,
                 f'gpu.utilization.{i}': self.nvml.nvmlDeviceGetUtilizationRates(handle).gpu,
                 f'gpu.temperature.{i}': self.nvml.nvmlDeviceGetTemperature(handle, self.nvml.NVML_TEMPERATURE_GPU),
-                f'gpu.power.usage{i}': self.nvml.nvmlDeviceGetPowerUsage(handle),
+                f'gpu.power.usage.{i}': self.nvml.nvmlDeviceGetPowerUsage(handle),
             })
 
         self.nvml.nvmlShutdown()
@@ -67,7 +67,7 @@ class MonitorComputer:
         for i in range(self.n_gpu):
             handle = self.nvml.nvmlDeviceGetHandleByIndex(i)
             self.data.update({
-                f'gpu.memory.total{i}': self.nvml.nvmlDeviceGetMemoryInfo(handle).total,
+                f'gpu.memory.total.{i}': self.nvml.nvmlDeviceGetMemoryInfo(handle).total,
                 f'gpu.power.limit.{i}': self.nvml.nvmlDeviceGetPowerManagementLimit(handle),
             })
 
