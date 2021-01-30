@@ -16,6 +16,14 @@ def store_l1_l2(name: str, tensor: torch.Tensor):
         tracker.add(f"{name}.l2", (tensor ** 2).mean().sqrt())
 
 
+def store_var(name: str, tensor: torch.Tensor):
+    if tensor.is_floating_point():
+        dims = tuple(i for i in range(len(tensor.shape)))
+        tracker.add(f"{name}.mean", tensor.mean())
+        var = (tensor ** 2).mean(dim=dims) - tensor.mean(dim=dims) ** 2
+        tracker.add(f"{name}.var", var.mean())
+
+
 def store_model_indicators(model: torch.nn.Module, *, model_name: str = "model"):
     for name, param in model.named_parameters():
         if param.requires_grad:
