@@ -1,6 +1,7 @@
-from fastai.callback.core import Callback, to_detach
+from fastai.callback.core import Callback, to_detach, patch
+from fastai.learner import Learner
 
-from labml import tracker
+from labml import tracker, experiment
 
 
 class LabMLFastAICallback(Callback):
@@ -12,10 +13,41 @@ class LabMLFastAICallback(Callback):
 
     def after_batch(self):
         tracker.add_global_step()
-        tracker.save({'loss.train': to_detach(self.loss.clone())})
+        if self.training:
+            metrics = {'loss.train': self.learn.loss}
+        else:
+            metrics = {'loss.valid': self.learn.loss}
+        try:
+            for m in self.learn.metrics:
+                if m.value is not None:
+                    metrics[m.name] = m.value
+        except:
+            pass
+
+        tracker.save(metrics)
 
     def after_epoch(self):
-        pass
+        metrics = {}
+        try:
+            for m in self.learn.metrics:
+                if m.value is not None:
+                    metrics[m.name] = m.value
+        except:
+            pass
+
+        tracker.save(metrics)
 
     def after_fit(self):
         pass
+
+
+@patch
+def labml_configs(self: Learner):
+    configs = {}
+    try:
+        configs['n_epoch'] = self.learn.n_epoch
+        configs['model_class'] = str(type(self.learn.model))
+    except:
+        pass
+
+    return configs
