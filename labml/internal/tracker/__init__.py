@@ -163,6 +163,7 @@ class Tracker:
     def store(self, key: str, value: any):
         if value is None:
             return
+
         if key.endswith('.'):
             key = '.'.join([key[:-1]] + [ns.name for ns in self.namespaces])
 
