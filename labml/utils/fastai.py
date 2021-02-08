@@ -36,6 +36,7 @@ class LabMLFastAICallback(Callback):
             pass
 
         tracker.save(metrics)
+        tracker.new_line()
 
     def after_fit(self):
         pass
