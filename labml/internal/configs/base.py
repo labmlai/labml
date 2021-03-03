@@ -506,7 +506,7 @@ class Configs:
                 'computed': Value.to_yaml_truncated(self.__cached.get(k, None)),
                 'is_hyperparam': self.__hyperparams.get(k, None),
                 'is_meta': self.__meta.get(k, None),
-                'is_explicitly_specified': (k in self.__explicitly_specified)
+                'is_explicitly_specified': (k in self.__explicitly_specified),
             }
 
         for k, c in self.__cached_configs.items():

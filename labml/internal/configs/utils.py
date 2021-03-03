@@ -71,7 +71,11 @@ class Value:
 
     @staticmethod
     def to_yaml_truncated(value, limit: int = 5000):
-        return Value.__to_yaml_truncated(value, limit)[0]
+        from labml.internal.configs.schedule import DynamicSchedule
+        if isinstance(value, DynamicSchedule):
+            return value.to_yaml()
+        else:
+            return Value.__to_yaml_truncated(value, limit)[0]
 
     @staticmethod
     def __to_yaml(value):
