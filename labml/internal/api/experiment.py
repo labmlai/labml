@@ -2,9 +2,9 @@ import threading
 import time
 from typing import Dict, Optional, TYPE_CHECKING
 
+from labml.internal.api import ApiCaller, Packet, ApiDataSource, ApiResponseHandler
+from labml.internal.api.dynamic import DynamicUpdateHandler
 from labml.internal.api.url import ApiUrlHandler
-
-from labml.internal.api import ApiCaller, Packet, ApiDataSource
 from ..configs.processor import ConfigsSaver
 
 if TYPE_CHECKING:
@@ -19,6 +19,18 @@ class WebApiConfigsSaver(ConfigsSaver):
 
     def save(self, configs: Dict):
         self.api_experiment.save_configs(configs)
+
+
+class DynamicScheduleHandler(ApiResponseHandler):
+    def __init__(self, handler: DynamicUpdateHandler):
+        self.handler = handler
+
+    def handle(self, data) -> bool:
+        if 'dynamic' not in data:
+            return False
+
+        self.handler.handle(data)
+        return False
 
 
 class ApiExperiment(ApiDataSource):
@@ -76,6 +88,9 @@ class ApiExperiment(ApiDataSource):
 
         from labml.internal.api.logs import API_LOGS
         API_LOGS.set_api(self.api_caller, frequency=LOGS_FREQUENCY)
+
+    def set_dynamic_handler(self, handler: DynamicUpdateHandler):
+        self.api_caller.add_handler(DynamicScheduleHandler(handler))
 
     def status(self, rank: int, status: str, details: str, time_: float):
         with self.lock:

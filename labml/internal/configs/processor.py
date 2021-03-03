@@ -70,6 +70,15 @@ class ConfigProcessor:
 
             return configs
 
+    def get_value(self, key):
+        """
+        Used to get values to update dynamic schedules
+        """
+        if self.configs is not None:
+            return self.configs._get_computed(key)
+        else:
+            return self.configs_dict.get(key, None)
+
     def add_saver(self, saver: ConfigsSaver):
         self.savers.append(saver)
         saver.save(self.to_json())

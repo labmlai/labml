@@ -516,6 +516,9 @@ class Configs:
 
         return configs
 
+    def _get_computed(self, key: str):
+        return self.__cached.get(key, None)
+
     def _reset_explicitly_specified(self):
         self.__explicitly_specified = set()
         for k, v in self.__cached_configs.items():

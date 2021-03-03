@@ -5,9 +5,12 @@ import time
 from typing import Optional, List, Set, Dict, Union, TYPE_CHECKING
 
 import git
+from labml.internal.api.dynamic import DynamicUpdateHandler
+
 from labml import logger, monit
 from labml.internal.configs.base import Configs
 from labml.internal.configs.processor import ConfigProcessor, FileConfigsSaver
+from labml.internal.configs.schedule import DynamicSchedule
 from labml.internal.experiment.experiment_run import Run, struct_time_to_time, struct_time_to_date
 from labml.internal.experiment.watcher import ExperimentWatcher
 from labml.internal.lab import lab_singleton
@@ -125,6 +128,17 @@ class CheckpointSaver:
                           ('models were not loaded.\n', Text.none),
                           'Models to be loaded should be specified with: ',
                           ('experiment.add_pytorch_models', Text.value)])
+
+
+class ExperimentDynamicUpdateHandler(DynamicUpdateHandler):
+    def __init__(self, config_processor: ConfigProcessor):
+        self.config_processor = config_processor
+
+    def handle(self, data: Dict):
+        for k, v in data:
+            s: DynamicSchedule = self.config_processor.get_value(k)
+            assert isinstance(k, DynamicSchedule)
+            s.set_value(v)
 
 
 class Experiment:
@@ -409,6 +423,7 @@ class Experiment:
                     self.web_api.start(self.run)
                     if self.configs_processor is not None:
                         self.configs_processor.add_saver(self.web_api.get_configs_saver())
+                        self.web_api.set_dynamic_handler(ExperimentDynamicUpdateHandler(self.configs_processor))
 
                 tracker().save_indicators(self.run.indicators_path)
 
