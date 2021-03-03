@@ -17,7 +17,7 @@
 ### 🔥 Features
 
 * Monitor running experiments from [mobile phone](https://github.com/lab-ml/app)
-[![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://web.lab-ml.com/run?uuid=9e7f39e047e811ebbaff2b26e3148b3d)
+[![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://app.labml.ai/run/9e7f39e047e811ebbaff2b26e3148b3d)
 * Integrate with just 2 lines of code (see examples below)
 * Keeps track of experiments including infomation like git commit, configurations and hyper-parameters
 * Keep Tensorboard logs organized
