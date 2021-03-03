@@ -1,11 +1,10 @@
 import threading
 import time
-import webbrowser
 from typing import Dict, Optional, TYPE_CHECKING
 
-from labml import logger
+from labml.internal.api.url import ApiUrlHandler
+
 from labml.internal.api import ApiCaller, Packet, ApiDataSource
-from labml.logger import Text
 from ..configs.processor import ConfigsSaver
 
 if TYPE_CHECKING:
@@ -35,7 +34,6 @@ class ApiExperiment(ApiDataSource):
         self.api_caller = api_caller
         self.configs_saver = None
         self.data = {}
-        self.callback = None
         self.lock = threading.Lock()
 
     def get_configs_saver(self):
@@ -52,12 +50,13 @@ class ApiExperiment(ApiDataSource):
     def get_data_packet(self) -> Packet:
         with self.lock:
             self.data['time'] = time.time()
-            packet = Packet(self.data, callback=self.callback)
+            packet = Packet(self.data)
             self.data = {}
-            self.callback = None
             return packet
 
     def start(self, run: 'Run'):
+        self.api_caller.add_handler(ApiUrlHandler(self.open_browser, 'Monitor experiment at '))
+
         with self.lock:
             self.data.update(dict(
                 name=run.name,
@@ -72,20 +71,11 @@ class ApiExperiment(ApiDataSource):
                 tags=run.tags,
                 notes=run.notes
             ))
-            self.callback = self._started
 
         self.api_caller.has_data(self)
 
         from labml.internal.api.logs import API_LOGS
         API_LOGS.set_api(self.api_caller, frequency=LOGS_FREQUENCY)
-
-    def _started(self, url):
-        if url is None:
-            return None
-
-        logger.log([('Monitor experiment at ', Text.meta), (url, Text.link)])
-        if self.open_browser:
-            webbrowser.open(url)
 
     def status(self, rank: int, status: str, details: str, time_: float):
         with self.lock:

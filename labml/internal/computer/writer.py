@@ -1,14 +1,12 @@
 import threading
 import time
-import webbrowser
 from typing import Dict
 from typing import Union
 
 import numpy as np
+from labml.internal.api.url import ApiUrlHandler
 
-from labml import logger
 from labml.internal.api import ApiCaller, Packet, ApiDataSource
-from labml.logger import Text
 
 MAX_BUFFER_SIZE = 1024
 
@@ -27,32 +25,22 @@ class Header(ApiDataSource):
         self.name = None
         self.comment = None
         self.data = {}
-        self.callback = None
         self.lock = threading.Lock()
 
     def get_data_packet(self) -> Packet:
         with self.lock:
             self.data['time'] = time.time()
-            packet = Packet(self.data, callback=self.callback)
+            packet = Packet(self.data)
             self.data = {}
-            self.callback = None
             return packet
 
     def start(self, configs: Dict[str, any]):
+        self.api_caller.add_handler(ApiUrlHandler(self.open_browser, 'Monitor computer at '))
         with self.lock:
             self.data['configs'] = configs
             self.data['name'] = 'My computer'
-            self.callback = self._started
 
         self.api_caller.has_data(self)
-
-    def _started(self, url):
-        if url is None:
-            return None
-
-        logger.log([('Monitor computer at ', Text.meta), (url, Text.link)])
-        if self.open_browser:
-            webbrowser.open(url)
 
     def status(self, rank: int, status: str, details: str, time_: float):
         with self.lock:
