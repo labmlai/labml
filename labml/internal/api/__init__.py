@@ -76,14 +76,9 @@ class _WebApiThread(threading.Thread):
         while not self.queue.empty():
             sources.append(self.queue.get())
 
-        sources_set = set()
-        filtered = []
-        for s in sources:
-            if s not in sources_set:
-                filtered.append(s)
-                sources_set.add(s)
+        sources = list(set(sources))
 
-        packets = [s.get_data_packet() for s in filtered]
+        packets = [s.get_data_packet() for s in sources]
         return [p for p in packets if not self._is_updating_notification(p)]
 
     def run(self):
