@@ -29,7 +29,7 @@ class DynamicScheduleHandler(ApiResponseHandler):
         if 'dynamic' not in data:
             return False
 
-        self.handler.handle(data)
+        self.handler.handle(data['dynamic'])
         return False
 
 

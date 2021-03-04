@@ -137,7 +137,7 @@ class ExperimentDynamicUpdateHandler(DynamicUpdateHandler):
     def handle(self, data: Dict):
         for k, v in data:
             s: DynamicSchedule = self.config_processor.get_value(k)
-            assert isinstance(k, DynamicSchedule)
+            assert isinstance(s, DynamicSchedule)
             s.set_value(v)
 
 
