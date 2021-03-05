@@ -1,10 +1,11 @@
 from pathlib import Path
 from typing import Optional
 
-from labml import monit
+from labml import logger
 from labml.internal import util
 from labml.internal.computer import CONFIGS_FOLDER
 from labml.internal.lab import WebAPIConfigs
+from labml.logger import Text
 
 
 class Computer:
@@ -25,7 +26,6 @@ class Computer:
     def __load_configs(self):
         self.config_folder = self.home / CONFIGS_FOLDER
 
-        print(self.config_folder, self.config_folder.exists())
         if self.config_folder.is_file():
             self.config_folder.unlink()
 
@@ -40,11 +40,17 @@ class Computer:
                 if config is None:
                     config = {}
         else:
-            with monit.section('Creating a .labml/config.yaml'):
-                from uuid import uuid1
-                config = {'uuid': uuid1().hex}
-                with open(str(configs_file), 'w') as f:
-                    f.write(util.yaml_dump(config))
+            logger.log([
+                ('~/labml/configs.yaml', Text.value),
+                ' does not exist. Creating ',
+                (str(configs_file), Text.meta)])
+            config = {}
+
+        if 'uuid' not in config:
+            from uuid import uuid1
+            config['uuid'] = uuid1().hex
+            with open(str(configs_file), 'w') as f:
+                f.write(util.yaml_dump(config))
 
         default_config = self.__default_config()
         for k, v in default_config.items():
