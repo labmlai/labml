@@ -1,6 +1,6 @@
 <div align="center" style="margin-bottom: 100px;">
 <h1>labml.ai</h1>
-<h2>Organize machine learning experiments and monitor training progress from mobile.</h2>
+<h2>Organize machine learning experiments and monitor training progress and hardware usage from mobile.</h2>
 
 <img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="150" alt="">
 
