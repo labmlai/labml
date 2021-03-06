@@ -1,8 +1,7 @@
 <div align="center" style="margin-bottom: 100px;">
-<h1>labml.ai</h1>
-<h2>Organize machine learning experiments and monitor training progress and hardware usage from mobile.</h2>
-
 <img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="150" alt="">
+
+<h2>Organize machine learning experiments and monitor training progress and hardware usage from mobile.</h2>
 
 [![PyPI - Python Version](https://badge.fury.io/py/labml.svg)](https://badge.fury.io/py/labml)
 [![PyPI Status](https://pepy.tech/badge/labml)](https://pepy.tech/project/labml)
@@ -12,7 +11,6 @@
 
 <img src="https://github.com/lab-ml/lab/blob/master/images/cover.png" alt=""/>
 </div>
-
 
 ### 🔥 Features
 
