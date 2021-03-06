@@ -121,8 +121,8 @@ If you use LabML for academic research, please cite the library using the follow
 ```bibtext
 @misc{labml,
  author = {Varuna Jayasiri, Nipun Wijerathne},
- title = {LabML: A library to organize machine learning experiments},
+ title = {labml.ai: A library to organize machine learning experiments},
  year = {2020},
- url = {https://lab-ml.com/},
+ url = {https://labml.ai/},
 }
 ```
