@@ -7,7 +7,7 @@
 [![PyPI - Python Version](https://badge.fury.io/py/labml.svg)](https://badge.fury.io/py/labml)
 [![PyPI Status](https://pepy.tech/badge/labml)](https://pepy.tech/project/labml)
 [![Join Slack](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
-[![Docs](https://img.shields.io/badge/labml-docs-blue)](https://lab-ml.com/)
+[![Docs](https://img.shields.io/badge/labml-docs-blue)](https://labml.ai/)
 [![Twitter](https://img.shields.io/twitter/follow/labmlai?style=social)](https://twitter.com/labmlai?ref_src=twsrc%5Etfw)
 
 <img src="https://github.com/lab-ml/lab/blob/master/images/cover.png" alt=""/>
@@ -74,15 +74,22 @@ with experiment.record(name='sample', exp_conf=conf):
                   callbacks=[LabMLKerasCallback()], verbose=None)
 ```
 
+### [Monitoring hardware usage](https://github.com/lab-ml/labml/blob/master/guides/hardware_monitoring.md)
+
+```sh
+pip install labml psutil py3nvml
+labml monitor
+```
 
 ### 📚 Documentation
 
-* [API to create experiments](https://lab-ml.com/guide/experiment.html)
-* [Track training metrics](https://lab-ml.com/guide/tracker.html)
-* [Monitored training loop and other iterators](https://lab-ml.com/guide/monit.html)
-* [API for custom visualizations](https://lab-ml.com/guide/analytics.html)
-* [Configurations management API](https://lab-ml.com/guide/configs.html)
-* [Logger for stylized logging](https://lab-ml.com/guide/logger.html)
+* [API to create experiments](https://docs.labml.ai/guide/experiment.html)
+* [Track training metrics](https://docs.labml.ai/guide/tracker.html)
+* [Monitored training loop and other iterators](https://docs.labml.ai/guide/monit.html)
+* [API for custom visualizations](https://docs.labml.ai/guide/analytics.html)
+* [Configurations management API](https://docs.labml.ai/guide/configs.html)
+* [Logger for stylized logging](https://docs.labml.ai/guide/logger.html)
+* [Monitoring hardware usage](https://github.com/lab-ml/labml/blob/master/guides/hardware_monitoring.md)
 
 ### 🖥 Screenshots
 
@@ -108,7 +115,7 @@ with experiment.record(name='sample', exp_conf=conf):
 
 [💬 Slack workspace for discussions](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
 
-[📗 Documentation](https://lab-ml.com/)
+[📗 Documentation](https://docs.labml.ai)
 
 [👨‍🏫 Samples](https://github.com/lab-ml/samples)
 
