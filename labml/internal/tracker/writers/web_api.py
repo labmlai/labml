@@ -53,8 +53,9 @@ class Writer(WriteBase, ApiDataSource):
     def write(self, *,
               global_step: int,
               indicators: Dict[str, Indicator]):
-        for ind in indicators.values():
-            self._write_indicator(global_step, ind)
+        with self.lock:
+            for ind in indicators.values():
+                self._write_indicator(global_step, ind)
 
         t = time.time()
         freq = self.frequency
