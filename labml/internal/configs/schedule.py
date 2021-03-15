@@ -1,9 +1,9 @@
-import warnings
-from typing import Tuple
+from typing import Tuple, Union
 
 
 class DynamicSchedule:
-    def __init__(self, default: float, range_: Tuple[float, float] = (0, 1)):
+    def __init__(self, default: Union[float, int], type_: str, range_: Tuple[float, float]):
+        self._type_ = type_
         self._range_ = range_
         self._default = default
         self._value = default
@@ -25,4 +25,15 @@ class DynamicSchedule:
             'type': 'DynamicSchedule',
             'default': self._default,
             'range': list(self._range_),
+            'dynamic_type': self._type_
         }
+
+
+class FloatDynamicSchedule(DynamicSchedule):
+    def __init__(self, default: float, range_: Tuple[float, float] = (0, 1)):
+        super().__init__(default, 'float', range_)
+
+
+class IntDynamicSchedule(DynamicSchedule):
+    def __init__(self, default: int, range_: Tuple[int, int] = (1, 16)):
+        super().__init__(default, 'int', range_)
