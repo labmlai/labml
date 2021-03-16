@@ -10,7 +10,7 @@ from labml.internal.api.dynamic import DynamicUpdateHandler
 from labml import logger, monit
 from labml.internal.configs.base import Configs
 from labml.internal.configs.processor import ConfigProcessor, FileConfigsSaver
-from labml.internal.configs.schedule import DynamicSchedule
+from labml.internal.configs.dynamic_hyperparam import DynamicHyperParam
 from labml.internal.experiment.experiment_run import Run, struct_time_to_time, struct_time_to_date
 from labml.internal.experiment.watcher import ExperimentWatcher
 from labml.internal.lab import lab_singleton
@@ -136,8 +136,8 @@ class ExperimentDynamicUpdateHandler(DynamicUpdateHandler):
 
     def handle(self, data: Dict):
         for k, v in data.items():
-            s: DynamicSchedule = self.config_processor.get_value(k)
-            assert isinstance(s, DynamicSchedule)
+            s: DynamicHyperParam = self.config_processor.get_value(k)
+            assert isinstance(s, DynamicHyperParam)
             s.set_value(v)
 
 

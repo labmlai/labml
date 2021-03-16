@@ -21,7 +21,7 @@ class WebApiConfigsSaver(ConfigsSaver):
         self.api_experiment.save_configs(configs)
 
 
-class DynamicScheduleHandler(ApiResponseHandler):
+class DynamicHyperParamHandler(ApiResponseHandler):
     def __init__(self, handler: DynamicUpdateHandler):
         self.handler = handler
 
@@ -90,7 +90,7 @@ class ApiExperiment(ApiDataSource):
         API_LOGS.set_api(self.api_caller, frequency=LOGS_FREQUENCY)
 
     def set_dynamic_handler(self, handler: DynamicUpdateHandler):
-        self.api_caller.add_handler(DynamicScheduleHandler(handler))
+        self.api_caller.add_handler(DynamicHyperParamHandler(handler))
 
     def status(self, rank: int, status: str, details: str, time_: float):
         with self.lock:
