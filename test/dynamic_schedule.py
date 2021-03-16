@@ -2,16 +2,16 @@ import time
 
 from labml import experiment, monit, tracker
 from labml.configs import BaseConfigs
-from labml.internal.configs.schedule import FloatDynamicSchedule
+from labml.internal.configs.dynamic_hyperparam import FloatDynamicHyperParam
 
 
 class Configs(BaseConfigs):
-    lr = FloatDynamicSchedule(0.01, (0, 1))
+    lr = FloatDynamicHyperParam(0.01, (0, 1))
 
 
 def main():
-    experiment.create(name='test_schedule', writers={'screen', 'web_api'})
-    lr = FloatDynamicSchedule(0.01, (0, 1))
+    experiment.create(name='test_dynamic_hp', writers={'screen', 'web_api'})
+    lr = FloatDynamicHyperParam(0.01, (0, 1))
     # experiment.configs({'lr': lr})
     conf = Configs()
     experiment.configs(conf)

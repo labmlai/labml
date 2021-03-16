@@ -1,7 +1,7 @@
 from typing import Tuple, Union
 
 
-class DynamicSchedule:
+class DynamicHyperParam:
     def __init__(self, default: Union[float, int], type_: str, range_: Tuple[float, float]):
         self._type_ = type_
         self._range_ = range_
@@ -29,11 +29,11 @@ class DynamicSchedule:
         }
 
 
-class FloatDynamicSchedule(DynamicSchedule):
+class FloatDynamicHyperParam(DynamicHyperParam):
     def __init__(self, default: float, range_: Tuple[float, float] = (0, 1)):
         super().__init__(default, 'float', range_)
 
 
-class IntDynamicSchedule(DynamicSchedule):
+class IntDynamicHyperParam(DynamicHyperParam):
     def __init__(self, default: int, range_: Tuple[int, int] = (1, 16)):
         super().__init__(default, 'int', range_)
