@@ -37,3 +37,6 @@ class FloatDynamicHyperParam(DynamicHyperParam):
 class IntDynamicHyperParam(DynamicHyperParam):
     def __init__(self, default: int, range_: Tuple[int, int] = (1, 16)):
         super().__init__(default, 'int', range_)
+
+    def set_value(self, value):
+        self._value = int(value)
