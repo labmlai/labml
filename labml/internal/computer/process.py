@@ -41,7 +41,7 @@ def get_running_process():
             return 0
 
 
-def run(is_check_process: bool = True):
+def run(is_check_process: bool = True, open_browser: bool = True):
     pid = get_running_process()
     if is_check_process and pid:
         raise RuntimeError(f'This computer is already being monitored. PID: {pid}')
@@ -54,7 +54,7 @@ def run(is_check_process: bool = True):
     with open(str(computer_singleton().config_folder / 'monitor.pid'), 'w') as f:
         f.write(str(os.getpid()))
 
-    m = monitor.MonitorComputer(session_uuid)
+    m = monitor.MonitorComputer(session_uuid, open_browser)
 
     m.start()
 

@@ -10,7 +10,7 @@ from labml.utils.notice import labml_notice
 
 
 class MonitorComputer:
-    def __init__(self, session_uuid: str):
+    def __init__(self, session_uuid: str, open_browser):
         api_caller = ApiCaller(computer_singleton().web_api.url,
                                {'computer_uuid': computer_singleton().uuid, 'session_uuid': session_uuid},
                                timeout_seconds=15,
@@ -18,7 +18,7 @@ class MonitorComputer:
         self.writer = Writer(api_caller, frequency=computer_singleton().web_api.frequency)
         self.header = Header(api_caller,
                              frequency=computer_singleton().web_api.frequency,
-                             open_browser=computer_singleton().web_api.open_browser)
+                             open_browser=open_browser)
         self.data = {}
         self.cache = {}
         self.nvml = None

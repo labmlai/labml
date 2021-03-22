@@ -132,13 +132,27 @@ def _launch(args: List[str]):
 
 def _monitor():
     from labml.internal.computer import process
+    from labml.internal.computer.configs import computer_singleton
 
-    process.run()
+    process.run(True, computer_singleton().web_api.open_browser)
+
+
+def _service():
+    from labml.internal.computer.service import service_singleton
+
+    service_singleton().set_token()
+    service_singleton().create()
+
+
+def _service_run():
+    from labml.internal.computer import process
+
+    process.run(True, False)
 
 
 def main():
-    parser = argparse.ArgumentParser(description='LabML CLI')
-    parser.add_argument('command', choices=['dashboard', 'capture', 'launch', 'monitor'])
+    parser = argparse.ArgumentParser(description='labml.ai CLI')
+    parser.add_argument('command', choices=['dashboard', 'capture', 'launch', 'monitor', 'service', 'service-run'])
     parser.add_argument('args', nargs=argparse.REMAINDER)
 
     args = parser.parse_args()
@@ -151,5 +165,9 @@ def main():
         _launch(args.args)
     elif args.command == 'monitor':
         _monitor()
+    elif args.command == 'service':
+        _service()
+    elif args.command == 'service-run':
+        _service_run()
     else:
         raise ValueError('Unknown command', args.command)

@@ -24,7 +24,9 @@ class WebAPIConfigs:
                  url: str,
                  frequency: float,
                  verify_connection: bool,
-                 open_browser: bool):
+                 open_browser: bool,
+                 is_default: bool):
+        self.is_default = is_default
         self.open_browser = open_browser
         self.frequency = frequency
         self.verify_connection = verify_connection
@@ -105,7 +107,8 @@ class Lab:
             self.web_api = WebAPIConfigs(url=web_api_url,
                                          frequency=self.configs['web_api_frequency'],
                                          verify_connection=self.configs['web_api_verify_connection'],
-                                         open_browser=self.configs['web_api_open_browser'])
+                                         open_browser=self.configs['web_api_open_browser'],
+                                         is_default=web_api_url == self.__default_config()['web_api'])
         else:
             self.web_api = None
 
