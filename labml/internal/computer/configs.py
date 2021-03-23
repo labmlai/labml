@@ -4,7 +4,7 @@ from typing import Optional
 from labml import logger, monit
 from labml.internal import util
 from labml.internal.computer import CONFIGS_FOLDER
-from labml.internal.lab import WebAPIConfigs
+from labml.internal.api.configs import WebAPIConfigs
 from labml.logger import Text
 
 

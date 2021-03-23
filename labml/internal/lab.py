@@ -2,6 +2,7 @@ from pathlib import PurePath, Path
 from typing import List, Optional, Dict
 
 from labml.internal import util
+from labml.internal.api.configs import WebAPIConfigs
 from labml.internal.util import is_colab, is_kaggle
 from labml.logger import Text
 from labml.utils import get_caller_file
@@ -12,25 +13,6 @@ _CONFIG_FILE_NAME = '.labml.yaml'
 
 class LabYamlNotfoundError(RuntimeError):
     pass
-
-
-class WebAPIConfigs:
-    url: str
-    frequency: float
-    verify_connection: bool
-    open_browser: bool
-
-    def __init__(self, *,
-                 url: str,
-                 frequency: float,
-                 verify_connection: bool,
-                 open_browser: bool,
-                 is_default: bool):
-        self.is_default = is_default
-        self.open_browser = open_browser
-        self.frequency = frequency
-        self.verify_connection = verify_connection
-        self.url = url
 
 
 class Lab:
@@ -104,11 +86,16 @@ class Lab:
             web_api_url = self.configs['web_api']
             if web_api_url[0:4] != 'http':
                 web_api_url = f"https://api.labml.ai/api/v1/track?labml_token={web_api_url}&"
+            is_default = web_api_url == self.__default_config()['web_api']
+            # if is_default:
+            #     from labml.internal.computer.configs import computer_singleton
+            #     if not computer_singleton().web_api.is_default:
+            #         web_api_url = computer_singleton().web_api.url
             self.web_api = WebAPIConfigs(url=web_api_url,
                                          frequency=self.configs['web_api_frequency'],
                                          verify_connection=self.configs['web_api_verify_connection'],
                                          open_browser=self.configs['web_api_open_browser'],
-                                         is_default=web_api_url == self.__default_config()['web_api'])
+                                         is_default=is_default)
         else:
             self.web_api = None
 
