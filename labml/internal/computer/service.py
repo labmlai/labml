@@ -45,7 +45,14 @@ class Service:
             f.write(self._get_service_file_content())
 
         with monit.section('Reload systemd daemon'):
-            os.system('systemctl --user daemon-reload')
+            ret = os.system('systemctl --user daemon-reload')
+            if ret != 0:
+                monit.fail()
+
+        with monit.section('Enable service'):
+            ret = os.system('systemctl --user enable labml.service')
+            if ret != 0:
+                monit.fail()
 
     def create(self):
         self._create()
