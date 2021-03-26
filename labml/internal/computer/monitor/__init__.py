@@ -1,24 +1,16 @@
 import time
 from pathlib import Path
-from typing import NamedTuple, Dict
 
 import psutil
 
 from labml.internal.api import ApiCaller
 from labml.internal.computer.configs import computer_singleton
+from labml.internal.computer.monitor.process import ProcessMonitor
 from labml.internal.computer.writer import Writer, Header
 from labml.utils.notice import labml_notice
 
 
-class Process(NamedTuple):
-    key: int
-    pid: int
-    name: str
-
-
 class MonitorComputer:
-    processes: Dict[int, Process]
-
     def __init__(self, session_uuid: str, open_browser):
         api_caller = ApiCaller(computer_singleton().web_api.url,
                                {'computer_uuid': computer_singleton().uuid, 'session_uuid': session_uuid},
@@ -33,8 +25,7 @@ class MonitorComputer:
         self.nvml = None
         self.n_gpu = 0
 
-        self.processes = {}
-        self.n_processes = 0
+        self.process_monitor = ProcessMonitor()
 
         try:
             from py3nvml import py3nvml as nvml
@@ -148,59 +139,8 @@ class MonitorComputer:
             'disk.used': res.used,
         })
 
-    def track_process(self, p: psutil.Process):
-        with p.oneshot():
-            key = None
-            if p.pid in self.processes:
-                if self.processes[p.pid].name == p.name():
-                    key = self.processes[p.pid].key
-            if key is None:
-                key = self.n_processes
-                self.n_processes += 1
-
-                self.processes[p.pid] = Process(key,
-                                                p.pid,
-                                                p.name())
-                self.data.update({
-                    f'process.{key}.name': p.name(),
-                    f'process.{key}.pid': p.pid,
-                })
-
-            try:
-                res = p.memory_info()
-                self.data.update({
-                    f'process.{key}.rss': res.rss,
-                    f'process.{key}.vms': res.vms,
-                })
-            except psutil.AccessDenied:
-                pass
-            try:
-                res = p.memory_percent()
-                self.data.update({
-                    f'process.{key}.mem': res,
-                })
-            except psutil.AccessDenied:
-                pass
-
-            try:
-                res = p.cpu_percent()
-                self.data.update({
-                    f'process.{key}.cpu': res,
-                })
-            except psutil.AccessDenied:
-                pass
-
-            try:
-                res = p.num_threads()
-                self.data.update({
-                    f'process.{key}.threads': res,
-                })
-            except psutil.AccessDenied:
-                pass
-
     def track_processes(self):
-        for p in psutil.process_iter():
-            self.track_process(p)
+        self.process_monitor.track(self.data)
 
     def track(self):
         self.track_net_io_counters()
@@ -220,7 +160,6 @@ class MonitorComputer:
         # self.track_cpu()
         # self.track_disk()
         self.first_gpu()
-        # track_processes()
 
         self.writer.track(self.data)
         self.data = {}
