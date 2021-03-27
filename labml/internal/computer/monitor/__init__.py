@@ -142,6 +142,27 @@ class MonitorComputer:
             'disk.used': res.used,
         })
 
+    def first_sensors(self):
+        try:
+            sensors = psutil.sensors_temperatures()
+        except AttributeError as e:
+            return
+
+        for k, temps in sensors.items():
+            for i, t in enumerate(temps):
+                assert isinstance(t, psutil._common.shwtemp)
+                self.data[f'temp.{k}.{i}.label'] = t.label
+
+    def track_sensors(self):
+        try:
+            sensors = psutil.sensors_temperatures()
+        except AttributeError as e:
+            return
+
+        for k, temps in sensors.items():
+            for i, t in enumerate(temps):
+                self.data[f'temp.{k}.{i}.current'] = t.current
+
     def track_processes(self):
         self.data.update(self.process_monitor.track())
 
@@ -152,6 +173,7 @@ class MonitorComputer:
         self.track_memory()
         self.track_cpu()
         self.track_disk()
+        self.track_sensors()
         # self.track_processes()
         self.track_gpu()
 
@@ -163,6 +185,7 @@ class MonitorComputer:
         # self.track_cpu()
         # self.track_disk()
         self.first_gpu()
+        self.first_sensors()
 
         self.writer.track(self.data)
         self.data = {}
