@@ -2,7 +2,10 @@ import time
 from pathlib import Path
 
 import psutil
+
+from labml import logger
 from labml.internal.computer.monitor.process import ProcessMonitor
+from labml.logger import Text
 from labml.utils.notice import labml_notice
 
 
@@ -19,6 +22,14 @@ class Scanner:
         except ImportError:
             labml_notice('Install py3nvml to monitor GPUs:\n pip install py3nvml',
                          is_warn=False)
+
+        if self.nvml:
+            try:
+                self.nvml.nvmlInit()
+                self.nvml.nvmlShutdown()
+            except self.nvml.NVMLError:
+                logger.log('NVML Library not found', Text.warning)
+                self.nvml = None
 
         self.process_monitor = ProcessMonitor(self.nvml)
 
