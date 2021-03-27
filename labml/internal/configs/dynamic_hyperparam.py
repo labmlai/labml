@@ -13,12 +13,19 @@ class DynamicHyperParam:
         self._default = default
         self._value = default
         self._key = None
+        self._change_tracked = False
+        self._last_tracked_step = -1
 
     def __call__(self):
-        if self._key is None:
-            warnings.warn('Register dynamic schedules with `experiment.configs` to update them live from the app')
-        else:
-            tracker.add(f'hp.{self._key}', self._value)
+        if not self._change_tracked or self._last_tracked_step != tracker.get_global_step():
+            if self._key is None:
+                warnings.warn('Register dynamic schedules with `experiment.configs` to update them live from the app')
+            else:
+                tracker.add(f'hp.{self._key}', self._value)
+
+        self._change_tracked = True
+        self._last_tracked_step = tracker.get_global_step()
+
         return self._value
 
     def register(self, key):
@@ -36,6 +43,7 @@ class DynamicHyperParam:
                 (' -> ', Text.subtle),
                 (f'{value}', Text.value),
             ])
+        self._change_tracked = False
         self._value = value
 
     def to_yaml(self):

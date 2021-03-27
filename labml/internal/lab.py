@@ -129,27 +129,37 @@ class Lab:
                 'class_name': 'Scalar',
                 'is_print': True,
                 'name': '*'
-            }, {
-                'class_name': 'Scalar',
-                'is_print': False,
-                'name': 'param.*'
-            }, {
-                'class_name': 'Scalar',
-                'is_print': False,
-                'name': 'grad.*'
-            }, {
-                'class_name': 'Scalar',
-                'is_print': False,
-                'name': 'module.*'
-            }, {
-                'class_name': 'Scalar',
-                'is_print': False,
-                'name': 'optim.*'
-            }, {
-                'class_name': 'Scalar',
-                'is_print': False,
-                'name': 'time.*'
-            }
+            },
+                {
+                    'class_name': 'Scalar',
+                    'is_print': False,
+                    'name': 'param.*'
+                },
+                {
+                    'class_name': 'Scalar',
+                    'is_print': False,
+                    'name': 'grad.*'
+                },
+                {
+                    'class_name': 'Scalar',
+                    'is_print': False,
+                    'name': 'module.*'
+                },
+                {
+                    'class_name': 'Scalar',
+                    'is_print': False,
+                    'name': 'optim.*'
+                },
+                {
+                    'class_name': 'Scalar',
+                    'is_print': False,
+                    'name': 'time.*'
+                },
+                {
+                    'class_name': 'Scalar',
+                    'is_print': False,
+                    'name': 'hp.*'
+                },
             ]
         )
 

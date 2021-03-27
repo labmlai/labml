@@ -150,7 +150,7 @@ class MonitorComputer:
         self.track_cpu()
         self.track_disk()
         self.track_gpu()
-        self.track_processes()
+        # self.track_processes()
 
         self.writer.track(self.data)
         self.data = {}
