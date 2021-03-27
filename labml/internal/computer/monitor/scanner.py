@@ -38,7 +38,7 @@ class Scanner:
         try:
             sensors = psutil.sensors_temperatures()
         except AttributeError as e:
-            return
+            return {}
 
         data = {}
 
@@ -157,6 +157,18 @@ class Scanner:
     def track_processes(self):
         self.data.update(self.process_monitor.track())
 
+    def track_battery(self):
+        try:
+            battery = psutil.sensors_battery()._asdict()
+        except AttributeError as e:
+            return
+
+        self.data.update({
+            'battery.percent': battery['percent'],
+            'battery.power_plugged': battery['power_plugged'],
+            'battery.secsleft': battery['secsleft'],
+        })
+
     def track(self):
         self.data = {}
 
@@ -165,6 +177,7 @@ class Scanner:
         self.track_cpu()
         self.track_disk()
         self.track_sensors()
+        self.track_battery()
         # self.track_processes()
         self.track_gpu()
 
