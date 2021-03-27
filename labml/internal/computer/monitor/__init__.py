@@ -72,10 +72,11 @@ class MonitorComputer:
         self.nvml.nvmlInit()
         for i in range(self.n_gpu):
             handle = self.nvml.nvmlDeviceGetHandleByIndex(i)
-            self.data.update({
-                f'gpu.memory.total.{i}': self.nvml.nvmlDeviceGetMemoryInfo(handle).total,
-                f'gpu.power.limit.{i}': self.nvml.nvmlDeviceGetPowerManagementLimit(handle),
-            })
+            self.data[f'gpu.memory.total.{i}'] = self.nvml.nvmlDeviceGetMemoryInfo(handle).total
+            try:
+                self.data[f'gpu.power.limit.{i}'] = self.nvml.nvmlDeviceGetPowerManagementLimit(handle)
+            except self.nvml.NVMLError:
+                pass
 
         self.nvml.nvmlShutdown()
 
