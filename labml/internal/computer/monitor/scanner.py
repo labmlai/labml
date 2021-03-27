@@ -45,7 +45,7 @@ class Scanner:
         for k, temps in sensors.items():
             for i, t in enumerate(temps):
                 assert isinstance(t, psutil._common.shwtemp)
-                data[f'sensor.name.{k}.{i}'] = t.label
+                data[f'sensor.temp.name.{k}.{i}'] = t.label
 
         return data
 
@@ -152,7 +152,7 @@ class Scanner:
 
         for k, temps in sensors.items():
             for i, t in enumerate(temps):
-                self.data[f'sensor.{k}.{i}'] = t.current
+                self.data[f'sensor.temp.{k}.{i}'] = t.current
 
     def track_processes(self):
         self.data.update(self.process_monitor.track())
@@ -161,8 +161,6 @@ class Scanner:
         self.data = {}
 
         self.track_net_io_counters()
-        # inspect(psutil.net_if_addrs())
-        # inspect(psutil.net_if_stats())
         self.track_memory()
         self.track_cpu()
         self.track_disk()
@@ -174,9 +172,6 @@ class Scanner:
 
     def first(self):
         self.data = {}
-        # self.track_memory()
-        # self.track_cpu()
-        # self.track_disk()
         self.first_gpu()
 
         return self.data
