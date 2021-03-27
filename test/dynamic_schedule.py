@@ -2,7 +2,7 @@ import time
 
 from labml import experiment, monit, tracker
 from labml.configs import BaseConfigs
-from labml.internal.configs.dynamic_hyperparam import FloatDynamicHyperParam
+from labml.configs import FloatDynamicHyperParam
 
 
 class Configs(BaseConfigs):

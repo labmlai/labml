@@ -103,6 +103,7 @@ def test_psutil():
         inspect(p.memory_info()._asdict())
         inspect(p.memory_percent())
         inspect(p.cpu_percent(1))
+        inspect(p.cpu_times()._asdict())
         inspect(p.num_threads())
         inspect(p.threads())
         try:
@@ -131,6 +132,6 @@ def test_psutil_processes():
 
 
 if __name__ == '__main__':
-    test_nvidia()
-    # test_psutil()
+    # test_nvidia()
+    test_psutil()
     # test_psutil_processes()

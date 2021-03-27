@@ -21,10 +21,39 @@ class ProcessMonitor:
     pids: Dict[int, int]
     processes: List[ProcessInfo]
 
-    def __init__(self):
+    def __init__(self, nvml):
         self.pids = {}
         self.processes = []
         self.data = {}
+        self.nvml = nvml
+
+    def _track_gpu(self, idx: int):
+        handle = self.nvml.nvmlDeviceGetHandleByIndex(idx)
+
+        procs = self.nvml.nvmlDeviceGetGraphicsRunningProcesses(handle)
+        for p in procs:
+            key = self.pids[p.pid]
+            self.data.update({
+                f'process.{key}.gpu.{idx}.mem': p.usedGpuMemory,
+            })
+
+        procs = self.nvml.nvmlDeviceGetComputeRunningProcesses(handle)
+        for p in procs:
+            key = self.pids[p.pid]
+            self.data.update({
+                f'process.{key}.gpu.{idx}.mem': p.usedGpuMemory,
+            })
+
+    def track_gpus(self):
+        self.data = {}
+
+        if not self.nvml:
+            return {}
+
+        for i in range(self.nvml.nvmlDeviceGetCount()):
+            self._track_gpu(i)
+
+        return self.data
 
     def track_process(self, p: psutil.Process):
         with p.oneshot():
@@ -42,7 +71,17 @@ class ProcessMonitor:
                 self.data.update({
                     f'process.{key}.name': p.name(),
                     f'process.{key}.pid': p.pid,
+                    f'process.{key}.cmdline': '\n'.join(p.cmdline()),
+                    f'process.{key}.ppid': p.ppid(),
+                    f'process.{key}.create_time': p.create_time(),
                 })
+
+                try:
+                    self.data.update({
+                        f'process.{key}.exe': p.exe(),
+                    })
+                except psutil.AccessDenied:
+                    pass
 
             self.processes[key].active = True
 
@@ -54,11 +93,17 @@ class ProcessMonitor:
                 })
             except psutil.AccessDenied:
                 pass
+
             try:
-                res = p.memory_percent()
+                res = p.cpu_times()
                 self.data.update({
-                    f'process.{key}.mem': res,
+                    f'process.{key}.user': res.user,
+                    f'process.{key}.system': res.system,
                 })
+                if hasattr(res, 'iowait'):
+                    self.data.update({
+                        f'process.{key}.iowait': res.iowait,
+                    })
             except psutil.AccessDenied:
                 pass
 
@@ -78,8 +123,8 @@ class ProcessMonitor:
             except psutil.AccessDenied:
                 pass
 
-    def track(self, data):
-        self.data = data
+    def track(self):
+        self.data = {}
 
         for p in self.processes:
             p.active = False
@@ -94,3 +139,4 @@ class ProcessMonitor:
                     f'process.{p.key}.dead': True,
                 })
 
+        return self.data

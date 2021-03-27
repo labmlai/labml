@@ -25,14 +25,14 @@ class MonitorComputer:
         self.nvml = None
         self.n_gpu = 0
 
-        self.process_monitor = ProcessMonitor()
-
         try:
             from py3nvml import py3nvml as nvml
             self.nvml = nvml
         except ImportError:
             labml_notice('Install py3nvml to monitor GPUs:\n pip install py3nvml',
                          is_warn=False)
+
+        self.process_monitor = ProcessMonitor(self.nvml)
 
     def start(self):
         configs = {
@@ -60,6 +60,8 @@ class MonitorComputer:
                 f'gpu.temperature.{i}': self.nvml.nvmlDeviceGetTemperature(handle, self.nvml.NVML_TEMPERATURE_GPU),
                 f'gpu.power.usage.{i}': self.nvml.nvmlDeviceGetPowerUsage(handle),
             })
+
+        # self.data.update(self.process_monitor.track_gpus())
 
         self.nvml.nvmlShutdown()
 
@@ -140,7 +142,7 @@ class MonitorComputer:
         })
 
     def track_processes(self):
-        self.process_monitor.track(self.data)
+        self.data.update(self.process_monitor.track())
 
     def track(self):
         self.track_net_io_counters()
@@ -149,8 +151,8 @@ class MonitorComputer:
         self.track_memory()
         self.track_cpu()
         self.track_disk()
-        self.track_gpu()
         # self.track_processes()
+        self.track_gpu()
 
         self.writer.track(self.data)
         self.data = {}
