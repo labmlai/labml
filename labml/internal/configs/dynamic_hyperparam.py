@@ -1,4 +1,9 @@
+import warnings
 from typing import Tuple, Union
+
+from labml.logger import Text
+
+from labml import tracker, logger
 
 
 class DynamicHyperParam:
@@ -7,17 +12,30 @@ class DynamicHyperParam:
         self._range_ = range_
         self._default = default
         self._value = default
-        self._registered = False
+        self._key = None
 
     def __call__(self):
-        # if not self._registered:
-        #     warnings.warn('Register dynamic schedules with `experiment.configs` to update them live from the app')
+        if self._key is None:
+            warnings.warn('Register dynamic schedules with `experiment.configs` to update them live from the app')
+        else:
+            tracker.add(f'hp.{self._key}', self._value)
         return self._value
 
-    def register(self):
-        self._registered = True
+    def register(self, key):
+        self._key = key
 
     def set_value(self, value):
+        if self._key is None:
+            warnings.warn('Register dynamic schedules with `experiment.configs` to update them live from the app')
+        else:
+            logger.log([
+                ('Dynamic hyper parameter changed: ', Text.subtle),
+                (self._key, Text.key),
+                (': ', Text.subtle),
+                (f'{self._value}', Text.value),
+                (' -> ', Text.subtle),
+                (f'{value}', Text.value),
+            ])
         self._value = value
 
     def to_yaml(self):
@@ -39,4 +57,4 @@ class IntDynamicHyperParam(DynamicHyperParam):
         super().__init__(default, 'int', range_)
 
     def set_value(self, value):
-        self._value = int(value)
+        super().set_value(int(value))

@@ -40,14 +40,26 @@ class ConfigProcessor:
             self.configs = None
             self.configs_dict = configs
             self.configs_dict.update(values)
+            self._register_dynamic_hyper_params()
 
         self.values = values
         self.savers = []
 
     def _on_configs_updated(self):
+        self.configs._register_dynamic_hyper_params()
+
         configs = self.to_json()
         for s in self.savers:
             s.save(configs)
+
+    def _register_dynamic_hyper_params(self):
+        from labml.internal.configs.dynamic_hyperparam import DynamicHyperParam
+
+        for k, v in self.configs_dict.items():
+            if not isinstance(v, DynamicHyperParam):
+                continue
+
+            v.register(f'{k}')
 
     def to_json(self):
         if self.configs is not None:

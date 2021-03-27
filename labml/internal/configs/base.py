@@ -319,8 +319,22 @@ class Configs:
         if item in self.__options and value in self.__options[item]:
             func = self.__options[item][value]
             with monit.section(f'Prepare {item}'):
-                value = func(self)
+                calc_value = func(self)
 
+            if isinstance(func.config_names, list) and len(func.config_names) > 1:
+                if not isinstance(calc_value, list) and not isinstance(calc_value, tuple):
+                    raise RuntimeError(f'Option {value} for {func.config_names} should return a list or tuple')
+                if len(calc_value) != len(func.config_names):
+                    raise RuntimeError(f'Option {value} for {func.config_names} should return a list or tuple')
+
+                for i in range(len(calc_value)):
+                    self.__set_calculated_value(func.config_names[i], calc_value[i])
+            else:
+                self.__set_calculated_value(item, calc_value)
+        else:
+            self.__set_calculated_value(item, value)
+
+    def __set_calculated_value(self, item: str, value: Any):
         if isinstance(value, Configs):
             self.__cached_configs[item] = value
             value._reset_explicitly_specified()
@@ -515,6 +529,19 @@ class Configs:
                 configs[f"{k}.{sk}"] = v
 
         return configs
+
+    def _register_dynamic_hyper_params(self, prefix: str = ''):
+        from labml.internal.configs.dynamic_hyperparam import DynamicHyperParam
+
+        for k in self.__types:
+            v = self._get_computed(k)
+            if not isinstance(v, DynamicHyperParam):
+                continue
+
+            v.register(f'{prefix}{k}')
+
+        for k, c in self.__cached_configs.items():
+            c._register_dynamic_hyper_params(f'{prefix}{k}.')
 
     def _get_computed(self, key: str):
         return self.__cached.get(key, None)
