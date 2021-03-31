@@ -2,7 +2,8 @@ from typing import List, Callable, overload, Union, Tuple
 
 from labml.internal.configs.base import Configs as _Configs
 from labml.internal.configs.config_item import ConfigItem
-from labml.internal.configs.dynamic_hyperparam import FloatDynamicHyperParam, IntDynamicHyperParam
+from labml.internal.configs.dynamic_hyperparam import DynamicHyperParam, \
+    FloatDynamicHyperParam, IntDynamicHyperParam
 from labml.utils.errors import ConfigsError
 
 
@@ -221,5 +222,6 @@ def aggregate(name: any, option_name: str, *args: Tuple[any, any]):
 
 __all__ = [option, calculate, hyperparams, meta_config, aggregate,
            BaseConfigs,
+           DynamicHyperParam,
            IntDynamicHyperParam, FloatDynamicHyperParam,
            ]
