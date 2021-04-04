@@ -1,7 +1,7 @@
 *Hyper-parameters control the learning process of models. They are set before training starts, either by intuition or a hyper-parameter search. They either stay static or change based on a pre-determined schedule. We are introducing dynamic hyper-parameters which can be manually adjusted during the training based on model training stats.*
 
 <div align="center">
-  <img src="https://github.com/lab-ml/labml/raw/master/guides/dynamic_hp.png" width="400px" alt="Dynamic Hyper-parameters Mobile Screenshot"/>
+  <img src="https://github.com/lab-ml/labml/raw/master/guides/dynamic_hp_desktop.png" width="600px" alt="Dynamic Hyper-parameters Mobile Screenshot"/>
 </div>
 
 ### What are hyper-parameters?
@@ -46,13 +46,13 @@ def train(batch):
   optimizer.step()
 ```
 
-The call `lr()` will return the current learning rate set in [labml.ai](https://labml.ai) app.
+The call `lr()` will return the current learning rate set in [labml.ai](https://labml.ai) [app](https://github.com/lab-ml/app).
 
 <div align="center">
   <img src="https://github.com/lab-ml/labml/raw/master/guides/dynamic_hp.png" width="400px" alt="Dynamic Hyper-parameters Mobile Screenshot"/>
 </div>
 
-Above is a screenshot of the mobile web interface for changing dynamic hyper-parameters. In this [![Demo](https://img.shields.io/badge/labml-experiment-brightgreen)](https://app.labml.ai/run/6eff28a0910e11eb9b008db315936e2f/hyper_params) demo we adjusted the learning rate, clipping range, and the number of training epochs (per sample) to speed up the training of a [PPO agent](https://nn.labml.ai/rl/ppo/experiment.html) for Atari Breakout. A standard learning rate decay and other static hyper-parameter values would have taken a lot of training updates to get over the score of 1.
+*Above is a screenshot of the mobile web interface for changing dynamic hyper-parameters. In this [![Demo](https://img.shields.io/badge/labml-experiment-brightgreen)](https://app.labml.ai/run/6eff28a0910e11eb9b008db315936e2f/hyper_params) demo we adjusted the learning rate, clipping range, and the number of training epochs (per sample) to speed up the training of a [PPO agent](https://nn.labml.ai/rl/ppo/experiment.html) for Atari Breakout. A standard learning rate decay and other static hyper-parameter values would have taken a lot of training updates to get over the score of 1.*
 
 ### Example use-cases
 
