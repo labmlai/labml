@@ -16,7 +16,7 @@ Setting hyper-parameters require quite a bit of experience with the kind of mode
 
 <!-- Now consider setting the reward discount factor in a reinforcement learning agent. This determines how much the future rewards are discounted when considering the current step. A lower discount factor will only give rewards from the next few steps, whilst a discount factor close to one will get rewards from all future steps. That is, a smaller discount factor will make the agent short-sighted. It's generally faster to train agents initially with a small discount factor and increase it to be close to one towards the end of the training. Knowing how fast to change this is difficult. You will know by intuition if you have trained agents in the same environment before. Otherwise, you will have to run a few training sessions and study them to get a better understanding. -->
 
-## Introducing Dynamic Hyper-parameters
+## ⚙️ Introducing Dynamic Hyper-parameters
 
 Dynamic hyper-parameters are hyper-parameters that researchers can adjust while the model is being trained. This allows researchers to actively control how the model trains, instead of letting the model train with a pre-determined set of hyper-parameters. Dynamic hyper-parameters help train the model faster and better on a single training session. Also, they let researchers play around with the hyper-parameters during a single training run to gather insights.
 
