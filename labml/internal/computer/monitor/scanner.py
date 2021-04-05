@@ -189,7 +189,7 @@ class Scanner:
         self.track_disk()
         self.track_sensors()
         self.track_battery()
-        # self.track_processes()
+        self.track_processes()
         self.track_gpu()
 
         return self.data
