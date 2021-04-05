@@ -71,7 +71,6 @@ class ProcessMonitor:
                 self.data.update({
                     f'process.{key}.name': p.name(),
                     f'process.{key}.pid': p.pid,
-                    f'process.{key}.cmdline': '\n'.join(p.cmdline()),
                     f'process.{key}.ppid': p.ppid(),
                     f'process.{key}.create_time': p.create_time(),
                 })
@@ -79,6 +78,13 @@ class ProcessMonitor:
                 try:
                     self.data.update({
                         f'process.{key}.exe': p.exe(),
+                    })
+                except psutil.AccessDenied:
+                    pass
+
+                try:
+                    self.data.update({
+                        f'process.{key}.cmdline': '\n'.join(p.cmdline()),
                     })
                 except psutil.AccessDenied:
                     pass
