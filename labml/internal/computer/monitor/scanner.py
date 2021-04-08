@@ -90,7 +90,7 @@ class Scanner:
                 f'gpu.power.usage.{i}': self.nvml.nvmlDeviceGetPowerUsage(handle),
             })
 
-        # self.data.update(self.process_monitor.track_gpus())
+        self.data.update(self.process_monitor.track_gpus())
 
         self.nvml.nvmlShutdown()
 
