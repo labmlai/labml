@@ -173,6 +173,8 @@ class Scanner:
             battery = psutil.sensors_battery()._asdict()
         except AttributeError as e:
             return
+        except FileNotFoundError as e:
+            return
 
         self.data.update({
             'battery.percent': battery['percent'],
