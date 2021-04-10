@@ -92,7 +92,10 @@ class Section:
 
     def progress(self, steps):
         old_progress = self._progress
-        self._progress = steps / self._total_steps
+        if self._total_steps > 0:
+            self._progress = steps / self._total_steps
+        else:
+            self._progress = 1.
 
         if self.is_silent:
             return False
