@@ -1,3 +1,7 @@
+[![Join Slack](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
+[![Docs](https://img.shields.io/badge/labml-docs-blue)](https://docs.labml.ai/)
+[![Twitter](https://img.shields.io/twitter/follow/labmlai?style=social)](https://twitter.com/labmlai?ref_src=twsrc%5Etfw)
+
 *Hyper-parameters control the learning process of models. They are set before training starts, either by intuition or a hyper-parameter search. They either stay static or change based on a pre-determined schedule. We are introducing dynamic hyper-parameters which can be manually adjusted during the training based on model training stats.*
 
 <div align="center">
