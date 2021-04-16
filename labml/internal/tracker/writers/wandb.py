@@ -1,6 +1,5 @@
 from typing import Dict
 
-import numpy as np
 import wandb
 
 from . import Writer as WriteBase
@@ -28,13 +27,11 @@ class Writer(WriteBase):
         if isinstance(indicator, NumericIndicator):
             hist_data = indicator.get_histogram()
             if hist_data is not None:
-                self.wandb.log({self._parse_key(indicator.name): self.wandb.Histogram(hist_data),
-                                'custom_step': global_step,
-                                })
+                self.wandb.log({self._parse_key(indicator.name): self.wandb.Histogram(hist_data)},
+                               step=global_step)
 
-            self.wandb.log({self._parse_key(indicator.mean_key): indicator.get_mean(),
-                            'custom_step': global_step,
-                            })
+            self.wandb.log({self._parse_key(indicator.mean_key): indicator.get_mean()},
+                           step=global_step)
 
     def write(self, *,
               global_step: int,
