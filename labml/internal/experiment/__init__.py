@@ -331,7 +331,7 @@ class Experiment:
             self.run.pids_path.mkdir()
 
         pid_path = self.run.pids_path / f'{self.distributed_rank}.pid'
-        assert not pid_path.exists()
+        assert not pid_path.exists(), str(pid_path)
 
         with open(str(pid_path), 'w') as f:
             f.write(f'{os.getpid()}')
