@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Set, Dict, List, Union, TYPE_CHECKING, overload, Tuple
+from typing import Optional, Set, Dict, List, TYPE_CHECKING, overload, Tuple
 
 import numpy as np
 
@@ -8,11 +8,11 @@ from labml.internal.experiment import \
     create_experiment as _create_experiment, \
     experiment_singleton as _experiment_singleton, \
     ModelSaver
-from labml.internal.monitor import monitor_singleton as monitor
 from labml.internal.experiment.experiment_run import \
     get_configs as _get_configs, \
     save_bundle as _save_bundle, \
     load_bundle as _load_bundle
+from labml.internal.monitor import monitor_singleton as monitor
 
 if TYPE_CHECKING:
     import torch
@@ -67,6 +67,11 @@ def create(*,
         from labml.internal.util.tensorboard_writer import has_tensorboard
         if has_tensorboard():
             writers.add('tensorboard')
+        try:
+            import wandb
+            writers.add('wandb')
+        except ImportError:
+            pass
 
     if disable_screen and 'screen' in writers:
         writers.remove('screen')

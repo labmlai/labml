@@ -367,6 +367,10 @@ class Experiment:
             from labml.internal.tracker.writers import tensorboard
             tracker().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
 
+        if 'wandb' in self.writers:
+            from labml.internal.tracker.writers import wandb
+            tracker().add_writer(wandb.Writer())
+
         if 'file' in self.writers:
             from labml.internal.tracker.writers import file
             tracker().add_writer(file.Writer(self.run.log_file))
