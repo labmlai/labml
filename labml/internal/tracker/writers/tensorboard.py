@@ -19,8 +19,8 @@ class Writer(WriteBase):
     def _parse_key(key: str):
         return key.replace('.', '/')
 
-    def write_h_parameters(self, hparams: Dict[str, any]):
-        self.__writer.hparams(hparams)
+    # def write_h_parameters(self, hparams: Dict[str, any]):
+    #     self.__writer.hparams(hparams)
 
     def _write_indicator(self, global_step: int, indicator: Indicator):
         if indicator.is_empty():

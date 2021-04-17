@@ -17,6 +17,7 @@
       <w>pytorch</w>
       <w>tensorboard</w>
       <w>uuids</w>
+      <w>wandb</w>
     </words>
   </dictionary>
 </component>

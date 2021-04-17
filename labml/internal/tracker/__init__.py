@@ -59,10 +59,6 @@ class Tracker:
         self.__writers = []
         self.is_indicators_updated = True
 
-    def write_h_parameters(self, hparams: Dict[str, any]):
-        for w in self.__writers:
-            w.write_h_parameters(hparams)
-
     def _write_writer(self, writer: Writer, global_step):
         return writer.write(global_step=global_step,
                             indicators=self.indicators)

@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 import time
-from typing import Optional, List, Set, Dict, Union, TYPE_CHECKING
+from typing import Optional, List, Set, Dict, Union, TYPE_CHECKING, Any
 
 import git
 from labml.internal.api.dynamic import DynamicUpdateHandler
@@ -157,6 +157,8 @@ class Experiment:
         tags (Set[str], optional): Set of tags for experiment
     """
     web_api: Optional['ApiExperiment']
+    wandb: Optional[Any]
+
     is_started: bool
     run: Run
     configs_processor: Optional[ConfigProcessor]
@@ -237,6 +239,7 @@ class Experiment:
         self.checkpoint_saver = CheckpointSaver(self.run.checkpoint_path)
         self.is_evaluate = is_evaluate
         self.web_api = None
+        self.wandb = None
         self.writers = writers
         self.is_started = False
         self.distributed_rank = 0
@@ -369,7 +372,10 @@ class Experiment:
 
         if 'wandb' in self.writers:
             from labml.internal.tracker.writers import wandb
-            tracker().add_writer(wandb.Writer())
+            self.wandb = wandb.Writer()
+            tracker().add_writer(self.wandb)
+        else:
+            self.wandb = None
 
         if 'file' in self.writers:
             from labml.internal.tracker.writers import file
@@ -429,12 +435,12 @@ class Experiment:
                         self.configs_processor.add_saver(self.web_api.get_configs_saver())
                         self.web_api.set_dynamic_handler(ExperimentDynamicUpdateHandler(self.configs_processor))
 
-                tracker().save_indicators(self.run.indicators_path)
+                if self.wandb is not None:
+                    self.wandb.init(self.run.name, self.run.run_path)
+                    if self.configs_processor is not None:
+                        self.configs_processor.add_saver(self.wandb.get_configs_saver())
 
-                # PERF: Writing to tensorboard takes about 4 seconds
-                # Also wont work when configs are updated live
-                # if self.configs_processor:
-                #     tracker().write_h_parameters(self.configs_processor.get_hyperparams())
+                tracker().save_indicators(self.run.indicators_path)
 
         self.is_started = True
         return ExperimentWatcher(self)
