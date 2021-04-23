@@ -70,9 +70,14 @@ class ApiExperiment(ApiDataSource):
         self.api_caller.add_handler(ApiUrlHandler(self.open_browser, 'Monitor experiment at '))
 
         with self.lock:
+            from labml.internal.computer.configs import computer_singleton
+
+            computer_uuid = computer_singleton().uuid
+
             self.data.update(dict(
                 name=run.name,
                 comment=run.comment,
+                computer=computer_uuid,
                 python_file=run.python_file,
                 repo_remotes=run.repo_remotes,
                 commit=run.commit,
@@ -81,7 +86,7 @@ class ApiExperiment(ApiDataSource):
                 start_step=run.start_step,
                 load_run=run.load_run,
                 tags=run.tags,
-                notes=run.notes
+                notes=run.notes,
             ))
 
         self.api_caller.has_data(self)
