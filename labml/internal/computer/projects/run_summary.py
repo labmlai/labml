@@ -6,6 +6,7 @@ from labml.internal.experiment.experiment_run import RunInfo
 
 COMPLETED_STATUSES = {'completed', 'interrupted', 'crashed'}
 
+
 class RunSummary:
     def __init__(self, path: Path):
         self.uuid = str(path.stem)
@@ -21,7 +22,6 @@ class RunSummary:
         self.load_cache()
         if not self.complete:
             self.scan()
-            self.save_cache()
 
     def load_cache(self):
         if not self.cache_path.exists():
@@ -73,3 +73,4 @@ class RunSummary:
                     if d['status'] in COMPLETED_STATUSES:
                         self.complete = True
 
+        self.save_cache()

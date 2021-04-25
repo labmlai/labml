@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Set
+from typing import Optional, Set, Union
 
 from labml import logger, monit
 from labml.internal import util
@@ -14,6 +14,8 @@ class Computer:
 
     Lab contains the labml specific properties.
     """
+    web_api_sync: str
+    web_api_polling: str
     web_api: WebAPIConfigs
     uuid: str
     config_folder: Path
@@ -72,6 +74,9 @@ class Computer:
                                      verify_connection=config['web_api_verify_connection'],
                                      open_browser=config['web_api_open_browser'],
                                      is_default=web_api_url == self.__default_config()['web_api'])
+        self.web_api_sync = config['web_api_sync']
+        self.web_api_polling = config['web_api_polling']
+
 
     def set_token(self, token: str):
         with monit.section('Update ~/labml/configs.yaml'):
@@ -97,6 +102,8 @@ class Computer:
             web_api_frequency=0,
             web_api_verify_connection=True,
             web_api_open_browser=True,
+            web_api_sync='https://api.labml.ai/api/v1/sync?',
+            web_api_polling='https://api.labml.ai/api/v1/polling?',
         )
 
     def get_projects(self) -> Set[str]:
