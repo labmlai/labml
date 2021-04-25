@@ -13,6 +13,7 @@ def sync():
                                   timeout_seconds=15)
 
     print(sync_caller.send({'jobs': [r.to_dict() for r in runs]}))
+    # TODO: Delete runs
 
 
 if __name__ == '__main__':
