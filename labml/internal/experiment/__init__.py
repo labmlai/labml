@@ -422,6 +422,9 @@ class Experiment:
 
         if not self.is_evaluate:
             if self.distributed_rank == 0:
+                from labml.internal.computer.configs import computer_singleton
+                computer_singleton().add_project(lab_singleton().path)
+
                 self.run.save_info()
             self._save_pid()
 

@@ -1,10 +1,10 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Set
 
 from labml import logger, monit
 from labml.internal import util
-from labml.internal.computer import CONFIGS_FOLDER
 from labml.internal.api.configs import WebAPIConfigs
+from labml.internal.computer import CONFIGS_FOLDER
 from labml.logger import Text
 
 
@@ -21,6 +21,7 @@ class Computer:
     def __init__(self):
         self.home = Path.home()
         self.config_folder = self.home / CONFIGS_FOLDER
+        self.projects_folder = self.config_folder / 'projects'
         self.configs_file = self.config_folder / 'configs.yaml'
 
         self.__load_configs()
@@ -32,6 +33,8 @@ class Computer:
         if not self.config_folder.exists():
             self.config_folder.mkdir(parents=True)
 
+        if not self.projects_folder.exists():
+            self.projects_folder.mkdir()
 
         if self.configs_file.exists():
             with open(str(self.configs_file)) as f:
@@ -91,6 +94,37 @@ class Computer:
             web_api_verify_connection=True,
             web_api_open_browser=True,
         )
+
+    def get_projects(self) -> Set[str]:
+        projects = set()
+        to_remove = []
+
+        for p in self.projects_folder.iterdir():
+            with open(str(p), 'r') as f:
+                project_path = f.read()
+            if project_path in projects:
+                to_remove.append(p)
+            else:
+                if Path(project_path).exists():
+                    projects.add(project_path)
+                else:
+                    to_remove.append(p)
+
+        for p in to_remove:
+            p.unlink()
+
+        return projects
+
+    def add_project(self, path: Path):
+        project_path = str(path.absolute())
+        if project_path in self.get_projects():
+            return
+
+        from uuid import uuid1
+        p_uuid = uuid1().hex
+
+        with open(str(self.projects_folder / f'{p_uuid}.txt'), 'w') as f:
+            f.write(project_path)
 
 
 _internal: Optional[Computer] = None
