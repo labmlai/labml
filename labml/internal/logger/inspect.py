@@ -18,6 +18,10 @@ except ImportError:
     numpy = None
 
 
+def _format_bool(value: bool):
+    return 'true' if value else 'false'
+
+
 def _format_int(value: int):
     return f"{value:,}"
 
@@ -37,7 +41,9 @@ def _format_float(value: float):
 
 
 def _format_value(value: any):
-    if isinstance(value, int):
+    if isinstance(value, bool):
+        return _format_bool(value)
+    elif isinstance(value, int):
         return _format_int(value)
     elif isinstance(value, float):
         return _format_float(value)

@@ -46,17 +46,12 @@ class Projects:
 
 
 def _test():
+    from labml.logger import inspect
+
     projects = Projects()
     runs = projects.get_runs()
-
-    from labml.internal.computer.projects.api import DirectApiCaller
-    from labml.internal.computer.configs import computer_singleton
-
-    sync_caller = DirectApiCaller(computer_singleton().web_api_sync,
-                                  {'computer_uuid': computer_singleton().uuid},
-                                  timeout_seconds=15)
-
-    sync_caller.send([r.to_dict() for r in runs])
+    for r in runs:
+        inspect(r.to_dict())
 
 
 if __name__ == '__main__':
