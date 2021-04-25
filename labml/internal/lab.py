@@ -27,7 +27,7 @@ class Lab:
     path: Optional[Path]
     web_api: Optional[WebAPIConfigs]
 
-    def __init__(self):
+    def __init__(self, path: Optional[Path] = None):
         self.indicators = {}
         self.path = None
         self.check_repo_dirty = None
@@ -39,8 +39,10 @@ class Lab:
         self.__update_configs()
         self.__current_path = None
 
-        python_file = get_caller_file()
-        self.__load_configs(Path(python_file).resolve())
+        if path is None:
+            path = Path(get_caller_file()).resolve()
+
+        self.__load_configs(path)
 
     def set_path(self, path: str):
         self.__load_configs(Path(path).resolve())
@@ -197,13 +199,6 @@ class Lab:
             path = path.parent
 
         return configs
-
-    def get_experiments(self) -> List[Path]:
-        """
-        Get list of experiments
-        """
-        experiments_path = Path(self.experiments)
-        return [child for child in experiments_path.iterdir()]
 
 
 _internal: Optional[Lab] = None

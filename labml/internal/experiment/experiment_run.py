@@ -247,7 +247,7 @@ def _get_run_checkpoint(run_path: Path, checkpoint: int = -1):
 
 
 def get_run_checkpoint(run_uuid: str, checkpoint: int = -1):
-    run_path = get_run_by_uuid(run_uuid)
+    run_path = get_run_by_uuid(lab.get_experiments_path(), run_uuid)
     if run_path is None:
         logger.log("Couldn't find a previous run")
         return None, None
@@ -276,7 +276,7 @@ def get_run_checkpoint(run_uuid: str, checkpoint: int = -1):
 
 
 def get_configs(run_uuid: str):
-    run_path = get_run_by_uuid(run_uuid)
+    run_path = get_run_by_uuid(lab.get_experiments_path(), run_uuid)
     if run_path is None:
         labml_notice(["Couldn't find a previous run to load configurations: ",
                       (run_uuid, Text.value)], is_danger=True)
@@ -290,7 +290,7 @@ def get_configs(run_uuid: str):
 
 def save_bundle(path: Path, run_uuid: str, checkpoint: int = -1, *,
                 data_files: List[str]):
-    run_path = get_run_by_uuid(run_uuid)
+    run_path = get_run_by_uuid(lab.get_experiments_path(), run_uuid)
     if run_path is None:
         raise RuntimeError(f"Couldn't find run {run_uuid}")
 
@@ -351,7 +351,7 @@ def load_bundle(path: Path, url: Optional[str] = None) -> Tuple[str, int]:
                 info = json.load(ef)
 
             run_uuid, checkpoint = info['uuid'], info['checkpoint']
-            run_path = get_run_by_uuid(run_uuid)
+            run_path = get_run_by_uuid(lab.get_experiments_path(), run_uuid)
 
             if run_path is not None:
                 logger.log(f"Run {run_uuid} exists", Text.meta)
