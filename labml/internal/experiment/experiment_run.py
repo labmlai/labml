@@ -82,6 +82,17 @@ class RunInfo:
         self.tags = tags
 
     @classmethod
+    def from_path(cls, run_path: Path):
+        """
+        ## Create a new from path
+        """
+        run_info_path = run_path / 'run.yaml'
+
+        with open(str(run_info_path), 'r') as f:
+            data = util.yaml_load(f.read())
+            return cls.from_dict(run_path.parent, data)
+
+    @classmethod
     def from_dict(cls, experiment_path: Path, data: Dict[str, any]):
         """
         ## Create a new trial from a dictionary

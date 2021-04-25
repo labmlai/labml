@@ -21,12 +21,7 @@ class RunsSet:
         self._runs = runs
 
     def get(self, uuid: str) -> Tuple[RunInfo, str]:
-        run_path = self._runs[uuid][0]
-        run_info_path = run_path / 'run.yaml'
-
-        with open(str(run_info_path), 'r') as f:
-            data = util.yaml_load(f.read())
-            run = RunInfo.from_dict(run_path.parent, data)
+        run = RunInfo.from_path(self._runs[uuid][0])
 
         return run, self._runs[uuid][1]
 

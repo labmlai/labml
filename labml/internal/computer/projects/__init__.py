@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from labml.internal.computer.projects.run_summary import RunSummary
+
 import labml.internal.lab
 
 
@@ -9,8 +11,8 @@ class Project:
 
     def get_runs(self):
         from labml.internal.manage.runs import get_runs
-        runs = list(get_runs(self.lab.experiments))
-
+        run_paths = list(get_runs(self.lab.experiments))
+        runs = [RunSummary(p) for p in run_paths]
         print(runs)
 
 

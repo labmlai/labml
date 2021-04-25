@@ -22,6 +22,7 @@ class Computer:
         self.home = Path.home()
         self.config_folder = self.home / CONFIGS_FOLDER
         self.projects_folder = self.config_folder / 'projects'
+        self.runs_cache = self.config_folder / 'runs_cache'
         self.configs_file = self.config_folder / 'configs.yaml'
 
         self.__load_configs()
@@ -35,6 +36,9 @@ class Computer:
 
         if not self.projects_folder.exists():
             self.projects_folder.mkdir()
+
+        if not self.runs_cache.exists():
+            self.runs_cache.mkdir()
 
         if self.configs_file.exists():
             with open(str(self.configs_file)) as f:

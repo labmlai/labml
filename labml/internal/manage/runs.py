@@ -5,12 +5,7 @@ from labml.logger import inspect
 
 
 def get_runs(experiments_path: Path) -> Generator[Path, None, None]:
-    if not experiments_path.exists():
-        return
-
-    for exp_path in experiments_path.iterdir():
-        if exp_path.name.startswith('_'):
-            continue
+    for exp_path in get_experiments(experiments_path):
         for run_path in exp_path.iterdir():
             yield run_path
 
