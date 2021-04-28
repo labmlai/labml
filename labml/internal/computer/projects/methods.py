@@ -2,7 +2,7 @@ from typing import List
 
 
 def start_tensorboard(*, runs: List[str]):
-    return 'started'
+    return 'https://labml.ai'
 
 
 def delete_runs(*, runs: List[str]):
