@@ -1,15 +1,15 @@
 from typing import List
 
 
-def start_tensorboard(*, run_uuids: List[str]):
+def start_tensorboard(*, runs: List[str]):
     return 'started'
 
 
-def delete_runs(*, run_uuids: List[str]):
+def delete_runs(*, runs: List[str]):
     return 'deleted'
 
 
-def clear_checkpoints(*, run_uuids: List[str]):
+def clear_checkpoints(*, runs: List[str]):
     return 'deleted'
 
 
