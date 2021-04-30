@@ -58,6 +58,25 @@ def remove_run(run_path: Path):
     rm_tree(run_path)
 
 
+def clear_checkpoints(run_path: Path):
+    checkpoints = list(get_checkpoints(run_path))
+    if not checkpoints:
+        return
+
+    checkpoint_steps = sorted([int(c.name) for c in checkpoints])
+
+    if len(checkpoint_steps) <= 2:
+        return
+
+    checkpoint_steps = checkpoint_steps[:-2]
+    checkpoints_path = run_path / "checkpoints"
+    from labml.internal.util import rm_tree
+
+    for c in checkpoint_steps:
+        path = checkpoints_path / str(c)
+        rm_tree(path)
+
+
 # ===TESTS===
 def _test_checkpoints_by_uuid(experiments_path: Path, run_uuid: str):
     run_path = get_run_by_uuid(experiments_path, run_uuid)

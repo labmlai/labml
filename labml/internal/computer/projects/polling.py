@@ -31,6 +31,7 @@ class Polling:
             for j in jobs:
                 inspect(j)
                 res = self.do_job(j)
+                self.results.append(res)
                 inspect(res)
 
     def do_job(self, job):

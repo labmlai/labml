@@ -2,6 +2,7 @@ from typing import List
 
 from labml.internal.computer.configs import computer_singleton
 from labml.internal.computer.projects.sync import SyncRuns
+from labml.internal.manage import runs as manage_runs
 from labml.internal.manage.tensorboard import TensorBoardStarter
 
 SYNC_RUNS = SyncRuns()
@@ -23,11 +24,20 @@ def start_tensorboard(*, runs: List[str]):
 
 
 def delete_runs(*, runs: List[str]):
-    return 'deleted'
+    paths = [r.path for r in SYNC_RUNS.get_runs(runs)]
+    for p in paths:
+        manage_runs.remove_run(p)
+
+    return {'deleted': True}
 
 
 def clear_checkpoints(*, runs: List[str]):
-    return 'deleted'
+    runs = SYNC_RUNS.get_runs(runs)
+    for r in runs:
+        manage_runs.clear_checkpoints(r.path)
+    for r in runs:
+        r.scan()
+    return {'runs': [r.to_dict() for r in runs]}
 
 
 def call_sync():
