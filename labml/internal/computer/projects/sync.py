@@ -12,7 +12,7 @@ def sync():
                                   {'computer_uuid': computer_singleton().uuid},
                                   timeout_seconds=15)
 
-    print(sync_caller.send({'jobs': [r.to_dict() for r in runs]}))
+    print(sync_caller.send({'runs': [r.to_dict() for r in runs]}))
     # TODO: Delete runs
 
 
