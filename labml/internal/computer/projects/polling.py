@@ -12,7 +12,7 @@ class Polling:
 
         self.caller = DirectApiCaller(computer_singleton().web_api_polling,
                                       {'computer_uuid': computer_singleton().uuid},
-                                      timeout_seconds=15)
+                                      timeout_seconds=60)
         self.results = []
 
     def run(self):

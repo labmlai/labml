@@ -1,5 +1,9 @@
 from typing import List
 
+from labml.internal.computer.projects.sync import SyncRuns
+
+SYNC_RUNS = SyncRuns()
+
 
 def start_tensorboard(*, runs: List[str]):
     return {'url': 'https://labml.ai'}
@@ -14,6 +18,7 @@ def clear_checkpoints(*, runs: List[str]):
 
 
 def call_sync():
+    SYNC_RUNS.sync()
     return {'synced': True}
 
 

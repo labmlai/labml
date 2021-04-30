@@ -52,6 +52,10 @@ class RunSummary:
         with open(str(self.cache_path), 'w') as f:
             f.write(util.yaml_dump(self.to_dict()))
 
+    def clear_cache(self):
+        if self.cache_path.exists():
+            self.cache_path.unlink()
+
     @staticmethod
     def _folder_size(path: Path):
         return sum(f.stat().st_size for f in path.glob('**/*') if f.is_file())
