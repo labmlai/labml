@@ -40,7 +40,7 @@ class Projects:
         self.load()
 
     def get_runs(self):
-        return [r for p in self.projects for r in p.runs.values()]
+        return {r.uuid: r for p in self.projects for r in p.runs.values()}
 
     def load(self):
         from labml.internal.computer.configs import computer_singleton

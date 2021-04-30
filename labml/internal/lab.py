@@ -40,7 +40,8 @@ class Lab:
         self.__current_path = None
 
         if path is None:
-            path = Path(get_caller_file()).resolve()
+            path = get_caller_file()
+            path = Path(path).resolve()
 
         self.__load_configs(path)
 

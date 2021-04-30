@@ -25,6 +25,7 @@ class Computer:
         self.config_folder = self.home / CONFIGS_FOLDER
         self.projects_folder = self.config_folder / 'projects'
         self.runs_cache = self.config_folder / 'runs_cache'
+        self.tensorboard_symlink_dir = self.config_folder / 'tensorboard'
         self.configs_file = self.config_folder / 'configs.yaml'
 
         self.__load_configs()
@@ -77,6 +78,10 @@ class Computer:
         self.web_api_sync = config['web_api_sync']
         self.web_api_polling = config['web_api_polling']
 
+        self.tensorboard_port = config['tensorboard_port']
+        self.tensorboard_visible_port = config['tensorboard_visible_port']
+        self.tensorboard_host = config['tensorboard_host']
+        self.tensorboard_protocol = config['tensorboard_protocol']
 
     def set_token(self, token: str):
         with monit.section('Update ~/labml/configs.yaml'):
@@ -104,6 +109,10 @@ class Computer:
             web_api_open_browser=True,
             web_api_sync='https://api.labml.ai/api/v1/sync?',
             web_api_polling='https://api.labml.ai/api/v1/polling?',
+            tensorboard_port=6006,
+            tensorboard_visible_port=6006,
+            tensorboard_host='localhost',
+            tensorboard_protocol='http',
         )
 
     def get_projects(self) -> Set[str]:

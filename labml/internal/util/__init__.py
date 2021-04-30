@@ -20,7 +20,9 @@ def yaml_dump(obj: any):
 
 
 def rm_tree(path_to_remove: pathlib.Path):
-    if path_to_remove.is_dir():
+    if path_to_remove.is_symlink():
+        path_to_remove.unlink()
+    elif path_to_remove.is_dir():
         for f in path_to_remove.iterdir():
             if f.is_dir():
                 rm_tree(f)

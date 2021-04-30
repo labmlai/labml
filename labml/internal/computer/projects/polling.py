@@ -27,22 +27,25 @@ class Polling:
             retries = 1
             self.results = []
             jobs = response.get('jobs', [])
-            inspect(jobs)
+            logger.log(f'Jobs: {len(jobs)}')
             for j in jobs:
-                self.do_job(j)
+                inspect(j)
+                res = self.do_job(j)
+                inspect(res)
 
     def do_job(self, job):
         method = job['method']
         data = job['data']
         uuid = job['uuid']
 
+        res = METHODS[method](**data)
         result = {
             'uuid': uuid,
-            'status': 'success',
-            'data': METHODS[method](**data)
+            'status': 'success' if res else 'fail',
+            'data': res
         }
 
-        self.results.append(result)
+        return result
 
 
 def _test():
