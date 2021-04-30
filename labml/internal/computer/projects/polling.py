@@ -2,7 +2,7 @@ import time
 
 from labml import logger
 from labml.internal.computer.projects.methods import METHODS
-from labml.logger import Text
+from labml.logger import Text, inspect
 
 
 class Polling:
@@ -27,7 +27,7 @@ class Polling:
             retries = 1
             self.results = []
             jobs = response.get('jobs', [])
-            print(jobs)
+            inspect(jobs)
             for j in jobs:
                 self.do_job(j)
 

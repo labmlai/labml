@@ -12,7 +12,14 @@ def sync():
                                   {'computer_uuid': computer_singleton().uuid},
                                   timeout_seconds=15)
 
-    print(sync_caller.send({'runs': [r.to_dict() for r in runs]}))
+    from labml import logger
+    from labml.logger import inspect, Text
+
+    response = sync_caller.send({'runs': [r.to_dict() for r in runs]})
+    for k, v in response.items():
+        logger.log(k, Text.title)
+        inspect(v)
+
     # TODO: Delete runs
 
 

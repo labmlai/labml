@@ -14,7 +14,7 @@ def clear_checkpoints(*, runs: List[str]):
 
 
 def call_sync():
-    return 'synced'
+    return {'synced': True}
 
 
 METHODS = {
