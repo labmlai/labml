@@ -4,10 +4,18 @@ from typing import Optional, Generator
 from labml.logger import inspect
 
 
+def _is_valid_path(path: Path):
+    if path.name.startswith('_') or path.name.startswith('.'):
+        return False
+    else:
+        return True
+
+
 def get_runs(experiments_path: Path) -> Generator[Path, None, None]:
     for exp_path in get_experiments(experiments_path):
         for run_path in exp_path.iterdir():
-            yield run_path
+            if _is_valid_path(run_path):
+                yield run_path
 
 
 def get_experiments(experiments_path: Path) -> Generator[Path, None, None]:
@@ -15,7 +23,7 @@ def get_experiments(experiments_path: Path) -> Generator[Path, None, None]:
         return
 
     for exp_path in experiments_path.iterdir():
-        if exp_path.name.startswith('_') or exp_path.name.startswith('.'):
+        if not _is_valid_path(exp_path):
             continue
 
         yield exp_path
@@ -32,7 +40,8 @@ def get_run_by_uuid(experiments_path: Path, run_uuid: str) -> Optional[Path]:
 
 def get_runs_by_experiment_path(exp_path: Path) -> Generator[Path, None, None]:
     for run_path in exp_path.iterdir():
-        yield run_path
+        if _is_valid_path(run_path):
+            yield run_path
 
 
 def get_checkpoints(run_path: Path) -> Generator[Path, None, None]:

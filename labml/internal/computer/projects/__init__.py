@@ -1,6 +1,12 @@
 from pathlib import Path
 from typing import Dict, List
 
+from labml.logger import Text
+
+from labml import logger
+
+from labml.internal.experiment.experiment_run import RunLoadError
+
 import labml.internal.lab
 from labml.internal.computer.projects.run_summary import RunSummary
 
@@ -15,7 +21,15 @@ class Project:
     def load_runs(self):
         from labml.internal.manage.runs import get_runs
         run_paths = list(get_runs(self.lab.experiments))
-        runs = [RunSummary(p) for p in run_paths]
+        runs = []
+        for p in run_paths:
+            try:
+                run = RunSummary(p)
+                runs.append(run)
+            except RunLoadError as e:
+                logger.log([('Error loading run: ', Text.warning), (str(p), Text.value)])
+                print(e)
+
         self.runs = {r.uuid: r for r in runs}
 
 

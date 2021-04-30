@@ -1,15 +1,14 @@
 import json
 import tarfile
-import tempfile
 import time
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 
 import numpy as np
-from labml.utils.download import download_file
 
 from labml import logger, lab, monit
 from labml.internal.configs.processor import load_configs
+from labml.utils.download import download_file
 from .. import util
 from ..manage.runs import get_run_by_uuid, get_checkpoints
 from ...logger import Text
@@ -26,6 +25,10 @@ def struct_time_to_date(t: time.struct_time):
 
 _GLOBAL_STEP = 'global_step'
 _TAR_BUFFER_SIZE = 100_000
+
+
+class RunLoadError(TypeError):
+    pass
 
 
 class RunInfo:
@@ -99,7 +102,11 @@ class RunInfo:
         """
         params = dict(experiment_path=experiment_path)
         params.update(data)
-        return cls(**params)
+        try:
+            run = cls(**params)
+            return run
+        except TypeError as e:
+            raise RunLoadError(e)
 
     def to_dict(self):
         """
