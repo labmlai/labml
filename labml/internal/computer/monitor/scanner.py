@@ -184,15 +184,17 @@ class Scanner:
 
     def track(self):
         self.data = {}
-
-        self.track_net_io_counters()
-        self.track_memory()
-        self.track_cpu()
-        self.track_disk()
-        self.track_sensors()
-        self.track_battery()
-        self.track_processes()
-        self.track_gpu()
+        try:
+            self.track_net_io_counters()
+            self.track_memory()
+            self.track_cpu()
+            self.track_disk()
+            self.track_sensors()
+            self.track_battery()
+            self.track_processes()
+            self.track_gpu()
+        except Exception as e:
+            print(e)
 
         return self.data
 

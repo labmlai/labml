@@ -79,14 +79,14 @@ class ProcessMonitor:
                     self.data.update({
                         f'process.{key}.exe': p.exe(),
                     })
-                except psutil.AccessDenied:
+                except (psutil.AccessDenied, psutil.ZombieProcess):
                     pass
 
                 try:
                     self.data.update({
                         f'process.{key}.cmdline': '\n'.join(p.cmdline()),
                     })
-                except psutil.AccessDenied:
+                except (psutil.AccessDenied, psutil.ZombieProcess):
                     pass
 
             self.processes[key].active = True
@@ -97,7 +97,7 @@ class ProcessMonitor:
                     f'process.{key}.rss': res.rss,
                     f'process.{key}.vms': res.vms,
                 })
-            except psutil.AccessDenied:
+            except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass
 
             try:
@@ -110,7 +110,7 @@ class ProcessMonitor:
                     self.data.update({
                         f'process.{key}.iowait': res.iowait,
                     })
-            except psutil.AccessDenied:
+            except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass
 
             try:
@@ -118,7 +118,7 @@ class ProcessMonitor:
                 self.data.update({
                     f'process.{key}.cpu': res,
                 })
-            except psutil.AccessDenied:
+            except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass
 
             try:
@@ -126,7 +126,7 @@ class ProcessMonitor:
                 self.data.update({
                     f'process.{key}.threads': res,
                 })
-            except psutil.AccessDenied:
+            except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass
 
     def track(self):
