@@ -55,10 +55,10 @@ class TensorBoardStarter:
         output = self.pipe.stderr.readline().decode('utf-8')
         if output.find('Press CTRL+C to quit') != -1:
             logger.log([('Tensorboard: ', Text.meta), (output, Text.subtle)])
-            return True
+            return True, output
         else:
             logger.log([('Failed to start Tensorboard: ', Text.warning), (output, Text.subtle)])
-            return False
+            return False, output
 
     def __del__(self):
         if self.pipe is not None:

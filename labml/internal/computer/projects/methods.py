@@ -17,10 +17,16 @@ TENSORBOARD_STARTER = TensorBoardStarter(
 
 def start_tensorboard(*, runs: List[str]):
     paths = [r.path for r in SYNC_RUNS.get_runs(runs)]
-    if TENSORBOARD_STARTER.start(paths):
-        return {'url': TENSORBOARD_STARTER.url}
+    ret, msg = TENSORBOARD_STARTER.start(paths)
+    if ret:
+        return {
+            'url': TENSORBOARD_STARTER.url,
+            'message': msg,
+        }
     else:
-        return {}
+        return {
+            'message': msg,
+        }
 
 
 def delete_runs(*, runs: List[str]):
