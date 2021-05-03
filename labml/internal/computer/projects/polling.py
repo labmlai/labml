@@ -14,10 +14,11 @@ class Polling:
                                       {'computer_uuid': computer_singleton().uuid},
                                       timeout_seconds=60)
         self.results = []
+        self.is_stopped = False
 
     def run(self):
         retries = 1
-        while True:
+        while not self.is_stopped:
             response = self.caller.send({'jobs': self.results})
             if response is None:
                 logger.log(f'Retrying again in 10 seconds ({retries})...', Text.highlight)

@@ -1,12 +1,15 @@
 import os
+import threading
 import time
 
 from labml import monit
 from labml.internal.computer import monitor
 from labml.internal.computer.configs import computer_singleton
+from labml.internal.computer.projects.methods import call_sync
+from labml.internal.computer.projects.polling import Polling
 
 
-def is_pid_running(pid):
+def _is_pid_running(pid):
     import os
     import errno
 
@@ -23,7 +26,7 @@ def is_pid_running(pid):
         return True
 
 
-def get_running_process():
+def _get_running_process():
     pid_file = computer_singleton().config_folder / 'monitor.pid'
     if not pid_file.exists():
         return 0
@@ -35,14 +38,33 @@ def get_running_process():
         except ValueError:
             return 0
 
-        if is_pid_running(pid):
+        if _is_pid_running(pid):
             return pid
         else:
             return 0
 
 
+class _SyncThread(threading.Thread):
+    def __init__(self):
+        super().__init__(daemon=False)
+        self.is_stopped = False
+        self.polling = Polling()
+
+    def stop(self):
+        self.polling.is_stopped = True
+
+    def run(self):
+        call_sync()
+        self.polling.run()
+
+
+def _sync_thread():
+    thread = _SyncThread()
+    thread.start()
+
+
 def run(is_check_process: bool = True, open_browser: bool = True):
-    pid = get_running_process()
+    pid = _get_running_process()
     if is_check_process and pid:
         raise RuntimeError(f'This computer is already being monitored. PID: {pid}')
 
@@ -57,6 +79,8 @@ def run(is_check_process: bool = True, open_browser: bool = True):
     m = monitor.MonitorComputer(session_uuid, open_browser)
 
     m.start()
+
+    _sync_thread()
 
     i = 0
     while True:

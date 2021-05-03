@@ -57,6 +57,7 @@ class TensorBoardStarter:
             logger.log([('Tensorboard: ', Text.meta), (output, Text.subtle)])
             return True
         else:
+            logger.log([('Failed to start Tensorboard: ', Text.warning), (output, Text.subtle)])
             return False
 
     def __del__(self):

@@ -158,6 +158,9 @@ def main():
     args = parser.parse_args()
 
     if args.command == 'dashboard':
+        logger.log([('labml dashboard', Text.heading),
+                    (' is deprecated. Please use labml.ai app instead\n', Text.danger),
+                    ('https://github.com/lab-ml/app', Text.value)])
         _open_dashboard()
     elif args.command == 'capture':
         _capture(args.args)

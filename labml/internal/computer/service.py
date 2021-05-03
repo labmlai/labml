@@ -2,9 +2,8 @@ import os
 import sys
 from typing import Optional
 
-from labml.logger import Text
-
 from labml import logger, monit
+from labml.logger import Text
 
 
 class Service:
@@ -65,6 +64,11 @@ class Service:
                         '\n and check status with:\n',
                         ('systemctl --user status labml.service', Text.value),
                         ])
+
+        with monit.section('Starting service'):
+            ret = os.system('systemctl --user start labml.service')
+            if ret != 0:
+                monit.fail()
 
     def set_token(self):
         from labml.internal.computer.configs import computer_singleton
