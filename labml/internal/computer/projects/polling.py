@@ -40,11 +40,11 @@ class Polling:
         data = job['data']
         uuid = job['uuid']
 
-        res = METHODS[method](**data)
+        status, data = METHODS[method](**data)
         result = {
             'uuid': uuid,
-            'status': 'success' if res else 'fail',
-            'data': res
+            'status': status,
+            'data': data,
         }
 
         return result

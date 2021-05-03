@@ -19,12 +19,12 @@ def start_tensorboard(*, runs: List[str]):
     paths = [r.path for r in SYNC_RUNS.get_runs(runs)]
     ret, msg = TENSORBOARD_STARTER.start(paths)
     if ret:
-        return {
+        return 'success', {
             'url': TENSORBOARD_STARTER.url,
             'message': msg,
         }
     else:
-        return {
+        return 'fail', {
             'message': msg,
         }
 
@@ -34,7 +34,7 @@ def delete_runs(*, runs: List[str]):
     for p in paths:
         manage_runs.remove_run(p)
 
-    return {'deleted': True}
+    return 'success', {}
 
 
 def clear_checkpoints(*, runs: List[str]):
@@ -43,12 +43,12 @@ def clear_checkpoints(*, runs: List[str]):
         manage_runs.clear_checkpoints(r.path)
     for r in runs:
         r.scan()
-    return {'runs': [r.to_dict() for r in runs]}
+    return 'success', {'runs': [r.to_dict() for r in runs]}
 
 
 def call_sync():
     SYNC_RUNS.sync()
-    return {'synced': True}
+    return 'success', {}
 
 
 METHODS = {
