@@ -22,7 +22,7 @@ def test_nvidia_device(idx: int):
             name=nvml.nvmlDeviceGetName(handle),
             # brand=brands[nvml.nvmlDeviceGetBrand(handle)],
             # multi_gpu=nvml.nvmlDeviceGetMultiGpuBoard(handle),
-            # pcie_link=nvml.nvmlDeviceGetCurrPcieLinkWidth(handle),
+            pcie_link=nvml.nvmlDeviceGetCurrPcieLinkWidth(handle),
 
             fan=nvml.nvmlDeviceGetFanSpeed(handle),
             # power=nvml.nvmlDeviceGetPowerState(handle),
@@ -132,6 +132,6 @@ def test_psutil_processes():
 
 
 if __name__ == '__main__':
-    # test_nvidia()
-    test_psutil()
+    test_nvidia()
+    # test_psutil()
     # test_psutil_processes()
