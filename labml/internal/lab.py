@@ -194,7 +194,7 @@ class Lab:
                         config['config_file_path'] = path
                         configs.append(config)
 
-            if str(path) == path.root:
+            if str(path) == path.anchor:
                 break
 
             path = path.parent
