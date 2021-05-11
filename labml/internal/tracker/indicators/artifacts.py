@@ -1,3 +1,4 @@
+import math
 from abc import ABC
 from collections import OrderedDict
 from typing import Dict, Optional, Any
@@ -128,9 +129,10 @@ class Image(_Collection):
                        ' not found. So cannot display images')
         images = [to_numpy(v) for v in self._values.values()]
         images = np.concatenate(images)
-        cols = min(3, len(images))
+        n_images = len(images)
+        cols = max(1, int(math.sqrt(n_images)))
         fig: plt.Figure
-        fig, axs = plt.subplots((len(images) + cols - 1) // cols, cols,
+        fig, axs = plt.subplots((n_images + cols - 1) // cols, cols,
                                 sharex='all', sharey='all',
                                 figsize=(8, 10))
         fig.suptitle(self.name)
@@ -143,6 +145,11 @@ class Image(_Collection):
                 img = img[0, :, :]
             else:
                 img = img.transpose(1, 2, 0)
+            if img.dtype.type in (np.float32, np.float64):
+                img = np.clip(img, 0., 1.)
+            else:
+                img = np.clip(img, 0, 255)
+
             ax.imshow(img)
         plt.show()
 
