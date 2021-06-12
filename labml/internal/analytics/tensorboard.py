@@ -1,7 +1,6 @@
 from typing import List, Optional
 
 import numpy as np
-import tensorflow as tf
 from tensorboard.backend.event_processing.directory_watcher import DirectoryDeletedError
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 from tensorboard.plugins.distribution import compressor
@@ -21,6 +20,11 @@ def _is_filtered(event, start_step: Optional[int], end_step: Optional[int]):
 class TensorBoardAnalytics(Analytics):
     def __init__(self, log_path):
         self.event_acc = EventAccumulator(str(log_path), size_guidance={'tensors': 1000})
+        try:
+            import tensorflow as tf
+            self.tf = tf
+        except ImportError as e:
+            raise e
 
     def load(self):
         try:
@@ -31,7 +35,7 @@ class TensorBoardAnalytics(Analytics):
     def tensor(self, name: str, start_step: Optional[int], end_step: Optional[int]) -> List[Event]:
         name = name.replace('.', '/')
         events = self.event_acc.Tensors(name)
-        return [Event(e.step, tf.make_ndarray(e.tensor_proto))
+        return [Event(e.step, self.tf.make_ndarray(e.tensor_proto))
                 for e in events if _is_filtered(e, start_step, end_step)]
 
     def summarize(self, events: List[Event]):

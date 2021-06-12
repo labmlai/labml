@@ -1,6 +1,10 @@
 import os
+import time
+from io import BufferedReader
 from pathlib import Path
+from queue import Queue, Empty
 from subprocess import Popen, PIPE
+from threading import Thread
 from typing import List, Optional
 
 from labml.logger import Text
@@ -9,6 +13,30 @@ from labml import logger
 
 from labml.internal.experiment.experiment_run import RunInfo
 from labml.internal.util import rm_tree
+
+
+def enqueue_output(out: BufferedReader, queue: Queue):
+    for line in iter(out.readline, b''):
+        queue.put(line.decode('utf-8'))
+    out.close()
+
+
+def get_output(out: BufferedReader):
+    q = Queue()
+    thread = Thread(target=enqueue_output, args=(out, q))
+    thread.daemon = True  # thread dies with the program
+    thread.start()
+
+    lines = []
+    while True:
+        try:
+            line = q.get(timeout=30 if len(lines) == 0 else 2)
+        except Empty:
+            break
+        else:
+            lines.append(line)
+
+    return lines
 
 
 class TensorBoardStarter:
@@ -52,7 +80,7 @@ class TensorBoardStarter:
                           env=os.environ.copy(),
                           stderr=PIPE)
 
-        output = self.pipe.stderr.readline().decode('utf-8')
+        output = ''.join(get_output(self.pipe.stderr))
         if output.find('Press CTRL+C to quit') != -1:
             logger.log([('Tensorboard: ', Text.meta), (output, Text.subtle)])
             return True, output
@@ -68,7 +96,10 @@ class TensorBoardStarter:
 def _test():
     from labml.internal.computer.configs import computer_singleton
     from labml import lab
+    from labml.internal.lab import lab_singleton
     import time
+
+    lab_singleton().set_path(str(Path(os.path.abspath(__file__)).parent.parent.parent.parent))
 
     tb = TensorBoardStarter(computer_singleton().tensorboard_symlink_dir)
 
@@ -76,7 +107,7 @@ def _test():
     #     print(k, v)
 
     res = tb.start([
-        lab.get_path() / 'logs' / 'sample' / '9f7970d6a98611ebbc6bacde48001122',
+        lab.get_path() / 'logs' / 'sample' / '68233e98cb5311eb9aa38d17b08f3a1d',
     ])
 
     print(res)

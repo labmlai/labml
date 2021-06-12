@@ -54,6 +54,8 @@ class Lab:
         self.__current_path = path
         config_files = self.__load_config_files(path)
 
+        self.configs = self.__default_config()
+
         if not config_files:
             if not is_colab() and not is_kaggle():
                 labml_notice([(".labml.yaml", Text.value),

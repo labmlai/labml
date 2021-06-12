@@ -135,7 +135,8 @@ class Image(_Collection):
         fig, axs = plt.subplots((n_images + cols - 1) // cols, cols,
                                 sharex='all', sharey='all',
                                 figsize=(8, 10))
-        fig.suptitle(self.name)
+        from labml import tracker
+        fig.suptitle(f'{self.name}-{tracker.get_global_step()}')
         for i, img in enumerate(images):
             if len(images) > 1:
                 ax: plt.Axes = axs[i // cols, i % cols]
