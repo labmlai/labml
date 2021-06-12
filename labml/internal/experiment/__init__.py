@@ -230,7 +230,7 @@ class Experiment:
         except git.InvalidGitRepositoryError:
             if not is_colab() and not is_kaggle():
                 labml_notice(["Not a valid git repository: ",
-                              (lab_singleton().path, Text.value)])
+                              (str(lab_singleton().path), Text.value)])
             self.run.commit = 'unknown'
             self.run.commit_message = ''
             self.run.is_dirty = True
