@@ -32,5 +32,20 @@ def main():
                 tracker.new_line()
 
 
+def repeat_values():
+    conf = {'batch_size': 20}
+
+    with experiment.record(name='sample', exp_conf=conf, writers={'web_api', 'screen'}):
+        for i in range(10):
+            tracker.add_global_step(1)
+            tracker.save('loss', 1)
+            tracker.save('loss', 5)
+            # tracker.save()
+
+            if i % 1000 == 0:
+                tracker.new_line()
+
+
 if __name__ == '__main__':
-    main()
+    # main()
+    repeat_values()
