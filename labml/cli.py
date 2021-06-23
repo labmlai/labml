@@ -65,7 +65,8 @@ class ExecutorThread(threading.Thread):
 
 
 def _capture(args: List[str]):
-    api_caller = ApiCaller("https://api.lab-ml.com/api/v1/track?", {'run_uuid': generate_uuid()})
+    api_caller = ApiCaller("https://api.lab-ml.com/api/v1/track?", {'run_uuid': generate_uuid()},
+                           timeout_seconds=120)
     api_logs = ApiLogs()
     data = {
         'name': 'Capture',
