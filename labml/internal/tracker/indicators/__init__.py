@@ -1,10 +1,5 @@
 from typing import Dict
 
-try:
-    import torch
-except ImportError:
-    torch = None
-
 
 class Indicator:
     def __init__(self, *, name: str, is_print: bool):

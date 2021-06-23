@@ -1,12 +1,8 @@
 from typing import Dict
 
 import numpy as np
-from .numeric import Queue, Histogram, Scalar
 
-try:
-    import torch
-except ImportError:
-    torch = None
+from .numeric import Queue, Histogram, Scalar
 
 
 def load_indicator_from_dict(data: Dict[str, any]):
@@ -24,6 +20,11 @@ def load_indicator_from_dict(data: Dict[str, any]):
 
 
 def create_default_indicator(name: str, value: any, is_print: bool):
+    try:
+        import torch
+    except ImportError:
+        torch = None
+
     if isinstance(value, int) or isinstance(value, float):
         return Scalar(name, is_print)
     elif isinstance(value, np.number):

@@ -1,12 +1,12 @@
 import numpy as np
 
-try:
-    import torch
-except ImportError:
-    torch = None
-
 
 def to_numpy(value):
+    try:
+        import torch
+    except ImportError:
+        torch = None
+
     if isinstance(value, int) or isinstance(value, float):
         return np.array(value)
     elif isinstance(value, np.number):

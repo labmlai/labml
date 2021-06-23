@@ -2,6 +2,7 @@ import pathlib
 from typing import Dict
 
 import numpy as np
+import torch
 import torch.nn
 
 from . import ModelSaver, experiment_singleton

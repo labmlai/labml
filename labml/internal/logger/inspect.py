@@ -7,15 +7,6 @@ from ...logger import Text
 if TYPE_CHECKING:
     from . import Logger
 
-try:
-    import torch
-except ImportError:
-    torch = None
-
-try:
-    import numpy
-except ImportError:
-    numpy = None
 
 
 def _format_bool(value: bool):
@@ -41,6 +32,16 @@ def _format_float(value: float):
 
 
 def _format_value(value: any):
+    try:
+        import torch
+    except ImportError:
+        torch = None
+
+    try:
+        import numpy
+    except ImportError:
+        numpy = None
+
     if isinstance(value, bool):
         return _format_bool(value)
     elif isinstance(value, int):
@@ -139,6 +140,16 @@ def _render_tensor(tensor, *, new_line: str = '\n', indent: str = '', depth=0):
 
 
 def _get_value_full(value: any):
+    try:
+        import torch
+    except ImportError:
+        torch = None
+
+    try:
+        import numpy
+    except ImportError:
+        numpy = None
+
     if isinstance(value, str):
         if len(value) < 500:
             return [('"', Text.subtle),
@@ -218,6 +229,16 @@ def _shrink(s: str, style: StyleCode = Text.value, limit: int = 80):
 
 
 def _get_value_line(value: any):
+    try:
+        import torch
+    except ImportError:
+        torch = None
+
+    try:
+        import numpy
+    except ImportError:
+        numpy = None
+
     f = _format_value(value)
 
     if f is not None:

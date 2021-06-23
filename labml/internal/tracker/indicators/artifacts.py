@@ -11,16 +11,6 @@ from labml.internal.util.values import to_numpy
 from labml.logger import Text as TextStyle
 from . import Indicator
 
-try:
-    import matplotlib.pyplot as plt
-except (ImportError, ModuleNotFoundError):
-    plt = None
-
-try:
-    import torch
-except ImportError:
-    torch = None
-
 
 class Artifact(Indicator, ABC):
     def __init__(self, *, name: str, is_print: bool):
@@ -124,6 +114,11 @@ class Image(_Collection):
         return None
 
     def print_all(self):
+        try:
+            import matplotlib.pyplot as plt
+        except (ImportError, ModuleNotFoundError):
+            plt = None
+
         if plt is None:
             logger.log(('matplotlib', logger.Text.highlight),
                        ' not found. So cannot display images')

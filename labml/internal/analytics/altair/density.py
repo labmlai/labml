@@ -2,11 +2,6 @@ from typing import List
 
 import altair as alt
 
-try:
-    import torch
-except ImportError:
-    torch = None
-
 
 def data_to_table(series, names, step):
     table = []
@@ -14,6 +9,11 @@ def data_to_table(series, names, step):
     for s in range(len(series)):
         data = series[s]
         name = names[s]
+
+        try:
+            import torch
+        except ImportError:
+            torch = None
 
         if torch is not None and isinstance(data, torch.Tensor):
             data = data.detach().cpu().numpy()

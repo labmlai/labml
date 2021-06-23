@@ -1,12 +1,8 @@
 from abc import ABC
 
 import numpy as np
-from .numeric import NumericIndicator
 
-try:
-    import torch
-except ImportError:
-    torch = None
+from .numeric import NumericIndicator
 
 
 class IndexedIndicator(NumericIndicator, ABC):

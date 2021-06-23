@@ -3,14 +3,14 @@ from typing import Optional
 import altair as alt
 import numpy as np
 
-try:
-    import torch
-except ImportError:
-    torch = None
-
 
 def data_to_table(data, low: Optional[float], high: Optional[float]):
     table = []
+
+    try:
+        import torch
+    except ImportError:
+        torch = None
 
     if torch is not None and isinstance(data, torch.Tensor):
         data = data.detach().cpu().numpy()
