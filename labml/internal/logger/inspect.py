@@ -8,7 +8,6 @@ if TYPE_CHECKING:
     from . import Logger
 
 
-
 def _format_bool(value: bool):
     return 'true' if value else 'false'
 
@@ -32,35 +31,41 @@ def _format_float(value: float):
 
 
 def _format_value(value: any):
-    try:
-        import torch
-    except ImportError:
-        torch = None
-
-    try:
-        import numpy
-    except ImportError:
-        numpy = None
-
     if isinstance(value, bool):
         return _format_bool(value)
     elif isinstance(value, int):
         return _format_int(value)
     elif isinstance(value, float):
         return _format_float(value)
-    elif numpy is not None and isinstance(value, numpy.number) and numpy.issubdtype(value, numpy.integer):
+
+    try:
+        import numpy
+    except ImportError:
+        numpy = None
+
+    if numpy is None:
+        return None
+
+    if isinstance(value, numpy.number) and numpy.issubdtype(value, numpy.integer):
         return _format_int(int(value))
-    elif numpy is not None and isinstance(value, numpy.number) and numpy.issubdtype(value, numpy.floating):
+    elif isinstance(value, numpy.number) and numpy.issubdtype(value, numpy.floating):
         if numpy.isnan(value):
             return 'NaN'
         return _format_float(float(value))
-    elif torch is not None and isinstance(value, torch.Tensor):
-        if not value.shape:
-            return _format_value(value.item())
-        else:
-            return None
-    else:
-        return None
+
+    try:
+        import torch
+    except ImportError:
+        torch = None
+
+    if torch is not None:
+        if isinstance(value, torch.Tensor):
+            if not value.shape:
+                return _format_value(value.item())
+            else:
+                return None
+
+    return None
 
 
 def _format_tensor(s: List[str], limit: int = 1_000, style: StyleCode = Text.value):
@@ -140,16 +145,6 @@ def _render_tensor(tensor, *, new_line: str = '\n', indent: str = '', depth=0):
 
 
 def _get_value_full(value: any):
-    try:
-        import torch
-    except ImportError:
-        torch = None
-
-    try:
-        import numpy
-    except ImportError:
-        numpy = None
-
     if isinstance(value, str):
         if len(value) < 500:
             return [('"', Text.subtle),
@@ -164,7 +159,12 @@ def _get_value_full(value: any):
                     (_format_int(len(value)), Text.meta),
                     (')', Text.subtle)]
 
-    elif numpy is not None and isinstance(value, numpy.ndarray):
+    try:
+        import numpy
+    except ImportError:
+        numpy = None
+
+    if numpy is not None and isinstance(value, numpy.ndarray):
         arr, trunc = _render_tensor(value, new_line='\n')
         arr, trunc_format = _format_tensor(arr)
         if not trunc and not trunc_format:
@@ -183,7 +183,13 @@ def _get_value_full(value: any):
                     *_key_value_pair('std', numpy.std(value)),
                     '\n',
                     *arr]
-    elif torch is not None and isinstance(value, torch.Tensor):
+
+    try:
+        import torch
+    except ImportError:
+        torch = None
+
+    if torch is not None and isinstance(value, torch.Tensor):
         arr, trunc = _render_tensor(value, new_line='\n')
         arr, trunc_format = _format_tensor(arr)
         if not trunc and not trunc_format:
@@ -229,25 +235,27 @@ def _shrink(s: str, style: StyleCode = Text.value, limit: int = 80):
 
 
 def _get_value_line(value: any):
-    try:
-        import torch
-    except ImportError:
-        torch = None
-
-    try:
-        import numpy
-    except ImportError:
-        numpy = None
-
     f = _format_value(value)
 
     if f is not None:
         return [(f, Text.value)]
     elif isinstance(value, str):
         return [('"', Text.subtle)] + _shrink(value) + [('"', Text.subtle)]
-    elif numpy is not None and isinstance(value, numpy.ndarray):
+
+    try:
+        import numpy
+    except ImportError:
+        numpy = None
+
+    if numpy is not None and isinstance(value, numpy.ndarray):
         return [*_format_tensor(_render_tensor(value, new_line='')[0], limit=80)[0]]
-    elif torch is not None and isinstance(value, torch.Tensor):
+
+    try:
+        import torch
+    except ImportError:
+        torch = None
+
+    if torch is not None and isinstance(value, torch.Tensor):
         return [*_format_tensor(_render_tensor(value, new_line='')[0], limit=80)[0]]
 
     s = str(value)

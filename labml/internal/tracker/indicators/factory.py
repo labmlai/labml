@@ -20,11 +20,6 @@ def load_indicator_from_dict(data: Dict[str, any]):
 
 
 def create_default_indicator(name: str, value: any, is_print: bool):
-    try:
-        import torch
-    except ImportError:
-        torch = None
-
     if isinstance(value, int) or isinstance(value, float):
         return Scalar(name, is_print)
     elif isinstance(value, np.number):
@@ -33,7 +28,13 @@ def create_default_indicator(name: str, value: any, is_print: bool):
         return Scalar(name, is_print)
     elif isinstance(value, np.ndarray):
         return Scalar(name, is_print)
-    elif torch is not None:
+
+    try:
+        import torch
+    except ImportError:
+        torch = None
+
+    if torch is not None:
         from torch.optim.optimizer import Optimizer
         if isinstance(value, torch.nn.parameter.Parameter):
             return Scalar(name, is_print)

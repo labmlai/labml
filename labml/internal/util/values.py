@@ -2,11 +2,6 @@ import numpy as np
 
 
 def to_numpy(value):
-    try:
-        import torch
-    except ImportError:
-        torch = None
-
     if isinstance(value, int) or isinstance(value, float):
         return np.array(value)
     elif isinstance(value, np.number):
@@ -15,7 +10,13 @@ def to_numpy(value):
         return np.array(value)
     elif isinstance(value, np.ndarray):
         return value
-    elif torch is not None:
+
+    try:
+        import torch
+    except ImportError:
+        torch = None
+
+    if torch is not None:
         if isinstance(value, torch.nn.parameter.Parameter):
             return value.data.cpu().numpy()
         elif isinstance(value, torch.Tensor):
