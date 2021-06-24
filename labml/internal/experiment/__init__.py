@@ -222,7 +222,10 @@ class Experiment:
         try:
             repo = git.Repo(lab_singleton().path)
 
-            self.run.repo_remotes = list(repo.remote().urls)
+            try:
+                self.run.repo_remotes = list(repo.remote().urls)
+            except (ValueError, git.GitCommandError):
+                self.run.repo_remotes = []
             self.run.commit = repo.head.commit.hexsha
             self.run.commit_message = repo.head.commit.message.strip()
             self.run.is_dirty = repo.is_dirty()
