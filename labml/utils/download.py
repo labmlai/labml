@@ -1,6 +1,10 @@
+import tarfile
 from pathlib import Path
 
-from labml import monit
+from labml import monit, logger
+from labml.logger import Text
+
+_TAR_BUFFER_SIZE = 100_000
 
 
 def download_file(url: str, path: Path):
@@ -17,3 +21,30 @@ def download_file(url: str, path: Path):
             monit.progress(count * block_size / total_size)
 
         urllib.request.urlretrieve(url, path, reporthook=reporthook)
+
+
+def _extract_tar_file(tar: tarfile.TarFile, f: tarfile.TarInfo, path: Path):
+    if not path.parent.exists():
+        path.parent.mkdir(parents=True)
+
+    with tar.extractfile(f) as ef:
+        with open(str(path), 'wb') as o:
+            while True:
+                r = ef.read(_TAR_BUFFER_SIZE)
+                if r:
+                    o.write(r)
+                else:
+                    break
+
+
+def extract_tar(tar_file: Path, to_path: Path):
+    with tarfile.open(str(tar_file), 'r:gz') as tar:
+        files = tar.getmembers()
+
+        for f in monit.iterate('Extract tar', files):
+            if f.isdir():
+                pass
+            elif f.isfile():
+                _extract_tar_file(tar, f, to_path / f.name)
+            else:
+                logger.log(f'Unknown file type {f.name}', Text.warning)
