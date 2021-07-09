@@ -1,0 +1,40 @@
+{
+  "name": "ui",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "@types/d3": "^5.7.2",
+    "@types/node": "latest",
+    "browserify": "^17.0.0",
+    "sass": "latest",
+    "tsify": "^5.0.2",
+    "typescript": "latest",
+    "uglify-js": "^3.12.8",
+    "uglifyify": "^5.0.2",
+    "watchify": "^4.0.0"
+  },
+  "dependencies": {
+    "d3": "^5.16.0"
+  },
+  "scripts": {
+    "build": "$npm_execpath run build:ui && $npm_execpath run build:sass",
+    "watch": "$npm_execpath run watch:ui & $npm_execpath run watch:sass",
+    "build:ui": "browserify ui/src/main.ts -t uglifyify -d -p [ tsify -p tsconfig.json] | uglifyjs -cm -o static/js/bundle.min.js --source-map \"content=inline,url=bundle.min.js.map,includeSources\"",
+    "watch:ui": "watchify ui/src/main.ts -t uglifyify -d -p [ tsify -p tsconfig.json] -v -o static/js/bundle.min.js",
+    "build:sass": "sass ui/src/style.scss:static/css/style.css",
+    "watch:sass": "sass --watch ui/src/style.scss:static/css/style.css",
+    "clean": "rm -rf static/"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

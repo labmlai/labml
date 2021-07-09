@@ -1,0 +1,2 @@
+recursive-include labml_app *
+include readme.rst
