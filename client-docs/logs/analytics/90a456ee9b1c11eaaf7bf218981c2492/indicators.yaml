@@ -1,0 +1,149 @@
+indicators:
+  "":
+    class_name: Scalar
+    is_print: false
+    name: ""
+  average_strategy.A.b:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.A.b
+  average_strategy.A.p:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.A.p
+  average_strategy.Ab.b:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.Ab.b
+  average_strategy.Ab.p:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.Ab.p
+  average_strategy.K.b:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.K.b
+  average_strategy.K.p:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.K.p
+  average_strategy.Kb.b:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.Kb.b
+  average_strategy.Kb.p:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.Kb.p
+  average_strategy.Q.b:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.Q.b
+  average_strategy.Q.p:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.Q.p
+  average_strategy.Qb.b:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.Qb.b
+  average_strategy.Qb.p:
+    class_name: Scalar
+    is_print: false
+    name: average_strategy.Qb.p
+  regret.A.b:
+    class_name: Scalar
+    is_print: false
+    name: regret.A.b
+  regret.A.p:
+    class_name: Scalar
+    is_print: false
+    name: regret.A.p
+  regret.Ab.b:
+    class_name: Scalar
+    is_print: false
+    name: regret.Ab.b
+  regret.Ab.p:
+    class_name: Scalar
+    is_print: false
+    name: regret.Ab.p
+  regret.K.b:
+    class_name: Scalar
+    is_print: false
+    name: regret.K.b
+  regret.K.p:
+    class_name: Scalar
+    is_print: false
+    name: regret.K.p
+  regret.Kb.b:
+    class_name: Scalar
+    is_print: false
+    name: regret.Kb.b
+  regret.Kb.p:
+    class_name: Scalar
+    is_print: false
+    name: regret.Kb.p
+  regret.Q.b:
+    class_name: Scalar
+    is_print: false
+    name: regret.Q.b
+  regret.Q.p:
+    class_name: Scalar
+    is_print: false
+    name: regret.Q.p
+  regret.Qb.b:
+    class_name: Scalar
+    is_print: false
+    name: regret.Qb.b
+  regret.Qb.p:
+    class_name: Scalar
+    is_print: false
+    name: regret.Qb.p
+  strategy.A.b:
+    class_name: Scalar
+    is_print: false
+    name: strategy.A.b
+  strategy.A.p:
+    class_name: Scalar
+    is_print: false
+    name: strategy.A.p
+  strategy.Ab.b:
+    class_name: Scalar
+    is_print: false
+    name: strategy.Ab.b
+  strategy.Ab.p:
+    class_name: Scalar
+    is_print: false
+    name: strategy.Ab.p
+  strategy.K.b:
+    class_name: Scalar
+    is_print: false
+    name: strategy.K.b
+  strategy.K.p:
+    class_name: Scalar
+    is_print: false
+    name: strategy.K.p
+  strategy.Kb.b:
+    class_name: Scalar
+    is_print: false
+    name: strategy.Kb.b
+  strategy.Kb.p:
+    class_name: Scalar
+    is_print: false
+    name: strategy.Kb.p
+  strategy.Q.b:
+    class_name: Scalar
+    is_print: false
+    name: strategy.Q.b
+  strategy.Q.p:
+    class_name: Scalar
+    is_print: false
+    name: strategy.Q.p
+  strategy.Qb.b:
+    class_name: Scalar
+    is_print: false
+    name: strategy.Qb.b
+  strategy.Qb.p:
+    class_name: Scalar
+    is_print: false
+    name: strategy.Qb.p

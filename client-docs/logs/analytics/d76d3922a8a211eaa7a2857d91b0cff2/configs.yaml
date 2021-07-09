@@ -1,0 +1,332 @@
+accuracy_func:
+  computed: labml.internal.configs.config_item.ConfigItem
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: accuracy_func
+  options: []
+  order: -1
+  type: typing.Callable
+  value: null
+activation:
+  computed: ReLU()
+  is_explicitly_specified: true
+  is_hyperparam: null
+  name: activation
+  options:
+  - relu
+  - sigmoid
+  order: 10
+  type: <class 'torch.nn.modules.module.Module'>
+  value: relu
+conv_sizes:
+  computed: '[(128, 2), (256, 4)]'
+  is_explicitly_specified: true
+  is_hyperparam: null
+  name: conv_sizes
+  options: []
+  order: 4
+  type: typing.List[typing.Tuple[int, int]]
+  value: '[(128, 2), (256, 4)]'
+cuda_device:
+  computed: 0
+  is_explicitly_specified: false
+  is_hyperparam: false
+  name: cuda_device
+  options: []
+  order: 7
+  type: <class 'int'>
+  value: 0
+device:
+  computed: cuda:0
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: device
+  options:
+  - _device
+  order: 9
+  type: <class 'torch.device'>
+  value: _device
+device_info:
+  computed: GPU:0 - GeForce GTX 1080 Ti
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: device_info
+  options:
+  - _device_info
+  order: 8
+  type: <class 'labml.helpers.pytorch.device.DeviceInfo'>
+  value: _device_info
+dropout:
+  computed: '0.1'
+  is_explicitly_specified: true
+  is_hyperparam: null
+  name: dropout
+  options: []
+  order: 5
+  type: <class 'float'>
+  value: '0.1'
+epochs:
+  computed: 500
+  is_explicitly_specified: true
+  is_hyperparam: null
+  name: epochs
+  options: []
+  order: 24
+  type: <class 'int'>
+  value: 500
+is_log_parameters:
+  computed: true
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: is_log_parameters
+  options: []
+  order: 27
+  type: <class 'bool'>
+  value: true
+is_loop_on_interrupt:
+  computed: true
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: is_loop_on_interrupt
+  options: []
+  order: 20
+  type: <class 'bool'>
+  value: true
+is_save_models:
+  computed: false
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: is_save_models
+  options: []
+  order: 21
+  type: <class 'bool'>
+  value: false
+learning_rate:
+  computed: '0.0001'
+  is_explicitly_specified: true
+  is_hyperparam: null
+  name: learning_rate
+  options: []
+  order: 29
+  type: <class 'float'>
+  value: '0.0001'
+log_new_line_interval:
+  computed: 1
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: log_new_line_interval
+  options: []
+  order: 19
+  type: <class 'int'>
+  value: 1
+log_write_interval:
+  computed: 1
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: log_write_interval
+  options: []
+  order: 22
+  type: <class 'int'>
+  value: 1
+loop_count:
+  computed: 2764000
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: loop_count
+  options:
+  - data_loop_count
+  order: 25
+  type: <class 'int'>
+  value: data_loop_count
+loop_step:
+  computed: 5528
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: loop_step
+  options:
+  - data_loop_step
+  order: 18
+  type: <class 'int'>
+  value: data_loop_step
+loss_func:
+  computed: MSELoss()
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: loss_func
+  options:
+  - loss_func
+  order: 13
+  type: typing.Callable
+  value: loss_func
+model:
+  computed: "CnnModel(\n  (layers): ModuleList(\n    (0): FrontPaddedConv1d(\n   \
+    \   (conv): Conv1d(5, 128, kernel_size=(2,), stride=(1,))\n    )\n    (1): FrontPaddedConv1d(\n\
+    \      (conv): Conv1d(128, 256, kernel_size=(4,), stride=(1,))\n    )\n  )\n \
+    \ (final): FrontPaddedConv1d(\n    (conv): Conv1d(256, 1, kernel_size=(1,), stride=(1,))\n\
+    \  )\n  (activation): ReLU()\n  (conv_dropout): Dropout(p=0.1, inplace=False)\n\
+    )"
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: model
+  options:
+  - cnn_model
+  order: 12
+  type: <class 'torch.nn.modules.module.Module'>
+  value: cnn_model
+optimizer:
+  computed: "Adam (\nParameter Group 0\n    amsgrad: False\n    betas: (0.9, 0.999)\n\
+    \    eps: 1e-08\n    lr: 0.0001\n    weight_decay: 0\n)"
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: optimizer
+  options:
+  - adam_optimizer
+  order: 30
+  type: <class 'torch.optim.adam.Adam'>
+  value: adam_optimizer
+save_models_interval:
+  computed: 1
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: save_models_interval
+  options: []
+  order: 23
+  type: <class 'int'>
+  value: 1
+train_batch_size:
+  computed: 32
+  is_explicitly_specified: true
+  is_hyperparam: null
+  name: train_batch_size
+  options: []
+  order: 16
+  type: <class 'int'>
+  value: 32
+train_batch_step:
+  computed: pytorch.stocks.batch_step.StocksBatchStep
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: train_batch_step
+  options:
+  - simple_train_batch_step
+  - train_stocks_batch_step
+  order: 31
+  type: <class 'labml.helpers.pytorch.train_valid.BatchStep'>
+  value: train_stocks_batch_step
+train_dataset:
+  computed: pytorch.stocks.dataset.MinutelyDataset
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: train_dataset
+  options:
+  - train_dataset
+  order: 11
+  type: <class 'pytorch.stocks.dataset.MinutelyDataset'>
+  value: train_dataset
+train_loader:
+  computed: torch.utils.data.dataloader.DataLoader
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: train_loader
+  options:
+  - train_loader
+  order: 17
+  type: <class 'torch.utils.data.dataloader.DataLoader'>
+  value: train_loader
+train_log_interval:
+  computed: 10
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: train_log_interval
+  options: []
+  order: 28
+  type: <class 'int'>
+  value: 10
+trainer:
+  computed: labml.helpers.pytorch.train_valid.Trainer
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: trainer
+  options:
+  - trainer
+  order: 32
+  type: <class 'labml.helpers.pytorch.train_valid.Trainer'>
+  value: trainer
+training_loop:
+  computed: LabTrainingLoop
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: training_loop
+  options:
+  - _loop_configs
+  order: 26
+  type: <class 'labml.helpers.training_loop.TrainingLoop'>
+  value: _loop_configs
+use_cuda:
+  computed: true
+  is_explicitly_specified: false
+  is_hyperparam: false
+  name: use_cuda
+  options: []
+  order: 6
+  type: <class 'bool'>
+  value: true
+valid_batch_size:
+  computed: 64
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: valid_batch_size
+  options: []
+  order: 0
+  type: <class 'int'>
+  value: 64
+valid_batch_step:
+  computed: pytorch.stocks.batch_step.StocksBatchStep
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: valid_batch_step
+  options:
+  - simple_valid_batch_step
+  - valid_stocks_batch_step
+  order: 14
+  type: <class 'labml.helpers.pytorch.train_valid.BatchStep'>
+  value: valid_stocks_batch_step
+valid_dataset:
+  computed: pytorch.stocks.dataset.MinutelyDataset
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: valid_dataset
+  options:
+  - train_dataset
+  order: 2
+  type: <class 'pytorch.stocks.dataset.MinutelyDataset'>
+  value: train_dataset
+valid_loader:
+  computed: torch.utils.data.dataloader.DataLoader
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: valid_loader
+  options:
+  - train_loader
+  order: 3
+  type: <class 'torch.utils.data.dataloader.DataLoader'>
+  value: train_loader
+validation_dates:
+  computed: 100
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: validation_dates
+  options: []
+  order: 1
+  type: <class 'int'>
+  value: 100
+validator:
+  computed: labml.helpers.pytorch.train_valid.Trainer
+  is_explicitly_specified: false
+  is_hyperparam: null
+  name: validator
+  options:
+  - validator
+  order: 15
+  type: <class 'labml.helpers.pytorch.train_valid.Trainer'>
+  value: validator

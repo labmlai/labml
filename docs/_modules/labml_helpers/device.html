@@ -1,0 +1,280 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>labml_helpers.device &mdash; LabML 0.4 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/lab_icon.png"/>
+  
+  
+  
+    <link rel="canonical" href="https://docs.labml.ai/_modules/labml_helpers/device.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/katex-math.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-PDCL9PHMHT');
+    </script>
+
+ 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LabML
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/lab.html">Lab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/configs.html">Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/experiment.html">Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/monit.html">Monitor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/tracker.html">Tracker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/helpers.html">Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#module-labml_helpers.training_loop">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/helpers.html#module-labml_helpers.datasets.mnist">Datasets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/analytics.html">Analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/manage.html">Manage</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LabML</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>labml_helpers.device</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for labml_helpers.device</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">labml.configs</span> <span class="kn">import</span> <span class="n">BaseConfigs</span><span class="p">,</span> <span class="n">hyperparams</span><span class="p">,</span> <span class="n">option</span>
+
+
+<span class="k">class</span> <span class="nc">DeviceInfo</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                 <span class="n">use_cuda</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+                 <span class="n">cuda_device</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_cuda</span> <span class="o">=</span> <span class="n">use_cuda</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cuda_device</span> <span class="o">=</span> <span class="n">cuda_device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cuda_count</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">device_count</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_cuda</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_cuda</span> <span class="ow">and</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cuda</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cuda_device</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cuda_count</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cuda_device</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cuda_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cuda</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;CPU&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cuda_device</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cuda_count</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;GPU:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cuda_device</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cuda_device</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;GPU:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cuda_count</span> <span class="o">-</span> <span class="mi">1</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cuda_device</span><span class="si">}</span><span class="s2">) &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cuda_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DeviceConfigs"><a class="viewcode-back" href="../../api/helpers.html#labml_helpers.device.DeviceConfigs">[docs]</a><span class="k">class</span> <span class="nc">DeviceConfigs</span><span class="p">(</span><span class="n">BaseConfigs</span><span class="p">):</span>
+    <span class="n">cuda_device</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">use_cuda</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">device_info</span><span class="p">:</span> <span class="n">DeviceInfo</span>
+
+    <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_primary</span><span class="o">=</span><span class="s1">&#39;device&#39;</span><span class="p">)</span></div>
+
+
+<span class="nd">@option</span><span class="p">(</span><span class="n">DeviceConfigs</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_device</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">DeviceConfigs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">device_info</span><span class="o">.</span><span class="n">device</span>
+
+
+<span class="n">hyperparams</span><span class="p">(</span><span class="n">DeviceConfigs</span><span class="o">.</span><span class="n">cuda_device</span><span class="p">,</span> <span class="n">DeviceConfigs</span><span class="o">.</span><span class="n">use_cuda</span><span class="p">,</span>
+            <span class="n">is_hyperparam</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="nd">@option</span><span class="p">(</span><span class="n">DeviceConfigs</span><span class="o">.</span><span class="n">device_info</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_device_info</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">DeviceConfigs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">DeviceInfo</span><span class="p">(</span><span class="n">use_cuda</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">use_cuda</span><span class="p">,</span>
+                      <span class="n">cuda_device</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">cuda_device</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lab contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,82 @@
+indicators:
+  model.final.conv.bias:
+    class_name: Histogram
+    is_print: false
+    name: model.final.conv.bias
+  model.final.conv.bias.grad:
+    class_name: Histogram
+    is_print: false
+    name: model.final.conv.bias.grad
+  model.final.conv.weight:
+    class_name: Histogram
+    is_print: false
+    name: model.final.conv.weight
+  model.final.conv.weight.grad:
+    class_name: Histogram
+    is_print: false
+    name: model.final.conv.weight.grad
+  model.layers.0.conv.bias:
+    class_name: Histogram
+    is_print: false
+    name: model.layers.0.conv.bias
+  model.layers.0.conv.bias.grad:
+    class_name: Histogram
+    is_print: false
+    name: model.layers.0.conv.bias.grad
+  model.layers.0.conv.weight:
+    class_name: Histogram
+    is_print: false
+    name: model.layers.0.conv.weight
+  model.layers.0.conv.weight.grad:
+    class_name: Histogram
+    is_print: false
+    name: model.layers.0.conv.weight.grad
+  model.layers.1.conv.bias:
+    class_name: Histogram
+    is_print: false
+    name: model.layers.1.conv.bias
+  model.layers.1.conv.bias.grad:
+    class_name: Histogram
+    is_print: false
+    name: model.layers.1.conv.bias.grad
+  model.layers.1.conv.weight:
+    class_name: Histogram
+    is_print: false
+    name: model.layers.1.conv.weight
+  model.layers.1.conv.weight.grad:
+    class_name: Histogram
+    is_print: false
+    name: model.layers.1.conv.weight.grad
+  train.loss:
+    class_name: Histogram
+    is_print: true
+    name: train.loss
+  valid.loss:
+    class_name: Histogram
+    is_print: true
+    name: valid.loss
+  valid.output:
+    class_name: Tensor
+    is_once: false
+    is_print: false
+    name: valid.output
+  valid.ref:
+    class_name: Tensor
+    is_once: true
+    is_print: false
+    name: valid.ref
+  valid.strike_high:
+    class_name: Tensor
+    is_once: true
+    is_print: false
+    name: valid.strike_high
+  valid.strike_low:
+    class_name: Tensor
+    is_once: true
+    is_print: false
+    name: valid.strike_low
+  valid.target:
+    class_name: Tensor
+    is_once: true
+    is_print: false
+    name: valid.target

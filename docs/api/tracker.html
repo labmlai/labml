@@ -1,0 +1,380 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tracker &mdash; LabML 0.4 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/lab_icon.png"/>
+  
+  
+  
+    <link rel="canonical" href="https://docs.labml.ai/api/tracker.html"/>
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/katex-math.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Utils" href="utils.html" />
+    <link rel="prev" title="Monitor" href="monit.html" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-PDCL9PHMHT');
+    </script>
+
+ 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> LabML
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="lab.html">Lab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="monit.html">Monitor</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tracker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="helpers.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="helpers.html#module-labml_helpers.training_loop">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="helpers.html#module-labml_helpers.datasets.mnist">Datasets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analytics.html">Analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manage.html">Manage</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LabML</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Tracker</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/tracker.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-labml.tracker">
+<span id="tracker"></span><h1>Tracker<a class="headerlink" href="#module-labml.tracker" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="labml.tracker.set_queue">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_queue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">queue_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">10</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_histogram">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_histogram</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_histogram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_scalar">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_scalar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_scalar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_indexed_scalar">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_indexed_scalar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_indexed_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_indexed_scalar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a class="reference internal" href="#labml.tracker.set_image" title="labml.tracker.set_image"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_image()</span></code></a>,
+<a class="reference internal" href="#labml.tracker.set_text" title="labml.tracker.set_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_text()</span></code></a>, and
+<a class="reference internal" href="#labml.tracker.set_indexed_text" title="labml.tracker.set_indexed_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_indexed_text()</span></code></a> are still experimental.</p>
+</div>
+<dl class="py function">
+<dt id="labml.tracker.set_image">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_image</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">density</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_text">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_indexed_text">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_indexed_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">title</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_indexed_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_indexed_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.add">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>This has multiple overloads</p>
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.save">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>This has multiple overloads</p>
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#save"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_step</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#save"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#save"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#save"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#save"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_step</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#save"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_step</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#save"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_step</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#save"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.namespace">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">namespace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#namespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a namespace for tracking</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.reset">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset indicators, for a new experiment</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_global_step">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_global_step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_step</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_global_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_global_step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.add_global_step">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add_global_step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">increment_global_step</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add_global_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.add_global_step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.get_global_step">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">get_global_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/labml/tracker.html#get_global_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.get_global_step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.new_line">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">new_line</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#new_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.new_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a new line.</p>
+<p>Equivalent to <code class="docutils literal notranslate"><span class="pre">logger.log</span></code>, but handles distributed training where only the rank=0
+process is tracking data.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="utils.html" class="btn btn-neutral float-right" title="Utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="monit.html" class="btn btn-neutral float-left" title="Monitor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lab contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

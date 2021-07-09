@@ -1,0 +1,15 @@
+name: 'analytics'
+comment: ''
+commit: 0c4e349240afa3d96daeb2f2446f76bfc23396ac
+commit_message: typo
+is_dirty: true
+load_run: null
+notes: ''
+python_file: /Users/varuna/ml/poker/kuhn_cfr
+start_step: 0
+tags:
+- kuhn
+- poker
+trial_date: '2020-05-21'
+trial_time: '10:05:57'
+uuid: 90a456ee9b1c11eaaf7bf218981c2492

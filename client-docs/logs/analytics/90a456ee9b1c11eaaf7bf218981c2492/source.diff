@@ -1,0 +1,11 @@
+diff --git a/kuhn_cfr/kuhn_cfr.ipynb b/kuhn_cfr/kuhn_cfr.ipynb
+index 64235ae..fad2a85 100644
+--- a/kuhn_cfr/kuhn_cfr.ipynb
++++ b/kuhn_cfr/kuhn_cfr.ipynb
+@@ -1303,4 +1303,4 @@
+  },
+  "nbformat": 4,
+  "nbformat_minor": 4
+-}
++}
+\ No newline at end of file

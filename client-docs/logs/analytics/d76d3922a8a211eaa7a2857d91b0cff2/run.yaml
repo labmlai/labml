@@ -1,0 +1,15 @@
+name: 'analytics'
+comment: 5_minutes
+commit: 0091356127526d0c2f1ccd04fca87a9627900663
+commit_message: 📚 stocks writeup
+is_dirty: true
+load_run: null
+notes: ""
+python_file: /home/varuna/ml/lab_samples/pytorch/stocks/minutely_stocks.py
+start_step: 0
+tags:
+  - minutely
+  - stocks
+trial_date: 2020-06-07
+trial_time: 15:09:54
+uuid: d76d3922a8a211eaa7a2857d91b0cff2

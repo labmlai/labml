@@ -1,0 +1,15 @@
+diff --git a/pytorch/stocks/minutely_stocks.py b/pytorch/stocks/minutely_stocks.py
+index 66dd2d1..7e900f5 100644
+--- a/pytorch/stocks/minutely_stocks.py
++++ b/pytorch/stocks/minutely_stocks.py
+@@ -100,8 +100,8 @@ def main():
+     conf = Configs()
+     conf.learning_rate = 1e-4
+     conf.epochs = 500
+-    # conf.conv_sizes = [(128, 2), (256, 4)]
+-    conf.conv_sizes = [(128, 1), (256, 2)]
++    conf.conv_sizes = [(128, 2), (256, 4)]
++    # conf.conv_sizes = [(128, 1), (256, 2)]
+     conf.activation = 'relu'
+     conf.dropout = 0.1
+     conf.train_batch_size = 32
