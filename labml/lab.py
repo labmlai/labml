@@ -30,6 +30,6 @@ def configure(configurations: Dict[str, any]):
     Set top level configurations through Python.
     You can set the configurations set through ``.labml.yaml``.
 
-    `See setup guide for details. <../guide/installation_setup.html>`_
+    `See the guide for details. <https://github.com/labmlai/labml/blob/master/guides/labml_yaml_file.md>`_
     """
     _internal().set_configurations(configurations)
