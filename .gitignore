@@ -11,7 +11,7 @@ source.json
 *.egg-info/
 dist/
 build/
-.idea/*
-!.idea/dictionaries
+*/.idea/*
+*/!.idea/dictionaries
 .labml.yaml
 labml_helpers
