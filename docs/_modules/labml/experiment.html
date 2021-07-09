@@ -1,0 +1,621 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>labml.experiment &mdash; labml.ai client library 0.4 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/lab_icon.png"/>
+  
+  
+  
+    <link rel="canonical" href="https://docs.labml.ai/_modules/labml/experiment.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/katex-math.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-PDCL9PHMHT');
+    </script>
+
+ 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> labml.ai client library
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/lab.html">Lab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/configs.html">Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/experiment.html">Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/monit.html">Monitor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/tracker.html">Tracker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/helpers.html">Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#module-labml_helpers.training_loop">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/helpers.html#module-labml_helpers.datasets.mnist">Datasets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/analytics.html">Analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/manage.html">Manage</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">labml.ai client library</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>labml.experiment</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for labml.experiment</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">labml.configs</span> <span class="kn">import</span> <span class="n">BaseConfigs</span>
+<span class="kn">from</span> <span class="nn">labml.internal.experiment</span> <span class="kn">import</span> \
+    <span class="n">create_experiment</span> <span class="k">as</span> <span class="n">_create_experiment</span><span class="p">,</span> \
+    <span class="n">experiment_singleton</span> <span class="k">as</span> <span class="n">_experiment_singleton</span><span class="p">,</span> \
+    <span class="n">ModelSaver</span>
+<span class="kn">from</span> <span class="nn">labml.internal.experiment.experiment_run</span> <span class="kn">import</span> \
+    <span class="n">get_configs</span> <span class="k">as</span> <span class="n">_get_configs</span><span class="p">,</span> \
+    <span class="n">save_bundle</span> <span class="k">as</span> <span class="n">_save_bundle</span><span class="p">,</span> \
+    <span class="n">load_bundle</span> <span class="k">as</span> <span class="n">_load_bundle</span>
+<span class="kn">from</span> <span class="nn">labml.internal.monitor</span> <span class="kn">import</span> <span class="n">monitor_singleton</span> <span class="k">as</span> <span class="n">monitor</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+
+
+<span class="k">def</span> <span class="nf">generate_uuid</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid1</span>
+    <span class="k">return</span> <span class="n">uuid1</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
+
+
+<div class="viewcode-block" id="save_checkpoint"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.save_checkpoint">[docs]</a><span class="k">def</span> <span class="nf">save_checkpoint</span><span class="p">():</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Saves model checkpoints</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="get_uuid"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.get_uuid">[docs]</a><span class="k">def</span> <span class="nf">get_uuid</span><span class="p">():</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the UUID of the current experiment run</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">uuid</span></div>
+
+
+<div class="viewcode-block" id="create"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.create">[docs]</a><span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="o">*</span><span class="p">,</span>
+           <span class="n">uuid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">python_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">writers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">ignore_callers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">disable_screen</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an experiment</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        name (str, optional): name of the experiment</span>
+<span class="sd">        python_file (str, optional): path of the Python file that</span>
+<span class="sd">            created the experiment</span>
+<span class="sd">        comment (str, optional): a short description of the experiment</span>
+<span class="sd">        writers (Set[str], optional): list of writers to write stat to.</span>
+<span class="sd">            Defaults to ``{&#39;tensorboard&#39;, &#39;sqlite&#39;, &#39;web_api&#39;}``.</span>
+<span class="sd">        ignore_callers: (Set[str], optional): list of files to ignore when</span>
+<span class="sd">            automatically determining ``python_file``</span>
+<span class="sd">        tags (Set[str], optional): Set of tags for experiment</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">writers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">writers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;screen&#39;</span><span class="p">,</span> <span class="s1">&#39;sqlite&#39;</span><span class="p">,</span> <span class="s1">&#39;web_api&#39;</span><span class="p">}</span>
+        <span class="kn">from</span> <span class="nn">labml.internal.util.tensorboard_writer</span> <span class="kn">import</span> <span class="n">has_tensorboard</span>
+        <span class="k">if</span> <span class="n">has_tensorboard</span><span class="p">():</span>
+            <span class="n">writers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;tensorboard&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">wandb</span>
+            <span class="n">writers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;wandb&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="n">disable_screen</span> <span class="ow">and</span> <span class="s1">&#39;screen&#39;</span> <span class="ow">in</span> <span class="n">writers</span><span class="p">:</span>
+        <span class="n">writers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;screen&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ignore_callers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ignore_callers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">uuid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uuid</span> <span class="o">=</span> <span class="n">generate_uuid</span><span class="p">()</span>
+
+    <span class="n">monitor</span><span class="p">()</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">_create_experiment</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span>
+                       <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                       <span class="n">python_file</span><span class="o">=</span><span class="n">python_file</span><span class="p">,</span>
+                       <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span>
+                       <span class="n">writers</span><span class="o">=</span><span class="n">writers</span><span class="p">,</span>
+                       <span class="n">ignore_callers</span><span class="o">=</span><span class="n">ignore_callers</span><span class="p">,</span>
+                       <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
+                       <span class="n">is_evaluate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">evaluate</span><span class="p">():</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This should be used for evaluation of a saved experiment.</span>
+<span class="sd">    This will not record anything.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">monitor</span><span class="p">()</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">_create_experiment</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">generate_uuid</span><span class="p">(),</span>
+                       <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">python_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">comment</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">writers</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
+                       <span class="n">ignore_callers</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
+                       <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">is_evaluate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">distributed</span><span class="p">(</span><span class="n">rank</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">world_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">distributed</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">world_size</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="add_model_savers"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.add_model_savers">[docs]</a><span class="k">def</span> <span class="nf">add_model_savers</span><span class="p">(</span><span class="n">savers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ModelSaver</span><span class="p">]):</span>
+    <span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">checkpoint_saver</span><span class="o">.</span><span class="n">add_savers</span><span class="p">(</span><span class="n">savers</span><span class="p">)</span></div>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">add_pytorch_models</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s1">&#39;torch.nn.Module&#39;</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">add_pytorch_models</span><span class="p">(</span><span class="n">models</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;torch.nn.Module&#39;</span><span class="p">]):</span>
+    <span class="o">...</span>
+
+
+<div class="viewcode-block" id="add_pytorch_models"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.add_pytorch_models">[docs]</a><span class="k">def</span> <span class="nf">add_pytorch_models</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set variables for saving and loading</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        models (Dict[str, torch.nn.Module]): a dictionary of torch modules</span>
+<span class="sd">            used in the experiment.</span>
+<span class="sd">            These will be saved with :func:`labml.experiment.save_checkpoint`</span>
+<span class="sd">            and loaded with :func:`labml.experiment.load`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">labml.internal.experiment.pytorch</span> <span class="kn">import</span> <span class="n">add_models</span> <span class="k">as</span> <span class="n">_add_pytorch_models</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span>
+        <span class="n">_add_pytorch_models</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_add_pytorch_models</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_sklearn_models"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.add_sklearn_models">[docs]</a><span class="k">def</span> <span class="nf">add_sklearn_models</span><span class="p">(</span><span class="n">models</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    .. warning::</span>
+<span class="sd">        This is still experimental.</span>
+
+<span class="sd">    Set variables for saving and loading</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        models (Dict[str, any]): a dictionary of SKLearn models</span>
+<span class="sd">            These will be saved with :func:`labml.experiment.save_checkpoint`</span>
+<span class="sd">            and loaded with :func:`labml.experiment.load`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.experiment.sklearn</span> <span class="kn">import</span> <span class="n">add_models</span> <span class="k">as</span> <span class="n">_add_sklearn_models</span>
+    <span class="n">_add_sklearn_models</span><span class="p">(</span><span class="n">models</span><span class="p">)</span></div>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">configs</span><span class="p">(</span><span class="n">conf_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">configs</span><span class="p">(</span><span class="n">conf_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">],</span> <span class="n">conf_override</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">configs</span><span class="p">(</span><span class="n">conf</span><span class="p">:</span> <span class="n">BaseConfigs</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">configs</span><span class="p">(</span><span class="n">conf</span><span class="p">:</span> <span class="n">BaseConfigs</span><span class="p">,</span> <span class="n">conf_override</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]):</span>
+    <span class="o">...</span>
+
+
+<div class="viewcode-block" id="configs"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.configs">[docs]</a><span class="k">def</span> <span class="nf">configs</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate configurations</span>
+
+<span class="sd">    This has multiple overloads</span>
+
+<span class="sd">    .. function:: configs(conf_dict: Dict[str, any])</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: configs(conf_dict: Dict[str, any], conf_override: Dict[str, any])</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: configs(conf: BaseConfigs)</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: configs(conf: BaseConfigs, run_order: List[Union[List[str], str]])</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: configs(conf: BaseConfigs, *run_order: str)</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: configs(conf: BaseConfigs, conf_override: Dict[str, any])</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: configs(conf: BaseConfigs, conf_override: Dict[str, any], run_order: List[Union[List[str], str]])</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: configs(conf: BaseConfigs, conf_override: Dict[str, any], *run_order: str)</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        conf (BaseConfigs, optional): configurations object</span>
+<span class="sd">        conf_dict (Dict[str, any], optional): a dictionary of configs</span>
+<span class="sd">        conf_override (Dict[str, any], optional): a dictionary of</span>
+<span class="sd">            configs to be overridden</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">conf_override</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">conf</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">conf_override</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="n">idx</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Invalid call to calculate configs&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">BaseConfigs</span><span class="p">):</span>
+        <span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">calc_configs</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">conf_override</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">calc_configs</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">conf_override</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Invalid call to calculate configs&quot;</span><span class="p">)</span></div>
+
+
+<span class="n">_load_run_uuid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_load_checkpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="start"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.start">[docs]</a><span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Starts the experiment.</span>
+<span class="sd">    Run it using ``with`` statement and it will monitor and report, experiment completion</span>
+<span class="sd">    and exceptions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_load_run_uuid</span>
+    <span class="k">global</span> <span class="n">_load_checkpoint</span>
+
+    <span class="k">return</span> <span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">run_uuid</span><span class="o">=</span><span class="n">_load_run_uuid</span><span class="p">,</span> <span class="n">checkpoint</span><span class="o">=</span><span class="n">_load_checkpoint</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_configs"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.load_configs">[docs]</a><span class="k">def</span> <span class="nf">load_configs</span><span class="p">(</span><span class="n">run_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">is_only_hyperparam</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load configs of a previous run</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        run_uuid (str): if provided the experiment will start from</span>
+<span class="sd">            a saved state in the run with UUID ``run_uuid``</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        is_only_hyperparam (bool, optional): if True all only the hyper parameters</span>
+<span class="sd">            are returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">conf</span> <span class="o">=</span> <span class="n">_get_configs</span><span class="p">(</span><span class="n">run_uuid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">conf</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">is_hyperparam</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;is_hyperparam&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">is_explicit</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;is_explicitly_specified&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_only_hyperparam</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">is_hyperparam</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">is_explicit</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">is_hyperparam</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">run_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads a the run from a previous checkpoint.</span>
+<span class="sd">    You need to separately call ``experiment.start`` to start the experiment.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        run_uuid (str): experiment will start from</span>
+<span class="sd">            a saved state in the run with UUID ``run_uuid``</span>
+<span class="sd">        checkpoint (str, optional): if provided the experiment will start from</span>
+<span class="sd">            given checkpoint. Otherwise it will start from the last checkpoint.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_load_run_uuid</span>
+    <span class="k">global</span> <span class="n">_load_checkpoint</span>
+
+    <span class="n">_load_run_uuid</span> <span class="o">=</span> <span class="n">run_uuid</span>
+    <span class="n">_load_checkpoint</span> <span class="o">=</span> <span class="n">checkpoint</span></div>
+
+
+<span class="k">def</span> <span class="nf">save_bundle</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">run_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                <span class="n">data_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">data_files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_files</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">checkpoint</span><span class="p">:</span>
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">_save_bundle</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">run_uuid</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">,</span>
+                 <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">load_bundle</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="n">_load_bundle</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="load_models"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.load_models">[docs]</a><span class="k">def</span> <span class="nf">load_models</span><span class="p">(</span><span class="n">models</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">run_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads and starts the run from a previous checkpoint.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        models (List[str]): List of names of models to be loaded</span>
+<span class="sd">        run_uuid (str): experiment will start from</span>
+<span class="sd">            a saved state in the run with UUID ``run_uuid``</span>
+<span class="sd">        checkpoint (str, optional): if provided the experiment will start from</span>
+<span class="sd">            given checkpoint. Otherwise it will start from the last checkpoint.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">load_models</span><span class="p">(</span><span class="n">models</span><span class="o">=</span><span class="n">models</span><span class="p">,</span> <span class="n">run_uuid</span><span class="o">=</span><span class="n">run_uuid</span><span class="p">,</span> <span class="n">checkpoint</span><span class="o">=</span><span class="n">checkpoint</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_numpy"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.save_numpy">[docs]</a><span class="k">def</span> <span class="nf">save_numpy</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Saves a single numpy array. This is used to save processed data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">numpy_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">numpy_path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">numpy_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.npy&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">numpy_path</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">),</span> <span class="n">array</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="record"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.record">[docs]</a><span class="k">def</span> <span class="nf">record</span><span class="p">(</span><span class="o">*</span><span class="p">,</span>
+           <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">writers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">exp_conf</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">lab_conf</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">disable_screen</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is combines :func:`create`, :func:`configs` and :func:`start`.</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        name (str, optional): name of the experiment</span>
+<span class="sd">        comment (str, optional): a short description of the experiment</span>
+<span class="sd">        writers (Set[str], optional): list of writers to write stat to.</span>
+<span class="sd">            Defaults to ``{&#39;tensorboard&#39;, &#39;sqlite&#39;, &#39;web_api&#39;}``.</span>
+<span class="sd">        tags (Set[str], optional): Set of tags for experiment</span>
+<span class="sd">        exp_conf (Dict[str, any], optional): a dictionary of experiment configurations</span>
+<span class="sd">        lab_conf (Dict[str, any], optional): a dictionary of configurations for LabML.</span>
+<span class="sd">         Use this if you want to change default configurations such as ``web_api``, and</span>
+<span class="sd">         ``data_path``.</span>
+<span class="sd">        token (str, optional): a shortcut to provide LabML mobile app token (or url - ``web_api``)</span>
+<span class="sd">         instead of including it in ``lab_conf``. You can set this with :func:`labml.lab.configure`,</span>
+<span class="sd">         `or with a configuration file for the entire project &lt;../guide/installation_setup.html&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">lab_conf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lab_conf</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">lab_conf</span><span class="p">[</span><span class="s1">&#39;web_api&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">token</span>
+
+    <span class="k">if</span> <span class="n">lab_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">labml.internal.lab</span> <span class="kn">import</span> <span class="n">lab_singleton</span> <span class="k">as</span> <span class="n">_internal</span>
+        <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">set_configurations</span><span class="p">(</span><span class="n">lab_conf</span><span class="p">)</span>
+
+    <span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+           <span class="n">python_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+           <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span>
+           <span class="n">writers</span><span class="o">=</span><span class="n">writers</span><span class="p">,</span>
+           <span class="n">ignore_callers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+           <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
+           <span class="n">disable_screen</span><span class="o">=</span><span class="n">disable_screen</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">exp_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">configs</span><span class="p">(</span><span class="n">exp_conf</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">start</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020-2021, labml.ai contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

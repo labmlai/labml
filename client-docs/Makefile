@@ -19,7 +19,7 @@ rebuild: clean build ## Rebuild docs
 
 pages: rebuild ## Create pages
 	@mkdir -p ../docs
-	@cat "This file makes sure that Github Pages doesn't process" > ../docs/.nojekyll
+	@echo "This file makes sure that Github Pages doesn't process" > ../docs/.nojekyll
 	@cp -r build/html/* ../docs
 
 help: ## Show this help.

@@ -1,0 +1,457 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>labml.tracker &mdash; labml.ai client library 0.4 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/lab_icon.png"/>
+  
+  
+  
+    <link rel="canonical" href="https://docs.labml.ai/_modules/labml/tracker.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/katex-math.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-PDCL9PHMHT');
+    </script>
+
+ 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> labml.ai client library
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/lab.html">Lab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/configs.html">Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/experiment.html">Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/monit.html">Monitor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/tracker.html">Tracker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/helpers.html">Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#module-labml_helpers.training_loop">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/helpers.html#module-labml_helpers.datasets.mnist">Datasets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/analytics.html">Analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/manage.html">Manage</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">labml.ai client library</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>labml.tracker</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for labml.tracker</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">labml.internal.tracker</span> <span class="kn">import</span> <span class="n">tracker_singleton</span> <span class="k">as</span> <span class="n">_internal</span>
+<span class="kn">from</span> <span class="nn">labml.internal.track_debug</span> <span class="kn">import</span> <span class="n">tracker_debug_singleton</span> <span class="k">as</span> <span class="n">_tracker_debug_singleton</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">is_debug</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="n">_tracker_debug_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">is_debug</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_tracker_debug_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_tracker_debug_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="set_global_step"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_global_step">[docs]</a><span class="k">def</span> <span class="nf">set_global_step</span><span class="p">(</span><span class="n">global_step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">set_global_step</span><span class="p">(</span><span class="n">global_step</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_global_step"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.add_global_step">[docs]</a><span class="k">def</span> <span class="nf">add_global_step</span><span class="p">(</span><span class="n">increment_global_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_global_step</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">increment_global_step</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_global_step"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.get_global_step">[docs]</a><span class="k">def</span> <span class="nf">get_global_step</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">global_step</span></div>
+
+
+<div class="viewcode-block" id="set_queue"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_queue">[docs]</a><span class="k">def</span> <span class="nf">set_queue</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">queue_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.numeric</span> <span class="kn">import</span> <span class="n">Queue</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Queue</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">queue_size</span><span class="p">,</span> <span class="n">is_print</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="set_histogram"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_histogram">[docs]</a><span class="k">def</span> <span class="nf">set_histogram</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.numeric</span> <span class="kn">import</span> <span class="n">Histogram</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Histogram</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_print</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="set_scalar"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_scalar">[docs]</a><span class="k">def</span> <span class="nf">set_scalar</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.numeric</span> <span class="kn">import</span> <span class="n">Scalar</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Scalar</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_print</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="set_indexed_scalar"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_indexed_scalar">[docs]</a><span class="k">def</span> <span class="nf">set_indexed_scalar</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.indexed</span> <span class="kn">import</span> <span class="n">IndexedScalar</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">IndexedScalar</span><span class="p">(</span><span class="n">name</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="set_image"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_image">[docs]</a><span class="k">def</span> <span class="nf">set_image</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">density</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.artifacts</span> <span class="kn">import</span> <span class="n">Image</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_print</span><span class="p">,</span> <span class="n">density</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="set_text"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_text">[docs]</a><span class="k">def</span> <span class="nf">set_text</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.artifacts</span> <span class="kn">import</span> <span class="n">Text</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Text</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_print</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">set_tensor</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_once</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.artifacts</span> <span class="kn">import</span> <span class="n">Tensor</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Tensor</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_once</span><span class="o">=</span><span class="n">is_once</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="set_indexed_text"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_indexed_text">[docs]</a><span class="k">def</span> <span class="nf">set_indexed_text</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.artifacts</span> <span class="kn">import</span> <span class="n">IndexedText</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">IndexedText</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">is_print</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">_add_dict</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<div class="viewcode-block" id="add"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.add">[docs]</a><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This has multiple overloads</span>
+
+<span class="sd">    .. function:: add(values: Dict[str, any])</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: add(name: str, value: any)</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: add(**kwargs: any)</span>
+<span class="sd">        :noindex:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">_add_dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)&#39;</span><span class="p">)</span>
+        <span class="n">_add_dict</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)&#39;</span><span class="p">)</span>
+        <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">save</span><span class="p">():</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">global_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">global_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">global_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">global_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<div class="viewcode-block" id="save"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.save">[docs]</a><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This has multiple overloads</span>
+
+<span class="sd">    .. function:: save()</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: save(global_step: int)</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: save(values: Dict[str, any])</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: save(name: str, value: any)</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: save(**kwargs: any)</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: save(global_step: int, values: Dict[str, any])</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: save(global_step: int, name: str, value: any)</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: save(global_step: int, **kwargs: any)</span>
+<span class="sd">        :noindex:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">set_global_step</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">add</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">write</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="new_line"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.new_line">[docs]</a><span class="k">def</span> <span class="nf">new_line</span><span class="p">():</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prints a new line.</span>
+
+<span class="sd">    Equivalent to ``logger.log``, but handles distributed training where only the rank=0</span>
+<span class="sd">    process is tracking data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">new_line</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="namespace"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.namespace">[docs]</a><span class="k">def</span> <span class="nf">namespace</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set a namespace for tracking</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">namespace</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="reset"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.reset">[docs]</a><span class="k">def</span> <span class="nf">reset</span><span class="p">():</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reset indicators, for a new experiment</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">reset_store</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020-2021, labml.ai contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
