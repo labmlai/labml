@@ -1,0 +1,14 @@
+.remote
+.git
+__pycache__
+.ipynb_checkpoints
+logs
+.DS_Store
+.*.swp
+*.egg-info/
+/data
+/html
+labml
+labml_helpers
+labml_nn
+.idea
