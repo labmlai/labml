@@ -1,19 +1,19 @@
 import setuptools
 
-with open("readme.rst", "r") as f:
+with open("readme.md", "r") as f:
     long_description = f.read()
 
 setuptools.setup(
     name='labml-helpers',
-    version='0.4.77',
+    version='0.4.79',
     author="Varuna Jayasiri, Nipun Wijerathne",
     author_email="vpjayasiri@gmail.com, hnipun@gmail.com",
     description="A collection of classes and functions to automate common deep learning training patterns",
     long_description=long_description,
-    long_description_content_type="text/x-rst",
-    url="https://github.com/lab-ml/helpers",
+    long_description_content_type="text/markdown",
+    url="https://github.com/labml.ai/labml",
     project_urls={
-        'Documentation': 'https://lab-ml.com/'
+        'Documentation': 'https://docs.labml.ai/'
     },
     packages=setuptools.find_packages(exclude=('test',
                                                'test.*')),

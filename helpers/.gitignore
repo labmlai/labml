@@ -1,9 +1,0 @@
-.ipynb_checkpoints
-__pycache__
-.DS_Store
-.*.swp
-*.egg-info/
-dist/
-build/
-.idea/*
-!.idea/dictionaries
