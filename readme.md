@@ -84,12 +84,16 @@ labml monitor
 
 ### 📚 Documentation
 
-* [API to create experiments](https://docs.labml.ai/guide/experiment.html)
-* [Track training metrics](https://docs.labml.ai/guide/tracker.html)
-* [Monitored training loop and other iterators](https://docs.labml.ai/guide/monit.html)
-* [API for custom visualizations](https://docs.labml.ai/guide/analytics.html)
-* [Configurations management API](https://docs.labml.ai/guide/configs.html)
-* [Logger for stylized logging](https://docs.labml.ai/guide/logger.html)
+* [Python API Reference](https://docs.labml.ai)
+
+##### Guides
+
+* [API to create experiments](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/experiment.ipynb)
+* [Track training metrics](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/tracker.ipynb)
+* [Monitored training loop and other iterators](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/monit.ipynb)
+* [API for custom visualizations](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/analytics.ipynb)
+* [Configurations management API](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/configs.ipynb)
+* [Logger for stylized logging](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/logger.ipynb)
 * [Monitoring hardware usage](https://github.com/lab-ml/labml/blob/master/guides/hardware_monitoring.md)
 
 ### 🖥 Screenshots
