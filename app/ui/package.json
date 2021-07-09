@@ -4,7 +4,7 @@
   "private": true,
   "devDependencies": {
     "@types/d3": "^5.7.2",
-    "@types/node": "latest",
+    "@types/node": "^15.6.0",
     "browserify": "^17.0.0",
     "sass": "latest",
     "tsify": "^5.0.2",
@@ -19,10 +19,10 @@
   "scripts": {
     "build": "$npm_execpath run build:ui && $npm_execpath run build:sass",
     "watch": "$npm_execpath run watch:ui & $npm_execpath run watch:sass",
-    "build:ui": "browserify src/main.ts -t uglifyify -d -p [ tsify -p tsconfig.json] | uglifyjs -cm -o static/js/bundle.min.js --source-map \"content=inline,url=bundle.min.js.map,includeSources\"",
-    "watch:ui": "watchify src/main.ts -t uglifyify -d -p [ tsify -p tsconfig.json] -v -o static/js/bundle.min.js",
-    "build:sass": "sass src/style.scss:static/css/style.css",
-    "watch:sass": "sass --watch src/style.scss:static/css/style.css",
+    "build:ui": "browserify src/main.ts -t uglifyify -d -p [ tsify -p tsconfig.json] | uglifyjs -cm -o ../static/js/bundle.min.js --source-map \"content=inline,url=bundle.min.js.map,includeSources\"",
+    "watch:ui": "watchify src/main.ts -t uglifyify -d -p [ tsify -p tsconfig.json] -v -o ../static/js/bundle.min.js",
+    "build:sass": "sass src/style.scss:../static/css/style.css",
+    "watch:sass": "sass --watch src/style.scss:../static/css/style.css",
     "clean": "rm -rf static/"
   },
   "browserslist": {
