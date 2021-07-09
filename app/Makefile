@@ -29,7 +29,7 @@ compile: ## Compile JS
 	cp ui/src/site.webmanifest static/site.webmanifest
 	cp ui/images/favicon.ico static/favicon.ico
 	cp -r ui/images static/
-	npm run build
+	cd ui && npm run build
 
 compile-prod: compile
 	$(eval JS_CHECKSUM := $(shell md5sum static/js/bundle.min.js | cut -f 1 -d " "))
@@ -45,7 +45,7 @@ compile-prod: compile
 
 
 watch-ui: compile ## Compile and Watch JS & CSS
-	npm run watch
+	cd ui && npm run watch
 
 build-ui: compile ## build production ui
 
