@@ -1,0 +1,8 @@
+matplotlib>=3.0.3
+numpy>=1.16.1
+labml>=0.4.101
+torch>=1.4.0
+torchvision>=0.5.0
+tensorflow>=2.1.0
+pandas>=0.24.2
+labml_helpers>=0.4.81
