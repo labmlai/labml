@@ -1,0 +1,8 @@
+.remote
+.git
+__pycache__
+.ipynb_checkpoints
+logs
+.DS_Store
+.*.swp
+*.egg-info/

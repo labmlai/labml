@@ -13,11 +13,11 @@ temp.ipynb
 dist/
 build/
 
-*/.idea/*
-*/!.idea/dictionaries
+**/.idea/*
+**/!.idea/dictionaries
 
 .labml.yaml
 
-*/.remote/scripts
-*/.remote/private_key
-*/.remote/configs.yaml
+**/.remote/scripts
+**/.remote/private_key
+**/.remote/configs.yaml
