@@ -1,0 +1,7 @@
+psutil
+numpy>=1.16.1
+labml>=0.4.62
+torch>=1.4.0
+torchvision>=0.5.0
+labml_helpers>=0.4.63
+tensorboard
