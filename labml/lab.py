@@ -27,7 +27,7 @@ def get_experiments_path() -> Path:
 
 def configure(configurations: Dict[str, any]):
     r"""
-    Set LabML configurations through Python.
+    Set top level configurations through Python.
     You can set the configurations set through ``.labml.yaml``.
 
     `See setup guide for details. <../guide/installation_setup.html>`_
