@@ -90,11 +90,10 @@ labml monitor
 
 * [API to create experiments](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/experiment.ipynb)
 * [Track training metrics](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/tracker.ipynb)
-* [Monitored training loop and other iterators](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/monit.ipynb)
+* [Monitored training loop and other iterators](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/monitor.ipynb)
 * [API for custom visualizations](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/analytics.ipynb)
 * [Configurations management API](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/configs.ipynb)
 * [Logger for stylized logging](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/logger.ipynb)
-* [Monitoring hardware usage](https://github.com/lab-ml/labml/blob/master/guides/hardware_monitoring.md)
 
 ### 🖥 Screenshots
 
