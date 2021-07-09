@@ -2,7 +2,7 @@ name: Deploy UI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ ]
   workflow_dispatch:
 
 jobs:
