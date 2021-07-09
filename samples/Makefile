@@ -1,5 +1,5 @@
 docs: ## Render annotated HTML
-	pylit --remove_empty_sections --title_md -t ../../pylit/templates/samples -d html -w labml_samples
+	pylit --remove_empty_sections --title_md -t ../../pylit/templates/samples -d html -w .
 
 pages: ## Copy to lab-ml site
 	@cd ../pages; git pull

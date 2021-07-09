@@ -4,7 +4,7 @@ import torch
 from labml_helpers.module import Module
 from torch import nn
 
-from labml_samples.pytorch.stocks import CandleIdx
+from stocks import CandleIdx
 
 
 class FrontPaddedConv1d(Module):

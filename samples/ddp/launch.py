@@ -1,5 +1,5 @@
 """
-python labml_samples/pytorch/ddp/launch.py --nproc_per_node=3 labml_samples/pytorch/ddp/mnist.py
+python launch.py --nproc_per_node=3 mnist.py
 """
 import os
 import subprocess

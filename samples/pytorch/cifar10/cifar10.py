@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from labml import experiment
 from labml.configs import option
 from labml_helpers.datasets.cifar10 import CIFAR10Configs
-from labml_samples.pytorch.mnist.e_labml_helpers import Configs as MNISTExperimentConfigs
+from pytorch.mnist.e_labml_helpers import Configs as MNISTExperimentConfigs
 
 
 class Net(nn.Module):

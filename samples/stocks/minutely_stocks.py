@@ -7,8 +7,8 @@ from labml import experiment, tracker, monit
 from labml.configs import option, calculate
 from labml_helpers.metrics.collector import Collector
 from labml_helpers.train_valid import SimpleTrainValidConfigs, BatchIndex
-from labml_samples.pytorch.stocks.dataset import MinutelyData, MinutelyDataset
-from labml_samples.pytorch.stocks.model import CnnModel
+from stocks.dataset import MinutelyData, MinutelyDataset
+from stocks.model import CnnModel
 
 
 class Configs(SimpleTrainValidConfigs):

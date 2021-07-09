@@ -6,7 +6,7 @@ from torch.nn.parallel import DistributedDataParallel
 from labml import experiment, monit
 from labml.configs import option
 from labml.logger import inspect
-from labml_samples.pytorch.mnist.e_labml_helpers import Configs, Net
+from pytorch.mnist.e_labml_helpers import Configs, Net
 
 
 @option(Configs.model)

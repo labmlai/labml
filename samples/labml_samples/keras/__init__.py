@@ -1,3 +1,0 @@
-"""
-# LabML Keras Samples
-"""

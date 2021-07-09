@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from labml import monit, lab, logger
 
-from labml_samples.pytorch.stocks import CandleIdx
+from stocks import CandleIdx
 
 
 def parse(df: pd.DataFrame):

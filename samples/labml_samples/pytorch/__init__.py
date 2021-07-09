@@ -1,3 +1,0 @@
-"""
-# LabML PyTorch Samples
-"""
