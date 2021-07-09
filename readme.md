@@ -1,7 +1,10 @@
 <div align="center" style="margin-bottom: 100px;">
-<img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="150" alt="">
 
-<h2>Organize machine learning experiments and monitor training progress and hardware usage from mobile.</h2>
+<!--
+<img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="150" alt="">
+-->
+
+<h1>Monitor deep learning model training and hardware usage from mobile.</h1>
 
 [![PyPI - Python Version](https://badge.fury.io/py/labml.svg)](https://badge.fury.io/py/labml)
 [![PyPI Status](https://pepy.tech/badge/labml)](https://pepy.tech/project/labml)
