@@ -97,12 +97,6 @@ labml monitor
 
 ### 🖥 Screenshots
 
-#### Dashboard
-
-<div align="center">
-    <img src="https://raw.githubusercontent.com/lab-ml/dashboard/master/images/screenshots/dashboard_table.png" alt="Dashboard Screenshot"/>
-</div>
-
 #### Formatted training loop output
 
 <div align="center">
