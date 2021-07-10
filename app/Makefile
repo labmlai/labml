@@ -63,8 +63,8 @@ package: build-ui ## Build PIPy Package
 check-package:  ## List contents of PIPy Package
 	cd server && tar -tvf dist/*.tar.gz
 
-upload-package: build  ## Upload PIPy Package
-	twine upload dist/*
+upload-package: package  ## Upload PIPy Package
+	twine upload server/dist/*
 
 install: compile  ## Install from repo
 	cd server && pip install -e .
