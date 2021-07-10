@@ -27,6 +27,7 @@ class Computer:
         self.runs_cache = self.config_folder / 'runs_cache'
         self.tensorboard_symlink_dir = self.config_folder / 'tensorboard'
         self.configs_file = self.config_folder / 'configs.yaml'
+        self.app_folder = self.config_folder / 'app'
 
         self.__load_configs()
 
@@ -39,6 +40,9 @@ class Computer:
 
         if not self.projects_folder.exists():
             self.projects_folder.mkdir()
+
+        if not self.app_folder.exists():
+            self.app_folder.mkdir()
 
         if not self.runs_cache.exists():
             self.runs_cache.mkdir()
