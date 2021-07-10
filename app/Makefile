@@ -49,15 +49,21 @@ watch-ui: compile ## Compile and Watch JS & CSS
 
 build-ui: compile ## build production ui
 
+clean: ## Cleanup builds
+	rm -rf server/labml_app/static
+	rm -rf server/build
+	rm -rf server/dist
+
 package: build-ui ## Build PIPy Package
 	rm -rf server/labml_app/static
 	cp -r static/ server/labml_app/static
+	find . -depth -name __pycache__ -type d -exec rm -rf {} +
 	cd server && python setup.py sdist bdist_wheel
 
 check-package:  ## List contents of PIPy Package
 	cd server && tar -tvf dist/*.tar.gz
 
-upload: build  ## Upload PIPy Package
+upload-package: build  ## Upload PIPy Package
 	twine upload dist/*
 
 install: compile  ## Install from repo
