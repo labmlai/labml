@@ -15,8 +15,7 @@ setuptools.setup(
     project_urls={
         'Documentation': 'https://lab-ml.com/'
     },
-    install_requires=['labml>=0.4.87',
-                      'gunicorn',
+    install_requires=['gunicorn',
                       'numpy',
                       'labml-db',
                       'fastapi',
