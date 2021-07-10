@@ -47,6 +47,9 @@ Indexes = [project.ProjectIndex,
 def init_db():
     data_path = computer_singleton().app_folder / 'data'
 
+    if not data_path.exists():
+        data_path.mkdir()
+
     if settings.IS_LOCAL_SETUP:
         Model.set_db_drivers(
             [FileDbDriver(PickleSerializer(), m, Path(f'{data_path}/{m.__name__}')) for s, m in Models])
