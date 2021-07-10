@@ -2,7 +2,6 @@ import math
 from typing import Dict, List, Optional, Union
 
 import numpy as np
-import labml_fast_merge
 
 MAX_BUFFER_LENGTH = 1024
 SMOOTH_POINTS = 50
@@ -32,6 +31,26 @@ class Series:
             self.max_buffer_length = max_buffer_length
         else:
             self.max_buffer_length = MAX_BUFFER_LENGTH
+
+        try:
+            import labml_fast_merge
+            def _merge_new(self,
+                           values: np.ndarray,
+                           last_step: np.ndarray,
+                           steps: np.ndarray,
+                           prev_last_step: int = 0,
+                           i: int = 0):  # from_step
+
+                return labml_fast_merge.merge(values,
+                                              last_step,
+                                              steps,
+                                              float(self.step_gap),
+                                              float(prev_last_step),
+                                              i)
+
+            self._merge = _merge_new
+        except ImportError:
+            self._merge = self._merge_old
 
     @property
     def last_value(self) -> float:
@@ -110,12 +129,12 @@ class Series:
                 values[i] = values[i - 1]
 
     def _merge_old(self,
-               values: np.ndarray,
-               last_step: np.ndarray,
-               steps: np.ndarray,
-               prev_last_step: int = 0,
-               i: int = 0  # from_step
-               ):
+                   values: np.ndarray,
+                   last_step: np.ndarray,
+                   steps: np.ndarray,
+                   prev_last_step: int = 0,
+                   i: int = 0  # from_step
+                   ):
         j = i + 1
         while j < len(values):
             if last_step[j] - prev_last_step < self.step_gap or last_step[j] - last_step[j - 1] < 1e-3:  # merge
@@ -134,15 +153,6 @@ class Series:
                 j += 1
 
         return i + 1  # size after merging
-
-    def _merge(self,
-               values: np.ndarray,
-               last_step: np.ndarray,
-               steps: np.ndarray,
-               prev_last_step: int = 0,
-               i: int = 0  # from_step
-               ):
-        return labml_fast_merge.merge(values, last_step, steps, float(self.step_gap), float(prev_last_step), i)
 
     def merge(self, prev_size: int = 0):
         from_step = max(0, prev_size - 1)

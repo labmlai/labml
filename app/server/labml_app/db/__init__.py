@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from labml_db import Model, Index
@@ -43,8 +44,18 @@ Indexes = [project.ProjectIndex,
            computer.ComputerIndex] + [m for s, m, p in analyses.AnalysisManager.get_db_indexes()]
 
 
+def get_data_path():
+    package_path = Path(os.path.dirname(os.path.abspath(__file__))).parent
+
+    data_path = package_path / 'data'
+    if not data_path.exists():
+        raise RuntimeError(f'Data folder not found. Package path: {str(package_path)}')
+
+    return data_path
+
+
 def init_db():
-    data_path = settings.DATA_PATH
+    data_path = get_data_path()
 
     if settings.IS_LOCAL_SETUP:
         Model.set_db_drivers(
