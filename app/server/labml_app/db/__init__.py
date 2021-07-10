@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from labml_db import Model, Index
@@ -9,6 +8,7 @@ from labml_db.index_driver.file import FileIndexDbDriver
 from labml_db.serializer.json import JsonSerializer
 from labml_db.serializer.yaml import YamlSerializer
 from labml_db.serializer.pickle import PickleSerializer
+from labml.internal.computer.configs import computer_singleton
 
 from .. import settings
 from . import project
@@ -44,18 +44,8 @@ Indexes = [project.ProjectIndex,
            computer.ComputerIndex] + [m for s, m, p in analyses.AnalysisManager.get_db_indexes()]
 
 
-def get_data_path():
-    package_path = Path(os.path.dirname(os.path.abspath(__file__))).parent
-
-    data_path = package_path / 'data'
-    if not data_path.exists():
-        raise RuntimeError(f'Data folder not found. Package path: {str(package_path)}')
-
-    return data_path
-
-
 def init_db():
-    data_path = get_data_path()
+    data_path = computer_singleton().app_folder / 'data'
 
     if settings.IS_LOCAL_SETUP:
         Model.set_db_drivers(
