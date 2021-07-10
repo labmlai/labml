@@ -109,16 +109,7 @@ labml monitor
     <img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" width="500" alt="Analytics"/>
 </div>
 
-## Links
-
-[💬 Slack workspace for discussions](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
-
-[📗 Documentation](https://docs.labml.ai)
-
-[👨‍🏫 Samples](https://github.com/lab-ml/samples)
-
-
-## Citing LabML
+## Citing
 
 If you use LabML for academic research, please cite the library using the following BibTeX entry.
 
