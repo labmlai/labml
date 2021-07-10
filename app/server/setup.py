@@ -3,7 +3,6 @@ import setuptools
 with open("../readme.md", "r") as f:
     long_description = f.read()
 
-
 setuptools.setup(
     name='labml_app',
     version='0.0.0',
@@ -16,7 +15,14 @@ setuptools.setup(
     project_urls={
         'Documentation': 'https://lab-ml.com/'
     },
-    install_requires=['labml>=0.4.87'],
+    install_requires=['labml>=0.4.87',
+                      'gunicorn',
+                      'numpy',
+                      'labml-db',
+                      'fastapi',
+                      'uvicorn',
+                      'aiofiles',
+                      ],
     packages=['labml_app'],
     include_package_data=True,
     classifiers=[

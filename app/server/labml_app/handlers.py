@@ -2,7 +2,6 @@ import sys
 import asyncio
 from typing import Callable, Dict, Any
 
-import requests
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
@@ -19,6 +18,11 @@ from .db import blocked_uuids
 from .db import job
 from . import utils
 from . import analyses
+
+try:
+    import requests
+except ImportError:
+    pass
 
 EndPointRes = Dict[str, Any]
 
