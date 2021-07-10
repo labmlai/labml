@@ -57,6 +57,16 @@ package: build-ui ## Build PIPy Package
 check-package:  ## List contents of PIPy Package
 	cd server && tar -tvf dist/*.tar.gz
 
+upload: build  ## Upload PIPy Package
+	twine upload dist/*
+
+install: compile  ## Install from repo
+	cd server && pip install -e .
+
+uninstall: ## Uninstall
+	pip uninstall labml_app labml
+
+
 help: ## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 

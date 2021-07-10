@@ -34,21 +34,9 @@ class Series:
 
         try:
             import labml_fast_merge
-            def _merge_new(self,
-                           values: np.ndarray,
-                           last_step: np.ndarray,
-                           steps: np.ndarray,
-                           prev_last_step: int = 0,
-                           i: int = 0):  # from_step
+            self.labml_fast_merge = labml_fast_merge
 
-                return labml_fast_merge.merge(values,
-                                              last_step,
-                                              steps,
-                                              float(self.step_gap),
-                                              float(prev_last_step),
-                                              i)
-
-            self._merge = _merge_new
+            self._merge = self._merge_new
         except ImportError:
             self._merge = self._merge_old
 
@@ -127,6 +115,15 @@ class Series:
         for i in range(1, len(values)):
             if infin[i]:
                 values[i] = values[i - 1]
+
+    def _merge_new(self,
+                   values: np.ndarray,
+                   last_step: np.ndarray,
+                   steps: np.ndarray,
+                   prev_last_step: int = 0,
+                   i: int = 0):  # from_step
+
+        return self.labml_fast_merge.merge(values, last_step, steps, float(self.step_gap), float(prev_last_step), i)
 
     def _merge_old(self,
                    values: np.ndarray,
