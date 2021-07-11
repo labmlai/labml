@@ -61,15 +61,18 @@ def create_app():
     db.init_db()
 
     def run_on_start():
-        repo = git.Repo(search_parent_directories=True)
-        sha = repo.head.object.hexsha
+        logger.info('initializing labml_app')
+
+        try:
+            repo = git.Repo(search_parent_directories=True)
+            sha = repo.head.object.hexsha
+            logger.error(f'THIS IS NOT AN ERROR: Server Deployed SHA : {sha}')
+        except git.InvalidGitRepositoryError:
+            pass
 
         if settings.IS_MIX_PANEL:
             mp_tread = mix_panel.MixPanelThread()
             mp_tread.start()
-
-        logger.info('initializing labml_app')
-        logger.error(f'THIS IS NOT AN ERROR: Server Deployed SHA : {sha}')
 
     run_on_start()
 
