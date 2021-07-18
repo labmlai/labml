@@ -80,6 +80,7 @@ class TensorBoardStarter:
                           env=os.environ.copy(),
                           stderr=PIPE)
 
+        time.sleep(5)
         output = ''.join(get_output(self.pipe.stderr))
         if output.find('Press CTRL+C to quit') != -1:
             logger.log([('Tensorboard: ', Text.meta), (output, Text.subtle)])
