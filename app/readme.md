@@ -1,7 +1,5 @@
 <div align="center" style="margin-bottom: 100px;">
     
-<img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="200px" alt="">
-
 <h2>Mobile first web app to monitor PyTorch & TensorFlow model training</h2>
 <h3>Relax while your models are training instead of sitting in front of a computer</h3>
 
