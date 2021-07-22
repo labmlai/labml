@@ -54,10 +54,11 @@ watch-ui: compile ## Compile and Watch JS & CSS
 
 build-ui: compile ## build production ui
 
-clean: ## Cleanup builds
+clean: clean-pycache ## Cleanup builds
 	rm -rf server/labml_app/static
 	rm -rf server/build
 	rm -rf server/dist
+	rm -rf static
 
 package: build-ui clean-pycache ## Build PIPy Package
 	rm -rf server/labml_app/static
