@@ -37,6 +37,24 @@ pip install labml
 2. Start pushing updates to the app  [with two lines of code](http://lab-ml.com/guide/tracker.html). Refer to the examples below.
 3. Click on the link printed in the terminal to open the app. [![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://app.labml.ai/run/9e7f39e047e811ebbaff2b26e3148b3d)
 
+
+### How to run app locally
+
+```sh
+pip install labml-app
+
+```
+
+```python
+from labml import tracker, experiment
+
+with experiment.record(name='sample', token='http://localhost:5000/api/v1/track?'):
+    for i in range(50):
+        loss, accuracy = train()
+        tracker.save(i, {'loss': loss, 'accuracy': accuracy})
+```
+
+
 ### Examples
 
 1. Pytorch [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing) [![Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone)
