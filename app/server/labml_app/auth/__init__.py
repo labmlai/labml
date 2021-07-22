@@ -55,7 +55,6 @@ def login_required(func) -> functools.wraps:
     async def wrapper(request: Request, *args, **kwargs):
         token_id = request.headers.get('Authorization', '')
         at = app_token.get_or_create(token_id)
-
         if not settings.IS_LOGIN_REQUIRED:
             at = _login_not_required()
 

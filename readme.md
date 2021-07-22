@@ -12,7 +12,7 @@
 [![Docs](https://img.shields.io/badge/labml-docs-blue)](https://docs.labml.ai/)
 [![Twitter](https://img.shields.io/twitter/follow/labmlai?style=social)](https://twitter.com/labmlai?ref_src=twsrc%5Etfw)
 
-<img src="https://github.com/lab-ml/lab/blob/master/images/cover.png" alt=""/>
+<img src="https://github.com/lab-ml/lab/blob/master/images/cover-dark.png" alt=""/>
 </div>
 
 ### 🔥 Features
@@ -97,12 +97,6 @@ labml monitor
 
 ### 🖥 Screenshots
 
-#### Dashboard
-
-<div align="center">
-    <img src="https://raw.githubusercontent.com/lab-ml/dashboard/master/images/screenshots/dashboard_table.png" alt="Dashboard Screenshot"/>
-</div>
-
 #### Formatted training loop output
 
 <div align="center">
@@ -115,16 +109,7 @@ labml monitor
     <img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" width="500" alt="Analytics"/>
 </div>
 
-## Links
-
-[💬 Slack workspace for discussions](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
-
-[📗 Documentation](https://docs.labml.ai)
-
-[👨‍🏫 Samples](https://github.com/lab-ml/samples)
-
-
-## Citing LabML
+## Citing
 
 If you use LabML for academic research, please cite the library using the following BibTeX entry.
 

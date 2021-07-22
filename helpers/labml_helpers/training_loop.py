@@ -144,6 +144,7 @@ class TrainingLoop:
         if (self.__is_save_models and
                 global_step - self.__last_save_step >= self.__save_models_interval):
             experiment.save_checkpoint()
+            self.__last_save_step = global_step
 
         return global_step
 
