@@ -5,13 +5,12 @@ import time
 import webbrowser
 from typing import List
 
-from typing.io import IO
-
 from labml import logger, experiment
 from labml.experiment import generate_uuid
 from labml.internal.api import ApiCaller, SimpleApiDataSource
 from labml.internal.api.logs import ApiLogs
 from labml.logger import Text
+from typing.io import IO
 
 
 def _open_dashboard():
@@ -24,6 +23,18 @@ def _open_dashboard():
         return
 
     labml_dashboard.start_server()
+
+
+def _start_app_server():
+    try:
+        import labml_app
+    except (ImportError, ModuleNotFoundError):
+        logger.log("Cannot import ", ('labml_app', Text.highlight), '.')
+        logger.log('Install with ',
+                   ('pip install labml-app', Text.value))
+        return
+
+    labml_app.start_server()
 
 
 class ExecutorThread(threading.Thread):
@@ -153,7 +164,15 @@ def _service_run():
 
 def main():
     parser = argparse.ArgumentParser(description='labml.ai CLI')
-    parser.add_argument('command', choices=['dashboard', 'capture', 'launch', 'monitor', 'service', 'service-run'])
+    parser.add_argument('command', choices=[
+        'app-server',
+        'capture',
+        'launch',
+        'monitor',
+        'service',
+        'service-run',
+        'dashboard',
+    ])
     parser.add_argument('args', nargs=argparse.REMAINDER)
 
     args = parser.parse_args()
@@ -163,6 +182,8 @@ def main():
                     (' is deprecated. Please use labml.ai app instead\n', Text.danger),
                     ('https://github.com/lab-ml/app', Text.value)])
         _open_dashboard()
+    elif args.command == 'app-server':
+        _start_app_server()
     elif args.command == 'capture':
         _capture(args.args)
     elif args.command == 'launch':
