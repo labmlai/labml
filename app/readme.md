@@ -10,7 +10,7 @@
 [![Docs](https://img.shields.io/badge/labml-docs-blue)](http://lab-ml.com/)
 [![Twitter](https://img.shields.io/twitter/url.svg?label=Follow%20%40LabML&style=social&url=https%3A%2F%2Ftwitter.com%2FLabML)](https://twitter.com/labmlai?ref_src=twsrc%5Etfw)
 
-<img src="https://github.com/lab-ml/app/blob/master/images/cover.png" alt=""/>
+<img src="https://github.com/labmlai/labml/blob/master/images/cover-dark.png" alt=""/>
 </div>
 
 This is an open-source library to push updates of your ML/DL model training to mobile. [Here's a sample experiment](https://app.labml.ai/run/39b03a1e454011ebbaff2b26e3148b3d)
@@ -36,6 +36,24 @@ pip install labml
 
 2. Start pushing updates to the app  [with two lines of code](http://lab-ml.com/guide/tracker.html). Refer to the examples below.
 3. Click on the link printed in the terminal to open the app. [![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://app.labml.ai/run/9e7f39e047e811ebbaff2b26e3148b3d)
+
+
+### How to run app locally
+
+```sh
+pip install labml-app
+
+```
+
+```python
+from labml import tracker, experiment
+
+with experiment.record(name='sample', token='http://localhost:5000/api/v1/track?'):
+    for i in range(50):
+        loss, accuracy = train()
+        tracker.save(i, {'loss': loss, 'accuracy': accuracy})
+```
+
 
 ### Examples
 
@@ -73,18 +91,4 @@ with experiment.record(name='sample', exp_conf=conf):
     for i in range(50):
         model.fit(x_train, y_train, epochs=conf['epochs'], validation_data=(x_test, y_test),
                   callbacks=[LabMLKerasCallback()], verbose=None)
-```
-
-
-### Citing LabML
-
-If you use LabML for academic research, please cite the library using the following BibTeX entry.
-
-```bibtex
-@misc{labml,
- author = {Varuna Jayasiri, Nipun Wijerathne},
- title = {LabML: A library to organize machine learning experiments},
- year = {2020},
- url = {https://lab-ml.com/},
-}
 ```

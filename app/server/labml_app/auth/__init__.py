@@ -14,7 +14,12 @@ from .. import settings
 def get_app_token(request: Request) -> 'app_token.AppToken':
     token_id = request.headers.get('Authorization', '')
 
-    return app_token.get_or_create(token_id)
+    if not settings.IS_LOGIN_REQUIRED:
+        at = _login_not_required()
+    else:
+        at = app_token.get_or_create(token_id)
+
+    return at
 
 
 def check_labml_token_permission(func) -> functools.wraps:
@@ -33,12 +38,27 @@ def check_labml_token_permission(func) -> functools.wraps:
     return wrapper
 
 
+def _login_not_required():
+    at = app_token.get_or_create('local')
+    if not at.user:
+        u = user.get_or_create_user(user.AuthOInfo(
+            **{k: '' for k in ('name', 'email', 'sub', 'email_verified', 'picture')}))
+
+        at.user = u.key
+        at.save()
+
+    return at
+
+
 def login_required(func) -> functools.wraps:
     @functools.wraps(func)
     async def wrapper(request: Request, *args, **kwargs):
         token_id = request.headers.get('Authorization', '')
         at = app_token.get_or_create(token_id)
-        if at.is_auth or not settings.IS_LOGIN_REQUIRED:
+        if not settings.IS_LOGIN_REQUIRED:
+            at = _login_not_required()
+
+        if at.is_auth:
             if inspect.iscoroutinefunction(func):
                 return await func(request, *args, **kwargs)
             else:
@@ -60,8 +80,8 @@ def get_auth_user(request: Request) -> Optional['user.User']:
         u = s.user.load()
 
     if not settings.IS_LOGIN_REQUIRED:
-        u = user.get_or_create_user(
-            user.AuthOInfo(**{k: '' for k in ('name', 'email', 'sub', 'email_verified', 'picture')}))
+        at = _login_not_required()
+        u = at.user.load()
 
     return u
 
@@ -69,7 +89,10 @@ def get_auth_user(request: Request) -> Optional['user.User']:
 def get_is_user_logged(request: Request) -> bool:
     s = get_app_token(request)
 
-    if s.is_auth or not settings.IS_LOGIN_REQUIRED:
+    if not settings.IS_LOGIN_REQUIRED:
+        s = _login_not_required()
+
+    if s.is_auth:
         return True
 
     return False

@@ -9,6 +9,7 @@ from labml_db.index_driver.file import FileIndexDbDriver
 from labml_db.serializer.json import JsonSerializer
 from labml_db.serializer.yaml import YamlSerializer
 from labml_db.serializer.pickle import PickleSerializer
+from labml.internal.computer.configs import computer_singleton
 
 from .. import settings
 from . import project
@@ -55,7 +56,10 @@ def get_data_path():
 
 
 def init_db():
-    data_path = get_data_path()
+    data_path = computer_singleton().app_folder / 'data'
+
+    if not data_path.exists():
+        data_path.mkdir()
 
     if settings.IS_LOCAL_SETUP:
         Model.set_db_drivers(

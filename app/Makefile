@@ -31,6 +31,11 @@ compile: ## Compile JS
 	cp -r ui/images static/
 	cd ui && npm run build
 
+clean-pycache:
+	find . -depth -name "__pycache__" -type d -exec rm -rf {} +
+	find . -depth -name ".DS_Store" -type f -exec rm -rf {} +
+	find . -depth -name ".ipynb_checkpoints" -type d -exec rm -rf {} +
+
 compile-prod: compile
 	$(eval JS_CHECKSUM := $(shell md5sum static/js/bundle.min.js | cut -f 1 -d " "))
 	$(eval CSS_CHECKSUM := $(shell md5sum static/css/style.css | cut -f 1 -d " "))
@@ -49,13 +54,28 @@ watch-ui: compile ## Compile and Watch JS & CSS
 
 build-ui: compile ## build production ui
 
-package: build-ui ## Build PIPy Package
+clean: ## Cleanup builds
+	rm -rf server/labml_app/static
+	rm -rf server/build
+	rm -rf server/dist
+
+package: build-ui clean-pycache ## Build PIPy Package
 	rm -rf server/labml_app/static
 	cp -r static/ server/labml_app/static
 	cd server && python setup.py sdist bdist_wheel
 
 check-package:  ## List contents of PIPy Package
 	cd server && tar -tvf dist/*.tar.gz
+
+upload-package: package  ## Upload PIPy Package
+	twine upload server/dist/*
+
+install: compile  ## Install from repo
+	cd server && pip install -e .
+
+uninstall: ## Uninstall
+	pip uninstall labml_app labml
+
 
 help: ## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
