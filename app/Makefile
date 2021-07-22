@@ -31,6 +31,11 @@ compile: ## Compile JS
 	cp -r ui/images static/
 	cd ui && npm run build
 
+clean-pycache:
+	find . -depth -name "__pycache__" -type d -exec rm -rf {} +
+	find . -depth -name ".DS_Store" -type f -exec rm -rf {} +
+	find . -depth -name ".ipynb_checkpoints" -type d -exec rm -rf {} +
+
 compile-prod: compile
 	$(eval JS_CHECKSUM := $(shell md5sum static/js/bundle.min.js | cut -f 1 -d " "))
 	$(eval CSS_CHECKSUM := $(shell md5sum static/css/style.css | cut -f 1 -d " "))
@@ -54,10 +59,9 @@ clean: ## Cleanup builds
 	rm -rf server/build
 	rm -rf server/dist
 
-package: build-ui ## Build PIPy Package
+package: build-ui clean-pycache ## Build PIPy Package
 	rm -rf server/labml_app/static
 	cp -r static/ server/labml_app/static
-	find . -depth -name __pycache__ -type d -exec rm -rf {} +
 	cd server && python setup.py sdist bdist_wheel
 
 check-package:  ## List contents of PIPy Package
