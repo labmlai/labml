@@ -115,7 +115,7 @@ labml monitor
 #### Custom visualizations based on Tensorboard logs
 
 <div align="center">
-    <img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" width="500" alt="Analytics"/>
+    <img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" alt="Analytics"/>
 </div>
 
 ## Citing
