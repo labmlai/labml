@@ -324,6 +324,7 @@
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__is_save_models</span> <span class="ow">and</span>
                 <span class="n">global_step</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__last_save_step</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__save_models_interval</span><span class="p">):</span>
             <span class="n">experiment</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__last_save_step</span> <span class="o">=</span> <span class="n">global_step</span>
 
         <span class="k">return</span> <span class="n">global_step</span>
 

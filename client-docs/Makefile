@@ -21,6 +21,7 @@ pages: rebuild ## Create pages
 	@mkdir -p ../docs
 	@echo "This file makes sure that Github Pages doesn't process" > ../docs/.nojekyll
 	@cp -r build/html/* ../docs
+	@printf "docs.labml.ai" > ../docs/CNAME
 
 help: ## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
