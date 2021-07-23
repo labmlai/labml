@@ -8,7 +8,7 @@
 [![PyPI Status](https://pepy.tech/badge/labml-app)](https://pepy.tech/project/labml-app)
 [![Slack](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
 [![Docs](https://img.shields.io/badge/labml-docs-blue)](http://docs.labml.ai/)
-[![Twitter](https://img.shields.io/twitter/url.svg?label=Follow%20%40LabML&style=social&url=https%3A%2F%2Ftwitter.com%2FLabML)](https://twitter.com/labmlai?ref_src=twsrc%5Etfw)
+[![Twitter](https://img.shields.io/twitter/follow/labmlai?style=social)](https://twitter.com/labmlai?ref_src=twsrc%5Etfw)
 
 <img src="https://github.com/labmlai/labml/blob/master/images/cover-dark.png" alt=""/>
 </div>
@@ -26,7 +26,7 @@ We also have a small [AWS instance running](https://app.labml.ai). and you are w
 * **Track only what you need:** You can pick and save the indicators that you want to track in the detail view. This would give you a customised summary view where you can focus on specific model indicators.
 * **Standard ouptut:** Check the terminal output from your mobile. No need to SSH.
 
-### [How to track experiments](https://github.com/labmlai/labml)
+### [📚 How to track experiments?](https://github.com/labmlai/labml)
 
 ### How to run app locally?
 
