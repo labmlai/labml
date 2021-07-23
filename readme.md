@@ -42,6 +42,8 @@ pip install labml
 
 ### PyTorch example
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing) [![Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone)
+
 ```python
 from labml import tracker, experiment
 
@@ -53,17 +55,24 @@ with experiment.record(name='sample', exp_conf=conf):
 
 ### PyTorch Lightning example
 
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15aSPDwbKihDu_c3aFHNPGG5POjVlM2KO?usp=sharing) [![Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/hnipun/pytorch-lightning)
+
 ```python
 from labml import experiment
-from labml.utils.lightning import LabMLLightningLogger
+from labml.utils.lightening import LabMLLighteningLogger
 
-trainer = pl.Trainer(gpus=1, max_epochs=5, progress_bar_refresh_rate=20, logger=LabMLLightningLogger())
+trainer = pl.Trainer(gpus=1, max_epochs=5, progress_bar_refresh_rate=20, logger=LabMLLighteningLogger())
 
 with experiment.record(name='sample', exp_conf=conf, disable_screen=True):
-    trainer.fit(model, data_loader)
+        trainer.fit(model, data_loader)
+
 ```
 
+
 ### TensorFlow 2.X Keras example
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1lx1dUG3MGaIDnq47HVFlzJ2lytjSa9Zy?usp=sharing) [![Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/hnipun/monitor-keras-model-training-on-your-mobile-phone)
 
 ```python
 from labml import experiment
