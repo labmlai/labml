@@ -84,16 +84,10 @@ with experiment.record(name='sample', exp_conf=conf):
                   callbacks=[LabMLKerasCallback()], verbose=None)
 ```
 
-### [Monitoring hardware usage](https://github.com/lab-ml/labml/blob/master/guides/hardware_monitoring.md)
-
-```sh
-pip install labml psutil py3nvml
-labml monitor
-```
-
 ### 📚 Documentation
 
 * [Python API Reference](https://docs.labml.ai)
+* [Samples](https://github.com/labmlai/labml/tree/master/samples)
 
 ##### Guides
 
@@ -117,6 +111,54 @@ labml monitor
 <div align="center">
     <img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" alt="Analytics"/>
 </div>
+
+## Tools
+
+### [Hosting your own experiments server](https://github.com/labmlai/labml/tree/master/app)
+
+```sh
+# Install the package
+pip install labml-app
+
+# Start the server
+
+labml app-server
+```
+
+
+### [Training models on cloud](https://github.com/labmlai/labml/tree/master/remote)
+
+```bash
+# Install the package
+pip install labml_remote
+
+# Initialize the project
+labml_remote init
+
+# Add cloud server(s) to .remote/configs.yaml
+
+# Prepare the remote server(s)
+labml_remote prepare
+
+# Start a PyTorch distributed training job
+labml_remote helper-torch-launch --cmd 'train.py' --nproc-per-node 2 --env GLOO_SOCKET_IFNAME enp1s0
+```
+
+### [Monitoring hardware usage](https://github.com/lab-ml/labml/blob/master/guides/hardware_monitoring.md)
+
+```sh
+# Install packages and dependencies
+pip install labml psutil py3nvml
+
+# Start monitoring
+labml monitor
+```
+
+## Other Guides
+
+#### [Setting up a local Ubuntu workstation for deep learning](https://github.com/labmlai/labml/blob/master/guides/local-ubuntu.md)
+
+#### [Setting up a local cloud computer for deep learning](https://github.com/labmlai/labml/blob/master/guides/remote-python.md)
 
 ## Citing
 
