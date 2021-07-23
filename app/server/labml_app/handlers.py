@@ -106,16 +106,15 @@ async def _update_run(request: Request, labml_token: str, run_uuid: str, labml_v
     r = project.get_run(run_uuid, token)
     if not r and not p:
         if labml_token:
-            error = {'error': 'invalid_token',
+            errors.append({'error': 'invalid_token',
                      'message': 'Please create a valid token at https://app.labml.ai.\n'
                                 'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'}
-        else:
-            error = {'warning': 'empty_token',
+                                'add it to your experiments list.'})
+        elif not settings.IS_LOCAL_SETUP:
+            errors.append({'warning': 'empty_token',
                      'message': 'Please create a valid token at https://app.labml.ai.\n'
                                 'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'}
-        errors.append(error)
+                                'add it to your experiments list.'})
 
     r = run.get_or_create(request, run_uuid, token)
     s = r.status.load()
@@ -195,16 +194,15 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
     c = project.get_session(session_uuid, token)
     if not c and not p:
         if labml_token:
-            error = {'error': 'invalid_token',
+            errors.append({'error': 'invalid_token',
                      'message': 'Please create a valid token at https://app.labml.ai.\n'
                                 'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'}
-        else:
-            error = {'warning': 'empty_token',
+                                'add it to your experiments list.'})
+        elif not settings.IS_LOCAL_SETUP:
+            errors.append({'warning': 'empty_token',
                      'message': 'Please create a valid token at https://app.labml.ai.\n'
                                 'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'}
-        errors.append(error)
+                                'add it to your experiments list.'})
 
     c = session.get_or_create(request, session_uuid, computer_uuid, token)
     s = c.status.load()
