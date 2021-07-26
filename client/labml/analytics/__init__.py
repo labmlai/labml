@@ -72,7 +72,7 @@ def runs(*uuids: str):
 
     Arguments:
         uuids (str): UUIDs of the runs. You can
-            get this from `dashboard <https://github.com/lab-ml/lab_dashboard>`_
+            get this from `labml app https://github.com/labmlai/labml/tree/master/app>`_
 
     Example:
         >>> from labml import analytics

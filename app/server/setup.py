@@ -11,9 +11,9 @@ setuptools.setup(
     description="",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/lab-ml/app",
+    url="https://github.com/labmlai/labml",
     project_urls={
-        'Documentation': 'https://lab-ml.com/'
+        'Documentation': 'https://docs.labml.ai'
     },
     install_requires=['labml>=0.4.128',
                       'gunicorn',

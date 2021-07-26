@@ -5,7 +5,7 @@
 # Hardware monitoring
 
 <div align="center">
-<img src="https://github.com/lab-ml/lab/blob/master/guides/hardware.png" width="30%" alt=""/>
+<img src="https://github.com/labmlai/lab/blob/master/guides/hardware.png" width="30%" alt=""/>
 </div>
 
 We just added support to monitor hardware to our mobile-friendly web app
@@ -39,8 +39,8 @@ pip install labml psutil py3nvml
 ```
 
 If you have problems with your Python environment you can use
-[our guide to setting up Python with conda locally](https://github.com/lab-ml/remote/blob/master/notes/local-ubuntu.md),
-or [on a remote computer](https://github.com/lab-ml/remote/blob/master/notes/remote-python.md).
+[our guide to setting up Python with conda locally](https://github.com/labmlai/labml/blob/master/guides/local-ubuntu.md),
+or [on a remote computer](https://github.com/labmlai/labml/blob/master/guides/remote-python.md).
 
 ### Start monitoring
 
@@ -75,13 +75,10 @@ web_api: TOKEN_STRING
 
 `labml monitor` will start a process that monitors the hardware usage every few seconds
 and send the usage information to [app.labml.ai](https://app.labml.ai) by default.
-You can also host an instance of our app, by cloning the [Github repository](https://github.com/lab-ml/app).
+You can also host an instance of our app, by cloning the [Github repository](https://github.com/labmlai/labml/tree/master/app).
 
 You can set the url of the server in  `.labml/configs.yaml`.
 
 ```yaml
 web_api: https://hosted-labml-app.com
 ```
-
-*Join our [Slack](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
-to discuss, and open an [issue on Github](https://github.com/lab-ml/labml/issues) if something breaks.*

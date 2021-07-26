@@ -184,9 +184,11 @@ And if you use `pipenv`,
 pipenv run python [PYTHON_SCRIPT_FILE]
 ```
 
-## [labml.ai remote](https://github.com/lab-ml/remote)
+## [labml.ai remote](https://github.com/labmlai/labml/tree/master/remote)
 
-This is still a tedious process with many commands. We have created an [open-source library](https://github.com/lab-ml/remote), that does all of the above for you. You only need to provide a few configurations (project_name, hostname, private_key and username).
+This is still a tedious process with many commands. We have created an
+[open-source library](https://github.com/labmlai/labml/tree/master/remote),
+that does all of the above for you. You only need to provide a few configurations (project_name, hostname, private_key and username).
 
 This is how it works,
 

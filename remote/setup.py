@@ -11,9 +11,8 @@ setuptools.setup(
     description="Run python code on remote servers",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/lab-ml/remote",
+    url="https://github.com/labmlai/labml/tree/master/remote",
     project_urls={
-        'Documentation': 'https://lab-ml.com/'
     },
     packages=setuptools.find_packages(exclude=('test',
                                                'test.*')),

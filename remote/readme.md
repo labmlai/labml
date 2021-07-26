@@ -9,7 +9,7 @@ It simply SSH's into the remote computers and run commands, and jobs with `nohup
  and synchronises using rsync.
 `labml_remote` comes with a easy-to-use CLI. You can also use the API to launch 
 customized distributed training sessions.
-[Here is a sample](https://github.com/lab-ml/remote).
+[Here is a sample](https://github.com/labmlai/labml/tree/master/samples/remote_ddp).
 
 ## Install from PIP
 

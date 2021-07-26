@@ -1,9 +1,5 @@
 <div align="center" style="margin-bottom: 100px;">
 
-<!--
-<img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="150" alt="">
--->
-
 <h1>Monitor deep learning model training and hardware usage from mobile.</h1>
 
 [![PyPI - Python Version](https://badge.fury.io/py/labml.svg)](https://badge.fury.io/py/labml)
@@ -12,21 +8,20 @@
 [![Docs](https://img.shields.io/badge/labml-docs-blue)](https://docs.labml.ai/)
 [![Twitter](https://img.shields.io/twitter/follow/labmlai?style=social)](https://twitter.com/labmlai?ref_src=twsrc%5Etfw)
 
-<img src="https://github.com/lab-ml/lab/blob/master/images/cover-dark.png" alt=""/>
+<img src="https://github.com/labmlai/lab/blob/master/images/cover-dark.png" alt=""/>
 </div>
 
 ### 🔥 Features
 
-* Monitor running experiments from [mobile phone](https://github.com/lab-ml/app)
+* Monitor running experiments from [mobile phone](https://github.com/labmlai/labml/tree/master/app) (or laptop)
 [![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://app.labml.ai/run/9e7f39e047e811ebbaff2b26e3148b3d)
-* Monitor [hardware usage on any computer](https://github.com/lab-ml/labml/blob/master/guides/hardware_monitoring.md) with a single command
+* Monitor [hardware usage on any computer](https://github.com/labmlai/labml/blob/master/guides/hardware_monitoring.md) with a single command
 * Integrate with just 2 lines of code (see examples below)
 * Keeps track of experiments including infomation like git commit, configurations and hyper-parameters
 * Keep Tensorboard logs organized
-* [Dashboard](https://github.com/lab-ml/dashboard/) to locally browse and manage experiment runs
 * Save and load checkpoints
 * API for custom visualizations
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lab-ml/samples/blob/master/labml_samples/pytorch/stocks/analysis.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/labmlai/labml/blob/master/samples/stocks/analysis.ipynb)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
 * Pretty logs of training progress
 * Open source! we also have a small hosted server for the mobile web app
@@ -91,12 +86,12 @@ with experiment.record(name='sample', exp_conf=conf):
 
 ##### Guides
 
-* [API to create experiments](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/experiment.ipynb)
-* [Track training metrics](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/tracker.ipynb)
-* [Monitored training loop and other iterators](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/monitor.ipynb)
-* [API for custom visualizations](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/analytics.ipynb)
-* [Configurations management API](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/configs.ipynb)
-* [Logger for stylized logging](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/logger.ipynb)
+* [API to create experiments](https://colab.research.google.com/github/labmlai/labml/blob/master/guides/experiment.ipynb)
+* [Track training metrics](https://colab.research.google.com/github/labmlai/labml/blob/master/guides/tracker.ipynb)
+* [Monitored training loop and other iterators](https://colab.research.google.com/github/labmlai/labml/blob/master/guides/monitor.ipynb)
+* [API for custom visualizations](https://colab.research.google.com/github/labmlai/labml/blob/master/guides/analytics.ipynb)
+* [Configurations management API](https://colab.research.google.com/github/labmlai/labml/blob/master/guides/configs.ipynb)
+* [Logger for stylized logging](https://colab.research.google.com/github/labmlai/labml/blob/master/guides/logger.ipynb)
 
 ### 🖥 Screenshots
 
@@ -144,7 +139,7 @@ labml_remote prepare
 labml_remote helper-torch-launch --cmd 'train.py' --nproc-per-node 2 --env GLOO_SOCKET_IFNAME enp1s0
 ```
 
-### [Monitoring hardware usage](https://github.com/lab-ml/labml/blob/master/guides/hardware_monitoring.md)
+### [Monitoring hardware usage](https://github.com/labmlai/labml/blob/master/guides/hardware_monitoring.md)
 
 ```sh
 # Install packages and dependencies

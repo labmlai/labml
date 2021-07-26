@@ -16,7 +16,7 @@ Configurations:
     data_path: 'data'
     experiments_path: 'logs'
     analytics_path: 'analytics'
-    web_api: 'TOKEN from web.lab-ml.com'
+    web_api: 'TOKEN from app.labml.ai'
     web_api_frequency: 60
     web_api_verify_connection: true
     web_api_open_browser: true
@@ -47,8 +47,8 @@ Configurations:
 * `web_api_open_browser`: Whether to open the monitoring url in the browser automatically when the experiment starts.
 
 * `indicators`: Use this to specify types of
-  [indicators for tracker](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/tracker.ipynb).
+  [indicators for tracker](https://colab.research.google.com/github/labmlai/labml/blob/master/guides/tracker.ipynb).
     * `class_name` is the type of the indicator
     * `is_print` is whether to output the statistic to console.
     * `name` can be a wildcard selector for indicator names. You can set these individually with the
-      [tracker API](https://colab.research.google.com/github/lab-ml/labml/blob/master/guides/tracker.ipynb).
+      [tracker API](https://colab.research.google.com/github/labmlai/labml/blob/master/guides/tracker.ipynb).

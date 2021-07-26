@@ -76,7 +76,7 @@ class ExecutorThread(threading.Thread):
 
 
 def _capture(args: List[str]):
-    api_caller = ApiCaller("https://api.lab-ml.com/api/v1/track?", {'run_uuid': generate_uuid()},
+    api_caller = ApiCaller("https://api.labml.ai/api/v1/track?", {'run_uuid': generate_uuid()},
                            timeout_seconds=120)
     api_logs = ApiLogs()
     data = {
@@ -180,7 +180,7 @@ def main():
     if args.command == 'dashboard':
         logger.log([('labml dashboard', Text.heading),
                     (' is deprecated. Please use labml.ai app instead\n', Text.danger),
-                    ('https://github.com/lab-ml/app', Text.value)])
+                    ('https://github.com/labmlai/labml/tree/master/app', Text.value)])
         _open_dashboard()
     elif args.command == 'app-server':
         _start_app_server()
