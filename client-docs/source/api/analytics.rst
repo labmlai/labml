@@ -5,11 +5,23 @@ Analytics
 
 .. automodule:: labml.analytics
 
+    Get data
+    --------
+
     .. autofunction:: runs
 
     .. autofunction:: get_run
 
     .. autofunction:: set_preferred_db
+
+    .. autofunction:: indicator_data
+
+    .. autofunction:: artifact_data
+
+    .. autoclass:: IndicatorCollection
+
+    Plot
+    ----
 
     .. autofunction:: distribution
 
@@ -18,9 +30,3 @@ Analytics
     .. autofunction:: binned_heatmap
 
     .. autofunction:: histogram
-
-    .. autofunction:: indicator_data
-
-    .. autofunction:: artifact_data
-
-    .. autoclass:: IndicatorCollection
