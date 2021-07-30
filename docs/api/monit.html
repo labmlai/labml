@@ -117,7 +117,12 @@
 <li class="toctree-l2"><a class="reference internal" href="tracker.html#helpers">Helpers</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Monitor</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Monitor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#iterators">Iterators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loop">Loop</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lab.html">Lab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configs.html">Configs</a></li>
@@ -196,33 +201,148 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-labml.monit">
-<span id="monitor"></span><h1>Monitor<a class="headerlink" href="#module-labml.monit" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt id="labml.monit.iterate">
-<code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">iterate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">iterable</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>Iterable<span class="p">, </span>Sized<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">total_steps</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">is_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_children_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_timed</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">context</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#iterate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.iterate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="labml.monit.enum">
-<code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">enum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">iterable</span><span class="p">:</span> <span class="n">Sized</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">is_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_children_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_timed</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">context</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#enum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.enum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+  <div class="section" id="monitor">
+<h1>Monitor<a class="headerlink" href="#monitor" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/labmlai/labml/blob/master/guides/monitor.ipynb">Here is a tutorial on Google Colab that shows how to use the monitor module</a></p>
+<span class="target" id="module-labml.monit"></span><div class="section" id="basic">
+<h2>Basic<a class="headerlink" href="#basic" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="labml.monit.section">
 <code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">section</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">is_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_timed</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">is_partial</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_new_line</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">is_children_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">total_steps</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.section" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This creates a monitored <code class="docutils literal notranslate"><span class="pre">with</span></code> block.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the section</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>is_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether not to print time taken. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>is_timed</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to measure time. Default to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>is_partial</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether it’s a partial excution where it gets called
+repeatedly. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>is_new_line</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print a new line. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>is_children_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to make child sections silent.
+Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>total_steps</strong> (<em>float</em><em>, </em><em>optional</em>) – Total number of steps. This is used to measure progress when
+<a class="reference internal" href="#labml.monit.progress" title="labml.monit.progress"><code class="xref py py-func docutils literal notranslate"><span class="pre">progress()</span></code></a> gets called. Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.monit.func">
+<code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">func</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">is_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_timed</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">is_partial</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_new_line</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">is_children_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">total_steps</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is similar to <a class="reference internal" href="#labml.monit.section" title="labml.monit.section"><code class="xref py py-func docutils literal notranslate"><span class="pre">section()</span></code></a> but can be used as a decorator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the function</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>is_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether not to print time taken. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>is_timed</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to measure time. Default to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>is_partial</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether it’s a partial excution where it gets called
+repeatedly. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>is_new_line</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print a new line. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>is_children_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to make child sections silent.
+Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>total_steps</strong> (<em>float</em><em>, </em><em>optional</em>) – Total number of steps. This is used to measure progress when
+<a class="reference internal" href="#labml.monit.progress" title="labml.monit.progress"><code class="xref py py-func docutils literal notranslate"><span class="pre">progress()</span></code></a> gets called. Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.monit.progress">
 <code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">progress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">steps</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.progress" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the progress of the section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>steps</strong> (<em>float</em>) – Current progress</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.monit.fail">
 <code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.fail" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Mark the current section as failed.</p>
+</dd></dl>
 
+</div>
+<div class="section" id="iterators">
+<h2>Iterators<a class="headerlink" href="#iterators" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="labml.monit.iterate">
+<code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">iterate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">iterable</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>Iterable<span class="p">, </span>Sized<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">total_steps</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">is_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_children_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_timed</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">context</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#iterate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.iterate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This creates a monitored iterator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the iterator</p></li>
+<li><p><strong>iterable</strong> (<em>Union</em><em>[</em><em>Iterable</em><em>, </em><em>Sized</em><em>, </em><em>int</em><em>]</em>) – The iterable</p></li>
+<li><p><strong>total_steps</strong> (<em>int</em><em>, </em><em>optional</em>) – Total number of steps. If not provided this is
+calculated from <code class="docutils literal notranslate"><span class="pre">iterable</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>is_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether not to print time taken. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>is_timed</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to measure time. Default to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>is_children_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to make child sections silent.
+Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>context</strong> (<em>optional</em>) – Reference to another section that will be used for monitoring the iteration.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.monit.enum">
+<code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">enum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">iterable</span><span class="p">:</span> <span class="n">Sized</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">is_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_children_silent</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">is_timed</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">context</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#enum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.enum" title="Permalink to this definition">¶</a></dt>
+<dd><p>This creates a monitored enumerator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the iterator</p></li>
+<li><p><strong>iterable</strong> (<em>Sized</em><em>]</em>) – The iterable</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>is_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether not to print time taken. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>is_timed</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to measure time. Default to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>is_children_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to make child sections silent.
+Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>context</strong> (<em>optional</em>) – Reference to another section that will be used for monitoring the iteration.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.monit.mix">
+<code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">mix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">total_iterations</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">iterators</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>str<span class="p">, </span>Sized<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">is_monit</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#mix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.mix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mix a set of iterators.</p>
+<p>This will iterate through a list of iterators while mixing among them.
+This is useful when you want to mix training and validation steps within an epoch.
+It gives a tuple of iterator name and the element as you iterate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>total_iterations</strong> (<em>Union</em><em>[</em><em>Collection</em><em>, </em><em>range</em><em>, </em><em>int</em><em>]</em>) – The number of times to mix</p></li>
+<li><p><strong>iterators</strong> (<em>Tuple</em><em>[</em><em>str</em><em>, </em><em>Sized</em><em>]</em>) – Are iterators and their names</p></li>
+<li><p><strong>is_monit</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to monitor the iteration</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="loop">
+<h2>Loop<a class="headerlink" href="#loop" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="labml.monit.loop">
 <code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">loop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterator_</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>Collection<span class="p">, </span>range<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">is_track</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">is_print_iteration_time</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.loop" title="Permalink to this definition">¶</a></dt>
@@ -237,13 +357,29 @@
 <code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">loop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterator_</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">is_track</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">is_print_iteration_time</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#loop"><span class="viewcode-link">[source]</span></a></dt>
 <dd></dd></dl>
 
+<p>This creates a monitored loop. This is designed for training loops.
+It has better monitoring than using <a class="reference internal" href="#labml.monit.iterate" title="labml.monit.iterate"><code class="xref py py-func docutils literal notranslate"><span class="pre">iterate()</span></code></a> or <a class="reference internal" href="#labml.monit.enum" title="labml.monit.enum"><code class="xref py py-func docutils literal notranslate"><span class="pre">enum()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>iterator_</strong> (<em>Union</em><em>[</em><em>Collection</em><em>, </em><em>range</em><em>, </em><em>int</em><em>]</em>) – The iterator</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>is_track</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether track the loop time using <a href="#id1"><span class="problematic" id="id2">:module:`labml.tracker`</span></a>.
+Default to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>is_print_iteration_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print iteration time. Default to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="labml.monit.finish_loop">
-<code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">finish_loop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#finish_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.finish_loop" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">finish_loop</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/labml/monit.html#finish_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.monit.finish_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finish the loop and flush all the loop related montoring stats.</p>
+</dd></dl>
 
+</div>
 </div>
 
 

@@ -393,7 +393,7 @@ def record(*,
            token: str = None,
            disable_screen: bool = False):
     r"""
-    This is combines :func:`create`, :func:`configs` and :func:`start`.
+    This combines :func:`create`, :func:`configs` and :func:`start`.
 
     Keyword Arguments:
         name (str, optional): name of the experiment

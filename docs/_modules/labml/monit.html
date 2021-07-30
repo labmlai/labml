@@ -115,7 +115,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/tracker.html#helpers">Helpers</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/monit.html">Monitor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/monit.html">Monitor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/monit.html#basic">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/monit.html#iterators">Iterators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/monit.html#loop">Loop</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/logger.html">Logger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/lab.html">Lab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/configs.html">Configs</a></li>
@@ -203,13 +208,30 @@
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+<div class="viewcode-block" id="func"><a class="viewcode-back" href="../../api/monit.html#labml.monit.func">[docs]</a><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
          <span class="n">is_silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
          <span class="n">is_timed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
          <span class="n">is_partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
          <span class="n">is_new_line</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
          <span class="n">is_children_silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
          <span class="n">total_steps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is similar to :func:`section` but can be used as a decorator.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the function</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        is_silent (bool, optional): Whether not to print time taken. Defaults to ``False``.</span>
+<span class="sd">        is_timed (bool, optional): Whether to measure time. Default to ``True``.</span>
+<span class="sd">        is_partial (bool, optional): Whether it&#39;s a partial excution where it gets called</span>
+<span class="sd">            repeatedly. Defaults to ``False``.</span>
+<span class="sd">        is_new_line (bool, optional): Whether to print a new line. Defaults to ``True``.</span>
+<span class="sd">        is_children_silent (bool, optional): Whether to make child sections silent.</span>
+<span class="sd">            Defaults to ``True``.</span>
+<span class="sd">        total_steps (float, optional): Total number of steps. This is used to measure progress when</span>
+<span class="sd">            :func:`progress` gets called. Defaults to ``1``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">decorator_func</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">section</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>
@@ -223,7 +245,7 @@
 
         <span class="k">return</span> <span class="n">wrapper</span>
 
-    <span class="k">return</span> <span class="n">decorator_func</span>
+    <span class="k">return</span> <span class="n">decorator_func</span></div>
 
 
 <div class="viewcode-block" id="iterate"><a class="viewcode-back" href="../../api/monit.html#labml.monit.iterate">[docs]</a><span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">,</span> <span class="n">Sized</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
@@ -232,6 +254,22 @@
             <span class="n">is_children_silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">is_timed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This creates a monitored iterator.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the iterator</span>
+<span class="sd">        iterable (Union[Iterable, Sized, int]): The iterable</span>
+<span class="sd">        total_steps (int, optional): Total number of steps. If not provided this is</span>
+<span class="sd">            calculated from ``iterable``.</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        is_silent (bool, optional): Whether not to print time taken. Defaults to ``False``.</span>
+<span class="sd">        is_timed (bool, optional): Whether to measure time. Default to ``True``.</span>
+<span class="sd">        is_children_silent (bool, optional): Whether to make child sections silent.</span>
+<span class="sd">            Defaults to ``True``.</span>
+<span class="sd">        context (optional): Reference to another section that will be used for monitoring the iteration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">total_steps</span><span class="p">,</span>
                                <span class="n">is_silent</span><span class="o">=</span><span class="n">is_silent</span><span class="p">,</span>
                                <span class="n">is_children_silent</span><span class="o">=</span><span class="n">is_children_silent</span><span class="p">,</span>
@@ -244,6 +282,20 @@
          <span class="n">is_children_silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
          <span class="n">is_timed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
          <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This creates a monitored enumerator.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the iterator</span>
+<span class="sd">        iterable (Sized]): The iterable</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        is_silent (bool, optional): Whether not to print time taken. Defaults to ``False``.</span>
+<span class="sd">        is_timed (bool, optional): Whether to measure time. Default to ``True``.</span>
+<span class="sd">        is_children_silent (bool, optional): Whether to make child sections silent.</span>
+<span class="sd">            Defaults to ``True``.</span>
+<span class="sd">        context (optional): Reference to another section that will be used for monitoring the iteration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">enum</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span>
                             <span class="n">is_silent</span><span class="o">=</span><span class="n">is_silent</span><span class="p">,</span>
                             <span class="n">is_children_silent</span><span class="o">=</span><span class="n">is_children_silent</span><span class="p">,</span>
@@ -258,6 +310,23 @@
             <span class="n">is_new_line</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">is_children_silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">total_steps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This creates a monitored ``with`` block.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the section</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        is_silent (bool, optional): Whether not to print time taken. Defaults to ``False``.</span>
+<span class="sd">        is_timed (bool, optional): Whether to measure time. Default to ``True``.</span>
+<span class="sd">        is_partial (bool, optional): Whether it&#39;s a partial excution where it gets called</span>
+<span class="sd">            repeatedly. Defaults to ``False``.</span>
+<span class="sd">        is_new_line (bool, optional): Whether to print a new line. Defaults to ``True``.</span>
+<span class="sd">        is_children_silent (bool, optional): Whether to make child sections silent.</span>
+<span class="sd">            Defaults to ``True``.</span>
+<span class="sd">        total_steps (float, optional): Total number of steps. This is used to measure progress when</span>
+<span class="sd">            :func:`progress` gets called. Defaults to ``1``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_silent</span><span class="o">=</span><span class="n">is_silent</span><span class="p">,</span>
                                <span class="n">is_timed</span><span class="o">=</span><span class="n">is_timed</span><span class="p">,</span>
                                <span class="n">is_partial</span><span class="o">=</span><span class="n">is_partial</span><span class="p">,</span>
@@ -267,10 +336,19 @@
 
 
 <div class="viewcode-block" id="progress"><a class="viewcode-back" href="../../api/monit.html#labml.monit.progress">[docs]</a><span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="n">steps</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set the progress of the section.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        steps (float): Current progress</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="fail"><a class="viewcode-back" href="../../api/monit.html#labml.monit.fail">[docs]</a><span class="k">def</span> <span class="nf">fail</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mark the current section as failed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">set_successful</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
 
 
@@ -299,14 +377,25 @@
          <span class="n">is_track</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
          <span class="n">is_print_iteration_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This has multiple overloads</span>
+<span class="sd">    This has multiple overloads</span>
 
-<span class="sd">        .. function:: loop(iterator_: range, *, is_track=True, is_print_iteration_time=True)</span>
-<span class="sd">            :noindex:</span>
+<span class="sd">    .. function:: loop(iterator_: range, *, is_track=True, is_print_iteration_time=True)</span>
+<span class="sd">        :noindex:</span>
 
-<span class="sd">        .. function:: loop(iterator_: int, *, is_track=True, is_print_iteration_time=True)</span>
-<span class="sd">            :noindex:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    .. function:: loop(iterator_: int, *, is_track=True, is_print_iteration_time=True)</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    This creates a monitored loop. This is designed for training loops.</span>
+<span class="sd">    It has better monitoring than using :func:`iterate` or :func:`enum`.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        iterator_ (Union[Collection, range, int]): The iterator</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        is_track (bool, optional): Whether track the loop time using :module:`labml.tracker`.</span>
+<span class="sd">            Default to ``True``.</span>
+<span class="sd">        is_print_iteration_time (bool, optional): Whether to print iteration time. Default to ``True``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">iterator_</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">loop</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">iterator_</span><span class="p">),</span>
@@ -318,15 +407,27 @@
                                 <span class="n">is_print_iteration_time</span><span class="o">=</span><span class="n">is_print_iteration_time</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">mix</span><span class="p">(</span><span class="n">total_iterations</span><span class="p">,</span> <span class="o">*</span><span class="n">iterators</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sized</span><span class="p">],</span>
+<div class="viewcode-block" id="mix"><a class="viewcode-back" href="../../api/monit.html#labml.monit.mix">[docs]</a><span class="k">def</span> <span class="nf">mix</span><span class="p">(</span><span class="n">total_iterations</span><span class="p">,</span> <span class="o">*</span><span class="n">iterators</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sized</span><span class="p">],</span>
         <span class="n">is_monit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Mix a set of iterators</span>
+<span class="sd">    Mix a set of iterators.</span>
+
+<span class="sd">    This will iterate through a list of iterators while mixing among them.</span>
+<span class="sd">    This is useful when you want to mix training and validation steps within an epoch.</span>
+<span class="sd">    It gives a tuple of iterator name and the element as you iterate.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        total_iterations (Union[Collection, range, int]): The number of times to mix</span>
+<span class="sd">        iterators (Tuple[str, Sized]): Are iterators and their names</span>
+<span class="sd">        is_monit (bool, optional): Whether to monitor the iteration</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">mix</span><span class="p">(</span><span class="n">total_iterations</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterators</span><span class="p">),</span> <span class="n">is_monit</span><span class="o">=</span><span class="n">is_monit</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">mix</span><span class="p">(</span><span class="n">total_iterations</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterators</span><span class="p">),</span> <span class="n">is_monit</span><span class="o">=</span><span class="n">is_monit</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="finish_loop"><a class="viewcode-back" href="../../api/monit.html#labml.monit.finish_loop">[docs]</a><span class="k">def</span> <span class="nf">finish_loop</span><span class="p">():</span>
+<div class="viewcode-block" id="finish_loop"><a class="viewcode-back" href="../../api/monit.html#labml.monit.finish_loop">[docs]</a><span class="k">def</span> <span class="nf">finish_loop</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finish the loop and flush all the loop related montoring stats.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">finish_loop</span><span class="p">()</span></div>
 </pre></div>
 

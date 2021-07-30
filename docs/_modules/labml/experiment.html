@@ -115,7 +115,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/tracker.html#helpers">Helpers</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/monit.html">Monitor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/monit.html">Monitor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/monit.html#basic">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/monit.html#iterators">Iterators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/monit.html#loop">Loop</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/logger.html">Logger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/lab.html">Lab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/configs.html">Configs</a></li>
@@ -588,7 +593,7 @@
            <span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">disable_screen</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is combines :func:`create`, :func:`configs` and :func:`start`.</span>
+<span class="sd">    This combines :func:`create`, :func:`configs` and :func:`start`.</span>
 
 <span class="sd">    Keyword Arguments:</span>
 <span class="sd">        name (str, optional): name of the experiment</span>
