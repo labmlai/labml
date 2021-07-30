@@ -1,6 +1,9 @@
 Lab
 ===
 
+This module lets you get constants like paths and set
+`labml <https://github.com/labmlai/labml>`_ configurations.
+
 .. automodule:: labml.lab
 
     .. autofunction:: get_path

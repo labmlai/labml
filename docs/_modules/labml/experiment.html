@@ -98,12 +98,20 @@
             
             
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/experiment.html">Experiment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/experiment.html#create-experiment">Create Experiment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/experiment.html#checkpoints">Checkpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/experiment.html#configurations-hyper-parameters">Configurations &amp; Hyper-parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/experiment.html#bundle-checkpoints">Bundle checkpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/experiment.html#distirbuted-training">Distirbuted training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/experiment.html#utilities">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/tracker.html">Tracker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/monit.html">Monitor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/logger.html">Logger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/lab.html">Lab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/configs.html">Configs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/experiment.html">Experiment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/logger.html">Logger</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/monit.html">Monitor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/tracker.html">Tracker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/analytics.html">Analytics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/manage.html">Manage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/utils.html">Utils</a></li>
@@ -273,7 +281,7 @@
                        <span class="n">is_evaluate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">evaluate</span><span class="p">():</span>
+<div class="viewcode-block" id="evaluate"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.evaluate">[docs]</a><span class="k">def</span> <span class="nf">evaluate</span><span class="p">():</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This should be used for evaluation of a saved experiment.</span>
 <span class="sd">    This will not record anything.</span>
@@ -287,14 +295,30 @@
                        <span class="n">writers</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
                        <span class="n">ignore_callers</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
                        <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">is_evaluate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                       <span class="n">is_evaluate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">distributed</span><span class="p">(</span><span class="n">rank</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">world_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">distributed</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">world_size</span><span class="p">)</span>
+<div class="viewcode-block" id="distributed"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.distributed">[docs]</a><span class="k">def</span> <span class="nf">distributed</span><span class="p">(</span><span class="n">rank</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">world_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set the ``rank`` and ``world_size`` of the current process</span>
+<span class="sd">    in an distributed training setup.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        rank (int): rank of the current process</span>
+<span class="sd">        world_size (int): number of training processes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">distributed</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">world_size</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="add_model_savers"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.add_model_savers">[docs]</a><span class="k">def</span> <span class="nf">add_model_savers</span><span class="p">(</span><span class="n">savers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ModelSaver</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add custom model savers</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        savers (Dict[str, ModelSaver]): a dictionary of :class:`labml.experiment.ModelSaver`.</span>
+<span class="sd">            These will be saved with :func:`labml.experiment.save_checkpoint`</span>
+<span class="sd">            and loaded with :func:`labml.experiment.load`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">checkpoint_saver</span><span class="o">.</span><span class="n">add_savers</span><span class="p">(</span><span class="n">savers</span><span class="p">)</span></div>
 
 
@@ -485,8 +509,19 @@
     <span class="n">_load_checkpoint</span> <span class="o">=</span> <span class="n">checkpoint</span></div>
 
 
-<span class="k">def</span> <span class="nf">save_bundle</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">run_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+<div class="viewcode-block" id="save_bundle"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.save_bundle">[docs]</a><span class="k">def</span> <span class="nf">save_bundle</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">run_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                 <span class="n">data_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a ``.tar.gz`` file with the configs and checkpoints that can be distributed and loaded</span>
+<span class="sd">    easily.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        path (Path): ``.tar.gz`` file path</span>
+<span class="sd">        run_uuid (str): experiment run to bundle</span>
+<span class="sd">        checkpoint (str, optional): if provided the given checkpoint will be bundled.</span>
+<span class="sd">            Otherwise it will bundle the last checkpoint.</span>
+<span class="sd">        data_files: List of data files (relative to :func:`labml.lab.get_data_path`) to be bundled.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">data_files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">data_files</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -494,11 +529,18 @@
         <span class="n">checkpoint</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="n">_save_bundle</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">run_uuid</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">,</span>
-                 <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">)</span>
+                 <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">load_bundle</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="n">_load_bundle</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+<div class="viewcode-block" id="load_bundle"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.load_bundle">[docs]</a><span class="k">def</span> <span class="nf">load_bundle</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract a bundle into experiments folder and returns the ``run_uuid`` and checkpoint.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        path (Path): ``.tar.gz`` file path</span>
+<span class="sd">        url (str): url to download the ``.tar.gz`` file from</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_load_bundle</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="load_models"><a class="viewcode-back" href="../../api/experiment.html#labml.experiment.load_models">[docs]</a><span class="k">def</span> <span class="nf">load_models</span><span class="p">(</span><span class="n">models</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">run_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>

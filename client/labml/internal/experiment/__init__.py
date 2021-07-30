@@ -26,10 +26,31 @@ if TYPE_CHECKING:
 
 
 class ModelSaver:
+    """
+    An abstract class defining model saver/loader.
+
+    The implementation should keep a reference to the model and load and save the model
+    parameters.
+    """
     def save(self, checkpoint_path: pathlib.Path) -> any:
+        """
+        Saves the model in the given checkpoint path
+
+        Arguments:
+            checkpoint_path (pathlib.Path): The path to save the model at
+
+        Returns any meta info, such as the individual filename(s)
+        """
         raise NotImplementedError()
 
-    def load(self, checkpoint_path: pathlib.Path, info: any):
+    def load(self, checkpoint_path: pathlib.Path, info: any) -> None:
+        """
+        Loads the model from the given checkpoint path
+
+        Arguments:
+            checkpoint_path (pathlib.Path): The path to load the model from
+            info (any): The returned meta data when saving
+        """
         raise NotImplementedError()
 
 

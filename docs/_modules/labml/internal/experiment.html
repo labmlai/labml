@@ -1,0 +1,775 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>labml.internal.experiment &mdash; labml.ai client library 0.4 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/lab_icon.png"/>
+  
+  
+  
+    <link rel="canonical" href="https://docs.labml.ai/_modules/labml/internal/experiment.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/katex-math.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-PDCL9PHMHT');
+    </script>
+
+ 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> labml.ai client library
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/experiment.html">Experiment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/experiment.html#create-experiment">Create Experiment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/experiment.html#checkpoints">Checkpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/experiment.html#configurations-hyper-parameters">Configurations &amp; Hyper-parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/experiment.html#bundle-checkpoints">Bundle checkpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/experiment.html#distirbuted-training">Distirbuted training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/experiment.html#utilities">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/tracker.html">Tracker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/monit.html">Monitor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/lab.html">Lab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/configs.html">Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/analytics.html">Analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/manage.html">Manage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/helpers.html">Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/helpers.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/helpers.html#module-labml_helpers.training_loop">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/helpers.html#module-labml_helpers.datasets.mnist">Datasets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">labml.ai client library</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>labml.internal.experiment</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for labml.internal.experiment</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span> <span class="nn">git</span>
+<span class="kn">from</span> <span class="nn">labml.internal.api.dynamic</span> <span class="kn">import</span> <span class="n">DynamicUpdateHandler</span>
+
+<span class="kn">from</span> <span class="nn">labml</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">monit</span>
+<span class="kn">from</span> <span class="nn">labml.internal.configs.base</span> <span class="kn">import</span> <span class="n">Configs</span>
+<span class="kn">from</span> <span class="nn">labml.internal.configs.processor</span> <span class="kn">import</span> <span class="n">ConfigProcessor</span><span class="p">,</span> <span class="n">FileConfigsSaver</span>
+<span class="kn">from</span> <span class="nn">labml.internal.configs.dynamic_hyperparam</span> <span class="kn">import</span> <span class="n">DynamicHyperParam</span>
+<span class="kn">from</span> <span class="nn">labml.internal.experiment.experiment_run</span> <span class="kn">import</span> <span class="n">Run</span><span class="p">,</span> <span class="n">struct_time_to_time</span><span class="p">,</span> <span class="n">struct_time_to_date</span>
+<span class="kn">from</span> <span class="nn">labml.internal.experiment.watcher</span> <span class="kn">import</span> <span class="n">ExperimentWatcher</span>
+<span class="kn">from</span> <span class="nn">labml.internal.lab</span> <span class="kn">import</span> <span class="n">lab_singleton</span>
+<span class="kn">from</span> <span class="nn">labml.internal.monitor</span> <span class="kn">import</span> <span class="n">monitor_singleton</span> <span class="k">as</span> <span class="n">monitor</span>
+<span class="kn">from</span> <span class="nn">labml.internal.tracker</span> <span class="kn">import</span> <span class="n">tracker_singleton</span> <span class="k">as</span> <span class="n">tracker</span>
+<span class="kn">from</span> <span class="nn">labml.internal.util</span> <span class="kn">import</span> <span class="n">is_ipynb</span><span class="p">,</span> <span class="n">is_colab</span><span class="p">,</span> <span class="n">is_kaggle</span>
+<span class="kn">from</span> <span class="nn">labml.logger</span> <span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">labml.utils</span> <span class="kn">import</span> <span class="n">get_caller_file</span>
+<span class="kn">from</span> <span class="nn">labml.utils.notice</span> <span class="kn">import</span> <span class="n">labml_notice</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.api.experiment</span> <span class="kn">import</span> <span class="n">ApiExperiment</span>
+
+
+<div class="viewcode-block" id="ModelSaver"><a class="viewcode-back" href="../../../api/experiment.html#labml.experiment.ModelSaver">[docs]</a><span class="k">class</span> <span class="nc">ModelSaver</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An abstract class defining model saver/loader.</span>
+
+<span class="sd">    The implementation should keep a reference to the model and load and save the model</span>
+<span class="sd">    parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ModelSaver.save"><a class="viewcode-back" href="../../../api/experiment.html#labml.experiment.ModelSaver.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkpoint_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves the model in the given checkpoint path</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            checkpoint_path (pathlib.Path): The path to save the model at</span>
+
+<span class="sd">        Returns any meta info, such as the individual filename(s)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ModelSaver.load"><a class="viewcode-back" href="../../../api/experiment.html#labml.experiment.ModelSaver.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkpoint_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="nb">any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the model from the given checkpoint path</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            checkpoint_path (pathlib.Path): The path to load the model from</span>
+<span class="sd">            info (any): The returned meta data when saving</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">CheckpointSaver</span><span class="p">:</span>
+    <span class="n">model_savers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ModelSaver</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">PurePath</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_savers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__no_savers_warned</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">add_savers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ModelSaver</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ## Set variable for saving and loading</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">is_started</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Cannot register models with the experiment after experiment has started.&#39;</span>
+                               <span class="s1">&#39;Register models before calling experiment.start&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_savers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ## Save model as a set of numpy arrays</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_savers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__no_savers_warned</span><span class="p">:</span>
+                <span class="n">labml_notice</span><span class="p">([</span><span class="s2">&quot;No models were registered for saving</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                              <span class="s2">&quot;You can register models with &quot;</span><span class="p">,</span>
+                              <span class="p">(</span><span class="s1">&#39;experiment.add_pytorch_models&#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">value</span><span class="p">)])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__no_savers_warned</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="n">checkpoints_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">checkpoints_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">checkpoints_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+
+        <span class="n">checkpoint_path</span> <span class="o">=</span> <span class="n">checkpoints_path</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="n">global_step</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">checkpoint_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+        <span class="n">checkpoint_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+
+        <span class="n">info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">saver</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_savers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">info</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">checkpoint_path</span><span class="p">)</span>
+
+        <span class="c1"># Save header</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">checkpoint_path</span> <span class="o">/</span> <span class="s2">&quot;info.json&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">info</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkpoint_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">models</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ## Load model as a set of numpy arrays</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_savers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__no_savers_warned</span><span class="p">:</span>
+                <span class="n">labml_notice</span><span class="p">([</span><span class="s2">&quot;No models were registered for loading or saving</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                              <span class="s2">&quot;You can register models with &quot;</span><span class="p">,</span>
+                              <span class="p">(</span><span class="s1">&#39;experiment.add_pytorch_models&#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">value</span><span class="p">)])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__no_savers_warned</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">models</span><span class="p">:</span>
+            <span class="n">models</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_savers</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">checkpoint_path</span> <span class="o">/</span> <span class="s2">&quot;info.json&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+
+        <span class="n">to_load</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">not_loaded</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">missing</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">info</span><span class="p">:</span>
+                <span class="n">missing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">to_load</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">info</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+                <span class="n">not_loaded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Load each model</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">to_load</span><span class="p">:</span>
+            <span class="n">saver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_savers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">saver</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">checkpoint_path</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+            <span class="n">labml_notice</span><span class="p">([(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s1"> &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">highlight</span><span class="p">),</span>
+                          <span class="p">(</span><span class="s1">&#39;model(s) could not be found.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">),</span>
+                          <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">to_load</span><span class="si">}</span><span class="s1"> &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">none</span><span class="p">),</span>
+                          <span class="p">(</span><span class="s1">&#39;models were loaded.&#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">none</span><span class="p">)</span>
+                          <span class="p">],</span> <span class="n">is_danger</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">not_loaded</span><span class="p">:</span>
+            <span class="n">labml_notice</span><span class="p">([(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">not_loaded</span><span class="si">}</span><span class="s1"> &#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">none</span><span class="p">),</span>
+                          <span class="p">(</span><span class="s1">&#39;models were not loaded.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">none</span><span class="p">),</span>
+                          <span class="s1">&#39;Models to be loaded should be specified with: &#39;</span><span class="p">,</span>
+                          <span class="p">(</span><span class="s1">&#39;experiment.add_pytorch_models&#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">value</span><span class="p">)])</span>
+
+
+<span class="k">class</span> <span class="nc">ExperimentDynamicUpdateHandler</span><span class="p">(</span><span class="n">DynamicUpdateHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_processor</span><span class="p">:</span> <span class="n">ConfigProcessor</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_processor</span> <span class="o">=</span> <span class="n">config_processor</span>
+
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">s</span><span class="p">:</span> <span class="n">DynamicHyperParam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_processor</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">DynamicHyperParam</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Experiment</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Each experiment has different configurations or algorithms.</span>
+<span class="sd">    An experiment can have multiple runs.</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        name (str, optional): name of the experiment</span>
+<span class="sd">        python_file (str, optional): path of the Python file that</span>
+<span class="sd">            created the experiment</span>
+<span class="sd">        comment (str, optional): a short description of the experiment</span>
+<span class="sd">        writers (Set[str], optional): list of writers to write stat to</span>
+<span class="sd">        ignore_callers: (Set[str], optional): list of files to ignore when</span>
+<span class="sd">            automatically determining ``python_file``</span>
+<span class="sd">        tags (Set[str], optional): Set of tags for experiment</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">web_api</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;ApiExperiment&#39;</span><span class="p">]</span>
+    <span class="n">wandb</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+
+    <span class="n">is_started</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">run</span><span class="p">:</span> <span class="n">Run</span>
+    <span class="n">configs_processor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ConfigProcessor</span><span class="p">]</span>
+
+    <span class="c1"># whether not to start the experiment if there are uncommitted changes.</span>
+    <span class="n">check_repo_dirty</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">checkpoint_saver</span><span class="p">:</span> <span class="n">CheckpointSaver</span>
+
+    <span class="n">distributed_rank</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">distributed_world_size</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                 <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">python_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">writers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">ignore_callers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+                 <span class="n">is_evaluate</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">is_ipynb</span><span class="p">():</span>
+            <span class="n">lab_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">set_path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">python_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">python_file</span> <span class="o">=</span> <span class="s1">&#39;notebook.ipynb&#39;</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Notebook Experiment&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">python_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">python_file</span> <span class="o">=</span> <span class="n">get_caller_file</span><span class="p">(</span><span class="n">ignore_callers</span><span class="p">)</span>
+
+            <span class="n">lab_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">set_path</span><span class="p">(</span><span class="n">python_file</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">PurePath</span><span class="p">(</span><span class="n">python_file</span><span class="p">)</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">stem</span>
+
+        <span class="k">if</span> <span class="n">comment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">global_params_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">comment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="n">global_params_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">comment</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_path</span> <span class="o">=</span> <span class="n">lab_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">experiments</span> <span class="o">/</span> <span class="n">name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_repo_dirty</span> <span class="o">=</span> <span class="n">lab_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">check_repo_dirty</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">configs_processor</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span> <span class="o">=</span> <span class="n">Run</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span>
+            <span class="n">experiment_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment_path</span><span class="p">,</span>
+            <span class="n">python_file</span><span class="o">=</span><span class="n">python_file</span><span class="p">,</span>
+            <span class="n">trial_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">(),</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">tags</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">repo</span> <span class="o">=</span> <span class="n">git</span><span class="o">.</span><span class="n">Repo</span><span class="p">(</span><span class="n">lab_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">repo_remotes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">remote</span><span class="p">()</span><span class="o">.</span><span class="n">urls</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">git</span><span class="o">.</span><span class="n">GitCommandError</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">repo_remotes</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">commit</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">hexsha</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">commit_message</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">is_dirty</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">is_dirty</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">diff</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">git</span><span class="o">.</span><span class="n">InvalidGitRepositoryError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_colab</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_kaggle</span><span class="p">():</span>
+                <span class="n">labml_notice</span><span class="p">([</span><span class="s2">&quot;Not a valid git repository: &quot;</span><span class="p">,</span>
+                              <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">lab_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">Text</span><span class="o">.</span><span class="n">value</span><span class="p">)])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">commit</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">commit_message</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">is_dirty</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">diff</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_saver</span> <span class="o">=</span> <span class="n">CheckpointSaver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">checkpoint_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_evaluate</span> <span class="o">=</span> <span class="n">is_evaluate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">web_api</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wandb</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writers</span> <span class="o">=</span> <span class="n">writers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distributed_world_size</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__print_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        🖨 Print the experiment info and check git repo status</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">([</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">title</span><span class="p">),</span>
+            <span class="s1">&#39;: &#39;</span><span class="p">,</span>
+            <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">uuid</span><span class="p">),</span> <span class="n">Text</span><span class="o">.</span><span class="n">meta</span><span class="p">)</span>
+        <span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">comment</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">([</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">comment</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">highlight</span><span class="p">)])</span>
+
+        <span class="n">commit_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">commit_message</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;¶ &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">([</span>
+            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;[dirty]&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">is_dirty</span> <span class="k">else</span> <span class="s2">&quot;[clean]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;: &quot;</span><span class="p">,</span>
+            <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">{</span><span class="n">commit_message</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">highlight</span><span class="p">)</span>
+        <span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">load_run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">([</span>
+                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;loaded from&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;: &quot;</span><span class="p">,</span>
+                <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">load_run</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">meta2</span><span class="p">),</span>
+            <span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_load_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkpoint_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_saver</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">checkpoint_path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_evaluate</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">tracker</span><span class="p">()</span><span class="o">.</span><span class="n">global_step</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">calc_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">configs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Configs</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]],</span>
+                     <span class="n">configs_override</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]]):</span>
+        <span class="k">if</span> <span class="n">configs_override</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">configs_override</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">global_params_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">configs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">configs_override</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">global_params_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">configs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">configs_processor</span> <span class="o">=</span> <span class="n">ConfigProcessor</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span> <span class="n">configs_override</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__start_from_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+        <span class="n">checkpoint_path</span><span class="p">,</span> <span class="n">global_step</span> <span class="o">=</span> <span class="n">experiment_run</span><span class="o">.</span><span class="n">get_run_checkpoint</span><span class="p">(</span>
+            <span class="n">run_uuid</span><span class="p">,</span>
+            <span class="n">checkpoint</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">global_step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">monit</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;Loading checkpoint&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_load_checkpoint</span><span class="p">(</span><span class="n">checkpoint_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">load_run</span> <span class="o">=</span> <span class="n">run_uuid</span>
+
+        <span class="k">return</span> <span class="n">global_step</span>
+
+    <span class="k">def</span> <span class="nf">load_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                    <span class="n">models</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                    <span class="n">run_uuid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">checkpoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checkpoint</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">checkpoint_path</span><span class="p">,</span> <span class="n">global_step</span> <span class="o">=</span> <span class="n">experiment_run</span><span class="o">.</span><span class="n">get_run_checkpoint</span><span class="p">(</span><span class="n">run_uuid</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">global_step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">labml_notice</span><span class="p">([</span><span class="s1">&#39;Could not find saved checkpoint&#39;</span><span class="p">],</span> <span class="n">is_danger</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="n">monit</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;Loading checkpoint&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_saver</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">checkpoint_path</span><span class="p">,</span> <span class="n">models</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_save_pid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">pids_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">pids_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+
+        <span class="n">pid_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">pids_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span><span class="si">}</span><span class="s1">.pid&#39;</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">pid_path</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">pid_path</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pid_path</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rank</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">world_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span> <span class="o">=</span> <span class="n">rank</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distributed_world_size</span> <span class="o">=</span> <span class="n">world_size</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">monitor</span><span class="p">()</span><span class="o">.</span><span class="n">silent</span><span class="p">()</span>
+
+        <span class="c1"># to make sure we have the path to save pid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">make_path</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_start_tracker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tracker</span><span class="p">()</span><span class="o">.</span><span class="n">reset_writers</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_evaluate</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s1">&#39;screen&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">writers</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">labml.internal.tracker.writers</span> <span class="kn">import</span> <span class="n">screen</span>
+            <span class="n">tracker</span><span class="p">()</span><span class="o">.</span><span class="n">add_writer</span><span class="p">(</span><span class="n">screen</span><span class="o">.</span><span class="n">ScreenWriter</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="s1">&#39;sqlite&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">writers</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">labml.internal.tracker.writers</span> <span class="kn">import</span> <span class="n">sqlite</span>
+            <span class="n">tracker</span><span class="p">()</span><span class="o">.</span><span class="n">add_writer</span><span class="p">(</span><span class="n">sqlite</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">sqlite_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">artifacts_folder</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s1">&#39;tensorboard&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">writers</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">labml.internal.tracker.writers</span> <span class="kn">import</span> <span class="n">tensorboard</span>
+            <span class="n">tracker</span><span class="p">()</span><span class="o">.</span><span class="n">add_writer</span><span class="p">(</span><span class="n">tensorboard</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">tensorboard_log_path</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s1">&#39;wandb&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">writers</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">labml.internal.tracker.writers</span> <span class="kn">import</span> <span class="n">wandb</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wandb</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">Writer</span><span class="p">()</span>
+            <span class="n">tracker</span><span class="p">()</span><span class="o">.</span><span class="n">add_writer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wandb</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wandb</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="s1">&#39;file&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">writers</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">labml.internal.tracker.writers</span> <span class="kn">import</span> <span class="n">file</span>
+            <span class="n">tracker</span><span class="p">()</span><span class="o">.</span><span class="n">add_writer</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">log_file</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s1">&#39;web_api&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">writers</span><span class="p">:</span>
+            <span class="n">web_api_conf</span> <span class="o">=</span> <span class="n">lab_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">web_api</span>
+            <span class="k">if</span> <span class="n">web_api_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">labml.internal.tracker.writers</span> <span class="kn">import</span> <span class="n">web_api</span>
+                <span class="kn">from</span> <span class="nn">labml.internal.api</span> <span class="kn">import</span> <span class="n">ApiCaller</span>
+                <span class="kn">from</span> <span class="nn">labml.internal.api.experiment</span> <span class="kn">import</span> <span class="n">ApiExperiment</span>
+                <span class="n">api_caller</span> <span class="o">=</span> <span class="n">ApiCaller</span><span class="p">(</span><span class="n">web_api_conf</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+                                       <span class="p">{</span><span class="s1">&#39;run_uuid&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">uuid</span><span class="p">},</span>
+                                       <span class="n">timeout_seconds</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">web_api</span> <span class="o">=</span> <span class="n">ApiExperiment</span><span class="p">(</span><span class="n">api_caller</span><span class="p">,</span>
+                                             <span class="n">frequency</span><span class="o">=</span><span class="n">web_api_conf</span><span class="o">.</span><span class="n">frequency</span><span class="p">,</span>
+                                             <span class="n">open_browser</span><span class="o">=</span><span class="n">web_api_conf</span><span class="o">.</span><span class="n">open_browser</span><span class="p">)</span>
+                <span class="n">tracker</span><span class="p">()</span><span class="o">.</span><span class="n">add_writer</span><span class="p">(</span><span class="n">web_api</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="n">api_caller</span><span class="p">,</span>
+                                                    <span class="n">frequency</span><span class="o">=</span><span class="n">web_api_conf</span><span class="o">.</span><span class="n">frequency</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">web_api</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+              <span class="n">run_uuid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">run_uuid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">checkpoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">checkpoint</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">global_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__start_from_checkpoint</span><span class="p">(</span><span class="n">run_uuid</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">global_step</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">start_step</span> <span class="o">=</span> <span class="n">global_step</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_tracker</span><span class="p">()</span>
+        <span class="n">tracker</span><span class="p">()</span><span class="o">.</span><span class="n">set_start_global_step</span><span class="p">(</span><span class="n">global_step</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__print_info</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_repo_dirty</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">is_dirty</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">([(</span><span class="s2">&quot;[FAIL]&quot;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">danger</span><span class="p">),</span>
+                            <span class="s2">&quot; Cannot trial an experiment with uncommitted changes.&quot;</span><span class="p">])</span>
+                <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_evaluate</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">labml.internal.computer.configs</span> <span class="kn">import</span> <span class="n">computer_singleton</span>
+                <span class="n">computer_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">lab_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">save_info</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_pid</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">configs_processor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">configs_processor</span><span class="o">.</span><span class="n">add_saver</span><span class="p">(</span><span class="n">FileConfigsSaver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">configs_path</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">web_api</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">web_api</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">configs_processor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">configs_processor</span><span class="o">.</span><span class="n">add_saver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">web_api</span><span class="o">.</span><span class="n">get_configs_saver</span><span class="p">())</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">web_api</span><span class="o">.</span><span class="n">set_dynamic_handler</span><span class="p">(</span><span class="n">ExperimentDynamicUpdateHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">configs_processor</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wandb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">run_path</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">configs_processor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">configs_processor</span><span class="o">.</span><span class="n">add_saver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wandb</span><span class="o">.</span><span class="n">get_configs_saver</span><span class="p">())</span>
+
+                <span class="n">tracker</span><span class="p">()</span><span class="o">.</span><span class="n">save_indicators</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">indicators_path</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">ExperimentWatcher</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">details</span><span class="p">:</span> <span class="nb">any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_evaluate</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">run_log_path</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span>
+                                   <span class="s1">&#39;rank&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span><span class="p">,</span>
+                                   <span class="s1">&#39;details&#39;</span><span class="p">:</span> <span class="n">details</span><span class="p">,</span>
+                                   <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">end_time</span><span class="p">},</span> <span class="n">indent</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">tracker</span><span class="p">()</span><span class="o">.</span><span class="n">finish_loop</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">web_api</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">web_api</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distributed_rank</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">end_time</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">GlobalParams</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="n">_global_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GlobalParams</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_internal</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Experiment</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">global_params_singleton</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">GlobalParams</span><span class="p">:</span>
+    <span class="k">global</span> <span class="n">_global_params</span>
+
+    <span class="k">if</span> <span class="n">_global_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_global_params</span> <span class="o">=</span> <span class="n">GlobalParams</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">_global_params</span>
+
+
+<span class="k">def</span> <span class="nf">has_experiment</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">global</span> <span class="n">_internal</span>
+
+    <span class="k">return</span> <span class="n">_internal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">experiment_singleton</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Experiment</span><span class="p">:</span>
+    <span class="k">global</span> <span class="n">_internal</span>
+
+    <span class="k">if</span> <span class="n">_internal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Experiment not created. &#39;</span>
+                           <span class="s1">&#39;Create an experiment first with `experiment.create`&#39;</span>
+                           <span class="s1">&#39; or `experiment.record`&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_internal</span>
+
+
+<span class="k">def</span> <span class="nf">create_experiment</span><span class="p">(</span><span class="o">*</span><span class="p">,</span>
+                      <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                      <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                      <span class="n">python_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                      <span class="n">comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                      <span class="n">writers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                      <span class="n">ignore_callers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                      <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+                      <span class="n">is_evaluate</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">_internal</span>
+
+    <span class="n">_internal</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span>
+                           <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                           <span class="n">python_file</span><span class="o">=</span><span class="n">python_file</span><span class="p">,</span>
+                           <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span>
+                           <span class="n">writers</span><span class="o">=</span><span class="n">writers</span><span class="p">,</span>
+                           <span class="n">ignore_callers</span><span class="o">=</span><span class="n">ignore_callers</span><span class="p">,</span>
+                           <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
+                           <span class="n">is_evaluate</span><span class="o">=</span><span class="n">is_evaluate</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020-2021, labml.ai contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

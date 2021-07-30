@@ -111,10 +111,26 @@ def evaluate():
 
 
 def distributed(rank: int, world_size: int):
+    """
+    Set the ``rank`` and ``world_size`` of the current process
+    in an distributed training setup.
+
+    Arguments:
+        rank (int): rank of the current process
+        world_size (int): number of training processes
+    """
     _experiment_singleton().distributed(rank, world_size)
 
 
 def add_model_savers(savers: Dict[str, ModelSaver]):
+    """
+    Add custom model savers
+
+    Arguments:
+        savers (Dict[str, ModelSaver]): a dictionary of :class:`labml.experiment.ModelSaver`.
+            These will be saved with :func:`labml.experiment.save_checkpoint`
+            and loaded with :func:`labml.experiment.load`.
+    """
     _experiment_singleton().checkpoint_saver.add_savers(savers)
 
 
@@ -307,6 +323,17 @@ def load(run_uuid: str, checkpoint: Optional[int] = None):
 
 def save_bundle(path: Path, run_uuid: str, checkpoint: Optional[int] = None, *,
                 data_files: List[str] = None):
+    """
+    Create a ``.tar.gz`` file with the configs and checkpoints that can be distributed and loaded
+    easily.
+
+    Arguments:
+        path (Path): ``.tar.gz`` file path
+        run_uuid (str): experiment run to bundle
+        checkpoint (str, optional): if provided the given checkpoint will be bundled.
+            Otherwise it will bundle the last checkpoint.
+        data_files: List of data files (relative to :func:`labml.lab.get_data_path`) to be bundled.
+    """
     if data_files is None:
         data_files = []
 
@@ -318,6 +345,13 @@ def save_bundle(path: Path, run_uuid: str, checkpoint: Optional[int] = None, *,
 
 
 def load_bundle(path: Path, *, url: Optional[str] = None) -> Tuple[str, int]:
+    """
+    Extract a bundle into experiments folder and returns the ``run_uuid`` and checkpoint.
+
+    Arguments:
+        path (Path): ``.tar.gz`` file path
+        url (str): url to download the ``.tar.gz`` file from
+    """
     return _load_bundle(path, url=url)
 
 

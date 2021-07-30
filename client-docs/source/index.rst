@@ -20,12 +20,12 @@ and tutorials.
 .. toctree::
    :maxdepth: 1
 
+   api/experiment
+   api/tracker
+   api/monit
+   api/logger
    api/lab
    api/configs
-   api/experiment
-   api/logger
-   api/monit
-   api/tracker
    api/analytics
    api/manage
    api/utils

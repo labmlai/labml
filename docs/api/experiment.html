@@ -43,8 +43,8 @@
   <link rel="stylesheet" href="../_static/katex-math.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Logger" href="logger.html" />
-    <link rel="prev" title="Configs" href="configs.html" />
+    <link rel="next" title="Tracker" href="tracker.html" />
+    <link rel="prev" title="labml.ai client reference" href="../index.html" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
     <script>
@@ -100,12 +100,20 @@
             
             
               <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Experiment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#create-experiment">Create Experiment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checkpoints">Checkpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configurations-hyper-parameters">Configurations &amp; Hyper-parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bundle-checkpoints">Bundle checkpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#distirbuted-training">Distirbuted training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utilities">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tracker.html">Tracker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="monit.html">Monitor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lab.html">Lab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configs.html">Configs</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Experiment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a></li>
-<li class="toctree-l1"><a class="reference internal" href="monit.html">Monitor</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tracker.html">Tracker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analytics.html">Analytics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="manage.html">Manage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
@@ -183,6 +191,8 @@
             
   <div class="section" id="module-labml.experiment">
 <span id="experiment"></span><h1>Experiment<a class="headerlink" href="#module-labml.experiment" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="create-experiment">
+<h2>Create Experiment<a class="headerlink" href="#create-experiment" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="labml.experiment.create">
 <code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">uuid</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">python_file</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">comment</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">writers</span><span class="p">:</span> <span class="n">Set<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_callers</span><span class="p">:</span> <span class="n">Set<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Set<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disable_screen</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.create" title="Permalink to this definition">¶</a></dt>
@@ -205,15 +215,92 @@ automatically determining <code class="docutils literal notranslate"><span class
 </dd></dl>
 
 <dl class="py function">
+<dt id="labml.experiment.record">
+<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">record</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">comment</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">writers</span><span class="p">:</span> <span class="n">Set<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Set<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exp_conf</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lab_conf</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">token</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disable_screen</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is combines <a class="reference internal" href="#labml.experiment.create" title="labml.experiment.create"><code class="xref py py-func docutils literal notranslate"><span class="pre">create()</span></code></a>, <a class="reference internal" href="#labml.experiment.configs" title="labml.experiment.configs"><code class="xref py py-func docutils literal notranslate"><span class="pre">configs()</span></code></a> and <a class="reference internal" href="#labml.experiment.start" title="labml.experiment.start"><code class="xref py py-func docutils literal notranslate"><span class="pre">start()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the experiment</p></li>
+<li><p><strong>comment</strong> (<em>str</em><em>, </em><em>optional</em>) – a short description of the experiment</p></li>
+<li><p><strong>writers</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – list of writers to write stat to.
+Defaults to <code class="docutils literal notranslate"><span class="pre">{'tensorboard',</span> <span class="pre">'sqlite',</span> <span class="pre">'web_api'}</span></code>.</p></li>
+<li><p><strong>tags</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Set of tags for experiment</p></li>
+<li><p><strong>exp_conf</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – a dictionary of experiment configurations</p></li>
+<li><p><strong>lab_conf</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – a dictionary of configurations for LabML.
+Use this if you want to change default configurations such as <code class="docutils literal notranslate"><span class="pre">web_api</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">data_path</span></code>.</p></li>
+<li><p><strong>token</strong> (<em>str</em><em>, </em><em>optional</em>) – a shortcut to provide LabML mobile app token (or url - <code class="docutils literal notranslate"><span class="pre">web_api</span></code>)
+instead of including it in <code class="docutils literal notranslate"><span class="pre">lab_conf</span></code>. You can set this with <a class="reference internal" href="lab.html#labml.lab.configure" title="labml.lab.configure"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.lab.configure()</span></code></a>,
+<a class="reference external" href="../guide/installation_setup.html">or with a configuration file for the entire project</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.experiment.evaluate">
+<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This should be used for evaluation of a saved experiment.
+This will not record anything.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.experiment.start">
+<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the experiment.
+Run it using <code class="docutils literal notranslate"><span class="pre">with</span></code> statement and it will monitor and report, experiment completion
+and exceptions.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="labml.experiment.get_uuid">
 <code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">get_uuid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#get_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.get_uuid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the UUID of the current experiment run</p>
 </dd></dl>
 
+</div>
+<div class="section" id="checkpoints">
+<h2>Checkpoints<a class="headerlink" href="#checkpoints" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="labml.experiment.add_model_savers">
-<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">add_model_savers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">savers</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>labml.internal.experiment.ModelSaver<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#add_model_savers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.add_model_savers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="labml.experiment.load">
+<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">run_uuid</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a the run from a previous checkpoint.
+You need to separately call <code class="docutils literal notranslate"><span class="pre">experiment.start</span></code> to start the experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>run_uuid</strong> (<em>str</em>) – experiment will start from
+a saved state in the run with UUID <code class="docutils literal notranslate"><span class="pre">run_uuid</span></code></p></li>
+<li><p><strong>checkpoint</strong> (<em>str</em><em>, </em><em>optional</em>) – if provided the experiment will start from
+given checkpoint. Otherwise it will start from the last checkpoint.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.experiment.load_models">
+<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">load_models</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">models</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">run_uuid</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#load_models"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.load_models" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads and starts the run from a previous checkpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>models</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of names of models to be loaded</p></li>
+<li><p><strong>run_uuid</strong> (<em>str</em>) – experiment will start from
+a saved state in the run with UUID <code class="docutils literal notranslate"><span class="pre">run_uuid</span></code></p></li>
+<li><p><strong>checkpoint</strong> (<em>str</em><em>, </em><em>optional</em>) – if provided the experiment will start from
+given checkpoint. Otherwise it will start from the last checkpoint.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.experiment.save_checkpoint">
+<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">save_checkpoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#save_checkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.save_checkpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves model checkpoints</p>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.experiment.add_pytorch_models">
@@ -246,6 +333,56 @@ and loaded with <a class="reference internal" href="#labml.experiment.load" titl
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt id="labml.experiment.add_model_savers">
+<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">add_model_savers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">savers</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>labml.internal.experiment.ModelSaver<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#add_model_savers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.add_model_savers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add custom model savers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>savers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="#labml.experiment.ModelSaver" title="labml.experiment.ModelSaver"><em>ModelSaver</em></a><em>]</em>) – a dictionary of <a class="reference internal" href="#labml.experiment.ModelSaver" title="labml.experiment.ModelSaver"><code class="xref py py-class docutils literal notranslate"><span class="pre">labml.experiment.ModelSaver</span></code></a>.
+These will be saved with <a class="reference internal" href="#labml.experiment.save_checkpoint" title="labml.experiment.save_checkpoint"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.experiment.save_checkpoint()</span></code></a>
+and loaded with <a class="reference internal" href="#labml.experiment.load" title="labml.experiment.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.experiment.load()</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="labml.experiment.ModelSaver">
+<em class="property">class </em><code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">ModelSaver</code><a class="reference internal" href="../_modules/labml/internal/experiment.html#ModelSaver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.ModelSaver" title="Permalink to this definition">¶</a></dt>
+<dd><p>An abstract class defining model saver/loader.</p>
+<p>The implementation should keep a reference to the model and load and save the model
+parameters.</p>
+<dl class="py method">
+<dt id="labml.experiment.ModelSaver.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">checkpoint_path</span><span class="p">:</span> <span class="n">pathlib.Path</span></em><span class="sig-paren">)</span> &#x2192; any<a class="reference internal" href="../_modules/labml/internal/experiment.html#ModelSaver.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.ModelSaver.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the model in the given checkpoint path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>checkpoint_path</strong> (<em>pathlib.Path</em>) – The path to save the model at</p>
+</dd>
+</dl>
+<p>Returns any meta info, such as the individual filename(s)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="labml.experiment.ModelSaver.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">checkpoint_path</span><span class="p">:</span> <span class="n">pathlib.Path</span></em>, <em class="sig-param"><span class="n">info</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/labml/internal/experiment.html#ModelSaver.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.ModelSaver.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the model from the given checkpoint path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>checkpoint_path</strong> (<em>pathlib.Path</em>) – The path to load the model from</p></li>
+<li><p><strong>info</strong> (<em>any</em>) – The returned meta data when saving</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="configurations-hyper-parameters">
+<h2>Configurations &amp; Hyper-parameters<a class="headerlink" href="#configurations-hyper-parameters" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="labml.experiment.configs">
 <code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">configs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#configs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.configs" title="Permalink to this definition">¶</a></dt>
@@ -304,31 +441,6 @@ configs to be overridden</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="labml.experiment.start">
-<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Starts the experiment.
-Run it using <code class="docutils literal notranslate"><span class="pre">with</span></code> statement and it will monitor and report, experiment completion
-and exceptions.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="labml.experiment.load">
-<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">run_uuid</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a the run from a previous checkpoint.
-You need to separately call <code class="docutils literal notranslate"><span class="pre">experiment.start</span></code> to start the experiment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>run_uuid</strong> (<em>str</em>) – experiment will start from
-a saved state in the run with UUID <code class="docutils literal notranslate"><span class="pre">run_uuid</span></code></p></li>
-<li><p><strong>checkpoint</strong> (<em>str</em><em>, </em><em>optional</em>) – if provided the experiment will start from
-given checkpoint. Otherwise it will start from the last checkpoint.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt id="labml.experiment.load_configs">
 <code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">load_configs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">run_uuid</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">is_only_hyperparam</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#load_configs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.load_configs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load configs of a previous run</p>
@@ -344,59 +456,69 @@ are returned</p>
 </dl>
 </dd></dl>
 
+</div>
+<div class="section" id="bundle-checkpoints">
+<h2>Bundle checkpoints<a class="headerlink" href="#bundle-checkpoints" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="labml.experiment.save_checkpoint">
-<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">save_checkpoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#save_checkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.save_checkpoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves model checkpoints</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="labml.experiment.load_models">
-<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">load_models</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">models</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">run_uuid</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#load_models"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.load_models" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads and starts the run from a previous checkpoint.</p>
+<dt id="labml.experiment.save_bundle">
+<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">save_bundle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">pathlib.Path</span></em>, <em class="sig-param"><span class="n">run_uuid</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">checkpoint</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">data_files</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#save_bundle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.save_bundle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file with the configs and checkpoints that can be distributed and loaded
+easily.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>models</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of names of models to be loaded</p></li>
-<li><p><strong>run_uuid</strong> (<em>str</em>) – experiment will start from
-a saved state in the run with UUID <code class="docutils literal notranslate"><span class="pre">run_uuid</span></code></p></li>
-<li><p><strong>checkpoint</strong> (<em>str</em><em>, </em><em>optional</em>) – if provided the experiment will start from
-given checkpoint. Otherwise it will start from the last checkpoint.</p></li>
+<li><p><strong>path</strong> (<em>Path</em>) – <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file path</p></li>
+<li><p><strong>run_uuid</strong> (<em>str</em>) – experiment run to bundle</p></li>
+<li><p><strong>checkpoint</strong> (<em>str</em><em>, </em><em>optional</em>) – if provided the given checkpoint will be bundled.
+Otherwise it will bundle the last checkpoint.</p></li>
+<li><p><strong>data_files</strong> – List of data files (relative to <a class="reference internal" href="lab.html#labml.lab.get_data_path" title="labml.lab.get_data_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.lab.get_data_path()</span></code></a>) to be bundled.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt id="labml.experiment.load_bundle">
+<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">load_bundle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">pathlib.Path</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">url</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>str<span class="p">, </span>int<span class="p">]</span><a class="reference internal" href="../_modules/labml/experiment.html#load_bundle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.load_bundle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract a bundle into experiments folder and returns the <code class="docutils literal notranslate"><span class="pre">run_uuid</span></code> and checkpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>Path</em>) – <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file path</p></li>
+<li><p><strong>url</strong> (<em>str</em>) – url to download the <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file from</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="distirbuted-training">
+<h2>Distirbuted training<a class="headerlink" href="#distirbuted-training" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="labml.experiment.distributed">
+<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">distributed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rank</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">world_size</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#distributed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.distributed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the <code class="docutils literal notranslate"><span class="pre">rank</span></code> and <code class="docutils literal notranslate"><span class="pre">world_size</span></code> of the current process
+in an distributed training setup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rank</strong> (<em>int</em>) – rank of the current process</p></li>
+<li><p><strong>world_size</strong> (<em>int</em>) – number of training processes</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="labml.experiment.save_numpy">
 <code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">save_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">array</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#save_numpy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.save_numpy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves a single numpy array. This is used to save processed data.</p>
 </dd></dl>
 
-<dl class="py function">
-<dt id="labml.experiment.record">
-<code class="sig-prename descclassname">labml.experiment.</code><code class="sig-name descname">record</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">comment</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">writers</span><span class="p">:</span> <span class="n">Set<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Set<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exp_conf</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lab_conf</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">token</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disable_screen</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.experiment.record" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is combines <a class="reference internal" href="#labml.experiment.create" title="labml.experiment.create"><code class="xref py py-func docutils literal notranslate"><span class="pre">create()</span></code></a>, <a class="reference internal" href="#labml.experiment.configs" title="labml.experiment.configs"><code class="xref py py-func docutils literal notranslate"><span class="pre">configs()</span></code></a> and <a class="reference internal" href="#labml.experiment.start" title="labml.experiment.start"><code class="xref py py-func docutils literal notranslate"><span class="pre">start()</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the experiment</p></li>
-<li><p><strong>comment</strong> (<em>str</em><em>, </em><em>optional</em>) – a short description of the experiment</p></li>
-<li><p><strong>writers</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – list of writers to write stat to.
-Defaults to <code class="docutils literal notranslate"><span class="pre">{'tensorboard',</span> <span class="pre">'sqlite',</span> <span class="pre">'web_api'}</span></code>.</p></li>
-<li><p><strong>tags</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Set of tags for experiment</p></li>
-<li><p><strong>exp_conf</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – a dictionary of experiment configurations</p></li>
-<li><p><strong>lab_conf</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – a dictionary of configurations for LabML.
-Use this if you want to change default configurations such as <code class="docutils literal notranslate"><span class="pre">web_api</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">data_path</span></code>.</p></li>
-<li><p><strong>token</strong> (<em>str</em><em>, </em><em>optional</em>) – a shortcut to provide LabML mobile app token (or url - <code class="docutils literal notranslate"><span class="pre">web_api</span></code>)
-instead of including it in <code class="docutils literal notranslate"><span class="pre">lab_conf</span></code>. You can set this with <a class="reference internal" href="lab.html#labml.lab.configure" title="labml.lab.configure"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.lab.configure()</span></code></a>,
-<a class="reference external" href="../guide/installation_setup.html">or with a configuration file for the entire project</a>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+</div>
 </div>
 
 
@@ -407,10 +529,10 @@ instead of including it in <code class="docutils literal notranslate"><span clas
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="logger.html" class="btn btn-neutral float-right" title="Logger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tracker.html" class="btn btn-neutral float-right" title="Tracker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="configs.html" class="btn btn-neutral float-left" title="Configs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="labml.ai client reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
