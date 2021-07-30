@@ -10,6 +10,11 @@ from labml.internal.experiment import experiment_singleton
 
 
 class LabMLLightningLogger(LightningLoggerBase):
+    """
+    PyTorch Lightening logger integration.
+    Pass an instance of this class to ``pytorch_lightning.Training`` as argument ``logger``.
+    PyTorch Lightening will call relavent mehtods of this class to log hyper-parameters and metrics.
+    """
     def __init__(self):
         super().__init__()
 

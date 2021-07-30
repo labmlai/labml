@@ -15,6 +15,11 @@ _MAP = {
 
 
 class LabMLKerasCallback(tf.keras.callbacks.Callback):
+    """
+    Keras callback integration.
+    Pass an instance of this class to Keras model ``fit`` method as argument ``callbacks``.
+    Keras will call relavent mehtods of this class to log metrics.
+    """
     def __init__(self, save_batch_frequency: int = 1):
         super().__init__()
         self.save_batch_frequency = save_batch_frequency

@@ -3,7 +3,7 @@ Manage
 
 .. warning::
 
-    This module is still experimental
+    This module is experimental
 
 .. automodule:: labml.manage
 

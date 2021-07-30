@@ -22,6 +22,7 @@ and tutorials.
 
    api/experiment
    api/tracker
+   api/framework_integrations
    api/monit
    api/analytics
    api/configs

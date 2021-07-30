@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Manage &mdash; labml.ai client library 0.4 documentation</title>
+  <title>Framework Integrations &mdash; labml.ai client library 0.4 documentation</title>
   
 
   
@@ -18,7 +18,7 @@
   
   
   
-    <link rel="canonical" href="https://docs.labml.ai/api/manage.html"/>
+    <link rel="canonical" href="https://docs.labml.ai/api/framework_integrations.html"/>
   
 
   
@@ -43,8 +43,8 @@
   <link rel="stylesheet" href="../_static/katex-math.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Utils" href="utils.html" />
-    <link rel="prev" title="Lab" href="lab.html" />
+    <link rel="next" title="Monitor" href="monit.html" />
+    <link rel="prev" title="Tracker" href="tracker.html" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
     <script>
@@ -117,10 +117,10 @@
 <li class="toctree-l2"><a class="reference internal" href="tracker.html#helpers">Helpers</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="framework_integrations.html">Framework Integrations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#fastai">FastAI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#keras">Keras</a></li>
-<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#pytorch-lightning">PyTorch Lightning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Framework Integrations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fastai">FastAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#keras">Keras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-lightning">PyTorch Lightning</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="monit.html">Monitor</a><ul>
@@ -143,7 +143,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lab.html">Lab</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Manage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manage.html">Manage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#cache">Cache</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#keyboard-interrupt">Keyboard Interrupt</a></li>
@@ -204,13 +204,13 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>Manage</li>
+      <li>Framework Integrations</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/api/manage.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/framework_integrations.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -223,46 +223,44 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="manage">
-<h1>Manage<a class="headerlink" href="#manage" title="Permalink to this headline">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This module is experimental</p>
+  <div class="section" id="framework-integrations">
+<h1>Framework Integrations<a class="headerlink" href="#framework-integrations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="fastai">
+<h2>FastAI<a class="headerlink" href="#fastai" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/labmlai/labml/tree/master/samples/fastai">FastAI Sample</a></p>
+<dl class="py class">
+<dt id="labml.utils.fastai.LabMLFastAICallback">
+<em class="property">class </em><code class="sig-prename descclassname">labml.utils.fastai.</code><code class="sig-name descname">LabMLFastAICallback</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/fastai.html#LabMLFastAICallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.fastai.LabMLFastAICallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>FastAI callback integration.
+Pass an instance of this class to FastAI learner as argument <code class="docutils literal notranslate"><span class="pre">cbs</span></code>.
+FastAI will call relavent mehtods of this class to log metrics.</p>
+</dd></dl>
+
 </div>
-<span class="target" id="module-labml.manage"></span><dl class="py function">
-<dt id="labml.manage.new_run">
-<code class="sig-prename descclassname">labml.manage.</code><code class="sig-name descname">new_run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">python_file</span><span class="p">:</span> <span class="n">pathlib.PurePath</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">configs</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">comment</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/manage.html#new_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.manage.new_run" title="Permalink to this definition">¶</a></dt>
-<dd><p>This starts a new experiment by running <code class="docutils literal notranslate"><span class="pre">main</span></code> function defined in <code class="docutils literal notranslate"><span class="pre">python_file</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>python_file</strong> (<em>PurePath</em>) – path of the Python script</p>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>configs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – a dictionary of configurations</p></li>
-<li><p><strong>comment</strong> (<em>str</em><em>, </em><em>optional</em>) – comment to identify the experiment</p></li>
-</ul>
-</dd>
-</dl>
+<div class="section" id="keras">
+<h2>Keras<a class="headerlink" href="#keras" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/labmlai/labml/tree/master/samples/keras">Keras Sample</a></p>
+<dl class="py class">
+<dt id="labml.utils.keras.LabMLKerasCallback">
+<em class="property">class </em><code class="sig-prename descclassname">labml.utils.keras.</code><code class="sig-name descname">LabMLKerasCallback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_batch_frequency</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/keras.html#LabMLKerasCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.keras.LabMLKerasCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Keras callback integration.
+Pass an instance of this class to Keras model <code class="docutils literal notranslate"><span class="pre">fit</span></code> method as argument <code class="docutils literal notranslate"><span class="pre">callbacks</span></code>.
+Keras will call relavent mehtods of this class to log metrics.</p>
 </dd></dl>
 
-<dl class="py function">
-<dt id="labml.manage.new_run_process">
-<code class="sig-prename descclassname">labml.manage.</code><code class="sig-name descname">new_run_process</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">python_file</span><span class="p">:</span> <span class="n">pathlib.PurePath</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">configs</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">comment</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/manage.html#new_run_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.manage.new_run_process" title="Permalink to this definition">¶</a></dt>
-<dd><p>This starts a new experiment in a separate process by running <code class="docutils literal notranslate"><span class="pre">main</span></code> function defined in <code class="docutils literal notranslate"><span class="pre">python_file</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>python_file</strong> (<em>PurePath</em>) – path of the Python script</p>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>configs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – a dictionary of configurations</p></li>
-<li><p><strong>comment</strong> (<em>str</em><em>, </em><em>optional</em>) – comment to identify the experiment</p></li>
-</ul>
-</dd>
-</dl>
+</div>
+<div class="section" id="pytorch-lightning">
+<h2>PyTorch Lightning<a class="headerlink" href="#pytorch-lightning" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/labmlai/labml/tree/master/samples/lightning">PyTorch Lightening Sample</a></p>
+<dl class="py class">
+<dt id="labml.utils.lightning.LabMLLightningLogger">
+<em class="property">class </em><code class="sig-prename descclassname">labml.utils.lightning.</code><code class="sig-name descname">LabMLLightningLogger</code><a class="reference internal" href="../_modules/labml/utils/lightning.html#LabMLLightningLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.lightning.LabMLLightningLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>PyTorch Lightening logger integration.
+Pass an instance of this class to <code class="docutils literal notranslate"><span class="pre">pytorch_lightning.Training</span></code> as argument <code class="docutils literal notranslate"><span class="pre">logger</span></code>.
+PyTorch Lightening will call relavent mehtods of this class to log hyper-parameters and metrics.</p>
 </dd></dl>
 
+</div>
 </div>
 
 
@@ -273,10 +271,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="utils.html" class="btn btn-neutral float-right" title="Utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="monit.html" class="btn btn-neutral float-right" title="Monitor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="lab.html" class="btn btn-neutral float-left" title="Lab" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tracker.html" class="btn btn-neutral float-left" title="Tracker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

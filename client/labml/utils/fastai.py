@@ -5,6 +5,12 @@ from labml import tracker, experiment
 
 
 class LabMLFastAICallback(Callback):
+    """
+    FastAI callback integration.
+    Pass an instance of this class to FastAI learner as argument ``cbs``.
+    FastAI will call relavent mehtods of this class to log metrics.
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 

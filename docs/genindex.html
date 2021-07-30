@@ -116,6 +116,12 @@
 <li class="toctree-l2"><a class="reference internal" href="api/tracker.html#helpers">Helpers</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="api/framework_integrations.html">Framework Integrations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/framework_integrations.html#fastai">FastAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/framework_integrations.html#keras">Keras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/framework_integrations.html#pytorch-lightning">PyTorch Lightning</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api/monit.html">Monitor</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/monit.html#basic">Basic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/monit.html#iterators">Iterators</a></li>
@@ -137,7 +143,13 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/lab.html">Lab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/manage.html">Manage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/utils.html#cache">Cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils.html#keyboard-interrupt">Keyboard Interrupt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils.html#downloading">Downloading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils.html#pytorch">PyTorch</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api/helpers.html">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/helpers.html#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/helpers.html#module-labml_helpers.training_loop">Modules</a><ul>
@@ -278,14 +290,20 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/utils.html#labml.utils.cache.cache">cache() (in module labml.utils.cache)</a>
+</li>
+      <li><a href="api/utils.html#labml.utils.cache.cache_get">cache_get() (in module labml.utils.cache)</a>
+</li>
+      <li><a href="api/utils.html#labml.utils.cache.cache_set">cache_set() (in module labml.utils.cache)</a>
+</li>
       <li><a href="api/configs.html#labml.configs.calculate">calculate() (in module labml.configs)</a>
 </li>
       <li><a href="api/helpers.html#labml_helpers.datasets.cifar10.CIFAR10Configs">CIFAR10Configs (class in labml_helpers.datasets.cifar10)</a>
 </li>
-      <li><a href="api/logger.html#labml.logger.Color">Color (class in labml.logger)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/logger.html#labml.logger.Color">Color (class in labml.logger)</a>
+</li>
       <li><a href="api/experiment.html#labml.experiment.configs">configs() (in module labml.experiment)</a>
 </li>
       <li><a href="api/lab.html#labml.lab.configure">configure() (in module labml.lab)</a>
@@ -302,6 +320,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/logger.html#labml.logger.Text.danger">danger (labml.logger.Text attribute)</a>
 </li>
+      <li><a href="api/utils.html#labml.utils.delayed_keyboard_interrupt.DelayedKeyboardInterrupt">DelayedKeyboardInterrupt (class in labml.utils.delayed_keyboard_interrupt)</a>
+</li>
       <li><a href="api/helpers.html#labml_helpers.device.DeviceConfigs">DeviceConfigs (class in labml_helpers.device)</a>
 </li>
   </ul></td>
@@ -309,6 +329,8 @@
       <li><a href="api/experiment.html#labml.experiment.distributed">distributed() (in module labml.experiment)</a>
 </li>
       <li><a href="api/analytics.html#labml.analytics.distribution">distribution() (in module labml.analytics)</a>
+</li>
+      <li><a href="api/utils.html#labml.utils.download.download_file">download_file() (in module labml.utils.download)</a>
 </li>
       <li><a href="api/configs.html#labml.configs.DynamicHyperParam">DynamicHyperParam (class in labml.configs)</a>
 </li>
@@ -323,6 +345,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/experiment.html#labml.experiment.evaluate">evaluate() (in module labml.experiment)</a>
+</li>
+      <li><a href="api/utils.html#labml.utils.download.extract_tar">extract_tar() (in module labml.utils.download)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -348,14 +372,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/lab.html#labml.lab.get_data_path">get_data_path() (in module labml.lab)</a>
 </li>
+      <li><a href="api/utils.html#labml.utils.pytorch.get_device">get_device() (in module labml.utils.pytorch)</a>
+</li>
       <li><a href="api/lab.html#labml.lab.get_experiments_path">get_experiments_path() (in module labml.lab)</a>
 </li>
       <li><a href="api/tracker.html#labml.tracker.get_global_step">get_global_step() (in module labml.tracker)</a>
 </li>
-      <li><a href="api/utils.html#labml.utils.pytorch.get_modules">get_modules() (in module labml.utils.pytorch)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/utils.html#labml.utils.pytorch.get_modules">get_modules() (in module labml.utils.pytorch)</a>
+</li>
       <li><a href="api/lab.html#labml.lab.get_path">get_path() (in module labml.lab)</a>
 </li>
       <li><a href="api/analytics.html#labml.analytics.get_run">get_run() (in module labml.analytics)</a>
@@ -469,21 +495,12 @@
 </li>
       </ul></li>
       <li>
-    labml.utils.pytorch
-
-      <ul>
-        <li><a href="api/utils.html#module-labml.utils.pytorch">module</a>
-</li>
-      </ul></li>
-      <li>
     labml_helpers.datasets.cifar10
 
       <ul>
         <li><a href="api/helpers.html#module-labml_helpers.datasets.cifar10">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     labml_helpers.datasets.mnist
 
@@ -491,6 +508,8 @@
         <li><a href="api/helpers.html#module-labml_helpers.datasets.mnist">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     labml_helpers.device
 
@@ -519,6 +538,12 @@
         <li><a href="api/helpers.html#module-labml_helpers.training_loop">module</a>
 </li>
       </ul></li>
+      <li><a href="api/framework_integrations.html#labml.utils.fastai.LabMLFastAICallback">LabMLFastAICallback (class in labml.utils.fastai)</a>
+</li>
+      <li><a href="api/framework_integrations.html#labml.utils.keras.LabMLKerasCallback">LabMLKerasCallback (class in labml.utils.keras)</a>
+</li>
+      <li><a href="api/framework_integrations.html#labml.utils.lightning.LabMLLightningLogger">LabMLLightningLogger (class in labml.utils.lightning)</a>
+</li>
       <li><a href="api/logger.html#labml.logger.Style.light">light (labml.logger.Style attribute)</a>
 </li>
       <li><a href="api/logger.html#labml.logger.Text.link">link (labml.logger.Text attribute)</a>
@@ -576,8 +601,6 @@
         <li><a href="api/monit.html#module-labml.monit">labml.monit</a>
 </li>
         <li><a href="api/tracker.html#module-labml.tracker">labml.tracker</a>
-</li>
-        <li><a href="api/utils.html#module-labml.utils.pytorch">labml.utils.pytorch</a>
 </li>
         <li><a href="api/helpers.html#module-labml_helpers.datasets.cifar10">labml_helpers.datasets.cifar10</a>
 </li>
@@ -707,6 +730,8 @@
       <li><a href="api/experiment.html#labml.experiment.start">start() (in module labml.experiment)</a>
 </li>
       <li><a href="api/utils.html#labml.utils.pytorch.store_model_indicators">store_model_indicators() (in module labml.utils.pytorch)</a>
+</li>
+      <li><a href="api/utils.html#labml.utils.pytorch.store_optimizer_indicators">store_optimizer_indicators() (in module labml.utils.pytorch)</a>
 </li>
       <li><a href="api/logger.html#labml.logger.Style">Style (class in labml.logger)</a>
 </li>

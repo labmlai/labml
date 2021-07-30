@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>labml_helpers.datasets.mnist &mdash; labml.ai client library 0.4 documentation</title>
+  <title>labml.utils.download &mdash; labml.ai client library 0.4 documentation</title>
   
 
   
@@ -18,7 +18,7 @@
   
   
   
-    <link rel="canonical" href="https://docs.labml.ai/_modules/labml_helpers/datasets/mnist.html"/>
+    <link rel="canonical" href="https://docs.labml.ai/_modules/labml/utils/download.html"/>
   
 
   
@@ -204,7 +204,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>labml_helpers.datasets.mnist</li>
+      <li>labml.utils.download</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -219,75 +219,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for labml_helpers.datasets.mnist</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
-<span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
+  <h1>Source code for labml.utils.download</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tarfile</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">labml</span> <span class="kn">import</span> <span class="n">lab</span>
-<span class="kn">from</span> <span class="nn">labml.configs</span> <span class="kn">import</span> <span class="n">BaseConfigs</span><span class="p">,</span> <span class="n">aggregate</span><span class="p">,</span> <span class="n">option</span>
+<span class="kn">from</span> <span class="nn">labml</span> <span class="kn">import</span> <span class="n">monit</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">labml.logger</span> <span class="kn">import</span> <span class="n">Text</span>
 
-
-<span class="k">def</span> <span class="nf">_dataset</span><span class="p">(</span><span class="n">is_train</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">lab</span><span class="o">.</span><span class="n">get_data_path</span><span class="p">()),</span>
-                          <span class="n">train</span><span class="o">=</span><span class="n">is_train</span><span class="p">,</span>
-                          <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                          <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
+<span class="n">_TAR_BUFFER_SIZE</span> <span class="o">=</span> <span class="mi">100_000</span>
 
 
-<div class="viewcode-block" id="MNISTConfigs"><a class="viewcode-back" href="../../../api/helpers.html#labml_helpers.datasets.mnist.MNISTConfigs">[docs]</a><span class="k">class</span> <span class="nc">MNISTConfigs</span><span class="p">(</span><span class="n">BaseConfigs</span><span class="p">):</span>
-    <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;MNIST&#39;</span>
-    <span class="n">dataset_transforms</span><span class="p">:</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span>
-    <span class="n">train_dataset</span><span class="p">:</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span>
-    <span class="n">valid_dataset</span><span class="p">:</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span>
+<div class="viewcode-block" id="download_file"><a class="viewcode-back" href="../../../api/utils.html#labml.utils.download.download_file">[docs]</a><span class="k">def</span> <span class="nf">download_file</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span>
 
-    <span class="n">train_loader</span><span class="p">:</span> <span class="n">DataLoader</span>
-    <span class="n">valid_loader</span><span class="p">:</span> <span class="n">DataLoader</span>
+    <span class="kn">import</span> <span class="nn">urllib.request</span>
 
-    <span class="n">train_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span>
-    <span class="n">valid_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">train_loader_shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">valid_loader_shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+    <span class="k">with</span> <span class="n">monit</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;Download&quot;</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">reporthook</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">block_size</span><span class="p">,</span> <span class="n">total_size</span><span class="p">):</span>
+            <span class="n">monit</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">count</span> <span class="o">*</span> <span class="n">block_size</span> <span class="o">/</span> <span class="n">total_size</span><span class="p">)</span>
 
-
-<span class="nd">@option</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">dataset_transforms</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">mnist_transforms</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
-        <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
-        <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.1307</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.3081</span><span class="p">,))</span>
-    <span class="p">])</span>
+        <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">reporthook</span><span class="o">=</span><span class="n">reporthook</span><span class="p">)</span></div>
 
 
-<span class="nd">@option</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">mnist_train_dataset</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">MNISTConfigs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">_dataset</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">dataset_transforms</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_extract_tar_file</span><span class="p">(</span><span class="n">tar</span><span class="p">:</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">TarFile</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">TarInfo</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">tar</span><span class="o">.</span><span class="n">extractfile</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">as</span> <span class="n">ef</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">o</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">ef</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">_TAR_BUFFER_SIZE</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">r</span><span class="p">:</span>
+                    <span class="n">o</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
 
 
-<span class="nd">@option</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">valid_dataset</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">mnist_valid_dataset</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">MNISTConfigs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">_dataset</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">dataset_transforms</span><span class="p">)</span>
+<div class="viewcode-block" id="extract_tar"><a class="viewcode-back" href="../../../api/utils.html#labml.utils.download.extract_tar">[docs]</a><span class="k">def</span> <span class="nf">extract_tar</span><span class="p">(</span><span class="n">tar_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">to_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tar_file</span><span class="p">),</span> <span class="s1">&#39;r:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">tar</span><span class="o">.</span><span class="n">getmembers</span><span class="p">()</span>
 
-
-<span class="nd">@option</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">train_loader</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">mnist_train_loader</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">MNISTConfigs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">,</span>
-                      <span class="n">batch_size</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">train_batch_size</span><span class="p">,</span>
-                      <span class="n">shuffle</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">train_loader_shuffle</span><span class="p">)</span>
-
-
-<span class="nd">@option</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">valid_loader</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">mnist_valid_loader</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">MNISTConfigs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">valid_dataset</span><span class="p">,</span>
-                      <span class="n">batch_size</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">valid_batch_size</span><span class="p">,</span>
-                      <span class="n">shuffle</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">valid_loader_shuffle</span><span class="p">)</span>
-
-
-<span class="n">aggregate</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">dataset_name</span><span class="p">,</span> <span class="s1">&#39;MNIST&#39;</span><span class="p">,</span>
-          <span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">dataset_transforms</span><span class="p">,</span> <span class="s1">&#39;mnist_transforms&#39;</span><span class="p">),</span>
-          <span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">,</span> <span class="s1">&#39;mnist_train_dataset&#39;</span><span class="p">),</span>
-          <span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">valid_dataset</span><span class="p">,</span> <span class="s1">&#39;mnist_valid_dataset&#39;</span><span class="p">),</span>
-          <span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">train_loader</span><span class="p">,</span> <span class="s1">&#39;mnist_train_loader&#39;</span><span class="p">),</span>
-          <span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">valid_loader</span><span class="p">,</span> <span class="s1">&#39;mnist_valid_loader&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">monit</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="s1">&#39;Extract tar&#39;</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">isdir</span><span class="p">():</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">f</span><span class="o">.</span><span class="n">isfile</span><span class="p">():</span>
+                <span class="n">_extract_tar_file</span><span class="p">(</span><span class="n">tar</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">to_path</span> <span class="o">/</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown file type </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">Text</span><span class="o">.</span><span class="n">warning</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

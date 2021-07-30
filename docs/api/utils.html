@@ -117,6 +117,12 @@
 <li class="toctree-l2"><a class="reference internal" href="tracker.html#helpers">Helpers</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="framework_integrations.html">Framework Integrations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#fastai">FastAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#keras">Keras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#pytorch-lightning">PyTorch Lightning</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="monit.html">Monitor</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="monit.html#basic">Basic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="monit.html#iterators">Iterators</a></li>
@@ -138,7 +144,13 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lab.html">Lab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="manage.html">Manage</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Utils</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cache">Cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#keyboard-interrupt">Keyboard Interrupt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#downloading">Downloading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch">PyTorch</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="helpers.html#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="helpers.html#module-labml_helpers.training_loop">Modules</a><ul>
@@ -211,11 +223,58 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-labml.utils.pytorch">
-<span id="utils"></span><h1>Utils<a class="headerlink" href="#module-labml.utils.pytorch" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="utils">
+<h1>Utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="cache">
+<h2>Cache<a class="headerlink" href="#cache" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="labml.utils.cache.cache">
+<code class="sig-prename descclassname">labml.utils.cache.</code><code class="sig-name descname">cache</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">loader</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">]</span><span class="p">, </span>Any<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">file_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'json'</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/labml/utils/cache.html#cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.cache.cache" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.utils.cache.cache_get">
+<code class="sig-prename descclassname">labml.utils.cache.</code><code class="sig-name descname">cache_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">file_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'json'</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/labml/utils/cache.html#cache_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.cache.cache_get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.utils.cache.cache_set">
+<code class="sig-prename descclassname">labml.utils.cache.</code><code class="sig-name descname">cache_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">Any</span></em>, <em class="sig-param"><span class="n">file_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'json'</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/labml/utils/cache.html#cache_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.cache.cache_set" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="keyboard-interrupt">
+<h2>Keyboard Interrupt<a class="headerlink" href="#keyboard-interrupt" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="labml.utils.delayed_keyboard_interrupt.DelayedKeyboardInterrupt">
+<em class="property">class </em><code class="sig-prename descclassname">labml.utils.delayed_keyboard_interrupt.</code><code class="sig-name descname">DelayedKeyboardInterrupt</code><a class="reference internal" href="../_modules/labml/utils/delayed_keyboard_interrupt.html#DelayedKeyboardInterrupt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.delayed_keyboard_interrupt.DelayedKeyboardInterrupt" title="Permalink to this definition">¶</a></dt>
+<dd><p>### Capture <cite>KeyboardInterrupt</cite> and fire it later</p>
+</dd></dl>
+
+</div>
+<div class="section" id="downloading">
+<h2>Downloading<a class="headerlink" href="#downloading" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="labml.utils.download.download_file">
+<code class="sig-prename descclassname">labml.utils.download.</code><code class="sig-name descname">download_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">pathlib.Path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/download.html#download_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.download.download_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.utils.download.extract_tar">
+<code class="sig-prename descclassname">labml.utils.download.</code><code class="sig-name descname">extract_tar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tar_file</span><span class="p">:</span> <span class="n">pathlib.Path</span></em>, <em class="sig-param"><span class="n">to_path</span><span class="p">:</span> <span class="n">pathlib.Path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/download.html#extract_tar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.download.extract_tar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="pytorch">
+<h2>PyTorch<a class="headerlink" href="#pytorch" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="labml.utils.pytorch.store_model_indicators">
 <code class="sig-prename descclassname">labml.utils.pytorch.</code><code class="sig-name descname">store_model_indicators</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span><span class="p">:</span> <span class="n">torch.nn.modules.module.Module</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">model_name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'model'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/pytorch.html#store_model_indicators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.pytorch.store_model_indicators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.utils.pytorch.store_optimizer_indicators">
+<code class="sig-prename descclassname">labml.utils.pytorch.</code><code class="sig-name descname">store_optimizer_indicators</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">optimizer</span><span class="p">:</span> <span class="n">Optimizer</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">models</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>torch.nn.modules.module.Module<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">optimizer_name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'optimizer'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/pytorch.html#store_optimizer_indicators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.pytorch.store_optimizer_indicators" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -223,6 +282,12 @@
 <code class="sig-prename descclassname">labml.utils.pytorch.</code><code class="sig-name descname">get_modules</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configs</span><span class="p">:</span> <span class="n"><a class="reference internal" href="configs.html#labml.configs.BaseConfigs" title="labml.configs.BaseConfigs">labml.configs.BaseConfigs</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/pytorch.html#get_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.pytorch.get_modules" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py function">
+<dt id="labml.utils.pytorch.get_device">
+<code class="sig-prename descclassname">labml.utils.pytorch.</code><code class="sig-name descname">get_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span><span class="p">:</span> <span class="n">torch.nn.modules.module.Module</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/pytorch.html#get_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.pytorch.get_device" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 </div>
 
 

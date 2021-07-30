@@ -115,6 +115,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/tracker.html#helpers">Helpers</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/framework_integrations.html">Framework Integrations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/framework_integrations.html#fastai">FastAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/framework_integrations.html#keras">Keras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/framework_integrations.html#pytorch-lightning">PyTorch Lightning</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/monit.html">Monitor</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../api/monit.html#basic">Basic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/monit.html#iterators">Iterators</a></li>
@@ -136,7 +142,13 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/lab.html">Lab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/manage.html">Manage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/utils.html#cache">Cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/utils.html#keyboard-interrupt">Keyboard Interrupt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/utils.html#downloading">Downloading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/utils.html#pytorch">PyTorch</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/helpers.html">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#module-labml_helpers.training_loop">Modules</a><ul>
@@ -215,6 +227,16 @@
 <div class="viewcode-block" id="new_run"><a class="viewcode-back" href="../../api/manage.html#labml.manage.new_run">[docs]</a><span class="k">def</span> <span class="nf">new_run</span><span class="p">(</span><span class="n">python_file</span><span class="p">:</span> <span class="n">PurePath</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
             <span class="n">configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This starts a new experiment by running ``main`` function defined in ``python_file``.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        python_file (PurePath): path of the Python script</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        configs (Dict[str, any], optional): a dictionary of configurations</span>
+<span class="sd">        comment (str, optional): comment to identify the experiment</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">labml.internal.manage.process</span> <span class="kn">import</span> <span class="n">new_run</span> <span class="k">as</span> <span class="n">_new_run</span>
     <span class="n">_new_run</span><span class="p">(</span><span class="n">python_file</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="n">configs</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">)</span></div>
 
@@ -222,7 +244,18 @@
 <div class="viewcode-block" id="new_run_process"><a class="viewcode-back" href="../../api/manage.html#labml.manage.new_run_process">[docs]</a><span class="k">def</span> <span class="nf">new_run_process</span><span class="p">(</span><span class="n">python_file</span><span class="p">:</span> <span class="n">PurePath</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                     <span class="n">configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="n">new_run_process</span><span class="p">(</span><span class="n">python_file</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="n">configs</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">)</span></div>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This starts a new experiment in a separate process by running ``main`` function defined in ``python_file``.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        python_file (PurePath): path of the Python script</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        configs (Dict[str, any], optional): a dictionary of configurations</span>
+<span class="sd">        comment (str, optional): comment to identify the experiment</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.manage.process</span> <span class="kn">import</span> <span class="n">new_run_process</span> <span class="k">as</span> <span class="n">_new_run_process</span>
+    <span class="n">_new_run_process</span><span class="p">(</span><span class="n">python_file</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="n">configs</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

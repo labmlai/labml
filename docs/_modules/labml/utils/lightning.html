@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>labml_helpers.datasets.mnist &mdash; labml.ai client library 0.4 documentation</title>
+  <title>labml.utils.lightning &mdash; labml.ai client library 0.4 documentation</title>
   
 
   
@@ -18,7 +18,7 @@
   
   
   
-    <link rel="canonical" href="https://docs.labml.ai/_modules/labml_helpers/datasets/mnist.html"/>
+    <link rel="canonical" href="https://docs.labml.ai/_modules/labml/utils/lightning.html"/>
   
 
   
@@ -204,7 +204,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>labml_helpers.datasets.mnist</li>
+      <li>labml.utils.lightning</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -219,75 +219,60 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for labml_helpers.datasets.mnist</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
-<span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
+  <h1>Source code for labml.utils.lightning</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">labml</span> <span class="kn">import</span> <span class="n">lab</span>
-<span class="kn">from</span> <span class="nn">labml.configs</span> <span class="kn">import</span> <span class="n">BaseConfigs</span><span class="p">,</span> <span class="n">aggregate</span><span class="p">,</span> <span class="n">option</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">pytorch_lightning.loggers.base</span> <span class="kn">import</span> <span class="n">LightningLoggerBase</span><span class="p">,</span> <span class="n">rank_zero_experiment</span>
+<span class="kn">from</span> <span class="nn">pytorch_lightning.utilities</span> <span class="kn">import</span> <span class="n">rank_zero_only</span>
 
-
-<span class="k">def</span> <span class="nf">_dataset</span><span class="p">(</span><span class="n">is_train</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">lab</span><span class="o">.</span><span class="n">get_data_path</span><span class="p">()),</span>
-                          <span class="n">train</span><span class="o">=</span><span class="n">is_train</span><span class="p">,</span>
-                          <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                          <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">labml</span> <span class="kn">import</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">lab</span>
+<span class="kn">from</span> <span class="nn">labml.internal.experiment</span> <span class="kn">import</span> <span class="n">experiment_singleton</span>
 
 
-<div class="viewcode-block" id="MNISTConfigs"><a class="viewcode-back" href="../../../api/helpers.html#labml_helpers.datasets.mnist.MNISTConfigs">[docs]</a><span class="k">class</span> <span class="nc">MNISTConfigs</span><span class="p">(</span><span class="n">BaseConfigs</span><span class="p">):</span>
-    <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;MNIST&#39;</span>
-    <span class="n">dataset_transforms</span><span class="p">:</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span>
-    <span class="n">train_dataset</span><span class="p">:</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span>
-    <span class="n">valid_dataset</span><span class="p">:</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span>
+<div class="viewcode-block" id="LabMLLightningLogger"><a class="viewcode-back" href="../../../api/framework_integrations.html#labml.utils.lightning.LabMLLightningLogger">[docs]</a><span class="k">class</span> <span class="nc">LabMLLightningLogger</span><span class="p">(</span><span class="n">LightningLoggerBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    PyTorch Lightening logger integration.</span>
+<span class="sd">    Pass an instance of this class to ``pytorch_lightning.Training`` as argument ``logger``.</span>
+<span class="sd">    PyTorch Lightening will call relavent mehtods of this class to log hyper-parameters and metrics.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-    <span class="n">train_loader</span><span class="p">:</span> <span class="n">DataLoader</span>
-    <span class="n">valid_loader</span><span class="p">:</span> <span class="n">DataLoader</span>
+    <span class="nd">@property</span>
+    <span class="nd">@rank_zero_experiment</span>
+    <span class="k">def</span> <span class="nf">experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="n">train_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span>
-    <span class="n">valid_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span>
+    <span class="nd">@rank_zero_only</span>
+    <span class="k">def</span> <span class="nf">log_hyperparams</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Namespace</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatten_dict</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">experiment</span><span class="o">.</span><span class="n">configs</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 
-    <span class="n">train_loader_shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">valid_loader_shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+    <span class="nd">@rank_zero_only</span>
+    <span class="k">def</span> <span class="nf">log_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span> <span class="n">step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tracker</span><span class="o">.</span><span class="n">add_global_step</span><span class="p">()</span>
+            <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">metrics</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">reset_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
 
-<span class="nd">@option</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">dataset_transforms</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">mnist_transforms</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
-        <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
-        <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.1307</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.3081</span><span class="p">,))</span>
-    <span class="p">])</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">save_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">lab</span><span class="o">.</span><span class="n">get_experiments_path</span><span class="p">())</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-<span class="nd">@option</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">mnist_train_dataset</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">MNISTConfigs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">_dataset</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">dataset_transforms</span><span class="p">)</span>
-
-
-<span class="nd">@option</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">valid_dataset</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">mnist_valid_dataset</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">MNISTConfigs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">_dataset</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">dataset_transforms</span><span class="p">)</span>
-
-
-<span class="nd">@option</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">train_loader</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">mnist_train_loader</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">MNISTConfigs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">,</span>
-                      <span class="n">batch_size</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">train_batch_size</span><span class="p">,</span>
-                      <span class="n">shuffle</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">train_loader_shuffle</span><span class="p">)</span>
-
-
-<span class="nd">@option</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">valid_loader</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">mnist_valid_loader</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">MNISTConfigs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">valid_dataset</span><span class="p">,</span>
-                      <span class="n">batch_size</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">valid_batch_size</span><span class="p">,</span>
-                      <span class="n">shuffle</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">valid_loader_shuffle</span><span class="p">)</span>
-
-
-<span class="n">aggregate</span><span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">dataset_name</span><span class="p">,</span> <span class="s1">&#39;MNIST&#39;</span><span class="p">,</span>
-          <span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">dataset_transforms</span><span class="p">,</span> <span class="s1">&#39;mnist_transforms&#39;</span><span class="p">),</span>
-          <span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">,</span> <span class="s1">&#39;mnist_train_dataset&#39;</span><span class="p">),</span>
-          <span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">valid_dataset</span><span class="p">,</span> <span class="s1">&#39;mnist_valid_dataset&#39;</span><span class="p">),</span>
-          <span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">train_loader</span><span class="p">,</span> <span class="s1">&#39;mnist_train_loader&#39;</span><span class="p">),</span>
-          <span class="p">(</span><span class="n">MNISTConfigs</span><span class="o">.</span><span class="n">valid_loader</span><span class="p">,</span> <span class="s1">&#39;mnist_valid_loader&#39;</span><span class="p">))</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">experiment_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">uuid</span></div>
 </pre></div>
 
            </div>
