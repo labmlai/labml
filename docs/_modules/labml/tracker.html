@@ -225,53 +225,143 @@
 
 
 <div class="viewcode-block" id="set_global_step"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_global_step">[docs]</a><span class="k">def</span> <span class="nf">set_global_step</span><span class="p">(</span><span class="n">global_step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set the current step for tracking</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        global_step (int): Global step</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">set_global_step</span><span class="p">(</span><span class="n">global_step</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="add_global_step"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.add_global_step">[docs]</a><span class="k">def</span> <span class="nf">add_global_step</span><span class="p">(</span><span class="n">increment_global_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Increment the current step for tracking</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        increment_global_step (int, optional): By how much to increment the global step.</span>
+<span class="sd">            Defaults to ``1`` if not provided.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_global_step</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">increment_global_step</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="get_global_step"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.get_global_step">[docs]</a><span class="k">def</span> <span class="nf">get_global_step</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns current step</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">global_step</span></div>
 
 
 <div class="viewcode-block" id="set_queue"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_queue">[docs]</a><span class="k">def</span> <span class="nf">set_queue</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">queue_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set indicator type to be a queue. This will maintain a queue of size ``queue_size``</span>
+<span class="sd">    to store the tracked values.</span>
+<span class="sd">    A histogram of the queue contents and stats like mean will be logged.</span>
+
+<span class="sd">    This is useful when we want to track statistics like moving average.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the indicator</span>
+<span class="sd">        queue_size (int, optional): Size of the queue. Defaults to ``10``.</span>
+<span class="sd">        is_print: (bool, optional): Whether the indicator should be printed in console.</span>
+<span class="sd">            Defaults to ``False``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.numeric</span> <span class="kn">import</span> <span class="n">Queue</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Queue</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">queue_size</span><span class="p">,</span> <span class="n">is_print</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="set_histogram"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_histogram">[docs]</a><span class="k">def</span> <span class="nf">set_histogram</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set indicator type to be a histogram.</span>
+<span class="sd">    It will log the tracked values as a histogram.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the indicator</span>
+<span class="sd">        is_print: (bool, optional): Whether the indicator should be printed in console.</span>
+<span class="sd">            Defaults to ``False``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.numeric</span> <span class="kn">import</span> <span class="n">Histogram</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Histogram</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_print</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="set_scalar"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_scalar">[docs]</a><span class="k">def</span> <span class="nf">set_scalar</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set indicator type to be a scalar.</span>
+<span class="sd">    It will log a scalar of the tracked values.</span>
+<span class="sd">    If there are multiple values it will log the mean.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the indicator</span>
+<span class="sd">        is_print: (bool, optional): Whether the indicator should be printed in console.</span>
+<span class="sd">            Defaults to ``False``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.numeric</span> <span class="kn">import</span> <span class="n">Scalar</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Scalar</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_print</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="set_indexed_scalar"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_indexed_scalar">[docs]</a><span class="k">def</span> <span class="nf">set_indexed_scalar</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set indicator type to be an indexed scalar.</span>
+<span class="sd">    It will log pairs of values (index, value).</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the indicator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.indexed</span> <span class="kn">import</span> <span class="n">IndexedScalar</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">IndexedScalar</span><span class="p">(</span><span class="n">name</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="set_image"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_image">[docs]</a><span class="k">def</span> <span class="nf">set_image</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">density</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set indicator type to be an image.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the indicator</span>
+<span class="sd">        is_print: (bool, optional): Whether to show the image with ``matplotlib``.</span>
+<span class="sd">            Defaults to ``False``.</span>
+<span class="sd">        density: (float, optional): This controls how often to log images.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.artifacts</span> <span class="kn">import</span> <span class="n">Image</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_print</span><span class="p">,</span> <span class="n">density</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="set_text"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_text">[docs]</a><span class="k">def</span> <span class="nf">set_text</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set indicator type to be text (a string).</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the indicator</span>
+<span class="sd">        is_print: (bool, optional): Whether to show the image with ``matplotlib``.</span>
+<span class="sd">            Defaults to ``False``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.artifacts</span> <span class="kn">import</span> <span class="n">Text</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Text</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_print</span><span class="p">))</span></div>
 
 
-<span class="k">def</span> <span class="nf">set_tensor</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_once</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="set_tensor"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_tensor">[docs]</a><span class="k">def</span> <span class="nf">set_tensor</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_once</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set indicator type to be a tensor.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the indicator</span>
+<span class="sd">        is_print: (bool, optional): Whether to show the image with ``matplotlib``.</span>
+<span class="sd">            Defaults to ``False``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.artifacts</span> <span class="kn">import</span> <span class="n">Tensor</span>
-    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Tensor</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_once</span><span class="o">=</span><span class="n">is_once</span><span class="p">))</span>
+    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">Tensor</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_once</span><span class="o">=</span><span class="n">is_once</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="set_indexed_text"><a class="viewcode-back" href="../../api/tracker.html#labml.tracker.set_indexed_text">[docs]</a><span class="k">def</span> <span class="nf">set_indexed_text</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set indicator type to be an indexed text.</span>
+<span class="sd">    It will log (index, text) pairs.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name (str): Name of the indicator</span>
+<span class="sd">        title (str): Title to display</span>
+<span class="sd">        is_print: (bool, optional): Whether to show the image with ``matplotlib``.</span>
+<span class="sd">            Defaults to ``False``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">labml.internal.tracker.indicators.artifacts</span> <span class="kn">import</span> <span class="n">IndexedText</span>
     <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">add_indicator</span><span class="p">(</span><span class="n">IndexedText</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">is_print</span><span class="p">))</span></div>
 

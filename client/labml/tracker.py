@@ -30,53 +30,143 @@ def debug(*args):
 
 
 def set_global_step(global_step: Optional[int]):
+    """
+    Set the current step for tracking
+
+    Arguments:
+        global_step (int): Global step
+    """
     _internal().set_global_step(global_step)
 
 
 def add_global_step(increment_global_step: int = 1):
+    """
+    Increment the current step for tracking
+
+    Arguments:
+        increment_global_step (int, optional): By how much to increment the global step.
+            Defaults to ``1`` if not provided.
+    """
     _internal().add_global_step(int(increment_global_step))
 
 
 def get_global_step() -> int:
+    """
+    Returns current step
+    """
     return _internal().global_step
 
 
 def set_queue(name: str, queue_size: int = 10, is_print: bool = False):
+    """
+    Set indicator type to be a queue. This will maintain a queue of size ``queue_size``
+    to store the tracked values.
+    A histogram of the queue contents and stats like mean will be logged.
+
+    This is useful when we want to track statistics like moving average.
+
+    Arguments:
+        name (str): Name of the indicator
+        queue_size (int, optional): Size of the queue. Defaults to ``10``.
+        is_print: (bool, optional): Whether the indicator should be printed in console.
+            Defaults to ``False``.
+    """
     from labml.internal.tracker.indicators.numeric import Queue
     _internal().add_indicator(Queue(name, queue_size, is_print))
 
 
 def set_histogram(name: str, is_print: bool = False):
+    """
+    Set indicator type to be a histogram.
+    It will log the tracked values as a histogram.
+
+    Arguments:
+        name (str): Name of the indicator
+        is_print: (bool, optional): Whether the indicator should be printed in console.
+            Defaults to ``False``.
+    """
     from labml.internal.tracker.indicators.numeric import Histogram
     _internal().add_indicator(Histogram(name, is_print))
 
 
 def set_scalar(name: str, is_print: bool = False):
+    """
+    Set indicator type to be a scalar.
+    It will log a scalar of the tracked values.
+    If there are multiple values it will log the mean.
+
+    Arguments:
+        name (str): Name of the indicator
+        is_print: (bool, optional): Whether the indicator should be printed in console.
+            Defaults to ``False``.
+    """
     from labml.internal.tracker.indicators.numeric import Scalar
     _internal().add_indicator(Scalar(name, is_print))
 
 
 def set_indexed_scalar(name: str):
+    """
+    Set indicator type to be an indexed scalar.
+    It will log pairs of values (index, value).
+
+    Arguments:
+        name (str): Name of the indicator
+    """
     from labml.internal.tracker.indicators.indexed import IndexedScalar
     _internal().add_indicator(IndexedScalar(name))
 
 
 def set_image(name: str, is_print: bool = False, density: Optional[float] = None):
+    """
+    Set indicator type to be an image.
+
+    Arguments:
+        name (str): Name of the indicator
+        is_print: (bool, optional): Whether to show the image with ``matplotlib``.
+            Defaults to ``False``.
+        density: (float, optional): This controls how often to log images.
+    """
     from labml.internal.tracker.indicators.artifacts import Image
     _internal().add_indicator(Image(name, is_print, density))
 
 
 def set_text(name: str, is_print: bool = False):
+    """
+    Set indicator type to be text (a string).
+
+    Arguments:
+        name (str): Name of the indicator
+        is_print: (bool, optional): Whether to show the image with ``matplotlib``.
+            Defaults to ``False``.
+    """
     from labml.internal.tracker.indicators.artifacts import Text
     _internal().add_indicator(Text(name, is_print))
 
 
 def set_tensor(name: str, is_once: bool = False):
+    """
+    Set indicator type to be a tensor.
+
+    Arguments:
+        name (str): Name of the indicator
+        is_print: (bool, optional): Whether to show the image with ``matplotlib``.
+            Defaults to ``False``.
+    """
     from labml.internal.tracker.indicators.artifacts import Tensor
     _internal().add_indicator(Tensor(name, is_once=is_once))
 
 
 def set_indexed_text(name: str, title: Optional[str] = None, is_print: bool = False):
+    """
+    Set indicator type to be an indexed text.
+    It will log (index, text) pairs.
+
+    Arguments:
+        name (str): Name of the indicator
+        title (str): Title to display
+        is_print: (bool, optional): Whether to show the image with ``matplotlib``.
+            Defaults to ``False``.
+    """
     from labml.internal.tracker.indicators.artifacts import IndexedText
     _internal().add_indicator(IndexedText(name, title, is_print))
 

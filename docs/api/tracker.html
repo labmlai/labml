@@ -196,9 +196,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-labml.tracker">
-<span id="tracker"></span><h1>Tracker<a class="headerlink" href="#module-labml.tracker" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="track">
+  <div class="section" id="tracker">
+<h1>Tracker<a class="headerlink" href="#tracker" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/labmlai/labml/blob/master/guides/tracker.ipynb">Here is a tutorial on Google Colab that shows how to use the tracker module</a></p>
+<span class="target" id="module-labml.tracker"></span><div class="section" id="track">
 <h2>Track<a class="headerlink" href="#track" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="labml.tracker.save">
@@ -303,17 +304,31 @@ Although saving takes negligible amount of time it can add up if called very fre
 <dl class="py function">
 <dt id="labml.tracker.set_global_step">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_global_step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_step</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_global_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_global_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the current step for tracking</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>global_step</strong> (<em>int</em>) – Global step</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.tracker.add_global_step">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add_global_step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">increment_global_step</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add_global_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.add_global_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Increment the current step for tracking</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>increment_global_step</strong> (<em>int</em><em>, </em><em>optional</em>) – By how much to increment the global step.
+Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code> if not provided.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.tracker.get_global_step">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">get_global_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/labml/tracker.html#get_global_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.get_global_step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns current step</p>
+</dd></dl>
 
 </div>
 <div class="section" id="setup">
@@ -321,43 +336,137 @@ Although saving takes negligible amount of time it can add up if called very fre
 <dl class="py function">
 <dt id="labml.tracker.set_queue">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_queue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">queue_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">10</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_queue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set indicator type to be a queue. This will maintain a queue of size <code class="docutils literal notranslate"><span class="pre">queue_size</span></code>
+to store the tracked values.
+A histogram of the queue contents and stats like mean will be logged.</p>
+<p>This is useful when we want to track statistics like moving average.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the indicator</p></li>
+<li><p><strong>queue_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Size of the queue. Defaults to <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
+<li><p><strong>is_print</strong> – (bool, optional): Whether the indicator should be printed in console.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.tracker.set_histogram">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_histogram</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_histogram" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set indicator type to be a histogram.
+It will log the tracked values as a histogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the indicator</p></li>
+<li><p><strong>is_print</strong> – (bool, optional): Whether the indicator should be printed in console.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.tracker.set_scalar">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_scalar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_scalar" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set indicator type to be a scalar.
+It will log a scalar of the tracked values.
+If there are multiple values it will log the mean.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the indicator</p></li>
+<li><p><strong>is_print</strong> – (bool, optional): Whether the indicator should be printed in console.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.tracker.set_indexed_scalar">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_indexed_scalar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_indexed_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_indexed_scalar" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set indicator type to be an indexed scalar.
+It will log pairs of values (index, value).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the indicator</p>
+</dd>
+</dl>
+</dd></dl>
 
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p><a class="reference internal" href="#labml.tracker.set_image" title="labml.tracker.set_image"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_image()</span></code></a>,
-<a class="reference internal" href="#labml.tracker.set_text" title="labml.tracker.set_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_text()</span></code></a>, and
+<p>Artificact setup functions
+<a class="reference internal" href="#labml.tracker.set_image" title="labml.tracker.set_image"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_image()</span></code></a>,
+<a class="reference internal" href="#labml.tracker.set_text" title="labml.tracker.set_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_text()</span></code></a>,
+<a class="reference internal" href="#labml.tracker.set_tensor" title="labml.tracker.set_tensor"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_tensor()</span></code></a>, and
 <a class="reference internal" href="#labml.tracker.set_indexed_text" title="labml.tracker.set_indexed_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_indexed_text()</span></code></a> are still experimental.</p>
 </div>
 <dl class="py function">
 <dt id="labml.tracker.set_image">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_image</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">density</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_image" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set indicator type to be an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the indicator</p></li>
+<li><p><strong>is_print</strong> – (bool, optional): Whether to show the image with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>density</strong> – (float, optional): This controls how often to log images.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.tracker.set_text">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_text" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set indicator type to be text (a string).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the indicator</p></li>
+<li><p><strong>is_print</strong> – (bool, optional): Whether to show the image with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_tensor">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_tensor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_once</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set indicator type to be a tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the indicator</p></li>
+<li><p><strong>is_print</strong> – (bool, optional): Whether to show the image with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.tracker.set_indexed_text">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_indexed_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">title</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_indexed_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_indexed_text" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set indicator type to be an indexed text.
+It will log (index, text) pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the indicator</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – Title to display</p></li>
+<li><p><strong>is_print</strong> – (bool, optional): Whether to show the image with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="namespaces">
