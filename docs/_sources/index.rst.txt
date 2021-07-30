@@ -23,11 +23,11 @@ and tutorials.
    api/experiment
    api/tracker
    api/monit
+   api/analytics
+   api/configs
+   api/manage
    api/logger
    api/lab
-   api/configs
-   api/analytics
-   api/manage
    api/utils
    api/helpers
 

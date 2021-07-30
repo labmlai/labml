@@ -43,8 +43,8 @@
   <link rel="stylesheet" href="../_static/katex-math.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Manage" href="manage.html" />
-    <link rel="prev" title="Configs" href="configs.html" />
+    <link rel="next" title="Configs" href="configs.html" />
+    <link rel="prev" title="Monitor" href="monit.html" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
     <script>
@@ -123,11 +123,11 @@
 <li class="toctree-l2"><a class="reference internal" href="monit.html#loop">Loop</a></li>
 </ul>
 </li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manage.html">Manage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lab.html">Lab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configs</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Analytics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="manage.html">Manage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="helpers.html#installation">Installation</a></li>
@@ -201,9 +201,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-labml.analytics">
-<span id="analytics"></span><h1>Analytics<a class="headerlink" href="#module-labml.analytics" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
+  <div class="section" id="analytics">
+<h1>Analytics<a class="headerlink" href="#analytics" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/labmlai/labml/blob/master/guides/analytics.ipynb">Here is a tutorial on Google Colab that shows how to use the analytics module</a></p>
+<span class="target" id="module-labml.analytics"></span><dl class="py function">
 <dt id="labml.analytics.runs">
 <code class="sig-prename descclassname">labml.analytics.</code><code class="sig-name descname">runs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">uuids</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/analytics.html#runs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.runs" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is used to analyze runs.
@@ -211,7 +212,7 @@ It fetches all the log indicators.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>uuids</strong> (<em>str</em>) – UUIDs of the runs. You can
-get this from <a href="#id1"><span class="problematic" id="id2">`labml app https://github.com/labmlai/labml/tree/master/app&gt;`_</span></a></p>
+get this from <a class="reference external" href="https://github.com/labmlai/labml/tree/master/app">labml.ai app</a></p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -230,7 +231,13 @@ get this from <a href="#id1"><span class="problematic" id="id2">`labml app https
 <dl class="py function">
 <dt id="labml.analytics.set_preferred_db">
 <code class="sig-prename descclassname">labml.analytics.</code><code class="sig-name descname">set_preferred_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/analytics.html#set_preferred_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.set_preferred_db" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the preference to load data from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>db</strong> (<em>str</em>) – Either <code class="docutils literal notranslate"><span class="pre">tensorboard</span></code> or <code class="docutils literal notranslate"><span class="pre">sqlite</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.analytics.distribution">
@@ -467,10 +474,10 @@ where <code class="docutils literal notranslate"><span class="pre">T</span></cod
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="manage.html" class="btn btn-neutral float-right" title="Manage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="configs.html" class="btn btn-neutral float-right" title="Configs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="configs.html" class="btn btn-neutral float-left" title="Configs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="monit.html" class="btn btn-neutral float-left" title="Monitor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

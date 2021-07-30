@@ -72,7 +72,7 @@ def runs(*uuids: str):
 
     Arguments:
         uuids (str): UUIDs of the runs. You can
-            get this from `labml app https://github.com/labmlai/labml/tree/master/app>`_
+            get this from `labml.ai app <https://github.com/labmlai/labml/tree/master/app>`_
 
     Example:
         >>> from labml import analytics
@@ -95,6 +95,12 @@ def get_run(uuid: str):
 
 
 def set_preferred_db(db: str):
+    """
+    Set the preference to load data from.
+
+    Arguments:
+        db (str): Either ``tensorboard`` or ``sqlite``
+    """
     if db not in ['tensorboard', 'sqlite']:
         raise ValueError('db should be one of tensorboard or sqlite')
     _cache.set_preferred_db(db)

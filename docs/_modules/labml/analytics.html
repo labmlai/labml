@@ -121,11 +121,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/monit.html#loop">Loop</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/analytics.html">Analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/configs.html">Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/manage.html">Manage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/logger.html">Logger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/lab.html">Lab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/configs.html">Configs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/analytics.html">Analytics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/manage.html">Manage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/helpers.html">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#installation">Installation</a></li>
@@ -272,7 +272,7 @@
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        uuids (str): UUIDs of the runs. You can</span>
-<span class="sd">            get this from `labml app https://github.com/labmlai/labml/tree/master/app&gt;`_</span>
+<span class="sd">            get this from `labml.ai app &lt;https://github.com/labmlai/labml/tree/master/app&gt;`_</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from labml import analytics</span>
@@ -295,6 +295,12 @@
 
 
 <div class="viewcode-block" id="set_preferred_db"><a class="viewcode-back" href="../../api/analytics.html#labml.analytics.set_preferred_db">[docs]</a><span class="k">def</span> <span class="nf">set_preferred_db</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set the preference to load data from.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        db (str): Either ``tensorboard`` or ``sqlite``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">db</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;tensorboard&#39;</span><span class="p">,</span> <span class="s1">&#39;sqlite&#39;</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;db should be one of tensorboard or sqlite&#39;</span><span class="p">)</span>
     <span class="n">_cache</span><span class="o">.</span><span class="n">set_preferred_db</span><span class="p">(</span><span class="n">db</span><span class="p">)</span></div>
