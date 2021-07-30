@@ -43,7 +43,7 @@
   <link rel="stylesheet" href="../_static/katex-math.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Manage" href="manage.html" />
+    <link rel="next" title="Logger" href="logger.html" />
     <link rel="prev" title="Analytics" href="analytics.html" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
@@ -128,10 +128,13 @@
 <li class="toctree-l2"><a class="reference internal" href="analytics.html#plot">Plot</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Configs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="manage.html">Manage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dynamic-hyper-parameters">Dynamic Hyper-parameters</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lab.html">Lab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manage.html">Manage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="helpers.html#installation">Installation</a></li>
@@ -205,9 +208,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-labml.configs">
-<span id="configs"></span><h1>Configs<a class="headerlink" href="#module-labml.configs" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
+  <div class="section" id="configs">
+<h1>Configs<a class="headerlink" href="#configs" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/labmlai/labml/blob/master/guides/configs.ipynb">Here is a tutorial on Google Colab that shows how to use the configs module</a></p>
+<span class="target" id="module-labml.configs"></span><dl class="py class">
 <dt id="labml.configs.BaseConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml.configs.</code><code class="sig-name descname">BaseConfigs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">_primary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/configs.html#BaseConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.configs.BaseConfigs" title="Permalink to this definition">¶</a></dt>
 <dd><p>You should sub-class this class to create your own configurations</p>
@@ -345,6 +349,8 @@ items are meta. Defaults to <code class="docutils literal notranslate"><span cla
 </dl>
 </dd></dl>
 
+<div class="section" id="dynamic-hyper-parameters">
+<h2>Dynamic Hyper-parameters<a class="headerlink" href="#dynamic-hyper-parameters" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="labml.configs.DynamicHyperParam">
 <em class="property">class </em><code class="sig-prename descclassname">labml.configs.</code><code class="sig-name descname">DynamicHyperParam</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>float<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">type_</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">range_</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/internal/configs/dynamic_hyperparam.html#DynamicHyperParam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.configs.DynamicHyperParam" title="Permalink to this definition">¶</a></dt>
@@ -386,6 +392,7 @@ You should use those.</p>
 </dd></dl>
 
 </div>
+</div>
 
 
            </div>
@@ -395,7 +402,7 @@ You should use those.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="manage.html" class="btn btn-neutral float-right" title="Manage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="logger.html" class="btn btn-neutral float-right" title="Logger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="analytics.html" class="btn btn-neutral float-left" title="Analytics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

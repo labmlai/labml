@@ -25,9 +25,9 @@ and tutorials.
    api/monit
    api/analytics
    api/configs
-   api/manage
    api/logger
    api/lab
+   api/manage
    api/utils
    api/helpers
 
