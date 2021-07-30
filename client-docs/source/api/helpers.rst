@@ -11,30 +11,22 @@ Installation
 Modules
 -------
 
-.. automodule:: labml_helpers.training_loop
 
-    .. autoclass:: TrainingLoopConfigs
+.. autoclass:: labml_helpers.training_loop.TrainingLoopConfigs
 
 
-.. automodule:: labml_helpers.device
+.. autoclass:: labml_helpers.device.DeviceConfigs
 
-    .. autoclass:: DeviceConfigs
 
-.. automodule:: labml_helpers.seed
+.. autoclass:: labml_helpers.seed.SeedConfigs
 
-    .. autoclass:: SeedConfigs
 
-.. automodule:: labml_helpers.train_valid
+.. autoclass:: labml_helpers.train_valid.TrainValidConfigs
 
-    .. autoclass:: TrainValidConfigs
 
 Datasets
-^^^^^^^^
+--------
 
-.. automodule:: labml_helpers.datasets.mnist
+.. autoclass:: labml_helpers.datasets.mnist.MNISTConfigs
 
-    .. autoclass:: MNISTConfigs
-
-.. automodule:: labml_helpers.datasets.cifar10
-
-    .. autoclass:: CIFAR10Configs
+.. autoclass:: labml_helpers.datasets.cifar10.CIFAR10Configs

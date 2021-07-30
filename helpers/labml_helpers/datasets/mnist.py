@@ -13,6 +13,25 @@ def _dataset(is_train, transform):
 
 
 class MNISTConfigs(BaseConfigs):
+    """
+    Configurable MNIST data set.
+
+    Arguments:
+        dataset_name (str): name of the data set, ``MNIST``
+        dataset_transforms (torchvision.transforms.Compose): image transformations
+        train_dataset (torchvision.datasets.MNIST): training dataset
+        valid_dataset (torchvision.datasets.MNIST): validation dataset
+
+        train_loader (torch.utils.data.DataLoader): training data loader
+        valid_loader (torch.utils.data.DataLoader): validation data loader
+
+        train_batch_size (int): training batch size
+        valid_batch_size (int): validation batch size
+
+        train_loader_shuffle (bool): whether to shuffle training data
+        valid_loader_shuffle (bool): whether to shuffle validation data
+    """
+
     dataset_name: str = 'MNIST'
     dataset_transforms: transforms.Compose
     train_dataset: datasets.MNIST

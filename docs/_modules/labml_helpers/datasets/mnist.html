@@ -151,10 +151,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api/helpers.html">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/helpers.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../api/helpers.html#module-labml_helpers.training_loop">Modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/helpers.html#module-labml_helpers.datasets.mnist">Datasets</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/helpers.html#modules">Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/helpers.html#datasets">Datasets</a></li>
 </ul>
 </li>
 </ul>
@@ -235,6 +233,25 @@
 
 
 <div class="viewcode-block" id="MNISTConfigs"><a class="viewcode-back" href="../../../api/helpers.html#labml_helpers.datasets.mnist.MNISTConfigs">[docs]</a><span class="k">class</span> <span class="nc">MNISTConfigs</span><span class="p">(</span><span class="n">BaseConfigs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configurable MNIST data set.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        dataset_name (str): name of the data set, ``MNIST``</span>
+<span class="sd">        dataset_transforms (torchvision.transforms.Compose): image transformations</span>
+<span class="sd">        train_dataset (torchvision.datasets.MNIST): training dataset</span>
+<span class="sd">        valid_dataset (torchvision.datasets.MNIST): validation dataset</span>
+
+<span class="sd">        train_loader (torch.utils.data.DataLoader): training data loader</span>
+<span class="sd">        valid_loader (torch.utils.data.DataLoader): validation data loader</span>
+
+<span class="sd">        train_batch_size (int): training batch size</span>
+<span class="sd">        valid_batch_size (int): validation batch size</span>
+
+<span class="sd">        train_loader_shuffle (bool): whether to shuffle training data</span>
+<span class="sd">        valid_loader_shuffle (bool): whether to shuffle validation data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;MNIST&#39;</span>
     <span class="n">dataset_transforms</span><span class="p">:</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span>
     <span class="n">train_dataset</span><span class="p">:</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span>

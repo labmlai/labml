@@ -13,6 +13,24 @@ def _dataset(is_train, transform):
 
 
 class CIFAR10Configs(BaseConfigs):
+    """
+    Configurable CIFAR 10 data set.
+
+    Arguments:
+        dataset_name (str): name of the data set, ``CIFAR10``
+        dataset_transforms (torchvision.transforms.Compose): image transformations
+        train_dataset (torchvision.datasets.CIFAR10): training dataset
+        valid_dataset (torchvision.datasets.CIFAR10): validation dataset
+
+        train_loader (torch.utils.data.DataLoader): training data loader
+        valid_loader (torch.utils.data.DataLoader): validation data loader
+
+        train_batch_size (int): training batch size
+        valid_batch_size (int): validation batch size
+
+        train_loader_shuffle (bool): whether to shuffle training data
+        valid_loader_shuffle (bool): whether to shuffle validation data
+    """
     dataset_name: str = 'CIFAR10'
     dataset_transforms: transforms.Compose
     train_dataset: datasets.CIFAR10

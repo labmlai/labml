@@ -152,10 +152,8 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-labml_helpers.training_loop">Modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-labml_helpers.datasets.mnist">Datasets</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#datasets">Datasets</a></li>
 </ul>
 </li>
 </ul>
@@ -230,41 +228,75 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="module-labml_helpers.training_loop">
-<span id="modules"></span><h2>Modules<a class="headerlink" href="#module-labml_helpers.training_loop" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="labml_helpers.training_loop.TrainingLoopConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.training_loop.</code><code class="sig-name descname">TrainingLoopConfigs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">_primary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/training_loop.html#TrainingLoopConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.training_loop.TrainingLoopConfigs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<span class="target" id="module-labml_helpers.device"></span><dl class="py class">
+<dl class="py class">
 <dt id="labml_helpers.device.DeviceConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.device.</code><code class="sig-name descname">DeviceConfigs</code><a class="reference internal" href="../_modules/labml_helpers/device.html#DeviceConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.device.DeviceConfigs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<span class="target" id="module-labml_helpers.seed"></span><dl class="py class">
+<dl class="py class">
 <dt id="labml_helpers.seed.SeedConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.seed.</code><code class="sig-name descname">SeedConfigs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">_primary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/seed.html#SeedConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.seed.SeedConfigs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<span class="target" id="module-labml_helpers.train_valid"></span><dl class="py class">
+<dl class="py class">
 <dt id="labml_helpers.train_valid.TrainValidConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.train_valid.</code><code class="sig-name descname">TrainValidConfigs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">_primary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/train_valid.html#TrainValidConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.train_valid.TrainValidConfigs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<div class="section" id="module-labml_helpers.datasets.mnist">
-<span id="datasets"></span><h3>Datasets<a class="headerlink" href="#module-labml_helpers.datasets.mnist" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="datasets">
+<h2>Datasets<a class="headerlink" href="#datasets" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="labml_helpers.datasets.mnist.MNISTConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.datasets.mnist.</code><code class="sig-name descname">MNISTConfigs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">_primary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/datasets/mnist.html#MNISTConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.datasets.mnist.MNISTConfigs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Configurable MNIST data set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_name</strong> (<em>str</em>) – name of the data set, <code class="docutils literal notranslate"><span class="pre">MNIST</span></code></p></li>
+<li><p><strong>dataset_transforms</strong> (<em>torchvision.transforms.Compose</em>) – image transformations</p></li>
+<li><p><strong>train_dataset</strong> (<em>torchvision.datasets.MNIST</em>) – training dataset</p></li>
+<li><p><strong>valid_dataset</strong> (<em>torchvision.datasets.MNIST</em>) – validation dataset</p></li>
+<li><p><strong>train_loader</strong> (<em>torch.utils.data.DataLoader</em>) – training data loader</p></li>
+<li><p><strong>valid_loader</strong> (<em>torch.utils.data.DataLoader</em>) – validation data loader</p></li>
+<li><p><strong>train_batch_size</strong> (<em>int</em>) – training batch size</p></li>
+<li><p><strong>valid_batch_size</strong> (<em>int</em>) – validation batch size</p></li>
+<li><p><strong>train_loader_shuffle</strong> (<em>bool</em>) – whether to shuffle training data</p></li>
+<li><p><strong>valid_loader_shuffle</strong> (<em>bool</em>) – whether to shuffle validation data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
-<span class="target" id="module-labml_helpers.datasets.cifar10"></span><dl class="py class">
+<dl class="py class">
 <dt id="labml_helpers.datasets.cifar10.CIFAR10Configs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.datasets.cifar10.</code><code class="sig-name descname">CIFAR10Configs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">_primary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/datasets/cifar10.html#CIFAR10Configs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.datasets.cifar10.CIFAR10Configs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Configurable CIFAR 10 data set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_name</strong> (<em>str</em>) – name of the data set, <code class="docutils literal notranslate"><span class="pre">CIFAR10</span></code></p></li>
+<li><p><strong>dataset_transforms</strong> (<em>torchvision.transforms.Compose</em>) – image transformations</p></li>
+<li><p><strong>train_dataset</strong> (<em>torchvision.datasets.CIFAR10</em>) – training dataset</p></li>
+<li><p><strong>valid_dataset</strong> (<em>torchvision.datasets.CIFAR10</em>) – validation dataset</p></li>
+<li><p><strong>train_loader</strong> (<em>torch.utils.data.DataLoader</em>) – training data loader</p></li>
+<li><p><strong>valid_loader</strong> (<em>torch.utils.data.DataLoader</em>) – validation data loader</p></li>
+<li><p><strong>train_batch_size</strong> (<em>int</em>) – training batch size</p></li>
+<li><p><strong>valid_batch_size</strong> (<em>int</em>) – validation batch size</p></li>
+<li><p><strong>train_loader_shuffle</strong> (<em>bool</em>) – whether to shuffle training data</p></li>
+<li><p><strong>valid_loader_shuffle</strong> (<em>bool</em>) – whether to shuffle validation data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
-</div>
 </div>
 </div>
 
