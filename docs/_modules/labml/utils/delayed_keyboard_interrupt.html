@@ -228,7 +228,8 @@
 
 <div class="viewcode-block" id="DelayedKeyboardInterrupt"><a class="viewcode-back" href="../../../api/utils.html#labml.utils.delayed_keyboard_interrupt.DelayedKeyboardInterrupt">[docs]</a><span class="k">class</span> <span class="nc">DelayedKeyboardInterrupt</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    ### Capture `KeyboardInterrupt` and fire it later</span>
+<span class="sd">    When this is used in a ``with`` block it will capture keyboard interrupts and</span>
+<span class="sd">    fire them at the end of the ``with`` block after all the code completes execution.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

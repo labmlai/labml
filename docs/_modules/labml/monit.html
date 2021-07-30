@@ -220,7 +220,8 @@
            <div itemprop="articleBody">
             
   <h1>Source code for labml.monit</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sized</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sized</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">from</span> <span class="nn">labml.internal.monitor</span> <span class="kn">import</span> <span class="n">monitor_singleton</span> <span class="k">as</span> <span class="n">_internal</span>
@@ -254,7 +255,9 @@
 <span class="sd">        total_steps (float, optional): Total number of steps. This is used to measure progress when</span>
 <span class="sd">            :func:`progress` gets called. Defaults to ``1``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">decorator_func</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">section</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>
                          <span class="n">is_silent</span><span class="o">=</span><span class="n">is_silent</span><span class="p">,</span>

@@ -6,7 +6,8 @@ from labml.logger import Text
 
 class DelayedKeyboardInterrupt:
     """
-    ### Capture `KeyboardInterrupt` and fire it later
+    When this is used in a ``with`` block it will capture keyboard interrupts and
+    fire them at the end of the ``with`` block after all the code completes execution.
     """
 
     def __init__(self):

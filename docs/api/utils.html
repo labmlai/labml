@@ -229,18 +229,51 @@
 <h2>Cache<a class="headerlink" href="#cache" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="labml.utils.cache.cache">
-<code class="sig-prename descclassname">labml.utils.cache.</code><code class="sig-name descname">cache</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">loader</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">]</span><span class="p">, </span>Any<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">file_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'json'</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/labml/utils/cache.html#cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.cache.cache" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">labml.utils.cache.</code><code class="sig-name descname">cache</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">loader</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Callable<span class="p">[</span><span class="p">]</span><span class="p">, </span>Any<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">file_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'json'</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/labml/utils/cache.html#cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.cache.cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>This caches results of a function. Can be used as a decorator or you can pass a lambda function
+to it that takes no arguments.</p>
+<p><em>It doesn’t cache by arguments.</em></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of the cache</p></li>
+<li><p><strong>loader</strong> (<em>Callable</em><em>[</em><em>[</em><em>]</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – the function that generates the data to be cached</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>file_type</strong> (<em>str</em><em>, </em><em>optional</em>) – The file type to store the data. Defaults to <code class="docutils literal notranslate"><span class="pre">json</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.utils.cache.cache_get">
 <code class="sig-prename descclassname">labml.utils.cache.</code><code class="sig-name descname">cache_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">file_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'json'</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/labml/utils/cache.html#cache_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.cache.cache_get" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get cached data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of the cache</p></li>
+<li><p><strong>file_type</strong> (<em>str</em><em>, </em><em>optional</em>) – The file type to store the data. Defaults to <code class="docutils literal notranslate"><span class="pre">json</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.utils.cache.cache_set">
 <code class="sig-prename descclassname">labml.utils.cache.</code><code class="sig-name descname">cache_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">Any</span></em>, <em class="sig-param"><span class="n">file_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'json'</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/labml/utils/cache.html#cache_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.cache.cache_set" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Save data in cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of the cache</p></li>
+<li><p><strong>value</strong> (<em>any</em>) – data to be cached</p></li>
+<li><p><strong>file_type</strong> (<em>str</em><em>, </em><em>optional</em>) – The file type to store the data. Defaults to <code class="docutils literal notranslate"><span class="pre">json</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="keyboard-interrupt">
@@ -248,7 +281,8 @@
 <dl class="py class">
 <dt id="labml.utils.delayed_keyboard_interrupt.DelayedKeyboardInterrupt">
 <em class="property">class </em><code class="sig-prename descclassname">labml.utils.delayed_keyboard_interrupt.</code><code class="sig-name descname">DelayedKeyboardInterrupt</code><a class="reference internal" href="../_modules/labml/utils/delayed_keyboard_interrupt.html#DelayedKeyboardInterrupt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.delayed_keyboard_interrupt.DelayedKeyboardInterrupt" title="Permalink to this definition">¶</a></dt>
-<dd><p>### Capture <cite>KeyboardInterrupt</cite> and fire it later</p>
+<dd><p>When this is used in a <code class="docutils literal notranslate"><span class="pre">with</span></code> block it will capture keyboard interrupts and
+fire them at the end of the <code class="docutils literal notranslate"><span class="pre">with</span></code> block after all the code completes execution.</p>
 </dd></dl>
 
 </div>
@@ -257,12 +291,30 @@
 <dl class="py function">
 <dt id="labml.utils.download.download_file">
 <code class="sig-prename descclassname">labml.utils.download.</code><code class="sig-name descname">download_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">pathlib.Path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/download.html#download_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.download.download_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Download a file from <code class="docutils literal notranslate"><span class="pre">url</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<em>str</em>) – URL to download the file from</p></li>
+<li><p><strong>path</strong> (<em>Path</em>) – The location to save the downloaded file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.utils.download.extract_tar">
 <code class="sig-prename descclassname">labml.utils.download.</code><code class="sig-name descname">extract_tar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tar_file</span><span class="p">:</span> <span class="n">pathlib.Path</span></em>, <em class="sig-param"><span class="n">to_path</span><span class="p">:</span> <span class="n">pathlib.Path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/download.html#extract_tar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.download.extract_tar" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Extract a <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tar_file</strong> (<em>Path</em>) – <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file</p></li>
+<li><p><strong>to_path</strong> (<em>Path</em>) – location to extract the contents</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="pytorch">
@@ -270,22 +322,56 @@
 <dl class="py function">
 <dt id="labml.utils.pytorch.store_model_indicators">
 <code class="sig-prename descclassname">labml.utils.pytorch.</code><code class="sig-name descname">store_model_indicators</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span><span class="p">:</span> <span class="n">torch.nn.modules.module.Module</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">model_name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'model'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/pytorch.html#store_model_indicators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.pytorch.store_model_indicators" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Track model parameters and gradients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model</strong> (<em>Optimizer</em>) – PyTorch model</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>model_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the model</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.utils.pytorch.store_optimizer_indicators">
 <code class="sig-prename descclassname">labml.utils.pytorch.</code><code class="sig-name descname">store_optimizer_indicators</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">optimizer</span><span class="p">:</span> <span class="n">Optimizer</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">models</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>torch.nn.modules.module.Module<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">optimizer_name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'optimizer'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/pytorch.html#store_optimizer_indicators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.pytorch.store_optimizer_indicators" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Track optimizer stats such as moments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>optimizer</strong> (<em>Optimizer</em>) – PyTorch optimizer</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>models</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>torch.nn.Module</em><em>]</em><em>, </em><em>optional</em>) – a dictionary of modules being optimized.
+This is used to get the proper parameter names.</p></li>
+<li><p><strong>optimizer_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the optimizer</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.utils.pytorch.get_modules">
 <code class="sig-prename descclassname">labml.utils.pytorch.</code><code class="sig-name descname">get_modules</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configs</span><span class="p">:</span> <span class="n"><a class="reference internal" href="configs.html#labml.configs.BaseConfigs" title="labml.configs.BaseConfigs">labml.configs.BaseConfigs</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/pytorch.html#get_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.pytorch.get_modules" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all the PyTorch modules in <code class="docutils literal notranslate"><span class="pre">configs</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>configs</strong> (<a class="reference internal" href="configs.html#labml.configs.BaseConfigs" title="labml.configs.BaseConfigs"><em>labml.configs.BaseConfigs</em></a>) – configurations object</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="labml.utils.pytorch.get_device">
 <code class="sig-prename descclassname">labml.utils.pytorch.</code><code class="sig-name descname">get_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span><span class="p">:</span> <span class="n">torch.nn.modules.module.Module</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/utils/pytorch.html#get_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.utils.pytorch.get_device" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the device the <code class="docutils literal notranslate"><span class="pre">module</span></code> is in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>module</strong> (<em>torch.nn.Module</em>) – PyTorch module</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </div>

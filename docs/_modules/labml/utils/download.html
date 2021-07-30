@@ -230,6 +230,13 @@
 
 
 <div class="viewcode-block" id="download_file"><a class="viewcode-back" href="../../../api/utils.html#labml.utils.download.download_file">[docs]</a><span class="k">def</span> <span class="nf">download_file</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download a file from ``url``.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        url (str): URL to download the file from</span>
+<span class="sd">        path (Path): The location to save the downloaded file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">return</span>
 
@@ -260,6 +267,13 @@
 
 
 <div class="viewcode-block" id="extract_tar"><a class="viewcode-back" href="../../../api/utils.html#labml.utils.download.extract_tar">[docs]</a><span class="k">def</span> <span class="nf">extract_tar</span><span class="p">(</span><span class="n">tar_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">to_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract a ``.tar.gz`` file.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        tar_file (Path): ``.tar.gz`` file</span>
+<span class="sd">        to_path (Path): location to extract the contents</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tar_file</span><span class="p">),</span> <span class="s1">&#39;r:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
         <span class="n">files</span> <span class="o">=</span> <span class="n">tar</span><span class="o">.</span><span class="n">getmembers</span><span class="p">()</span>
 

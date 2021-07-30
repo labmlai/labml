@@ -8,6 +8,13 @@ _TAR_BUFFER_SIZE = 100_000
 
 
 def download_file(url: str, path: Path):
+    """
+    Download a file from ``url``.
+
+    Arguments:
+        url (str): URL to download the file from
+        path (Path): The location to save the downloaded file
+    """
     if path.exists():
         return
 
@@ -38,6 +45,13 @@ def _extract_tar_file(tar: tarfile.TarFile, f: tarfile.TarInfo, path: Path):
 
 
 def extract_tar(tar_file: Path, to_path: Path):
+    """
+    Extract a ``.tar.gz`` file.
+
+    Arguments:
+        tar_file (Path): ``.tar.gz`` file
+        to_path (Path): location to extract the contents
+    """
     with tarfile.open(str(tar_file), 'r:gz') as tar:
         files = tar.getmembers()
 

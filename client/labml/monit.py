@@ -1,3 +1,4 @@
+import functools
 from typing import Iterable, Sized, Collection, Callable, Tuple
 from typing import Union, Optional, overload
 
@@ -32,7 +33,9 @@ def func(name, *,
         total_steps (float, optional): Total number of steps. This is used to measure progress when
             :func:`progress` gets called. Defaults to ``1``.
     """
+
     def decorator_func(f: Callable):
+        @functools.wraps(f)
         def wrapper(*args, **kwargs):
             with section(name,
                          is_silent=is_silent,

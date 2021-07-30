@@ -247,6 +247,15 @@
 
 
 <div class="viewcode-block" id="store_model_indicators"><a class="viewcode-back" href="../../../api/utils.html#labml.utils.pytorch.store_model_indicators">[docs]</a><span class="k">def</span> <span class="nf">store_model_indicators</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;model&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Track model parameters and gradients.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        model (Optimizer): PyTorch model</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        model_name (str, optional): name of the model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
@@ -258,6 +267,18 @@
 <div class="viewcode-block" id="store_optimizer_indicators"><a class="viewcode-back" href="../../../api/utils.html#labml.utils.pytorch.store_optimizer_indicators">[docs]</a><span class="k">def</span> <span class="nf">store_optimizer_indicators</span><span class="p">(</span><span class="n">optimizer</span><span class="p">:</span> <span class="s1">&#39;Optimizer&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                                <span class="n">models</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                                <span class="n">optimizer_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;optimizer&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Track optimizer stats such as moments.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        optimizer (Optimizer): PyTorch optimizer</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        models (Dict[str, torch.nn.Module], optional): a dictionary of modules being optimized.</span>
+<span class="sd">            This is used to get the proper parameter names.</span>
+<span class="sd">        optimizer_name (str, optional): name of the optimizer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">if</span> <span class="n">models</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">names</span> <span class="o">=</span> <span class="p">{}</span>
@@ -287,6 +308,13 @@
 
 
 <div class="viewcode-block" id="get_modules"><a class="viewcode-back" href="../../../api/utils.html#labml.utils.pytorch.get_modules">[docs]</a><span class="k">def</span> <span class="nf">get_modules</span><span class="p">(</span><span class="n">configs</span><span class="p">:</span> <span class="n">BaseConfigs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get all the PyTorch modules in ``configs`` object.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        configs (labml.configs.BaseConfigs): configurations object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">keys</span> <span class="o">=</span> <span class="nb">dir</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span>
 
     <span class="n">modules</span> <span class="o">=</span> <span class="p">{}</span>
@@ -302,6 +330,12 @@
 
 
 <div class="viewcode-block" id="get_device"><a class="viewcode-back" href="../../../api/utils.html#labml.utils.pytorch.get_device">[docs]</a><span class="k">def</span> <span class="nf">get_device</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the device the ``module`` is in.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        module (torch.nn.Module): PyTorch module</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">sample_param</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>

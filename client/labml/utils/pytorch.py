@@ -25,6 +25,15 @@ def store_var(name: str, tensor: torch.Tensor):
 
 
 def store_model_indicators(model: torch.nn.Module, *, model_name: str = "model"):
+    """
+    Track model parameters and gradients.
+
+    Arguments:
+        model (Optimizer): PyTorch model
+
+    Keyword Arguments:
+        model_name (str, optional): name of the model
+    """
     for name, param in model.named_parameters():
         if param.requires_grad:
             with torch.no_grad():
@@ -36,6 +45,18 @@ def store_model_indicators(model: torch.nn.Module, *, model_name: str = "model")
 def store_optimizer_indicators(optimizer: 'Optimizer', *,
                                models: Optional[Dict[str, torch.nn.Module]] = None,
                                optimizer_name: str = "optimizer"):
+    """
+    Track optimizer stats such as moments.
+
+    Arguments:
+        optimizer (Optimizer): PyTorch optimizer
+
+    Keyword Arguments:
+        models (Dict[str, torch.nn.Module], optional): a dictionary of modules being optimized.
+            This is used to get the proper parameter names.
+        optimizer_name (str, optional): name of the optimizer
+    """
+
     if models is None:
         models = {}
     names = {}
@@ -65,6 +86,13 @@ def store_optimizer_indicators(optimizer: 'Optimizer', *,
 
 
 def get_modules(configs: BaseConfigs):
+    """
+    Get all the PyTorch modules in ``configs`` object.
+
+    Arguments:
+        configs (labml.configs.BaseConfigs): configurations object
+    """
+
     keys = dir(configs)
 
     modules = {}
@@ -80,6 +108,12 @@ def get_modules(configs: BaseConfigs):
 
 
 def get_device(module: torch.nn.Module):
+    """
+    Get the device the ``module`` is in.
+
+    Arguments:
+        module (torch.nn.Module): PyTorch module
+    """
     params = module.parameters()
     try:
         sample_param = next(params)
