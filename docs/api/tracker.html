@@ -109,7 +109,14 @@
 <li class="toctree-l2"><a class="reference internal" href="experiment.html#utilities">Utilities</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tracker</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tracker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#track">Track</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step">Step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#helpers">Helpers</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="monit.html">Monitor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lab.html">Lab</a></li>
@@ -191,68 +198,8 @@
             
   <div class="section" id="module-labml.tracker">
 <span id="tracker"></span><h1>Tracker<a class="headerlink" href="#module-labml.tracker" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt id="labml.tracker.set_queue">
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_queue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">queue_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">10</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_queue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="labml.tracker.set_histogram">
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_histogram</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_histogram" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="labml.tracker.set_scalar">
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_scalar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_scalar" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="labml.tracker.set_indexed_scalar">
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_indexed_scalar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_indexed_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_indexed_scalar" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><a class="reference internal" href="#labml.tracker.set_image" title="labml.tracker.set_image"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_image()</span></code></a>,
-<a class="reference internal" href="#labml.tracker.set_text" title="labml.tracker.set_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_text()</span></code></a>, and
-<a class="reference internal" href="#labml.tracker.set_indexed_text" title="labml.tracker.set_indexed_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_indexed_text()</span></code></a> are still experimental.</p>
-</div>
-<dl class="py function">
-<dt id="labml.tracker.set_image">
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_image</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">density</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_image" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="labml.tracker.set_text">
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_text" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="labml.tracker.set_indexed_text">
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_indexed_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">title</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_indexed_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_indexed_text" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="labml.tracker.add">
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>This has multiple overloads</p>
-<dl class="py function">
-<dt>
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt>
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt>
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="track">
+<h2>Track<a class="headerlink" href="#track" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="labml.tracker.save">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.save" title="Permalink to this definition">¶</a></dt>
@@ -297,20 +244,62 @@
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_step</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#save"><span class="viewcode-link">[source]</span></a></dt>
 <dd></dd></dl>
 
+<p>This saves the tracking information in all the writers
+such as <a class="reference external" href="https://github.com/labmlai/labml/tree/master/app">labml.ai monitoring app</a>,
+<a class="reference external" href="https://www.tensorflow.org/tensorboard">TensorBoard</a> and
+<a class="reference external" href="https://wandb.ai/">Weights and Biases</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>global_step</strong> (<em>int</em>) – The current step</p></li>
+<li><p><strong>values</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em>) – A dictionary of key-value pairs to track</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The name of the value to be tracked</p></li>
+<li><p><strong>value</strong> (<em>any</em>) – The value to be tracked</p></li>
+<li><p><strong>kwargs</strong> – Key-value pairs to track</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="labml.tracker.namespace">
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">namespace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#namespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.namespace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a namespace for tracking</p>
-</dd></dl>
+<dt id="labml.tracker.add">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>This has multiple overloads</p>
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
-<dt id="labml.tracker.reset">
-<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset indicators, for a new experiment</p>
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#add"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<p>This add tracking information to a temporary queue.
+These will be saved when <a class="reference internal" href="#labml.tracker.save" title="labml.tracker.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.save()</span></code></a> is called.</p>
+<p>You should use <a class="reference internal" href="#labml.tracker.add" title="labml.tracker.add"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.add()</span></code></a> to improve performance since
+saving tracking information consumes time.
+Although saving takes negligible amount of time it can add up if called very frequently.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em>) – A dictionary of key-value pairs to track</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The name of the value to be tracked</p></li>
+<li><p><strong>value</strong> (<em>any</em>) – The value to be tracked</p></li>
+<li><p><strong>kwargs</strong> – Key-value pairs to track</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
+</div>
+<div class="section" id="step">
+<h2>Step<a class="headerlink" href="#step" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="labml.tracker.set_global_step">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_global_step</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_step</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_global_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_global_step" title="Permalink to this definition">¶</a></dt>
@@ -326,6 +315,68 @@
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">get_global_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/labml/tracker.html#get_global_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.get_global_step" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</div>
+<div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="labml.tracker.set_queue">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_queue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">queue_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">10</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_histogram">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_histogram</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_histogram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_scalar">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_scalar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_scalar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_indexed_scalar">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_indexed_scalar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_indexed_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_indexed_scalar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a class="reference internal" href="#labml.tracker.set_image" title="labml.tracker.set_image"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_image()</span></code></a>,
+<a class="reference internal" href="#labml.tracker.set_text" title="labml.tracker.set_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_text()</span></code></a>, and
+<a class="reference internal" href="#labml.tracker.set_indexed_text" title="labml.tracker.set_indexed_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.set_indexed_text()</span></code></a> are still experimental.</p>
+</div>
+<dl class="py function">
+<dt id="labml.tracker.set_image">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_image</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">density</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_text">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="labml.tracker.set_indexed_text">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">set_indexed_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">title</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_print</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#set_indexed_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.set_indexed_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="labml.tracker.namespace">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">namespace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#namespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a namespace for tracking</p>
+</dd></dl>
+
+</div>
+<div class="section" id="helpers">
+<h2>Helpers<a class="headerlink" href="#helpers" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="labml.tracker.reset">
+<code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset indicators, for a new experiment</p>
+</dd></dl>
+
 <dl class="py function">
 <dt id="labml.tracker.new_line">
 <code class="sig-prename descclassname">labml.tracker.</code><code class="sig-name descname">new_line</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/tracker.html#new_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.tracker.new_line" title="Permalink to this definition">¶</a></dt>
@@ -334,6 +385,7 @@
 process is tracking data.</p>
 </dd></dl>
 
+</div>
 </div>
 
 

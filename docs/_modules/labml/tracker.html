@@ -107,7 +107,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/experiment.html#utilities">Utilities</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/tracker.html">Tracker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/tracker.html">Tracker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tracker.html#track">Track</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tracker.html#step">Step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tracker.html#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tracker.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tracker.html#helpers">Helpers</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/monit.html">Monitor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/logger.html">Logger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/lab.html">Lab</a></li>
@@ -301,6 +308,19 @@
 
 <span class="sd">    .. function:: add(**kwargs: any)</span>
 <span class="sd">        :noindex:</span>
+
+<span class="sd">    This add tracking information to a temporary queue.</span>
+<span class="sd">    These will be saved when :func:`labml.tracker.save` is called.</span>
+
+<span class="sd">    You should use :func:`labml.tracker.add` to improve performance since</span>
+<span class="sd">    saving tracking information consumes time.</span>
+<span class="sd">    Although saving takes negligible amount of time it can add up if called very frequently.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        values (Dict[str, any]): A dictionary of key-value pairs to track</span>
+<span class="sd">        name (str): The name of the value to be tracked</span>
+<span class="sd">        value (any): The value to be tracked</span>
+<span class="sd">        kwargs: Key-value pairs to track</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)&#39;</span><span class="p">)</span>
@@ -388,6 +408,18 @@
 
 <span class="sd">    .. function:: save(global_step: int, **kwargs: any)</span>
 <span class="sd">        :noindex:</span>
+
+<span class="sd">    This saves the tracking information in all the writers</span>
+<span class="sd">    such as `labml.ai monitoring app &lt;https://github.com/labmlai/labml/tree/master/app&gt;`_,</span>
+<span class="sd">    `TensorBoard &lt;https://www.tensorflow.org/tensorboard&gt;`_ and</span>
+<span class="sd">    `Weights and Biases &lt;https://wandb.ai/&gt;`_.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        global_step (int): The current step</span>
+<span class="sd">        values (Dict[str, any]): A dictionary of key-value pairs to track</span>
+<span class="sd">        name (str): The name of the value to be tracked</span>
+<span class="sd">        value (any): The value to be tracked</span>
+<span class="sd">        kwargs: Key-value pairs to track</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">set_global_step</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>

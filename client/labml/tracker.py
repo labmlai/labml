@@ -113,6 +113,19 @@ def add(*args, **kwargs):
 
     .. function:: add(**kwargs: any)
         :noindex:
+
+    This add tracking information to a temporary queue.
+    These will be saved when :func:`labml.tracker.save` is called.
+
+    You should use :func:`labml.tracker.add` to improve performance since
+    saving tracking information consumes time.
+    Although saving takes negligible amount of time it can add up if called very frequently.
+
+    Arguments:
+        values (Dict[str, any]): A dictionary of key-value pairs to track
+        name (str): The name of the value to be tracked
+        value (any): The value to be tracked
+        kwargs: Key-value pairs to track
     """
     if len(args) > 2:
         raise TypeError('tracker.add should be called as add(name, value), add(dictionary) or add(k=v,k2=v2...)')
@@ -200,6 +213,18 @@ def save(*args, **kwargs):
 
     .. function:: save(global_step: int, **kwargs: any)
         :noindex:
+
+    This saves the tracking information in all the writers
+    such as `labml.ai monitoring app <https://github.com/labmlai/labml/tree/master/app>`_,
+    `TensorBoard <https://www.tensorflow.org/tensorboard>`_ and
+    `Weights and Biases <https://wandb.ai/>`_.
+
+    Arguments:
+        global_step (int): The current step
+        values (Dict[str, any]): A dictionary of key-value pairs to track
+        name (str): The name of the value to be tracked
+        value (any): The value to be tracked
+        kwargs: Key-value pairs to track
     """
     if len(args) > 0 and type(args[0]) == int:
         _internal().set_global_step(args[0])

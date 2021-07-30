@@ -3,39 +3,55 @@ Tracker
 
 .. automodule:: labml.tracker
 
+    Track
+    -----
 
-     .. autofunction:: set_queue
+    .. autofunction:: save
 
-     .. autofunction:: set_histogram
+    .. autofunction:: add
 
-     .. autofunction:: set_scalar
 
-     .. autofunction:: set_indexed_scalar
+    Step
+    ----
+    .. autofunction:: set_global_step
 
-     .. warning::
+    .. autofunction:: add_global_step
 
-         :func:`labml.tracker.set_image`,
-         :func:`labml.tracker.set_text`, and
-         :func:`labml.tracker.set_indexed_text` are still experimental.
+    .. autofunction:: get_global_step
 
-     .. autofunction:: set_image
 
-     .. autofunction:: set_text
+    Setup
+    -----
 
-     .. autofunction:: set_indexed_text
+    .. autofunction:: set_queue
 
-     .. autofunction:: add
+    .. autofunction:: set_histogram
 
-     .. autofunction:: save
+    .. autofunction:: set_scalar
 
-     .. autofunction:: namespace
+    .. autofunction:: set_indexed_scalar
 
-     .. autofunction:: reset
+    .. warning::
 
-     .. autofunction:: set_global_step
+        :func:`labml.tracker.set_image`,
+        :func:`labml.tracker.set_text`, and
+        :func:`labml.tracker.set_indexed_text` are still experimental.
 
-     .. autofunction:: add_global_step
+    .. autofunction:: set_image
 
-     .. autofunction:: get_global_step
+    .. autofunction:: set_text
 
-     .. autofunction:: new_line
+    .. autofunction:: set_indexed_text
+
+    Namespaces
+    ----------
+
+    .. autofunction:: namespace
+
+
+    Helpers
+    -------
+
+    .. autofunction:: reset
+
+    .. autofunction:: new_line
