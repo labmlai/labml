@@ -24,6 +24,7 @@
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/labmlai/labml/blob/master/samples/stocks/analysis.ipynb)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
 * Pretty logs of training progress
+* [Change hyper-parameters while the model is training](https://github.com/labmlai/labml/blob/master/guides/dynamic_hyperparameters.md)
 * Open source! we also have a small hosted server for the mobile web app
 
 
