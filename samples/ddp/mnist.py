@@ -57,4 +57,5 @@ if __name__ == '__main__':
     # Spawn multiple GPU
     # torch.multiprocessing.spawn(main, args=(3, experiment.generate_uuid()), nprocs=3, join=True)
 
+    # Run with `labml launch`, same arguments as `torch.distributed.launch`
     _launcher()
