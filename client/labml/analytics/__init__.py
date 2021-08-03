@@ -201,7 +201,8 @@ def distribution(*args: any,
         step = args[1]
 
     if names is None:
-        names = [f'{i + 1}' for i in range(len(series))]
+        digits = len(str(len(series)))
+        names = [str(i + 1).zfill(digits) for i in range(len(series))]
 
     if series is None:
         raise ValueError("distribution should be called with an indicator collection"
