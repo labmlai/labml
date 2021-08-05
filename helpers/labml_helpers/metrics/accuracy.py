@@ -43,9 +43,7 @@ class Accuracy(Metric):
         self.data.reset()
 
     def on_epoch_end(self):
-        if self.data.samples == 0:
-            return
-        tracker.add("accuracy.", self.data.correct / self.data.samples)
+        self.track()
 
     def track(self):
         if self.data.samples == 0:
