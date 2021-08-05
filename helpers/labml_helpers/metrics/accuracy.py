@@ -55,7 +55,7 @@ class Accuracy(Metric):
 
 class BinaryAccuracy(Accuracy):
     def __call__(self, output: torch.Tensor, target: torch.Tensor):
-        pred = output.view(-1) < 0
+        pred = output.view(-1) > 0
         target = target.view(-1)
         self.data.correct += pred.eq(target).sum().item()
         self.data.samples += len(target)
