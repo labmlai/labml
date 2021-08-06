@@ -14,6 +14,13 @@ class SetSeed:
 
 
 class SeedConfigs(BaseConfigs):
+    r"""
+    This is a configurable module for setting the seeds.
+    It will set seeds with ``torch.manual_seed`` and ``np.random.seed``.
+
+    Arguments:
+        seed (int): Seed integer. Defaults to ``5``.
+    """
     seed: int = 5
 
     set = '_set_seed'
