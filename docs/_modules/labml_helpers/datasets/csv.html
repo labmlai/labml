@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>labml.utils.keras &mdash; labml.ai client library 0.4 documentation</title>
+  <title>labml_helpers.datasets.csv &mdash; labml.ai client library 0.4 documentation</title>
   
 
   
@@ -18,7 +18,7 @@
   
   
   
-    <link rel="canonical" href="https://docs.labml.ai/_modules/labml/utils/keras.html"/>
+    <link rel="canonical" href="https://docs.labml.ai/_modules/labml_helpers/datasets/csv.html"/>
   
 
   
@@ -207,7 +207,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>labml.utils.keras</li>
+      <li>labml_helpers.datasets.csv</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -222,57 +222,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for labml.utils.keras</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+  <h1>Source code for labml_helpers.datasets.csv</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">torch</span>
 
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">labml</span> <span class="kn">import</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">logger</span>
-
-<span class="n">_MAP</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="s1">&#39;batch&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="s1">&#39;loss.train&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="s1">&#39;accuracy.train&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;val_loss&#39;</span><span class="p">:</span> <span class="s1">&#39;loss.valid&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;val_accuracy&#39;</span><span class="p">:</span> <span class="s1">&#39;accuracy.valid&#39;</span>
-<span class="p">}</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">TensorDataset</span>
 
 
-<div class="viewcode-block" id="LabMLKerasCallback"><a class="viewcode-back" href="../../../api/framework_integrations.html#labml.utils.keras.LabMLKerasCallback">[docs]</a><span class="k">class</span> <span class="nc">LabMLKerasCallback</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">Callback</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Keras callback integration.</span>
-<span class="sd">    Pass an instance of this class to Keras model ``fit`` method as argument ``callbacks``.</span>
-<span class="sd">    Keras will call relavent mehtods of this class to log metrics.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_batch_frequency</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_batch_frequency</span> <span class="o">=</span> <span class="n">save_batch_frequency</span>
+<div class="viewcode-block" id="CsvDataset"><a class="viewcode-back" href="../../../api/helpers.html#labml_helpers.datasets.csv.CsvDataset">[docs]</a><span class="k">class</span> <span class="nc">CsvDataset</span><span class="p">(</span><span class="n">TensorDataset</span><span class="p">):</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">pd</span>
+    <span class="n">y_cols</span><span class="p">:</span> <span class="n">List</span>
+    <span class="n">x_cols</span><span class="p">:</span> <span class="n">List</span>
+    <span class="n">transform</span><span class="p">:</span> <span class="n">Callable</span>
+    <span class="n">test_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">train</span><span class="p">:</span> <span class="nb">bool</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_parse_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]]):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">logs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">data</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">logs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_MAP</span><span class="p">:</span>
-                <span class="n">k</span> <span class="o">=</span> <span class="n">_MAP</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">continue</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">y_cols</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">x_cols</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">train</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">transform</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="n">test_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">nrows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="nb">vars</span><span class="p">())</span>
 
-            <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;filepath_or_buffer&#39;</span><span class="p">:</span> <span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;nrows&#39;</span><span class="p">:</span> <span class="n">nrows</span><span class="p">})</span>
 
-        <span class="k">return</span> <span class="n">data</span>
+        <span class="n">data_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">on_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data_length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_fraction</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_size</span> <span class="o">=</span> <span class="n">data_length</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_size</span>
 
-    <span class="k">def</span> <span class="nf">on_train_batch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">tracker</span><span class="o">.</span><span class="n">add_global_step</span><span class="p">()</span>
-        <span class="n">tracker</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">batch</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_batch_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">train_size</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">train_size</span><span class="p">:]</span>
+
+        <span class="k">if</span> <span class="n">train</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">CsvDataset</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>labml.lab &mdash; labml.ai client library 0.4 documentation</title>
+  <title>labml_helpers.metrics &mdash; labml.ai client library 0.4 documentation</title>
   
 
   
@@ -18,7 +18,7 @@
   
   
   
-    <link rel="canonical" href="https://docs.labml.ai/_modules/labml/lab.html"/>
+    <link rel="canonical" href="https://docs.labml.ai/_modules/labml_helpers/metrics.html"/>
   
 
   
@@ -207,7 +207,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>labml.lab</li>
+      <li>labml_helpers.metrics</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -222,42 +222,33 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for labml.lab</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">PurePath</span><span class="p">,</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
-
-<span class="kn">from</span> <span class="nn">labml.internal.lab</span> <span class="kn">import</span> <span class="n">lab_singleton</span> <span class="k">as</span> <span class="n">_internal</span>
+  <h1>Source code for labml_helpers.metrics</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 
 
-<div class="viewcode-block" id="get_path"><a class="viewcode-back" href="../../api/lab.html#labml.lab.get_path">[docs]</a><span class="k">def</span> <span class="nf">get_path</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get the path to the root of the project</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">path</span></div>
+<div class="viewcode-block" id="StateModule"><a class="viewcode-back" href="../../api/helpers.html#labml_helpers.metrics.StateModule">[docs]</a><span class="k">class</span> <span class="nc">StateModule</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># def __call__(self):</span>
+    <span class="c1">#     raise NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">create_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">any</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">on_epoch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">on_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="get_data_path"><a class="viewcode-back" href="../../api/lab.html#labml.lab.get_data_path">[docs]</a><span class="k">def</span> <span class="nf">get_data_path</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get the path to the data folder</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">data_path</span></div>
-
-
-<div class="viewcode-block" id="get_experiments_path"><a class="viewcode-back" href="../../api/lab.html#labml.lab.get_experiments_path">[docs]</a><span class="k">def</span> <span class="nf">get_experiments_path</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get the path to the root of experiment logs</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">experiments</span></div>
-
-
-<div class="viewcode-block" id="configure"><a class="viewcode-back" href="../../api/lab.html#labml.lab.configure">[docs]</a><span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="n">configurations</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Set top level configurations through Python.</span>
-<span class="sd">    You can set the configurations set through ``.labml.yaml``.</span>
-
-<span class="sd">    `See the guide for details. &lt;https://github.com/labmlai/labml/blob/master/guides/labml_yaml_file.md&gt;`_</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_internal</span><span class="p">()</span><span class="o">.</span><span class="n">set_configurations</span><span class="p">(</span><span class="n">configurations</span><span class="p">)</span></div>
+<div class="viewcode-block" id="Metric"><a class="viewcode-back" href="../../api/helpers.html#labml_helpers.metrics.Metric">[docs]</a><span class="k">class</span> <span class="nc">Metric</span><span class="p">(</span><span class="n">StateModule</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">track</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
 </pre></div>
 
            </div>

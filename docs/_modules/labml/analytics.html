@@ -150,9 +150,14 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/helpers.html">Helpers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#modules">Modules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#datasets">Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#configurable-modules">Configurable Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#datasets">Datasets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/helpers.html#text-datasets">Text Datasets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#schedules">Schedules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#metrics">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#utilies">Utilies</a></li>
 </ul>
 </li>
 </ul>
@@ -421,7 +426,8 @@
         <span class="n">step</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">))]</span>
+        <span class="n">digits</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)))</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="n">digits</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">))]</span>
 
     <span class="k">if</span> <span class="n">series</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;distribution should be called with an indicator collection&quot;</span>
