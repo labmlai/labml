@@ -239,6 +239,16 @@
 
 
 <div class="viewcode-block" id="SeedConfigs"><a class="viewcode-back" href="../../api/helpers.html#labml_helpers.seed.SeedConfigs">[docs]</a><span class="k">class</span> <span class="nc">SeedConfigs</span><span class="p">(</span><span class="n">BaseConfigs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a configurable module for setting the seeds.</span>
+<span class="sd">    It will set seeds with ``torch.manual_seed`` and ``np.random.seed``.</span>
+
+<span class="sd">    You need to call ``set`` method to set seeds</span>
+<span class="sd">    (`example &lt;https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py&gt;`_).</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        seed (int): Seed integer. Defaults to ``5``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
 
     <span class="nb">set</span> <span class="o">=</span> <span class="s1">&#39;_set_seed&#39;</span></div>

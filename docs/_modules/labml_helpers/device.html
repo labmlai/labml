@@ -257,6 +257,20 @@
 
 
 <div class="viewcode-block" id="DeviceConfigs"><a class="viewcode-back" href="../../api/helpers.html#labml_helpers.device.DeviceConfigs">[docs]</a><span class="k">class</span> <span class="nc">DeviceConfigs</span><span class="p">(</span><span class="n">BaseConfigs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a configurable module to get a single device to train model on.</span>
+<span class="sd">    It can pick up CUDA devices and it will fall back to CPU if they are not available.</span>
+
+<span class="sd">    It has other small advantages such as being able to view the</span>
+<span class="sd">    actual device name on configurations view of</span>
+<span class="sd">    `labml app &lt;https://github.com/labmlai/labml/tree/master/app&gt;`_</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        cuda_device (int): The CUDA device number. Defaults to ``0``.</span>
+<span class="sd">        use_cuda (bool): Whether to use CUDA devices. Defaults to ``True``.</span>
+
+<span class="sd">    `Here&#39;s an example usage &lt;https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cuda_device</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">use_cuda</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 

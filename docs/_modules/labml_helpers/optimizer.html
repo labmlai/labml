@@ -232,13 +232,31 @@
 
 
 <div class="viewcode-block" id="OptimizerConfigs"><a class="viewcode-back" href="../../api/helpers.html#labml_helpers.optimizer.OptimizerConfigs">[docs]</a><span class="k">class</span> <span class="nc">OptimizerConfigs</span><span class="p">(</span><span class="n">BaseConfigs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This creates a configurable optimizer.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        learning_rate (float): Learning rate of the optimizer. Defaults to ``0.01``.</span>
+<span class="sd">        momentum (float): Momentum of the optimizer. Defaults to ``0.5``.</span>
+<span class="sd">        parameters: Model parameters to optimize.</span>
+<span class="sd">        d_model (int): Embedding size of the model (for Noam optimizer).</span>
+<span class="sd">        betas (Tuple[float, float]): Betas for Adam optimizer. Defaults to ``(0.9, 0.999)``.</span>
+<span class="sd">        eps (float): Epsilon for Adam/RMSProp optimizers. Defaults to ``1e-8``.</span>
+<span class="sd">        step_factor (int): Step factor for Noam optimizer. Defaults to ``1024``.</span>
+
+<span class="sd">    `Here&#39;s an example usage &lt;https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py&gt;`_.</span>
+
+<span class="sd">    Also there is a better (more options) implementation in ``labml_nn``.</span>
+<span class="sd">    `We recommend using that &lt;https://nn.labml.ai/optimizers/configs.html&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">optimizer</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span>
     <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span>
     <span class="n">momentum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="nb">any</span>
     <span class="n">d_model</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">betas</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">)</span>
-    <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-08</span>
+    <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
     <span class="n">step_factor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

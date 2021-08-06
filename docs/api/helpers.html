@@ -236,17 +236,57 @@
 <dl class="py class">
 <dt id="labml_helpers.device.DeviceConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.device.</code><code class="sig-name descname">DeviceConfigs</code><a class="reference internal" href="../_modules/labml_helpers/device.html#DeviceConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.device.DeviceConfigs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This is a configurable module to get a single device to train model on.
+It can pick up CUDA devices and it will fall back to CPU if they are not available.</p>
+<p>It has other small advantages such as being able to view the
+actual device name on configurations view of
+<a class="reference external" href="https://github.com/labmlai/labml/tree/master/app">labml app</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cuda_device</strong> (<em>int</em>) – The CUDA device number. Defaults to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p><strong>use_cuda</strong> (<em>bool</em>) – Whether to use CUDA devices. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p><a class="reference external" href="https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py">Here’s an example usage</a>.</p>
+</dd></dl>
 
 <dl class="py class">
 <dt id="labml_helpers.seed.SeedConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.seed.</code><code class="sig-name descname">SeedConfigs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">_primary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/seed.html#SeedConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.seed.SeedConfigs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This is a configurable module for setting the seeds.
+It will set seeds with <code class="docutils literal notranslate"><span class="pre">torch.manual_seed</span></code> and <code class="docutils literal notranslate"><span class="pre">np.random.seed</span></code>.</p>
+<p>You need to call <code class="docutils literal notranslate"><span class="pre">set</span></code> method to set seeds
+(<a class="reference external" href="https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py">example</a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>seed</strong> (<em>int</em>) – Seed integer. Defaults to <code class="docutils literal notranslate"><span class="pre">5</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="labml_helpers.optimizer.OptimizerConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.optimizer.</code><code class="sig-name descname">OptimizerConfigs</code><a class="reference internal" href="../_modules/labml_helpers/optimizer.html#OptimizerConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.optimizer.OptimizerConfigs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This creates a configurable optimizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>learning_rate</strong> (<em>float</em>) – Learning rate of the optimizer. Defaults to <code class="docutils literal notranslate"><span class="pre">0.01</span></code>.</p></li>
+<li><p><strong>momentum</strong> (<em>float</em>) – Momentum of the optimizer. Defaults to <code class="docutils literal notranslate"><span class="pre">0.5</span></code>.</p></li>
+<li><p><strong>parameters</strong> – Model parameters to optimize.</p></li>
+<li><p><strong>d_model</strong> (<em>int</em>) – Embedding size of the model (for Noam optimizer).</p></li>
+<li><p><strong>betas</strong> (<em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Betas for Adam optimizer. Defaults to <code class="docutils literal notranslate"><span class="pre">(0.9,</span> <span class="pre">0.999)</span></code>.</p></li>
+<li><p><strong>eps</strong> (<em>float</em>) – Epsilon for Adam/RMSProp optimizers. Defaults to <code class="docutils literal notranslate"><span class="pre">1e-8</span></code>.</p></li>
+<li><p><strong>step_factor</strong> (<em>int</em>) – Step factor for Noam optimizer. Defaults to <code class="docutils literal notranslate"><span class="pre">1024</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p><a class="reference external" href="https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py">Here’s an example usage</a>.</p>
+<p>Also there is a better (more options) implementation in <code class="docutils literal notranslate"><span class="pre">labml_nn</span></code>.
+<a class="reference external" href="https://nn.labml.ai/optimizers/configs.html">We recommend using that</a>.</p>
+</dd></dl>
 
 <dl class="py class">
 <dt id="labml_helpers.training_loop.TrainingLoopConfigs">
