@@ -1,6 +1,5 @@
 [![PyPI - Python Version](https://badge.fury.io/py/labml-remote.svg)](https://badge.fury.io/py/labml-remote)
 [![PyPI Status](https://pepy.tech/badge/labml_remote)](https://pepy.tech/project/labml_remote)
-[![PyPI Status](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
 
 `labml_remote` is a very simple tool that lets you setup python and run python on remote computers.
 It's mainly intended for deep learning training.
