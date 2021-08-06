@@ -18,6 +18,9 @@ class SeedConfigs(BaseConfigs):
     This is a configurable module for setting the seeds.
     It will set seeds with ``torch.manual_seed`` and ``np.random.seed``.
 
+    You need to call ``set`` method to set seeds
+    (`example <https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py>`_).
+
     Arguments:
         seed (int): Seed integer. Defaults to ``5``.
     """

@@ -7,13 +7,31 @@ from labml.configs import BaseConfigs, option, meta_config
 
 
 class OptimizerConfigs(BaseConfigs):
+    r"""
+    This creates a configurable optimizer.
+
+    Arguments:
+        learning_rate (float): Learning rate of the optimizer. Defaults to ``0.01``.
+        momentum (float): Momentum of the optimizer. Defaults to ``0.5``.
+        parameters: Model parameters to optimize.
+        d_model (int): Embedding size of the model (for Noam optimizer).
+        betas (Tuple[float, float]): Betas for Adam optimizer. Defaults to ``(0.9, 0.999)``.
+        eps (float): Epsilon for Adam/RMSProp optimizers. Defaults to ``1e-8``.
+        step_factor (int): Step factor for Noam optimizer. Defaults to ``1024``.
+
+    `Here's an example usage <https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py>`_.
+
+    Also there is a better (more options) implementation in ``labml_nn``.
+    `We recommend using that <https://nn.labml.ai/optimizers/configs.html>`_.
+    """
+
     optimizer: torch.optim.Adam
     learning_rate: float = 0.01
     momentum: float = 0.5
     parameters: any
     d_model: int
     betas: Tuple[float, float] = (0.9, 0.999)
-    eps: float = 1e-08
+    eps: float = 1e-8
     step_factor: int = 1024
 
     def __init__(self):

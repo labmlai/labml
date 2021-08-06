@@ -43,6 +43,8 @@ class DeviceConfigs(BaseConfigs):
     Arguments:
         cuda_device (int): The CUDA device number. Defaults to ``0``.
         use_cuda (bool): Whether to use CUDA devices. Defaults to ``True``.
+
+    `Here's an example usage <https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py>`_.
     """
     cuda_device: int = 0
     use_cuda: bool = True
