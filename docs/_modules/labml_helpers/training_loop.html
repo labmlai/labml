@@ -394,6 +394,25 @@
 
 
 <div class="viewcode-block" id="TrainingLoopConfigs"><a class="viewcode-back" href="../../api/helpers.html#labml_helpers.training_loop.TrainingLoopConfigs">[docs]</a><span class="k">class</span> <span class="nc">TrainingLoopConfigs</span><span class="p">(</span><span class="n">BaseConfigs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a configurable training loop.</span>
+
+<span class="sd">    &gt;&gt;&gt; for step in conf.training_loop:</span>
+<span class="sd">    &gt;&gt;&gt;     ...</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        loop_count (int): Total number of steps. Defaults to ``10``.</span>
+<span class="sd">        loop_step (int): Number of steps to increment per iteration. Defaults to ``1``.</span>
+<span class="sd">        is_save_models (bool): Whether to call :func:`labml.experiment.save_checkpoint` on each iteration.</span>
+<span class="sd">         Defaults to ``False``.</span>
+<span class="sd">        save_models_interval (int): The interval (in steps) to save models. Defaults to ``1``.</span>
+<span class="sd">        log_new_line_interval (int): The interval (in steps) to print a new line to the screen.</span>
+<span class="sd">         Defaults to ``1``.</span>
+<span class="sd">        log_write_interval (int): The interval (in steps) to call :func:`labml.tracker.save`.</span>
+<span class="sd">         Defaults to ``1``.</span>
+<span class="sd">        is_loop_on_interrupt (bool): Whether to handle keyboard interrupts and wait until a iteration is complete.</span>
+<span class="sd">         Defaults to ``False``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">loop_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
     <span class="n">loop_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">is_save_models</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>

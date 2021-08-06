@@ -291,7 +291,29 @@ It will set seeds with <code class="docutils literal notranslate"><span class="p
 <dl class="py class">
 <dt id="labml_helpers.training_loop.TrainingLoopConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.training_loop.</code><code class="sig-name descname">TrainingLoopConfigs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">_primary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/training_loop.html#TrainingLoopConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.training_loop.TrainingLoopConfigs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This is a configurable training loop.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">training_loop</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="o">...</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loop_count</strong> (<em>int</em>) – Total number of steps. Defaults to <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
+<li><p><strong>loop_step</strong> (<em>int</em>) – Number of steps to increment per iteration. Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><strong>is_save_models</strong> (<em>bool</em>) – Whether to call <a class="reference internal" href="experiment.html#labml.experiment.save_checkpoint" title="labml.experiment.save_checkpoint"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.experiment.save_checkpoint()</span></code></a> on each iteration.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>save_models_interval</strong> (<em>int</em>) – The interval (in steps) to save models. Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><strong>log_new_line_interval</strong> (<em>int</em>) – The interval (in steps) to print a new line to the screen.
+Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><strong>log_write_interval</strong> (<em>int</em>) – The interval (in steps) to call <a class="reference internal" href="tracker.html#labml.tracker.save" title="labml.tracker.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.save()</span></code></a>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><strong>is_loop_on_interrupt</strong> (<em>bool</em>) – Whether to handle keyboard interrupts and wait until a iteration is complete.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt id="labml_helpers.train_valid.TrainValidConfigs">

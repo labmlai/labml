@@ -169,6 +169,25 @@ class TrainingLoop:
 
 
 class TrainingLoopConfigs(BaseConfigs):
+    r"""
+    This is a configurable training loop.
+
+    >>> for step in conf.training_loop:
+    >>>     ...
+
+    Arguments:
+        loop_count (int): Total number of steps. Defaults to ``10``.
+        loop_step (int): Number of steps to increment per iteration. Defaults to ``1``.
+        is_save_models (bool): Whether to call :func:`labml.experiment.save_checkpoint` on each iteration.
+         Defaults to ``False``.
+        save_models_interval (int): The interval (in steps) to save models. Defaults to ``1``.
+        log_new_line_interval (int): The interval (in steps) to print a new line to the screen.
+         Defaults to ``1``.
+        log_write_interval (int): The interval (in steps) to call :func:`labml.tracker.save`.
+         Defaults to ``1``.
+        is_loop_on_interrupt (bool): Whether to handle keyboard interrupts and wait until a iteration is complete.
+         Defaults to ``False``.
+    """
     loop_count: int = 10
     loop_step: int = 1
     is_save_models: bool = False
