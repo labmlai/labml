@@ -170,7 +170,8 @@ class TrainingLoop:
 
 class TrainingLoopConfigs(BaseConfigs):
     r"""
-    This is a configurable training loop.
+    This is a configurable training loop. You can extend this class for your configurations
+    if it involves a training loop.
 
     >>> for step in conf.training_loop:
     >>>     ...

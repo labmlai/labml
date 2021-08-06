@@ -205,6 +205,23 @@ class BatchIndex:
 
 
 class TrainValidConfigs(TrainingLoopConfigs):
+    r"""
+    This is a configurable module that you can extend for experiments that involve a 
+    training and validation datasets (i.e. most DL experiments).
+    This is based on :class:`labml_helpers.training_loop.TrainingLoopConfigs`.
+
+    Arguments:
+        epochs (int): Number of epochs to train on. Defaults to ``10``.
+        train_loader (torch.utils.data.DataLoader): Training data loader.
+        valid_loader (torch.utils.data.DataLoader): Training data loader.
+        inner_iterations (int): Number of times to switch between training and validation
+         within an epoch. Defaults to ``1``.
+
+    You can override ``init``, ``step`` functions. There is also a ``sample`` function
+    that you can override to generate samples ever time it switches between training and validation.
+
+    `Here's an example usage <https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py>`_.    
+    """
     state_modules: List[StateModule]
 
     mode: ModeState
@@ -277,6 +294,25 @@ def _data_loop_count(c: TrainValidConfigs):
 
 
 class SimpleTrainValidConfigs(TrainValidConfigs):
+    r"""
+    This is a configurable module that works for many standard DL experiments.
+    This is based on :class:`labml_helpers.training_loop.TrainValidConfigs`.
+
+    Arguments:
+        model: A PyTorch model.
+        optimizer: A PyTorch optimizer to update model.
+        device: The device to train the model on. This defaults to a configurable device -
+         :class:`labml_helpers.device.DeviceConfigs`.
+        loss_function: A function to calculate the loss. This should accept ``model_output, target`` as
+         arguments.
+        update_batches (int): Number of batches to accumulate before taking an optimizer step.
+         Defaults to ``1``.
+        log_params_updates (int): How often (number of batches) to track model parameters and gradients.
+         Defaults to a large number; i.e. logs every epoch.
+        log_activations_batches (int): How often to log model activations. 
+         Defaults to a large number; i.e. logs every epoch.
+        log_save_batches (int): How often to call :func:`labml.tracker.save`.
+    """
     optimizer: torch.optim.Adam
     model: nn.Module
     device: torch.device = DeviceConfigs()

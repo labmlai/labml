@@ -430,6 +430,23 @@
 
 
 <div class="viewcode-block" id="TrainValidConfigs"><a class="viewcode-back" href="../../api/helpers.html#labml_helpers.train_valid.TrainValidConfigs">[docs]</a><span class="k">class</span> <span class="nc">TrainValidConfigs</span><span class="p">(</span><span class="n">TrainingLoopConfigs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a configurable module that you can extend for experiments that involve a </span>
+<span class="sd">    training and validation datasets (i.e. most DL experiments).</span>
+<span class="sd">    This is based on :class:`labml_helpers.training_loop.TrainingLoopConfigs`.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        epochs (int): Number of epochs to train on. Defaults to ``10``.</span>
+<span class="sd">        train_loader (torch.utils.data.DataLoader): Training data loader.</span>
+<span class="sd">        valid_loader (torch.utils.data.DataLoader): Training data loader.</span>
+<span class="sd">        inner_iterations (int): Number of times to switch between training and validation</span>
+<span class="sd">         within an epoch. Defaults to ``1``.</span>
+
+<span class="sd">    You can override ``init``, ``step`` functions. There is also a ``sample`` function</span>
+<span class="sd">    that you can override to generate samples ever time it switches between training and validation.</span>
+
+<span class="sd">    `Here&#39;s an example usage &lt;https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py&gt;`_.    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">state_modules</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StateModule</span><span class="p">]</span>
 
     <span class="n">mode</span><span class="p">:</span> <span class="n">ModeState</span>
@@ -501,7 +518,26 @@
     <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">epochs</span>
 
 
-<span class="k">class</span> <span class="nc">SimpleTrainValidConfigs</span><span class="p">(</span><span class="n">TrainValidConfigs</span><span class="p">):</span>
+<div class="viewcode-block" id="SimpleTrainValidConfigs"><a class="viewcode-back" href="../../api/helpers.html#labml_helpers.train_valid.SimpleTrainValidConfigs">[docs]</a><span class="k">class</span> <span class="nc">SimpleTrainValidConfigs</span><span class="p">(</span><span class="n">TrainValidConfigs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a configurable module that works for many standard DL experiments.</span>
+<span class="sd">    This is based on :class:`labml_helpers.training_loop.TrainValidConfigs`.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        model: A PyTorch model.</span>
+<span class="sd">        optimizer: A PyTorch optimizer to update model.</span>
+<span class="sd">        device: The device to train the model on. This defaults to a configurable device -</span>
+<span class="sd">         :class:`labml_helpers.device.DeviceConfigs`.</span>
+<span class="sd">        loss_function: A function to calculate the loss. This should accept ``model_output, target`` as</span>
+<span class="sd">         arguments.</span>
+<span class="sd">        update_batches (int): Number of batches to accumulate before taking an optimizer step.</span>
+<span class="sd">         Defaults to ``1``.</span>
+<span class="sd">        log_params_updates (int): How often (number of batches) to track model parameters and gradients.</span>
+<span class="sd">         Defaults to a large number; i.e. logs every epoch.</span>
+<span class="sd">        log_activations_batches (int): How often to log model activations. </span>
+<span class="sd">         Defaults to a large number; i.e. logs every epoch.</span>
+<span class="sd">        log_save_batches (int): How often to call :func:`labml.tracker.save`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">optimizer</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">DeviceConfigs</span><span class="p">()</span>
@@ -545,7 +581,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">batch_idx</span><span class="o">.</span><span class="n">is_interval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_save_batches</span><span class="p">):</span>
-                <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
 
 <span class="n">meta_config</span><span class="p">(</span><span class="n">SimpleTrainValidConfigs</span><span class="o">.</span><span class="n">update_batches</span><span class="p">,</span>

@@ -20,6 +20,7 @@ Configurable Modules
 
 .. autoclass:: labml_helpers.train_valid.TrainValidConfigs
 
+.. autoclass:: labml_helpers.train_valid.SimpleTrainValidConfigs
 
 Datasets
 --------

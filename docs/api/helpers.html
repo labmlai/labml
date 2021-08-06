@@ -291,7 +291,8 @@ It will set seeds with <code class="docutils literal notranslate"><span class="p
 <dl class="py class">
 <dt id="labml_helpers.training_loop.TrainingLoopConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.training_loop.</code><code class="sig-name descname">TrainingLoopConfigs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">_primary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/training_loop.html#TrainingLoopConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.training_loop.TrainingLoopConfigs" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a configurable training loop.</p>
+<dd><p>This is a configurable training loop. You can extend this class for your configurations
+if it involves a training loop.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">training_loop</span><span class="p">:</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="o">...</span>
 </pre></div>
@@ -318,7 +319,50 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">False</
 <dl class="py class">
 <dt id="labml_helpers.train_valid.TrainValidConfigs">
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.train_valid.</code><code class="sig-name descname">TrainValidConfigs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">_primary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/train_valid.html#TrainValidConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.train_valid.TrainValidConfigs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This is a configurable module that you can extend for experiments that involve a
+training and validation datasets (i.e. most DL experiments).
+This is based on <a class="reference internal" href="#labml_helpers.training_loop.TrainingLoopConfigs" title="labml_helpers.training_loop.TrainingLoopConfigs"><code class="xref py py-class docutils literal notranslate"><span class="pre">labml_helpers.training_loop.TrainingLoopConfigs</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epochs</strong> (<em>int</em>) – Number of epochs to train on. Defaults to <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
+<li><p><strong>train_loader</strong> (<em>torch.utils.data.DataLoader</em>) – Training data loader.</p></li>
+<li><p><strong>valid_loader</strong> (<em>torch.utils.data.DataLoader</em>) – Training data loader.</p></li>
+<li><p><strong>inner_iterations</strong> (<em>int</em>) – Number of times to switch between training and validation
+within an epoch. Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>You can override <code class="docutils literal notranslate"><span class="pre">init</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code> functions. There is also a <code class="docutils literal notranslate"><span class="pre">sample</span></code> function
+that you can override to generate samples ever time it switches between training and validation.</p>
+<p><a class="reference external" href="https://github.com/labmlai/labml/blob/master/samples/pytorch/mnist/e_labml_helpers.py">Here’s an example usage</a>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="labml_helpers.train_valid.SimpleTrainValidConfigs">
+<em class="property">class </em><code class="sig-prename descclassname">labml_helpers.train_valid.</code><code class="sig-name descname">SimpleTrainValidConfigs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">_primary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/train_valid.html#SimpleTrainValidConfigs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.train_valid.SimpleTrainValidConfigs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a configurable module that works for many standard DL experiments.
+This is based on <code class="xref py py-class docutils literal notranslate"><span class="pre">labml_helpers.training_loop.TrainValidConfigs</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – A PyTorch model.</p></li>
+<li><p><strong>optimizer</strong> – A PyTorch optimizer to update model.</p></li>
+<li><p><strong>device</strong> – The device to train the model on. This defaults to a configurable device -
+<a class="reference internal" href="#labml_helpers.device.DeviceConfigs" title="labml_helpers.device.DeviceConfigs"><code class="xref py py-class docutils literal notranslate"><span class="pre">labml_helpers.device.DeviceConfigs</span></code></a>.</p></li>
+<li><p><strong>loss_function</strong> – A function to calculate the loss. This should accept <code class="docutils literal notranslate"><span class="pre">model_output,</span> <span class="pre">target</span></code> as
+arguments.</p></li>
+<li><p><strong>update_batches</strong> (<em>int</em>) – Number of batches to accumulate before taking an optimizer step.
+Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><strong>log_params_updates</strong> (<em>int</em>) – How often (number of batches) to track model parameters and gradients.
+Defaults to a large number; i.e. logs every epoch.</p></li>
+<li><p><strong>log_activations_batches</strong> (<em>int</em>) – How often to log model activations.
+Defaults to a large number; i.e. logs every epoch.</p></li>
+<li><p><strong>log_save_batches</strong> (<em>int</em>) – How often to call <a class="reference internal" href="tracker.html#labml.tracker.save" title="labml.tracker.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.tracker.save()</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="datasets">
