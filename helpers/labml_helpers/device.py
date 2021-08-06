@@ -32,6 +32,18 @@ class DeviceInfo:
 
 
 class DeviceConfigs(BaseConfigs):
+    r"""
+    This is a configurable module to get a single device to train model on.
+    It can pick up CUDA devices and it will fall back to CPU if they are not available.
+
+    It has other small advantages such as being able to view the
+    actual device name on configurations view of
+    `labml app <https://github.com/labmlai/labml/tree/master/app>`_
+
+    Arguments:
+        cuda_device (int): The CUDA device number. Defaults to ``0``.
+        use_cuda (bool): Whether to use CUDA devices. Defaults to ``True``.
+    """
     cuda_device: int = 0
     use_cuda: bool = True
 
