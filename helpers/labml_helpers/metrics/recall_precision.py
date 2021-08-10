@@ -49,7 +49,7 @@ class RecallPrecision(Metric):
         self.track()
 
     def track(self):
-        if self.data.total == 0:
-            return
-        tracker.add("prcn.", self.data.tp / (self.data.tp + self.data.fp))
-        tracker.add("recl.", self.data.tp / (self.data.tp + self.data.fn))
+        if self.data.tp + self.data.fp > 0:
+            tracker.add("prcn.", self.data.tp / (self.data.tp + self.data.fp))
+        if self.data.tp + self.data.fn > 0:
+            tracker.add("recl.", self.data.tp / (self.data.tp + self.data.fn))
