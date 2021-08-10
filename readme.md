@@ -7,7 +7,7 @@
 [![Docs](https://img.shields.io/badge/labml-docs-blue)](https://docs.labml.ai/)
 [![Twitter](https://img.shields.io/twitter/follow/labmlai?style=social)](https://twitter.com/labmlai?ref_src=twsrc%5Etfw)
 
-<img src="https://github.com/labmlai/lab/blob/master/images/cover-dark.png" alt=""/>
+<img src="https://github.com/labmlai/labml/blob/master/images/cover-dark.png" alt=""/>
 </div>
 
 ### 🔥 Features
