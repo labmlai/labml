@@ -255,13 +255,12 @@ def _get_run_checkpoint(run_path: Path, checkpoint: int = -1):
     else:
         required_ci = checkpoint
 
-    checkpoint_steps = set(checkpoint_steps)
+    selected_ci = -1
+    for ci in checkpoint_steps:
+        if ci <= required_ci:
+            selected_ci = max(selected_ci, ci)
 
-    for ci in range(required_ci, -1, -1):
-        if ci not in checkpoint_steps:
-            continue
-
-        return ci
+    return selected_ci
 
 
 def get_run_checkpoint(run_uuid: str, checkpoint: int = -1):
