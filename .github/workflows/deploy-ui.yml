@@ -10,10 +10,20 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: Cloning Repo
+      - name: Cloning Source Repo
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
+
+      - name: Setting up directories
+        run: mkdir -p app/lib
+
+      - name: Cloning Library Repo
+        uses: actions/checkout@v2
+        with:
+          repository: 'vpj/weya'
+          submodules: 'recursive'
+          path: 'app/lib/weya'
 
       - name: Setup Node
         uses: actions/setup-node@v2
@@ -45,7 +55,7 @@ jobs:
 
       - name: Deploy
         run: |
-          rsync -zravKLt --perms --executability static/ ${{ secrets.DEPLOY_LOCATION }}
+          rsync -zravKLt --perms --executability app/static/ ${{ secrets.DEPLOY_LOCATION }}
 
       - name: Create Sentry release
         uses: getsentry/action-release@v1
