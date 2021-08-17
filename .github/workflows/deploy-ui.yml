@@ -38,7 +38,7 @@ jobs:
       - name: Prepare build environment
         run: |
           cd app/ui && npm install
-          echo "${{ secrets.ENV_TS }}" > app/ui/src/env.ts
+          echo "${{ secrets.ENV_TS }}" > src/env.ts
 
       - name: Build
         run: cd app && make compile-prod
