@@ -2,7 +2,7 @@ name: Deploy UI
 
 on:
   push:
-    branches: [ ]
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -37,11 +37,11 @@ jobs:
 
       - name: Prepare build environment
         run: |
-          npm install
-          echo "${{ secrets.ENV_TS }}" > ui/src/env.ts
+          cd app/ui && npm install
+          echo "${{ secrets.ENV_TS }}" > app/ui/src/env.ts
 
       - name: Build
-        run: make compile-prod
+        run: cd app && make compile-prod
 
       - name: Deploy
         run: |
@@ -55,5 +55,5 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           environment: production
-          sourcemaps: './static/js'
+          sourcemaps: './app/static/js'
           set_commits: skip
