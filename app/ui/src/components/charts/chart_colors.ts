@@ -2,7 +2,8 @@ import d3 from "../../d3"
 
 const LIGHT_SINGLE_HUE = d3.piecewise(d3.interpolateHsl, ["#004c6d", "#c1e7ff"])
 const DARK_SINGLE_HUE = d3.piecewise(d3.interpolateHsl, ["#c1e7ff", "#004c6d"])
-const DIVERGENT = d3.piecewise(d3.interpolateHcl, ["#ffa600", "#f73790", "#0088ce"])
+const DIVERGENT = d3.piecewise(d3.interpolateHcl, ["#ffa600", "#bc5090", "#003f5d"])
+const DARK_DIVERGENT = d3.piecewise(d3.interpolateHcl, ["#ffa600", "#f73790", "#0088ce"])
 const DIVERGENT_SECOND = d3.piecewise(d3.interpolateHcl, ["#dd8400", "#9a3070", "#001d3b"])
 
 interface ChartColorsOptions {
@@ -26,6 +27,9 @@ export default class ChartColors {
         this.isDivergent = opt.isDivergent
 
         this.colorScale = DIVERGENT
+        if (document.body.classList.contains('light')) {
+            this.colorScale = DARK_DIVERGENT
+        }
         this.secondColorScale = DIVERGENT_SECOND
         if (!this.isDivergent) {
             if (document.body.classList.contains('light')) {
