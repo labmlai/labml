@@ -64,7 +64,7 @@ It can be annoying to get this url from the logs especially if you are running `
 
 In such cases you can obtain a token from
 [app.labml.ai](https://app.labml.ai) (Hamburger menu -> [Settings](https://app.labml.ai/settings)).
-You can then add this to `.labml/configs.yaml` in your home directory.
+You can then add this to `~/.labml/configs.yaml` in your home directory.
 
 ```yaml
 web_api: TOKEN_STRING
@@ -76,8 +76,8 @@ web_api: TOKEN_STRING
 and send the usage information to [app.labml.ai](https://app.labml.ai) by default.
 You can also host an instance of our app, by cloning the [Github repository](https://github.com/labmlai/labml/tree/master/app).
 
-You can set the url of the server in  `.labml/configs.yaml`.
+You can set the url of the server in  `~/.labml/configs.yaml`.
 
 ```yaml
-web_api: https://hosted-labml-app.com
+web_api: https://hosted-labml-app.com/api/v1/computer
 ```
