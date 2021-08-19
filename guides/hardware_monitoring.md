@@ -4,7 +4,7 @@
 # Hardware monitoring
 
 <div align="center">
-<img src="https://github.com/labmlai/lab/blob/master/guides/hardware.png" width="30%" alt=""/>
+<img src="https://github.com/labmlai/labml/blob/master/guides/hardware.png" width="30%" alt=""/>
 </div>
 
 We just added support to monitor hardware to our mobile-friendly web app
@@ -16,26 +16,11 @@ You can use it to monitor hardware usage even if you are not training models.
 You need to install our python package and some dependencies to start monitoring.
 
 ```sh
-pip install labml
-```
-
-`psutil` is the package we use to track hardware (`labml` doesn't install it as a dependency).
-
-```sh
-pip install psutil
-```
-
- To monitor GPUs (nvidia) you need to install `py3nvml` package as well.
-
-```sh
-pip install py3nvml
-```
-
- You can install all of the above packages in a single command
-
-```sh
 pip install labml psutil py3nvml
 ```
+
+* `psutil` is the package we use to track hardware (`labml` doesn't install it as a dependency).
+* To monitor GPUs (nvidia) you need to install `py3nvml` package as well.
 
 If you have problems with your Python environment you can use
 [our guide to setting up Python with conda locally](https://github.com/labmlai/labml/blob/master/guides/local-ubuntu.md),
