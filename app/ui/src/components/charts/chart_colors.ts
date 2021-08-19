@@ -27,7 +27,7 @@ export default class ChartColors {
         this.isDivergent = opt.isDivergent
 
         this.colorScale = DIVERGENT
-        if (document.body.classList.contains('light')) {
+        if (document.body.classList.contains('dark')) {
             this.colorScale = DARK_DIVERGENT
         }
         this.secondColorScale = DIVERGENT_SECOND
