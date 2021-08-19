@@ -7,9 +7,9 @@
 <img src="https://github.com/labmlai/labml/blob/master/guides/hardware.png" width="30%" alt=""/>
 </div>
 
-We just added support to monitor hardware to our mobile-friendly web app
-for monitoring deep learning model training.
-You can use it to monitor hardware usage even if you are not training models.
+[labml.ai](https://labml.ai) app can be used to monitor hardware.
+
+*You can use it to monitor hardware usage even if you are not training models.*
 
 ### Installation
 
