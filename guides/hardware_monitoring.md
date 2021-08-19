@@ -78,4 +78,4 @@ You can set the url of the server in  `~/.labml/configs.yaml`.
 web_api: https://hosted-labml-app.com/api/v1/computer?labml_token=[TOKEN_STRING]&
 ```
 
-*Note that the `&` at the end is important.
+*Note that the `&` at the end is important.*
