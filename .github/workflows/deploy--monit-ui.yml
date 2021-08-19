@@ -1,0 +1,69 @@
+name: Deploy Monit UI
+
+on:
+  release:
+    types:  [ published ]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Cloning Source Repo
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Setting up directories
+        run: mkdir -p app/lib
+
+      - name: Cloning Library Repo
+        uses: actions/checkout@v2
+        with:
+          repository: 'vpj/weya'
+          submodules: 'recursive'
+          path: 'app/lib/weya'
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Setup Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa
+          known_hosts: ${{ secrets.MONIT_KNOWN_HOSTS }}
+
+      - name: Prepare build environment
+        run: |
+          cd app/ui && npm install
+          echo "${{ secrets.MONIT_ENV_TS }}" > src/env.ts
+
+      - name: Build
+        run: cd app && make compile-prod
+
+      - name: Deploy
+        run: |
+          rsync -zravKLt --perms --executability app/static/ ${{ secrets.MONIT_DEPLOY_LOCATION }}
+
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          environment: 'monit-server'
+          sourcemaps: './app/static/js'
+          set_commits: skip
