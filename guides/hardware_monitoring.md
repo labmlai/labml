@@ -90,5 +90,7 @@ You can also host an instance of our app, by cloning the [Github repository](htt
 You can set the url of the server in  `~/.labml/configs.yaml`.
 
 ```yaml
-web_api: https://hosted-labml-app.com/api/v1/computer
+web_api: https://hosted-labml-app.com/api/v1/computer?labml_token=[TOKEN_STRING]&
 ```
+
+*Note that the `&` at the end is important.
