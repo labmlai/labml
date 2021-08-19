@@ -56,6 +56,17 @@ You can also run it with `nohup` if you want it to run in the background on a re
 nohup labml monitor &
 ```
 
+### Setting up a service to monitor
+
+You can setup a [`systemd`](https://systemd.io/) service to monitor your computer.
+This will make sure your computer gets monitored in the background and the service should start upon computer restarts.
+
+```sh
+labml service
+```
+
+Above command will setup the service and show you how to start/stop the service.
+
 ### Obtaining a token
 
 This step is not necessary but useful if you are monitoring from time to time.
