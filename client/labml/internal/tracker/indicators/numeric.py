@@ -78,7 +78,9 @@ class _Collection(NumericIndicator, ABC):
             return merged
 
     def collect_value(self, value):
-        self._values.append(to_numpy(value).ravel())
+        value = to_numpy(value).ravel()
+        if len(value) > 0:
+            self._values.append(to_numpy(value).ravel())
 
     def clear(self):
         self._values = []

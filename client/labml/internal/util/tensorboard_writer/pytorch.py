@@ -34,8 +34,7 @@ class PyTorchTensorboardWriter(TensorboardWriter):
         self.__connect()
         if isinstance(value, list) or isinstance(value, deque):
             value = np.array(value)
-        if len(value) > 0:
-            self.__writer.add_histogram(key, value, global_step)
+        self.__writer.add_histogram(key, value, global_step)
 
     def add_image(self, key: str, img: any, global_step: int):
         self.__connect()
