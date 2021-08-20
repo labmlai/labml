@@ -61,8 +61,6 @@ class ScreenWriter(Writer):
         parts = []
 
         for ind in indicators.values():
-            if ind.is_empty():
-                continue
             if not isinstance(ind, NumericIndicator):
                 continue
             if not ind.is_print:
