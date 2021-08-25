@@ -27,7 +27,7 @@ class Loop:
         self._init_time = 0.
         self._iter_time = 0.
         self._beta_pow = 1.
-        self._beta = 0.9
+        self._beta = 0.6
         self.monitor = monitor
         self.__global_step: Optional[int] = None
         self.__looping_sections: Dict[str, LoopingSection] = {}

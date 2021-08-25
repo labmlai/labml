@@ -199,7 +199,7 @@ class LoopingSection(Section):
                          is_children_silent=False,
                          total_steps=total_steps)
         self._beta_pow = 1.
-        self._beta = 0.9
+        self._beta = 0.6
         self._estimated_time = 0.
         self._time_length = 7
         self._last_end_time = -1.
