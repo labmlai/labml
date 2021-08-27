@@ -28,8 +28,8 @@ class OtherErrorView extends ScreenView {
                 ROUTER.navigate('/')
             }
         },
-        slack: () => {
-            window.open('https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/')
+        githubIssues: () => {
+            window.open('https://github.com/labmlai/labml/issues')
         },
     }
 
@@ -66,10 +66,10 @@ class OtherErrorView extends ScreenView {
                         $('span', '.m-1', 'Retry')
                     })
                 $('button', '.btn.nav-link',
-                    {on: {click: this.events.slack}},
+                    {on: {click: this.events.githubIssues}},
                     $ => {
-                        $('span', '.fas.fa-comments', '')
-                        $('span', '.m-1', 'Reach us on Slack')
+                        $('span', '.far.fa-dot-circle', '')
+                        $('span', '.m-1', 'Reach us on Github issues')
                     })
             })
 
