@@ -36,7 +36,6 @@ export class HamburgerMenuView {
         this.isMenuVisible = false
     }
 
-
     render($: WeyaElementFunction) {
         this.elem = $('div', $ => {
             $('div', '.nav-container', $ => {
@@ -58,6 +57,32 @@ export class HamburgerMenuView {
             this.setButtonContainer(this.buttonContainer)
         }
         return this.elem
+    }
+
+    onMenuToggle = () => {
+        this.isMenuVisible = !this.isMenuVisible
+        if (this.isMenuVisible) {
+            this.navLinksContainer.classList.add('nav-active')
+            this.overlayElement.classList.add('d-block')
+        } else {
+            this.navLinksContainer.classList.remove('nav-active')
+            this.overlayElement.classList.remove('d-block')
+        }
+    }
+
+    onLogOut = async () => {
+        try {
+            let res = await NETWORK.signOut()
+            if (res.is_successful) {
+                localStorage.removeItem('app_token')
+                NETWORK.redirectLogout()
+            } else {
+                Sentry.captureException("Logout failed")
+            }
+        } catch (e) {
+            handleNetworkError(e)
+            return
+        }
     }
 
     private async renderProfile() {
@@ -110,39 +135,6 @@ export class HamburgerMenuView {
                 onButtonClick: this.onLogOut,
                 parent: this.constructor.name
             }).render($)
-            new NavButton({
-                icon: '.fas.fa-comments',
-                text: 'Join our Slack',
-                link: 'https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/',
-                target: '_blank',
-                parent: this.constructor.name
-            }).render($)
         })
-    }
-
-    onMenuToggle = () => {
-        this.isMenuVisible = !this.isMenuVisible
-        if (this.isMenuVisible) {
-            this.navLinksContainer.classList.add('nav-active')
-            this.overlayElement.classList.add('d-block')
-        } else {
-            this.navLinksContainer.classList.remove('nav-active')
-            this.overlayElement.classList.remove('d-block')
-        }
-    }
-
-    onLogOut = async () => {
-        try {
-            let res = await NETWORK.signOut()
-            if (res.is_successful) {
-                localStorage.removeItem('app_token')
-                NETWORK.redirectLogout()
-            } else {
-                Sentry.captureException("Logout failed")
-            }
-        } catch (e) {
-            handleNetworkError(e)
-            return
-        }
     }
 }
