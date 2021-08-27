@@ -1,3 +1,4 @@
+import random
 from pathlib import PurePath, Path
 from typing import List, Callable, Dict, Optional
 
@@ -98,7 +99,9 @@ class SequentialDataLoader(IterableDataset):
 
 class SequentialUnBatchedDataset(Dataset):
     def __init__(self, *, text: str, dataset: TextDataset,
-                 seq_len: int):
+                 seq_len: int,
+                 is_random_offset: bool = True):
+        self.is_random_offset = is_random_offset
         self.seq_len = seq_len
         self.data = dataset.text_to_i(text)
 
@@ -108,6 +111,9 @@ class SequentialUnBatchedDataset(Dataset):
     def __getitem__(self, idx):
         start = idx * self.seq_len
         assert start + self.seq_len + 1 <= self.data.shape[0]
+        if self.is_random_offset:
+            start += random.randint(0, min(self.seq_len - 1, self.data.shape[0] - (start + self.seq_len + 1)))
+
         end = start + self.seq_len
         data = self.data[start: end]
         target = self.data[start + 1: end + 1]
