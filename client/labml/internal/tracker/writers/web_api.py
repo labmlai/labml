@@ -81,6 +81,19 @@ class Writer(WriteBase, ApiDataSource):
 
         self.api_caller.has_data(self)
 
+    def _mean(self, values: np.ndarray, n_elems: int):
+        blocks = (len(values) + n_elems - 1) // n_elems
+        if len(values) % n_elems != 0:
+            n_elems = len(values) // blocks
+        means = []
+        if blocks > 0:
+            means.append(np.mean(values[:blocks * n_elems].reshape(n_elems, blocks), axis=-1))
+
+        if len(values) > blocks * n_elems:
+            means.append(np.mean(values[blocks * n_elems:].reshape(1, -1), axis=-1))
+
+        return np.concatenate(means)
+
     def get_and_clear_indicators(self):
         data = {}
 
@@ -91,14 +104,13 @@ class Writer(WriteBase, ApiDataSource):
             value = np.array(value)
             step: np.ndarray = value[:, 0]
             value: np.ndarray = value[:, 1]
-            while value.shape[0] > MAX_BUFFER_SIZE:
-                if value.shape[0] % 2 == 1:
-                    value = np.concatenate((value, value[-1:]))
-                    step = np.concatenate((step, step[-1:]))
-
-                n = value.shape[0] // 2
-                step = np.mean(step.reshape(n, 2), axis=-1)
-                value = np.mean(value.reshape(n, 2), axis=-1)
+            n = len(step)
+            if n > 1:
+                diff = (step[-1] - step[0] + 1) * n / (n - 1)
+                max_buffer_size = int(min(MAX_BUFFER_SIZE, 1000 / step[0] * diff))
+                if len(value) > max_buffer_size:
+                    step = self._mean(step, max_buffer_size)
+                    value = self._mean(value, max_buffer_size)
 
             data[key] = {
                 'step': step.tolist(),

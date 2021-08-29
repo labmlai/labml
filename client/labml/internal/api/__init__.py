@@ -156,8 +156,9 @@ class _WebApiThread(threading.Thread):
         req.add_header('Content-Type', 'application/json; charset=utf-8')
         data_json = json.dumps(data)
         data_json = data_json.encode('utf-8')
-        req.add_header('Content-Length', str(len(data)))
+        req.add_header('Content-Length', str(len(data_json)))
 
+        # print('Data size', len(data_json))
         response = urllib.request.urlopen(req, data_json, timeout=self.timeout_seconds)
         content = response.read().decode('utf-8')
         result = json.loads(content)

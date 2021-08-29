@@ -42,10 +42,37 @@ class ApiLogs(ApiDataSource):
             self.commits_count += 1
             self.api_caller.has_data(self)
 
+    def _clean(self, data: str):
+        last_newline = None
+        remove = []
+        for i in range(len(data)):
+            if data[i] == '\r':
+                if i + 1 < len(data) and data[i + 1] == '\n':
+                    remove.append((i, i))
+                elif last_newline is not None:
+                    remove.append((last_newline + 1, i))
+                last_newline = i
+            elif data[i] == '\n':
+                last_newline = i
+
+        res = []
+        offset = 0
+        for r in remove:
+            if offset < r[0]:
+                res.append(data[offset: r[0]])
+            offset = r[1] + 1
+
+        res.append(data[offset:])
+        return ''.join(res)
+
     def get_data_packet(self) -> Packet:
         with self.lock:
             self.last_committed = time.time()
             self.data['time'] = time.time()
+            for type_ in ['stdout', 'logger']:
+                if type_ not in self.data:
+                    continue
+                self.data[type_] = self._clean(self.data[type_])
             packet = Packet(self.data)
             self.data = {}
             return packet
