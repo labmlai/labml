@@ -1,2 +1,2 @@
-labml>=0.4.84
+labml>=0.4.133
 torch
