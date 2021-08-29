@@ -50,4 +50,14 @@ def create_default_indicator(name: str, value: any, is_print: bool):
             from labml.internal.tracker.indicators.aggregate import PyTorchOptimizer
             return PyTorchOptimizer(name, is_print)
 
+    try:
+        import jaxlib
+    except ImportError:
+        jaxlib = None
+
+    if jaxlib is not None:
+        from jaxlib.xla_extension import DeviceArray
+        if isinstance(value, DeviceArray):
+            return Scalar(name, is_print)
+
     raise ValueError(f"Unknown type {type(value)}")

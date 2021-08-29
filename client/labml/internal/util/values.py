@@ -22,4 +22,14 @@ def to_numpy(value):
         elif isinstance(value, torch.Tensor):
             return value.data.cpu().numpy()
 
+    try:
+        import jaxlib
+    except ImportError:
+        jaxlib = None
+
+    if jaxlib is not None:
+        from jaxlib.xla_extension import DeviceArray
+        if isinstance(value, DeviceArray):
+            return np.asarray(value)
+
     raise ValueError(f"Unknown type {type(value)}")
