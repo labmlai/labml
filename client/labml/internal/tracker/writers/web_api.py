@@ -107,7 +107,8 @@ class Writer(WriteBase, ApiDataSource):
             n = len(step)
             if n > 1:
                 diff = (step[-1] - step[0] + 1) * n / (n - 1)
-                max_buffer_size = int(min(MAX_BUFFER_SIZE, 1000 / step[0] * diff))
+                start_step = max(step[0], 1)
+                max_buffer_size = int(min(MAX_BUFFER_SIZE, 1000 / start_step * diff))
                 if len(value) > max_buffer_size:
                     step = self._mean(step, max_buffer_size)
                     value = self._mean(value, max_buffer_size)
