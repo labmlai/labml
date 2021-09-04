@@ -143,5 +143,6 @@ The machine learning field is advancing quite fast, so it's easy to get outdated
 * [How to avoid machine learning pitfalls: a guide for academic researchers](https://papers.labml.ai/paper/2108.02497) by [Michael A. Lones](https://twitter.com/michael_lones)
 * [Pitfalls in Machine Learning Research: Reexamining the Development Cycle](https://papers.labml.ai/paper/2011.02832) by [Stella Biderman](https://twitter.com/BlancheMinerva) and Walter J. Scheirer
 * [A Recipe for Training Neural Networks](https://karpathy.github.io/2019/04/25/recipe/) by [Andrej Karpathy](https://twitter.com/karpathy)
+* [21 Habits I Picked Up While Learning Machine Learning](https://blog.varunajayasiri.com/practices_learned_while_learning_machine_learning.html) by [Varuna Jayasiri](https://twitter.com/vpj)
 
 Please feel free to contribute to this document.
