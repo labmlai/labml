@@ -100,7 +100,7 @@ It's important to log details instead of summarized stats. For example, you can 
 
 ## Production
 
-### Save inputs and outs
+### Save inputs and outputs
 
 You will need them to train new models as well as to compare new models with the existing model. If saving them is not possible, consider saving a sample of them. You can sample randomly or based on model uncertainty.
 
