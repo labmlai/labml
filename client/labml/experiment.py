@@ -67,11 +67,6 @@ def create(*,
         from labml.internal.util.tensorboard_writer import has_tensorboard
         if has_tensorboard():
             writers.add('tensorboard')
-        try:
-            import wandb
-            writers.add('wandb')
-        except ImportError:
-            pass
 
     if disable_screen and 'screen' in writers:
         writers.remove('screen')
