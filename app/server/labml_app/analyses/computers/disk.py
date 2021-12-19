@@ -102,7 +102,7 @@ class DiskAnalysis(Analysis):
 
 
 @Analysis.route('GET', 'disk/{session_uuid}')
-def get_disk_tracking(request: Request, session_uuid: str) -> Any:
+async def get_disk_tracking(request: Request, session_uuid: str) -> Any:
     track_data = []
     status_code = 404
 
@@ -118,7 +118,7 @@ def get_disk_tracking(request: Request, session_uuid: str) -> Any:
 
 
 @Analysis.route('GET', 'disk/preferences/{session_uuid}')
-def get_disk_preferences(request: Request, session_uuid: str) -> Any:
+async def get_disk_preferences(request: Request, session_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = DiskPreferencesIndex.get(session_uuid)

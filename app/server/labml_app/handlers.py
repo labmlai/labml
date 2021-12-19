@@ -1,4 +1,5 @@
 import sys
+import inspect
 import asyncio
 from typing import Callable, Dict, Any
 
@@ -65,7 +66,7 @@ async def sign_in(request: Request) -> EndPointRes:
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def sign_out(request: Request) -> EndPointRes:
+async def sign_out(request: Request) -> EndPointRes:
     token_id = request.headers.get('Authorization', '')
     at = app_token.get_or_create(token_id)
 
@@ -107,14 +108,14 @@ async def _update_run(request: Request, labml_token: str, run_uuid: str, labml_v
     if not r and not p:
         if labml_token:
             errors.append({'error': 'invalid_token',
-                     'message': 'Please create a valid token at https://app.labml.ai.\n'
-                                'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'})
+                           'message': 'Please create a valid token at https://app.labml.ai.\n'
+                                      'Click on the experiment link to monitor the experiment and '
+                                      'add it to your experiments list.'})
         elif not settings.IS_LOCAL_SETUP:
             errors.append({'warning': 'empty_token',
-                     'message': 'Please create a valid token at https://app.labml.ai.\n'
-                                'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'})
+                           'message': 'Please create a valid token at https://app.labml.ai.\n'
+                                      'Click on the experiment link to monitor the experiment and '
+                                      'add it to your experiments list.'})
 
     r = run.get_or_create(request, run_uuid, token)
     s = r.status.load()
@@ -195,14 +196,14 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
     if not c and not p:
         if labml_token:
             errors.append({'error': 'invalid_token',
-                     'message': 'Please create a valid token at https://app.labml.ai.\n'
-                                'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'})
+                           'message': 'Please create a valid token at https://app.labml.ai.\n'
+                                      'Click on the experiment link to monitor the experiment and '
+                                      'add it to your experiments list.'})
         elif not settings.IS_LOCAL_SETUP:
             errors.append({'warning': 'empty_token',
-                     'message': 'Please create a valid token at https://app.labml.ai.\n'
-                                'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'})
+                           'message': 'Please create a valid token at https://app.labml.ai.\n'
+                                      'Click on the experiment link to monitor the experiment and '
+                                      'add it to your experiments list.'})
 
     c = session.get_or_create(request, session_uuid, computer_uuid, token)
     s = c.status.load()
@@ -239,7 +240,7 @@ async def update_session(request: Request) -> EndPointRes:
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def claim_run(request: Request, run_uuid: str) -> EndPointRes:
+async def claim_run(request: Request, run_uuid: str) -> EndPointRes:
     r = run.get(run_uuid)
     at = auth.get_app_token(request)
 
@@ -267,7 +268,7 @@ def claim_run(request: Request, run_uuid: str) -> EndPointRes:
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def claim_session(request: Request, session_uuid: str) -> EndPointRes:
+async def claim_session(request: Request, session_uuid: str) -> EndPointRes:
     c = session.get(session_uuid)
     at = auth.get_app_token(request)
 
@@ -294,7 +295,7 @@ def claim_session(request: Request, session_uuid: str) -> EndPointRes:
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def get_run(request: Request, run_uuid: str) -> JSONResponse:
+async def get_run(request: Request, run_uuid: str) -> JSONResponse:
     run_data = {}
     status_code = 404
 
@@ -310,7 +311,7 @@ def get_run(request: Request, run_uuid: str) -> JSONResponse:
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def get_session(request: Request, session_uuid: str) -> JSONResponse:
+async def get_session(request: Request, session_uuid: str) -> JSONResponse:
     session_data = {}
     status_code = 404
 
@@ -353,7 +354,7 @@ async def edit_session(request: Request, session_uuid: str) -> EndPointRes:
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
+async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_data = {}
     status_code = 404
 
@@ -369,7 +370,7 @@ def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def get_session_status(request: Request, session_uuid: str) -> JSONResponse:
+async def get_session_status(request: Request, session_uuid: str) -> JSONResponse:
     status_data = {}
     status_code = 404
 
@@ -387,7 +388,7 @@ def get_session_status(request: Request, session_uuid: str) -> JSONResponse:
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(None)
 @auth.check_labml_token_permission
-def get_runs(request: Request, labml_token: str) -> EndPointRes:
+async def get_runs(request: Request, labml_token: str) -> EndPointRes:
     u = auth.get_auth_user(request)
 
     if labml_token:
@@ -411,7 +412,7 @@ def get_runs(request: Request, labml_token: str) -> EndPointRes:
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(None)
 @auth.check_labml_token_permission
-def get_sessions(request: Request, labml_token: str) -> EndPointRes:
+async def get_sessions(request: Request, labml_token: str) -> EndPointRes:
     u = auth.get_auth_user(request)
 
     if labml_token:
@@ -457,7 +458,7 @@ async def delete_sessions(request: Request) -> EndPointRes:
 
 
 @auth.login_required
-def add_run(request: Request, run_uuid: str) -> EndPointRes:
+async def add_run(request: Request, run_uuid: str) -> EndPointRes:
     u = auth.get_auth_user(request)
 
     u.default_project.add_run(run_uuid)
@@ -466,7 +467,7 @@ def add_run(request: Request, run_uuid: str) -> EndPointRes:
 
 
 @auth.login_required
-def add_session(request: Request, session_uuid: str) -> EndPointRes:
+async def add_session(request: Request, session_uuid: str) -> EndPointRes:
     u = auth.get_auth_user(request)
 
     u.default_project.add_session(session_uuid)
@@ -476,7 +477,7 @@ def add_session(request: Request, session_uuid: str) -> EndPointRes:
 
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def get_computer(request: Request, computer_uuid: str) -> EndPointRes:
+async def get_computer(request: Request, computer_uuid: str) -> EndPointRes:
     c = computer.get_or_create(computer_uuid)
 
     return c.get_data()
@@ -496,14 +497,14 @@ async def set_user(request: Request) -> EndPointRes:
 
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def get_user(request: Request) -> EndPointRes:
+async def get_user(request: Request) -> EndPointRes:
     u = auth.get_auth_user(request)
 
     return u.get_data()
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def is_user_logged(request: Request) -> EndPointRes:
+async def is_user_logged(request: Request) -> EndPointRes:
     return {'is_user_logged': auth.get_is_user_logged(request)}
 
 
@@ -621,10 +622,16 @@ async def clear_checkpoints(request: Request, computer_uuid: str) -> EndPointRes
 
 
 def _add_server(app: FastAPI, method: str, func: Callable, url: str):
+    if not inspect.iscoroutinefunction(func):
+        raise ValueError(f'{func.__name__} is not a async function')
+
     app.add_api_route(f'/api/v1/{url}', endpoint=func, methods=[method])
 
 
 def _add_ui(app: FastAPI, method: str, func: Callable, url: str):
+    if not inspect.iscoroutinefunction(func):
+        raise ValueError(f'{func.__name__} is not a async function')
+
     app.add_api_route(f'/api/v1/{url}', endpoint=func, methods=[method])
 
 

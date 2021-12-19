@@ -58,7 +58,7 @@ class ComparisonPreferencesIndex(Index['ComparisonPreferences']):
 
 
 @Analysis.route('GET', 'compare/preferences/{run_uuid}')
-def get_comparison_preferences(request: Request, run_uuid: str) -> Any:
+async def get_comparison_preferences(request: Request, run_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = ComparisonPreferencesIndex.get(run_uuid)

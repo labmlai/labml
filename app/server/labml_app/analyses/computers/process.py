@@ -250,7 +250,7 @@ class ProcessAnalysis(Analysis):
 
 
 @Analysis.route('GET', 'process/{session_uuid}')
-def get_process_tracking(request: Request, session_uuid: str) -> Any:
+async def get_process_tracking(request: Request, session_uuid: str) -> Any:
     track_data = []
     summary_data = []
     status_code = 404
@@ -267,7 +267,7 @@ def get_process_tracking(request: Request, session_uuid: str) -> Any:
 
 
 @Analysis.route('GET', 'process/zero_cpu/{session_uuid}')
-def get_zero_cpu_processes(request: Request, session_uuid: str) -> Any:
+async def get_zero_cpu_processes(request: Request, session_uuid: str) -> Any:
     track_data = []
     status_code = 404
 
@@ -283,7 +283,7 @@ def get_zero_cpu_processes(request: Request, session_uuid: str) -> Any:
 
 
 @Analysis.route('GET', 'process/{session_uuid}/details/{process_id}')
-def get_process_detail(request: Request, session_uuid: str, process_id: str) -> Any:
+async def get_process_detail(request: Request, session_uuid: str, process_id: str) -> Any:
     data = {}
     status_code = 404
 
@@ -299,7 +299,7 @@ def get_process_detail(request: Request, session_uuid: str, process_id: str) -> 
 
 
 @Analysis.route('GET', 'process/preferences/{session_uuid}')
-def get_process_preferences(request: Request, session_uuid: str) -> Any:
+async def get_process_preferences(request: Request, session_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = ProcessPreferencesIndex.get(session_uuid)

@@ -153,7 +153,7 @@ class ParametersAnalysis(Analysis):
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'parameters/{run_uuid}')
-def get_params_tracking(request: Request, run_uuid: str) -> Any:
+async def get_params_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     summary_data = []
     status_code = 404
@@ -171,7 +171,7 @@ def get_params_tracking(request: Request, run_uuid: str) -> Any:
 
 
 @Analysis.route('GET', 'parameters/preferences/{run_uuid}')
-def get_params_preferences(request: Request, run_uuid: str) -> Any:
+async def get_params_preferences(request: Request, run_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = ParametersPreferencesIndex.get(run_uuid)

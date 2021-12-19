@@ -2,7 +2,6 @@ import git
 import os
 import logging
 import time
-import warnings
 from pathlib import Path
 from time import strftime
 
@@ -17,19 +16,6 @@ from labml_app import settings
 from labml_app.logger import logger
 from labml_app.utils import mix_panel
 from labml_app import db
-
-if settings.SENTRY_DSN:
-    try:
-        import sentry_sdk
-        from sentry_sdk.integrations.flask import FlaskIntegration
-
-        sentry_sdk.init(
-            dsn=settings.SENTRY_DSN,
-            integrations=[FlaskIntegration()],
-            traces_sample_rate=1.0
-        )
-    except ImportError:
-        warnings.warn("Sentry SDK not installed")
 
 
 def get_static_path():
