@@ -29,11 +29,11 @@ def check_labml_token_permission(func) -> functools.wraps:
 
         p = project.get_project(labml_token)
         if p and p.is_sharable:
-            await func(*args, **kwargs)
+            return await func(*args, **kwargs)
 
         kwargs['labml_token'] = None
 
-        await func(*args, **kwargs)
+        return await func(*args, **kwargs)
 
     return wrapper
 
