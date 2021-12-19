@@ -161,7 +161,7 @@ def delete(session_uuid: str) -> None:
 
         SessionIndex.delete(session_uuid)
 
-        analyses.AnalysisManager.delete_run(session_uuid)
+        analyses.AnalysisManager.delete_session(session_uuid)
 
 
 def get_sessions(labml_token: str) -> List[Session]:

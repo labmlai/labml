@@ -26,9 +26,9 @@ class AnalysisManager:
             ans.delete(run_uuid)
 
     @staticmethod
-    def delete_computer(computer_uuid: str) -> None:
+    def delete_session(session_uuid: str) -> None:
         for ans in computer_analyses:
-            ans.delete(computer_uuid)
+            ans.delete(session_uuid)
 
     @staticmethod
     def get_handlers() -> List[Tuple[str, Callable, str, bool]]:
