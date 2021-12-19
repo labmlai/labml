@@ -449,7 +449,7 @@ async def delete_runs(request: Request) -> EndPointRes:
 @auth.login_required
 async def delete_sessions(request: Request) -> EndPointRes:
     json = await request.json()
-    session_uuids = json
+    session_uuids = json['session_uuids']
 
     u = auth.get_auth_user(request)
     u.default_project.delete_sessions(session_uuids, u.email)
