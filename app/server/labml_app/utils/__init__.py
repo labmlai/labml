@@ -3,7 +3,7 @@ from typing import Callable
 from uuid import uuid4
 from functools import wraps
 
-from . import mix_panel
+from . import analytics
 
 
 def check_version(user_v, new_v) -> bool:

@@ -12,9 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from labml_app import handlers
-from labml_app import settings
 from labml_app.logger import logger
-from labml_app.utils import mix_panel
 from labml_app import db
 
 
@@ -55,10 +53,6 @@ def create_app():
             logger.error(f'THIS IS NOT AN ERROR: Server Deployed SHA : {sha}')
         except git.InvalidGitRepositoryError:
             pass
-
-        if settings.IS_MIX_PANEL:
-            mp_tread = mix_panel.MixPanelThread()
-            mp_tread.start()
 
     run_on_start()
 

@@ -6,7 +6,6 @@ from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
-from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import SeriesEnums
 from labml_app.settings import INDICATOR_LIMIT
@@ -151,7 +150,6 @@ class ParametersAnalysis(Analysis):
             pp.delete()
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'parameters/{run_uuid}')
 async def get_params_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
