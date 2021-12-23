@@ -1,5 +1,5 @@
 from labml import monit
-from server.labml_app.db import computer, init_db
+from labml_app.db import computer, init_db
 
 res = {}
 
