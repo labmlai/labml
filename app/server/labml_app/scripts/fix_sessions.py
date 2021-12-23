@@ -10,3 +10,4 @@ for computer_key in monit.iterate('computers', computer_keys):
 
     res[type(c.sessions)] = res.get(type(c.sessions), 0)
     res[type(c.sessions)] += 1
+print(res)
