@@ -125,16 +125,16 @@ class ProcessAnalysis(Analysis):
 
         process_ids_to_remove = {process_id for process_id in self.process.dead if self.process.dead[process_id]}
 
-        ind_to_remove = []
+        inds_to_remove = []
         for process_id in process_ids_to_remove:
             for s in series_names:
                 ind = f'{process_id}.{s}'
-                ind_to_remove.append(ind)
+                inds_to_remove.append(ind)
 
             self.process.dead.pop(process_id)
 
         removed = 0
-        for ind in ind_to_remove:
+        for ind in inds_to_remove:
             ret = self.process.tracking.pop(ind, None)
             if ret:
                 removed += 1
