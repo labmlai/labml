@@ -1,4 +1,4 @@
-from typing import Dict, Set, Any
+from typing import Dict, Set, Any, List
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -13,7 +13,8 @@ from ..series_collection import SeriesCollection
 from ..preferences import Preferences
 
 SERIES_NAMES = ['rss', 'vms', 'cpu', 'threads', 'user', 'system']
-STATIC_NAMEs = ['name', 'create_time', 'pid', 'ppid', 'dead', 'exe', 'cmdline']
+OTHER_SERIES_NAMES = ['ppid', 'iowait']
+STATIC_NAMES = ['name', 'create_time', 'pid', 'ppid', 'dead', 'exe', 'cmdline']
 
 ALMOST_ZERO = 1.0E-2
 
@@ -117,6 +118,29 @@ class ProcessAnalysis(Analysis):
                 res[ind] = s
 
         self.process.track(res)
+        self.clean_dead_processes()
+
+    def clean_dead_processes(self):
+        series_names = SERIES_NAMES + OTHER_SERIES_NAMES
+
+        process_ids_to_remove = {process_id for process_id in self.process.dead if self.process.dead[process_id]}
+
+        ind_to_remove = []
+        for process_id in process_ids_to_remove:
+            for s in series_names:
+                ind = f'{process_id}.{s}'
+                ind_to_remove.append(ind)
+
+            self.process.dead.pop(process_id)
+
+        removed = 0
+        for ind in ind_to_remove:
+            ret = self.process.tracking.pop(ind, None)
+            if ret:
+                removed += 1
+
+        self.process.save()
+        logger.info(f'processes: {removed} number of series removed, {len(self.process.tracking)} remaining')
 
     def get_tracking(self):
         res = {}
