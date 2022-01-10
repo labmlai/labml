@@ -136,6 +136,6 @@ class DeepValueCollection(ValueCollection):
 
         parts = key.split('.')
         for p in parts:
-            value = getattr(value, p)
+            value = value[p]
 
         return value
