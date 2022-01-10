@@ -136,6 +136,9 @@ class DeepValueCollection(ValueCollection):
 
         parts = key.split('.')
         for p in parts:
-            value = value[p]
+            if isinstance(value, tuple) or isinstance(value, list):
+                value = value[int(p)]
+            else:
+                value = value[p]
 
         return value
