@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 def _transform_key_part(part):
     try:
         if str(int(part)) == part:
-            return f'{part:09d}'
+            return f'{int(part):09d}'
     except ValueError as e:
         pass
 
@@ -25,6 +25,7 @@ def sort_keys(keys: List[str]):
             ]
         )
         for key in keys]
+
     combined = [(t, k) for t, k in zip(transformed, keys)]
     combined = sorted(combined, key=lambda x: x[0])
     return [k for t, k in combined]
