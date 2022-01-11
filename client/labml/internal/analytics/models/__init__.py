@@ -50,17 +50,21 @@ class BackwardHook:
 
 
 class ModelProbe:
-    def __init__(self, model: 'nn.Module', name: str = 'model'):
+    def __init__(self, model: 'nn.Module', name: str = 'model', *,
+                 add_forward_hooks=True,
+                 add_backward_hooks=False):
         self.model = model
         for n, module in model.named_modules():
             module: 'nn.Module'
             if n == '':
                 n = name
-            forward_hook = ForwardHook(n, self.add_forward_tensor)
-            module.register_forward_hook(forward_hook)
+            if add_forward_hooks:
+                forward_hook = ForwardHook(n, self.add_forward_tensor)
+                module.register_forward_hook(forward_hook)
 
-            backward_hook = ForwardHook(n, self.add_backward_tensor)
-            module.register_full_backward_hook(backward_hook)
+            if add_backward_hooks:
+                backward_hook = ForwardHook(n, self.add_backward_tensor)
+                module.register_full_backward_hook(backward_hook)
 
         self._forward_output = {}
         self._forward_input = {}
