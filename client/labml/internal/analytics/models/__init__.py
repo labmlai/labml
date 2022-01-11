@@ -92,14 +92,14 @@ class ValueCollection:
 
         return [prefix]
 
-    def _get_value(self, key: str):
+    def get_value(self, key: str):
         return self._values[key]
 
     def get_list(self):
-        return [self._get_value(f) for f in self._keys]
+        return [self.get_value(f) for f in self._keys]
 
     def get_dict(self):
-        return {f: self._get_value(f) for f in self._keys}
+        return {f: self.get_value(f) for f in self._keys}
 
     def deep(self):
         if isinstance(self, DeepValueCollection):
@@ -122,9 +122,15 @@ class ValueCollection:
 
         return self.__class__(self._values, keys)
 
+    def __len__(self):
+        return len(self._keys)
+
+    def keys(self):
+        return self._keys
+
 
 class DeepValueCollection(ValueCollection):
-    def _get_value(self, key: str):
+    def get_value(self, key: str):
         parts = key.split('/')
 
         if len(parts) == 1:

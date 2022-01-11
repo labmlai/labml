@@ -2,7 +2,8 @@ import math
 from typing import TYPE_CHECKING, List, Tuple
 
 from labml.internal.util.colors import StyleCode
-from ...logger import Text
+
+from ....logger import Text
 
 if TYPE_CHECKING:
     from . import Logger
@@ -293,14 +294,18 @@ class Inspect:
         elif len(args) == 1:
             assert len(kwargs.keys()) == 0
             arg = args[0]
-            if isinstance(arg, list):
+            if isinstance(arg, list) or isinstance(arg, tuple):
                 self._log_key_value([(i, v) for i, v in enumerate(arg)])
             elif isinstance(arg, dict):
                 keys = list(arg.keys())
-                keys.sort()
+                keys.sort(key=lambda x: str(x))
                 self._log_key_value([(k, arg[k]) for k in keys])
             else:
-                self.__logger.log(_get_value_full(arg))
+                from labml.internal.analytics.models import ValueCollection
+                if isinstance(arg, ValueCollection):
+                    self._log_key_value([(i, v) for i, v in enumerate(arg.keys())])
+                else:
+                    self.__logger.log(_get_value_full(arg))
         else:
             assert len(kwargs.keys()) == 0
             self._log_key_value([(i, v) for i, v in enumerate(args)], False)
