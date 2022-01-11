@@ -6,6 +6,30 @@ if TYPE_CHECKING:
     from torch import nn
 
 
+def _transform_key_part(part):
+    try:
+        if str(int(part)) == part:
+            return f'{part:09d}'
+    except ValueError as e:
+        pass
+
+    return part
+
+
+def sort_keys(keys: List[str]):
+    transformed = [
+        '/'.join(
+            [
+                '.'.join([_transform_key_part(k2) for k2 in k.split('.')])
+                for k in key.split('/')
+            ]
+        )
+        for key in keys]
+    combined = [(t, k) for t, k in zip(transformed, keys)]
+    combined = sorted(combined, key=lambda x: x[0])
+    return [k for t, k in combined]
+
+
 class ForwardHook:
     def __init__(self, name: str, save_callback: Callable):
         self.save_callback = save_callback
@@ -57,23 +81,23 @@ class ModelProbe:
 
     @property
     def parameters(self):
-        return ValueCollection(self._parameters, sorted(list(self._parameters.keys())))
+        return ValueCollection(self._parameters, sort_keys(list(self._parameters.keys())))
 
     @property
     def forward_input(self):
-        return ValueCollection(self._forward_input, sorted(list(self._forward_input.keys())))
+        return ValueCollection(self._forward_input, sort_keys(list(self._forward_input.keys())))
 
     @property
     def forward_output(self):
-        return ValueCollection(self._forward_output, sorted(list(self._forward_output.keys())))
+        return ValueCollection(self._forward_output, sort_keys(list(self._forward_output.keys())))
 
     @property
     def backward_input(self):
-        return ValueCollection(self._backward_input, sorted(list(self._backward_input.keys())))
+        return ValueCollection(self._backward_input, sort_keys(list(self._backward_input.keys())))
 
     @property
     def backward_output(self):
-        return ValueCollection(self._backward_output, sorted(list(self._backward_output.keys())))
+        return ValueCollection(self._backward_output, sort_keys(list(self._backward_output.keys())))
 
 
 class ValueCollection:
@@ -109,7 +133,7 @@ class ValueCollection:
             ValueCollection._expand_value(f'{k}', self._values[k], '/') for k in self._keys],
             [])
 
-        return DeepValueCollection(self._values, sorted(keys))
+        return DeepValueCollection(self._values, sort_keys(keys))
 
     def __str__(self):
         return str(self._keys)
