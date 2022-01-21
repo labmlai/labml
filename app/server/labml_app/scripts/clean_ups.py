@@ -84,6 +84,12 @@ def add_block_uuids():
             logger.info(r.run_uuid)
             blocked_uuids.add_blocked_run(r)
 
+    for session_uuid in block_uuids.update_session_uuids:
+        s = session.get(session_uuid)
+        if s:
+            logger.info(s.session_uuid)
+            blocked_uuids.add_blocked_session(s)
+
     logger.info('......Done.........')
 
 
