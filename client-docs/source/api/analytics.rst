@@ -5,6 +5,12 @@ Analytics
 
 .. automodule:: labml.analytics
 
+    Probing
+    -------
+
+    .. autoclass:: ModelProbe
+
+
     Get data
     --------
 

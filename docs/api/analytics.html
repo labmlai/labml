@@ -130,6 +130,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Analytics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#probing">Probing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#get-data">Get data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plot">Plot</a></li>
 </ul>
@@ -229,7 +230,24 @@
   <div class="section" id="analytics">
 <h1>Analytics<a class="headerlink" href="#analytics" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="https://colab.research.google.com/github/labmlai/labml/blob/master/guides/analytics.ipynb">Here is a tutorial on Google Colab that shows how to use the analytics module</a></p>
-<span class="target" id="module-labml.analytics"></span><div class="section" id="get-data">
+<span class="target" id="module-labml.analytics"></span><div class="section" id="probing">
+<h2>Probing<a class="headerlink" href="#probing" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="labml.analytics.ModelProbe">
+<em class="property">class </em><code class="sig-prename descclassname">labml.analytics.</code><code class="sig-name descname">ModelProbe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span><span class="p">:</span> <span class="n">nn.Module</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'model'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/analytics.html#ModelProbe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.ModelProbe" title="Permalink to this definition">¶</a></dt>
+<dd><p>You can wrap any PyTorch model with <a class="reference internal" href="#labml.analytics.ModelProbe" title="labml.analytics.ModelProbe"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelProbe</span></code></a> to access it’s parameters, activations and gradients.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">labml.analytics</span> <span class="kn">import</span> <span class="n">ModelProbe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">probe</span> <span class="o">=</span> <span class="n">ModelProbe</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">probe</span><span class="o">.</span><span class="n">forward_output</span><span class="p">[</span><span class="s2">&quot;*attention*&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_dict</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">probe</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;*.bias&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_list</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="get-data">
 <h2>Get data<a class="headerlink" href="#get-data" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="labml.analytics.runs">
