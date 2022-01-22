@@ -135,11 +135,10 @@ class ProcessAnalysis(Analysis):
 
         removed = 0
         for ind in inds:
-            if ind in inds_to_remove:
                 ret = self.process.tracking.pop(ind, None)
                 if ret:
                     removed += 1
-                    self.process.dead.pop(inds_to_remove[ind])
+                    self.process.dead.pop(inds_to_remove[ind], None)
 
         self.process.save()
         logger.info(f'processes: {removed} number of series removed, {len(self.process.tracking)} remaining')
