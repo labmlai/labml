@@ -20,6 +20,8 @@ from .. import auth
 QUEUE = queue.Queue()
 ANALYTICS_ID = 'labml_app'
 
+EXCLUDED_METHODS = {'polling'}
+
 
 class Event:
     @staticmethod
@@ -96,7 +98,7 @@ class Event:
                 if time_limit and total_time < time_limit:
                     return r
 
-                if time_limit and total_time > time_limit + 1.5:
+                if time_limit and total_time > time_limit + 1.5 and func.__name__ not in EXCLUDED_METHODS:
                     slack.client.send(f'PERF time: {total_time * 1000:.2f}ms method:{func.__name__}, url:{request.url}')
 
                 self.track(request, func.__name__, {'time_elapsed': str(total_time)})
