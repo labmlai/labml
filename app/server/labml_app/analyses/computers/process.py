@@ -1,4 +1,4 @@
-from typing import Dict, Set, Any, List
+from typing import Dict, Set, Any
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -125,19 +125,21 @@ class ProcessAnalysis(Analysis):
 
         process_ids_to_remove = {process_id for process_id in self.process.dead if self.process.dead[process_id]}
 
-        inds_to_remove = []
+        inds_to_remove = {}
         for process_id in process_ids_to_remove:
             for s in series_names:
                 ind = f'{process_id}.{s}'
-                inds_to_remove.append(ind)
+                inds_to_remove[ind] = process_id
 
-            self.process.dead.pop(process_id)
+        inds = list(self.process.tracking.keys())
 
         removed = 0
-        for ind in inds_to_remove:
-            ret = self.process.tracking.pop(ind, None)
-            if ret:
-                removed += 1
+        for ind in inds:
+            if ind in inds_to_remove:
+                ret = self.process.tracking.pop(ind, None)
+                if ret:
+                    removed += 1
+                    self.process.dead.pop(inds_to_remove[ind])
 
         self.process.save()
         logger.info(f'processes: {removed} number of series removed, {len(self.process.tracking)} remaining')
