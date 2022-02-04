@@ -153,6 +153,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../api/helpers.html">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#configurable-modules">Configurable Modules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/helpers.html#datasets">Datasets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/helpers.html#remote">Remote</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/helpers.html#text-datasets">Text Datasets</a></li>
 </ul>
 </li>
@@ -228,7 +229,6 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">from</span> <span class="nn">labml.configs</span> <span class="kn">import</span> <span class="n">BaseConfigs</span>
 <span class="kn">from</span> <span class="nn">labml.internal.experiment</span> <span class="kn">import</span> \
     <span class="n">create_experiment</span> <span class="k">as</span> <span class="n">_create_experiment</span><span class="p">,</span> \
@@ -242,6 +242,8 @@
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">AVAILABLE_WRITERS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;screen&#39;</span><span class="p">,</span> <span class="s1">&#39;web_api&#39;</span><span class="p">,</span> <span class="s1">&#39;sqlite&#39;</span><span class="p">,</span> <span class="s1">&#39;tensorboard&#39;</span><span class="p">,</span> <span class="s1">&#39;wandb&#39;</span><span class="p">,</span> <span class="s1">&#39;comet&#39;</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">}</span>
 
 
 <span class="k">def</span> <span class="nf">generate_uuid</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -294,6 +296,10 @@
         <span class="k">if</span> <span class="n">has_tensorboard</span><span class="p">():</span>
             <span class="n">writers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;tensorboard&#39;</span><span class="p">)</span>
 
+    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">writers</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">AVAILABLE_WRITERS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown writer: </span><span class="si">{</span><span class="n">w</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">disable_screen</span> <span class="ow">and</span> <span class="s1">&#39;screen&#39;</span> <span class="ow">in</span> <span class="n">writers</span><span class="p">:</span>
         <span class="n">writers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;screen&#39;</span><span class="p">)</span>
 
@@ -304,6 +310,7 @@
         <span class="n">uuid</span> <span class="o">=</span> <span class="n">generate_uuid</span><span class="p">()</span>
 
     <span class="n">monitor</span><span class="p">()</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
     <span class="n">_create_experiment</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span>
                        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                        <span class="n">python_file</span><span class="o">=</span><span class="n">python_file</span><span class="p">,</span>
@@ -664,7 +671,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020-2021, labml.ai contributors
+        &copy; Copyright 2020-2022, labml.ai contributors
 
     </p>
   </div>

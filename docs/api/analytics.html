@@ -155,6 +155,7 @@
 <li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="helpers.html#configurable-modules">Configurable Modules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="helpers.html#datasets">Datasets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="helpers.html#remote">Remote</a></li>
 <li class="toctree-l3"><a class="reference internal" href="helpers.html#text-datasets">Text Datasets</a></li>
 </ul>
 </li>
@@ -234,7 +235,7 @@
 <h2>Probing<a class="headerlink" href="#probing" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="labml.analytics.ModelProbe">
-<em class="property">class </em><code class="sig-prename descclassname">labml.analytics.</code><code class="sig-name descname">ModelProbe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span><span class="p">:</span> <span class="n">nn.Module</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'model'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/analytics.html#ModelProbe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.ModelProbe" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">labml.analytics.</code><code class="sig-name descname">ModelProbe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span><span class="p">:</span> <span class="n">nn.Module</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'model'</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">add_forward_hooks</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">add_backward_hooks</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/analytics.html#ModelProbe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.ModelProbe" title="Permalink to this definition">¶</a></dt>
 <dd><p>You can wrap any PyTorch model with <a class="reference internal" href="#labml.analytics.ModelProbe" title="labml.analytics.ModelProbe"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelProbe</span></code></a> to access it’s parameters, activations and gradients.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">labml.analytics</span> <span class="kn">import</span> <span class="n">ModelProbe</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">probe</span> <span class="o">=</span> <span class="n">ModelProbe</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
@@ -535,7 +536,7 @@ where <code class="docutils literal notranslate"><span class="pre">T</span></cod
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020-2021, labml.ai contributors
+        &copy; Copyright 2020-2022, labml.ai contributors
 
     </p>
   </div>

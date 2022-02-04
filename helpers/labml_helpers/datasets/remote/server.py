@@ -22,18 +22,39 @@ class _ServerDataset:
 
 
 class DatasetServer:
+    r"""
+    Remote dataset server
+
+    `Here's a sample usage of the server <https://github.com/labmlai/labml/blob/master/helpers/labml_helpers/datasets/remote/test/mnist_server.py>`_
+    """
+
     def __init__(self):
         self.app = FastAPI()
         self.datasets = {}
 
     def add_dataset(self, name: str, dataset: Dataset):
+        """
+        Add a dataset
+
+
+        Arguments:
+            name (str): name of the data set
+            dataset (Dataset): dataset to be served
+        """
         assert name not in self.datasets
         sd = _ServerDataset(name, dataset)
         self.datasets[name] = sd
         self.app.add_api_route("/" + name + "/len", sd.len_handler, methods=["GET"])
         self.app.add_api_route("/" + name + "/item/{idx}", sd.item_handler, methods=["GET"])
 
-    def start(self, host="0.0.0.0", port=8000):
+    def start(self, host: str = "0.0.0.0", port: int = 8000):
+        """
+        Start the server
+
+        Arguments:
+            host (str): hostname of the server
+            port (int): server port
+        """
         uvicorn.run(self.app, host=host, port=port)
 
 

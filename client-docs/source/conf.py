@@ -17,7 +17,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'labml.ai client library'
-copyright = '2020-2021, labml.ai contributors'
+copyright = '2020-2022, labml.ai contributors'
 author = 'labml.ai contributors'
 
 # The full version, including alpha/beta/rc tags

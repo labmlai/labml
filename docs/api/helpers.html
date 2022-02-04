@@ -154,6 +154,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#configurable-modules">Configurable Modules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#datasets">Datasets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#remote">Remote</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#text-datasets">Text Datasets</a></li>
 </ul>
 </li>
@@ -417,6 +418,61 @@ Defaults to a large number; i.e. logs every epoch.</p></li>
 <em class="property">class </em><code class="sig-prename descclassname">labml_helpers.datasets.csv.</code><code class="sig-name descname">CsvDataset</code><span class="sig-paren">(</span><em class="sig-param">file_path: str</em>, <em class="sig-param">y_cols: List</em>, <em class="sig-param">x_cols: List</em>, <em class="sig-param">train: bool = True</em>, <em class="sig-param">transform: Callable = &lt;function CsvDataset.&lt;lambda&gt;&gt;</em>, <em class="sig-param">test_fraction: float = 0.0</em>, <em class="sig-param">nrows: int = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/datasets/csv.html#CsvDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.datasets.csv.CsvDataset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<div class="section" id="remote">
+<h3>Remote<a class="headerlink" href="#remote" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="labml_helpers.datasets.remote.DatasetServer">
+<em class="property">class </em><code class="sig-prename descclassname">labml_helpers.datasets.remote.</code><code class="sig-name descname">DatasetServer</code><a class="reference internal" href="../_modules/labml_helpers/datasets/remote/server.html#DatasetServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.datasets.remote.DatasetServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remote dataset server</p>
+<p><a class="reference external" href="https://github.com/labmlai/labml/blob/master/helpers/labml_helpers/datasets/remote/test/mnist_server.py">Here’s a sample usage of the server</a></p>
+<dl class="py method">
+<dt id="labml_helpers.datasets.remote.DatasetServer.add_dataset">
+<code class="sig-name descname">add_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">dataset</span><span class="p">:</span> <span class="n">torch.utils.data.dataset.Dataset</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/datasets/remote/server.html#DatasetServer.add_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.datasets.remote.DatasetServer.add_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of the data set</p></li>
+<li><p><strong>dataset</strong> (<em>Dataset</em>) – dataset to be served</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="labml_helpers.datasets.remote.DatasetServer.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'0.0.0.0'</span></em>, <em class="sig-param"><span class="n">port</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">8000</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/datasets/remote/server.html#DatasetServer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.datasets.remote.DatasetServer.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> (<em>str</em>) – hostname of the server</p></li>
+<li><p><strong>port</strong> (<em>int</em>) – server port</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="labml_helpers.datasets.remote.RemoteDataset">
+<em class="property">class </em><code class="sig-prename descclassname">labml_helpers.datasets.remote.</code><code class="sig-name descname">RemoteDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">host</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'0.0.0.0'</span></em>, <em class="sig-param"><span class="n">port</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">8000</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml_helpers/datasets/remote/client.html#RemoteDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml_helpers.datasets.remote.RemoteDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remote dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of the data set, as specified in
+<a class="reference internal" href="#labml_helpers.datasets.remote.DatasetServer" title="labml_helpers.datasets.remote.DatasetServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">labml_helpers.datasets.remote.DatasetServer</span></code></a></p></li>
+<li><p><strong>host</strong> (<em>str</em>) – hostname of the server</p></li>
+<li><p><strong>post</strong> (<em>int</em>) – port of the server</p></li>
+</ul>
+</dd>
+</dl>
+<p><a class="reference external" href="https://github.com/labmlai/labml/blob/master/helpers/labml_helpers/datasets/remote/test/mnist_train.py">Here’s a sample</a></p>
+</dd></dl>
+
+</div>
 <div class="section" id="text-datasets">
 <h3>Text Datasets<a class="headerlink" href="#text-datasets" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
@@ -549,7 +605,7 @@ Defaults to a large number; i.e. logs every epoch.</p></li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020-2021, labml.ai contributors
+        &copy; Copyright 2020-2022, labml.ai contributors
 
     </p>
   </div>

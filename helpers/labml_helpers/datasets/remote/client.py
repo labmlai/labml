@@ -15,7 +15,7 @@ class RemoteDataset(Dataset):
         host (str): hostname of the server
         post (int): port of the server
 
-    `Here's a sample <>`_
+    `Here's a sample <https://github.com/labmlai/labml/blob/master/helpers/labml_helpers/datasets/remote/test/mnist_train.py>`_
     """
 
     def __init__(self, name: str, host: str = "0.0.0.0", port: int = 8000):

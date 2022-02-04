@@ -154,6 +154,7 @@
 <li class="toctree-l1"><a class="reference internal" href="api/helpers.html">Helpers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/helpers.html#configurable-modules">Configurable Modules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/helpers.html#datasets">Datasets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/helpers.html#remote">Remote</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/helpers.html#text-datasets">Text Datasets</a></li>
 </ul>
 </li>
@@ -260,6 +261,8 @@
 </li>
       <li><a href="api/tracker.html#labml.tracker.add">add() (in module labml.tracker)</a>
 </li>
+      <li><a href="api/helpers.html#labml_helpers.datasets.remote.DatasetServer.add_dataset">add_dataset() (labml_helpers.datasets.remote.DatasetServer method)</a>
+</li>
       <li><a href="api/tracker.html#labml.tracker.add_global_step">add_global_step() (in module labml.tracker)</a>
 </li>
   </ul></td>
@@ -334,14 +337,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/logger.html#labml.logger.Text.danger">danger (labml.logger.Text attribute)</a>
 </li>
+      <li><a href="api/helpers.html#labml_helpers.datasets.remote.DatasetServer">DatasetServer (class in labml_helpers.datasets.remote)</a>
+</li>
       <li><a href="api/utils.html#labml.utils.delayed_keyboard_interrupt.DelayedKeyboardInterrupt">DelayedKeyboardInterrupt (class in labml.utils.delayed_keyboard_interrupt)</a>
 </li>
       <li><a href="api/helpers.html#labml_helpers.device.DeviceConfigs">DeviceConfigs (class in labml_helpers.device)</a>
 </li>
-      <li><a href="api/experiment.html#labml.experiment.distributed">distributed() (in module labml.experiment)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/experiment.html#labml.experiment.distributed">distributed() (in module labml.experiment)</a>
+</li>
       <li><a href="api/analytics.html#labml.analytics.distribution">distribution() (in module labml.analytics)</a>
 </li>
       <li><a href="api/utils.html#labml.utils.download.download_file">download_file() (in module labml.utils.download)</a>
@@ -657,6 +662,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/helpers.html#labml_helpers.schedule.RelativePiecewise">RelativePiecewise (class in labml_helpers.schedule)</a>
 </li>
+      <li><a href="api/helpers.html#labml_helpers.datasets.remote.RemoteDataset">RemoteDataset (class in labml_helpers.datasets.remote)</a>
+</li>
       <li><a href="api/tracker.html#labml.tracker.reset">reset() (in module labml.tracker)</a>
 </li>
       <li><a href="api/analytics.html#labml.analytics.runs">runs() (in module labml.analytics)</a>
@@ -720,7 +727,11 @@
       <li><a href="api/helpers.html#labml_helpers.train_valid.SimpleTrainValidConfigs">SimpleTrainValidConfigs (class in labml_helpers.train_valid)</a>
 </li>
       <li><a href="api/experiment.html#labml.experiment.start">start() (in module labml.experiment)</a>
+
+      <ul>
+        <li><a href="api/helpers.html#labml_helpers.datasets.remote.DatasetServer.start">(labml_helpers.datasets.remote.DatasetServer method)</a>
 </li>
+      </ul></li>
       <li><a href="api/helpers.html#labml_helpers.metrics.StateModule">StateModule (class in labml_helpers.metrics)</a>
 </li>
       <li><a href="api/utils.html#labml.utils.pytorch.store_model_indicators">store_model_indicators() (in module labml.utils.pytorch)</a>
@@ -798,7 +809,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020-2021, labml.ai contributors
+        &copy; Copyright 2020-2022, labml.ai contributors
 
     </p>
   </div>
