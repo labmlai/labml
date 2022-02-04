@@ -31,6 +31,13 @@ Datasets
 
 .. autoclass:: labml_helpers.datasets.csv.CsvDataset
 
+Remote
+^^^^^^
+
+.. autoclass:: labml_helpers.datasets.remote.DatasetServer
+
+.. autoclass:: labml_helpers.datasets.remote.RemoteDataset
+
 Text Datasets
 ^^^^^^^^^^^^^
 

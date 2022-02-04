@@ -1,5 +1,5 @@
 from labml import lab
-from labml_helpers.dataloaders.remote import DatasetServer
+from labml_helpers.datasets.remote import DatasetServer
 from torchvision import datasets, transforms
 
 

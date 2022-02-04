@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data
 from labml import tracker, experiment, monit, logger
-from labml_helpers.dataloaders.remote import RemoteDataset
+from labml_helpers.datasets.remote import RemoteDataset
 
 
 class Net(nn.Module):

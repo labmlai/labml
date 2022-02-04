@@ -6,7 +6,19 @@ from torch.utils.data import Dataset
 
 
 class RemoteDataset(Dataset):
-    def __init__(self, name: str, host="0.0.0.0", port=8000):
+    """
+    Remote dataset
+
+    Arguments:
+        name (str): name of the data set, as specified in
+         :class:`labml_helpers.datasets.remote.DatasetServer`
+        host (str): hostname of the server
+        post (int): port of the server
+
+    `Here's a sample <>`_
+    """
+
+    def __init__(self, name: str, host: str = "0.0.0.0", port: int = 8000):
         self.name = name
         self.port = port
         self.host = host
