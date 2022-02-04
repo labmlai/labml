@@ -3,8 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data
-from labml import tracker, experiment, monit, logger
-from labml_helpers.dataloaders.remote import RemoteDataset
+from torchvision import datasets, transforms
+
+from labml import lab, tracker, experiment, monit, logger
 
 
 class Net(nn.Module):
@@ -88,15 +89,26 @@ def main():
     else:
         device = torch.device(f"cuda:0")
 
+    data_transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.1307,), (0.3081,))
+    ])
+
     train_loader = torch.utils.data.DataLoader(
-        RemoteDataset('mnist_train'),
+        datasets.MNIST(str(lab.get_data_path()),
+                       train=True,
+                       download=True,
+                       transform=data_transform),
         batch_size=configs['train_batch_size'],
         shuffle=True,
         num_workers=4)
 
     valid_loader = torch.utils.data.DataLoader(
-        RemoteDataset('mnist_valid'),
-        batch_size=configs['valid_batch_size'],
+        datasets.MNIST(str(lab.get_data_path()),
+                       train=False,
+                       download=True,
+                       transform=data_transform),
+        batch_size=configs['train_batch_size'],
         shuffle=False,
         num_workers=4)
 

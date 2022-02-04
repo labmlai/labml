@@ -16,7 +16,6 @@ class _ServerDataset:
 
     def item_handler(self, request: Request, idx: str):
         sample = self.dataset[int(idx)]
-        print(idx)
 
         sample = pickle.dumps(sample)
         return Response(sample, media_type='binary/pickle')
