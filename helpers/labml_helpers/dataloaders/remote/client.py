@@ -6,26 +6,27 @@ from torch.utils.data import Dataset
 
 
 class RemoteDataset(Dataset):
-    def __init__(self, host="0.0.0.0", port=8000):
+    def __init__(self, name: str, host="0.0.0.0", port=8000):
+        self.name = name
         self.port = port
         self.host = host
         self.http = urllib3.PoolManager()
         self._len = None
 
     def __getitem__(self, item):
-        r = self.http.request('GET', f'http://{self.host}:{self.port}/item/{item}')
+        r = self.http.request('GET', f'http://{self.host}:{self.port}/{self.name}/item/{item}')
         return pickle.loads(r.data)
 
     def __len__(self):
         if self._len is None:
-            r = self.http.request('GET', f'http://{self.host}:{self.port}/len')
+            r = self.http.request('GET', f'http://{self.host}:{self.port}/{self.name}/len')
             self._len = pickle.loads(r.data)
 
         return self._len
 
 
 def _test():
-    dataset = RemoteDataset()
+    dataset = RemoteDataset('mnist_train')
     print(len(dataset))
     img = dataset[0]
 

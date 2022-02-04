@@ -14,6 +14,8 @@ def main():
                              download=True,
                              transform=transform)
 
+    RemoteServer
+
     img = dataset[0]
 
     plt.imshow(img[0][0], cmap='gray')
