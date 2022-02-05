@@ -75,7 +75,7 @@ class ModelProbe(_ModelProbe):
     You can wrap any PyTorch model with :class:`ModelProbe` to access it's parameters, activations and gradients.
 
     `Here's a notebook with example usage <https://github.com/labmlai/labml/blob/master/guides/model_probe.ipynb>`_
-    
+
     >>> from labml.analytics import ModelProbe
     >>> probe = ModelProbe(model)
     >>> outputs = model(inputs)
