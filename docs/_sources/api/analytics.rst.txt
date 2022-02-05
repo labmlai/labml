@@ -10,6 +10,33 @@ Analytics
 
     .. autoclass:: ModelProbe
 
+        .. autoproperty:: parameters
+
+        .. autoproperty:: forward_input
+
+        .. autoproperty:: forward_output
+
+        .. autoproperty:: backward_input
+
+        .. autoproperty:: backward_output
+
+    .. autoclass:: ValueCollection
+
+        .. automethod:: get_value
+
+        .. automethod:: get_list
+
+        .. automethod:: get_dict
+
+        .. automethod:: deep
+
+    .. autoclass:: DeepValueCollection
+
+        .. automethod:: get_value
+
+        .. automethod:: get_list
+
+        .. automethod:: get_dict
 
     Get data
     --------

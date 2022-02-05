@@ -59,11 +59,11 @@ class ModelProbe:
             if n == '':
                 n = name
             if add_forward_hooks:
-                forward_hook = ForwardHook(n, self.add_forward_tensor)
+                forward_hook = ForwardHook(n, self._add_forward_tensor)
                 module.register_forward_hook(forward_hook)
 
             if add_backward_hooks:
-                backward_hook = ForwardHook(n, self.add_backward_tensor)
+                backward_hook = ForwardHook(n, self._add_backward_tensor)
                 module.register_full_backward_hook(backward_hook)
 
         self._forward_output = {}
@@ -76,32 +76,47 @@ class ModelProbe:
         for k, v in model.named_parameters():
             self._parameters[k] = v
 
-    def add_forward_tensor(self, name: str, inp: any, outp: any):
+    def _add_forward_tensor(self, name: str, inp: any, outp: any):
         self._forward_input[name] = inp
         self._forward_output[name] = outp
 
-    def add_backward_tensor(self, name: str, inp: any, outp: any):
+    def _add_backward_tensor(self, name: str, inp: any, outp: any):
         self._backward_input[name] = inp
         self._backward_output[name] = outp
 
     @property
     def parameters(self):
+        """
+        All the model parameters as a :class:`ValueCollection`
+        """
         return ValueCollection(self._parameters, sort_keys(list(self._parameters.keys())))
 
     @property
     def forward_input(self):
+        """
+        Inputs to layers in the forward pass as a :class:`ValueCollection`
+        """
         return ValueCollection(self._forward_input, sort_keys(list(self._forward_input.keys())))
 
     @property
     def forward_output(self):
+        """
+        Outputs of layers in the forward pass as a :class:`ValueCollection`
+        """
         return ValueCollection(self._forward_output, sort_keys(list(self._forward_output.keys())))
 
     @property
     def backward_input(self):
+        """
+        Inputs (gradients) to layers in the backward pass as a :class:`ValueCollection`
+        """
         return ValueCollection(self._backward_input, sort_keys(list(self._backward_input.keys())))
 
     @property
     def backward_output(self):
+        """
+        Output (gradients) of layers in the backward pass as a :class:`ValueCollection`
+        """
         return ValueCollection(self._backward_output, sort_keys(list(self._backward_output.keys())))
 
 
@@ -122,15 +137,30 @@ class ValueCollection:
         return [prefix]
 
     def get_value(self, key: str):
+        """
+        Get a value by key
+
+        Arguments:
+            key (str): Key of the value
+        """
         return self._values[key]
 
     def get_list(self):
+        """
+        Get a list of values
+        """
         return [self.get_value(f) for f in self._keys]
 
     def get_dict(self):
+        """
+        Get a dictionary of values
+        """
         return {f: self.get_value(f) for f in self._keys}
 
     def deep(self):
+        """
+        Get a :class:`DeepValueCollection` by expanding the tree of values
+        """
         if isinstance(self, DeepValueCollection):
             return self
 
@@ -160,6 +190,12 @@ class ValueCollection:
 
 class DeepValueCollection(ValueCollection):
     def get_value(self, key: str):
+        """
+        Get a value by key. Use ``/`` to go navigate into child elements.
+
+        Arguments:
+            key (str): Key of the value
+        """
         parts = key.split('/')
 
         if len(parts) == 1:

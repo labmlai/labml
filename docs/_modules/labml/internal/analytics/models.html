@@ -1,0 +1,484 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>labml.internal.analytics.models &mdash; labml.ai client library 0.4 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../../_static/lab_icon.png"/>
+  
+  
+  
+    <link rel="canonical" href="https://docs.labml.ai/_modules/labml/internal/analytics/models.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/katex-math.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-PDCL9PHMHT');
+    </script>
+
+ 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> labml.ai client library
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/experiment.html">Experiment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/experiment.html#create-experiment">Create Experiment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/experiment.html#checkpoints">Checkpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/experiment.html#configurations-hyper-parameters">Configurations &amp; Hyper-parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/experiment.html#bundle-checkpoints">Bundle checkpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/experiment.html#distirbuted-training">Distirbuted training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/experiment.html#utilities">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/tracker.html">Tracker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tracker.html#track">Track</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tracker.html#step">Step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tracker.html#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tracker.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tracker.html#helpers">Helpers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/framework_integrations.html">Framework Integrations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/framework_integrations.html#fastai">FastAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/framework_integrations.html#keras">Keras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/framework_integrations.html#pytorch-lightning">PyTorch Lightning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/monit.html">Monitor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/monit.html#basic">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/monit.html#iterators">Iterators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/monit.html#loop">Loop</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/analytics.html">Analytics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/analytics.html#probing">Probing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/analytics.html#get-data">Get data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/analytics.html#plot">Plot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/configs.html">Configs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/configs.html#dynamic-hyper-parameters">Dynamic Hyper-parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/logger.html">Logger</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/logger.html#styling">Styling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/lab.html">Lab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/manage.html">Manage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/utils.html#cache">Cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/utils.html#keyboard-interrupt">Keyboard Interrupt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/utils.html#downloading">Downloading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/utils.html#pytorch">PyTorch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/helpers.html">Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/helpers.html#configurable-modules">Configurable Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/helpers.html#datasets">Datasets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/helpers.html#remote">Remote</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/helpers.html#text-datasets">Text Datasets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/helpers.html#schedules">Schedules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/helpers.html#metrics">Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/helpers.html#utilies">Utilies</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">labml.ai client library</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>labml.internal.analytics.models</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for labml.internal.analytics.models</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">labml.internal.util.strings</span> <span class="kn">import</span> <span class="n">is_pattern_match</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+
+
+<span class="k">def</span> <span class="nf">_transform_key_part</span><span class="p">(</span><span class="n">part</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">part</span><span class="p">))</span> <span class="o">==</span> <span class="n">part</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">part</span><span class="p">)</span><span class="si">:</span><span class="s1">09d</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">part</span>
+
+
+<span class="k">def</span> <span class="nf">sort_keys</span><span class="p">(</span><span class="n">keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+    <span class="n">transformed</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">_transform_key_part</span><span class="p">(</span><span class="n">k2</span><span class="p">)</span> <span class="k">for</span> <span class="n">k2</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)])</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
+
+    <span class="n">combined</span> <span class="o">=</span> <span class="p">[(</span><span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">transformed</span><span class="p">,</span> <span class="n">keys</span><span class="p">)]</span>
+    <span class="n">combined</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">combined</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">combined</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">ForwardHook</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">save_callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_callback</span> <span class="o">=</span> <span class="n">save_callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">BackwardHook</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">save_callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_callback</span> <span class="o">=</span> <span class="n">save_callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ModelProbe</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="s1">&#39;nn.Module&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                 <span class="n">add_forward_hooks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">add_backward_hooks</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">named_modules</span><span class="p">():</span>
+            <span class="n">module</span><span class="p">:</span> <span class="s1">&#39;nn.Module&#39;</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="k">if</span> <span class="n">add_forward_hooks</span><span class="p">:</span>
+                <span class="n">forward_hook</span> <span class="o">=</span> <span class="n">ForwardHook</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_forward_tensor</span><span class="p">)</span>
+                <span class="n">module</span><span class="o">.</span><span class="n">register_forward_hook</span><span class="p">(</span><span class="n">forward_hook</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">add_backward_hooks</span><span class="p">:</span>
+                <span class="n">backward_hook</span> <span class="o">=</span> <span class="n">ForwardHook</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_backward_tensor</span><span class="p">)</span>
+                <span class="n">module</span><span class="o">.</span><span class="n">register_full_backward_hook</span><span class="p">(</span><span class="n">backward_hook</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forward_output</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forward_input</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_backward_output</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_backward_input</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="k">def</span> <span class="nf">_add_forward_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="nb">any</span><span class="p">,</span> <span class="n">outp</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forward_input</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">inp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forward_output</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">outp</span>
+
+    <span class="k">def</span> <span class="nf">_add_backward_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="nb">any</span><span class="p">,</span> <span class="n">outp</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_backward_input</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">inp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_backward_output</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">outp</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        All the model parameters as a :class:`ValueCollection`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ValueCollection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">,</span> <span class="n">sort_keys</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">forward_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inputs to layers in the forward pass as a :class:`ValueCollection`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ValueCollection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_forward_input</span><span class="p">,</span> <span class="n">sort_keys</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_forward_input</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">forward_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Outputs of layers in the forward pass as a :class:`ValueCollection`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ValueCollection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_forward_output</span><span class="p">,</span> <span class="n">sort_keys</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_forward_output</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">backward_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inputs (gradients) to layers in the backward pass as a :class:`ValueCollection`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ValueCollection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_backward_input</span><span class="p">,</span> <span class="n">sort_keys</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_backward_input</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">backward_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Output (gradients) of layers in the backward pass as a :class:`ValueCollection`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ValueCollection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_backward_output</span><span class="p">,</span> <span class="n">sort_keys</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_backward_output</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+
+<span class="k">class</span> <span class="nc">ValueCollection</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">],</span> <span class="n">keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span> <span class="o">=</span> <span class="n">keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">values</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_expand_value</span><span class="p">(</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">any</span><span class="p">,</span> <span class="n">separator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span>
+                <span class="n">ValueCollection</span><span class="o">.</span><span class="n">_expand_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">separator</span><span class="si">}{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value</span><span class="p">)],</span>
+                <span class="p">[])</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">ValueCollection</span><span class="o">.</span><span class="n">_expand_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">separator</span><span class="si">}{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()],</span> <span class="p">[])</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">prefix</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ValueCollection.get_value"><a class="viewcode-back" href="../../../../api/analytics.html#labml.analytics.ValueCollection.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a value by key</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            key (str): Key of the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ValueCollection.get_list"><a class="viewcode-back" href="../../../../api/analytics.html#labml.analytics.ValueCollection.get_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ValueCollection.get_dict"><a class="viewcode-back" href="../../../../api/analytics.html#labml.analytics.ValueCollection.get_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a dictionary of values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">f</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="ValueCollection.deep"><a class="viewcode-back" href="../../../../api/analytics.html#labml.analytics.ValueCollection.deep">[docs]</a>    <span class="k">def</span> <span class="nf">deep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a :class:`DeepValueCollection` by expanding the tree of values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">DeepValueCollection</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span>
+            <span class="n">ValueCollection</span><span class="o">.</span><span class="n">_expand_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">],</span>
+            <span class="p">[])</span>
+
+        <span class="k">return</span> <span class="n">DeepValueCollection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">,</span> <span class="n">sort_keys</span><span class="p">(</span><span class="n">keys</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span> <span class="k">if</span> <span class="n">is_pattern_match</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">item</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span>
+
+
+<span class="k">class</span> <span class="nc">DeepValueCollection</span><span class="p">(</span><span class="n">ValueCollection</span><span class="p">):</span>
+<div class="viewcode-block" id="DeepValueCollection.get_value"><a class="viewcode-back" href="../../../../api/analytics.html#labml.analytics.DeepValueCollection.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a value by key. Use ``/`` to go navigate into child elements.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            key (str): Key of the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">value</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020-2022, labml.ai contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

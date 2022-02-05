@@ -237,6 +237,7 @@
 <dt id="labml.analytics.ModelProbe">
 <em class="property">class </em><code class="sig-prename descclassname">labml.analytics.</code><code class="sig-name descname">ModelProbe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span><span class="p">:</span> <span class="n">nn.Module</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'model'</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">add_forward_hooks</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">add_backward_hooks</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/analytics.html#ModelProbe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.ModelProbe" title="Permalink to this definition">¶</a></dt>
 <dd><p>You can wrap any PyTorch model with <a class="reference internal" href="#labml.analytics.ModelProbe" title="labml.analytics.ModelProbe"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelProbe</span></code></a> to access it’s parameters, activations and gradients.</p>
+<p><a class="reference external" href="https://github.com/labmlai/labml/blob/master/guides/model_probe.ipynb">Here’s a notebook with example usage</a></p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">labml.analytics</span> <span class="kn">import</span> <span class="n">ModelProbe</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">probe</span> <span class="o">=</span> <span class="n">ModelProbe</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
@@ -245,6 +246,98 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">probe</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;*.bias&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_list</span><span class="p">()</span>
 </pre></div>
 </div>
+<dl class="py method">
+<dt id="labml.analytics.ModelProbe.parameters">
+<em class="property">property </em><code class="sig-name descname">parameters</code><a class="headerlink" href="#labml.analytics.ModelProbe.parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>All the model parameters as a <a class="reference internal" href="#labml.analytics.ValueCollection" title="labml.analytics.ValueCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueCollection</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="labml.analytics.ModelProbe.forward_input">
+<em class="property">property </em><code class="sig-name descname">forward_input</code><a class="headerlink" href="#labml.analytics.ModelProbe.forward_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs to layers in the forward pass as a <a class="reference internal" href="#labml.analytics.ValueCollection" title="labml.analytics.ValueCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueCollection</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="labml.analytics.ModelProbe.forward_output">
+<em class="property">property </em><code class="sig-name descname">forward_output</code><a class="headerlink" href="#labml.analytics.ModelProbe.forward_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Outputs of layers in the forward pass as a <a class="reference internal" href="#labml.analytics.ValueCollection" title="labml.analytics.ValueCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueCollection</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="labml.analytics.ModelProbe.backward_input">
+<em class="property">property </em><code class="sig-name descname">backward_input</code><a class="headerlink" href="#labml.analytics.ModelProbe.backward_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs (gradients) to layers in the backward pass as a <a class="reference internal" href="#labml.analytics.ValueCollection" title="labml.analytics.ValueCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueCollection</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="labml.analytics.ModelProbe.backward_output">
+<em class="property">property </em><code class="sig-name descname">backward_output</code><a class="headerlink" href="#labml.analytics.ModelProbe.backward_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output (gradients) of layers in the backward pass as a <a class="reference internal" href="#labml.analytics.ValueCollection" title="labml.analytics.ValueCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueCollection</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="labml.analytics.ValueCollection">
+<em class="property">class </em><code class="sig-prename descclassname">labml.analytics.</code><code class="sig-name descname">ValueCollection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">keys</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/analytics.html#ValueCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.ValueCollection" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="labml.analytics.ValueCollection.get_value">
+<code class="sig-name descname">get_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/internal/analytics/models.html#ValueCollection.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.ValueCollection.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a value by key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – Key of the value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="labml.analytics.ValueCollection.get_list">
+<code class="sig-name descname">get_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/internal/analytics/models.html#ValueCollection.get_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.ValueCollection.get_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of values</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="labml.analytics.ValueCollection.get_dict">
+<code class="sig-name descname">get_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/internal/analytics/models.html#ValueCollection.get_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.ValueCollection.get_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dictionary of values</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="labml.analytics.ValueCollection.deep">
+<code class="sig-name descname">deep</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/internal/analytics/models.html#ValueCollection.deep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.ValueCollection.deep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <a class="reference internal" href="#labml.analytics.DeepValueCollection" title="labml.analytics.DeepValueCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeepValueCollection</span></code></a> by expanding the tree of values</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="labml.analytics.DeepValueCollection">
+<em class="property">class </em><code class="sig-prename descclassname">labml.analytics.</code><code class="sig-name descname">DeepValueCollection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>any<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">keys</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/analytics.html#DeepValueCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.DeepValueCollection" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="labml.analytics.DeepValueCollection.get_value">
+<code class="sig-name descname">get_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/internal/analytics/models.html#DeepValueCollection.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#labml.analytics.DeepValueCollection.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a value by key. Use <code class="docutils literal notranslate"><span class="pre">/</span></code> to go navigate into child elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – Key of the value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="labml.analytics.DeepValueCollection.get_list">
+<code class="sig-name descname">get_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#labml.analytics.DeepValueCollection.get_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of values</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="labml.analytics.DeepValueCollection.get_dict">
+<code class="sig-name descname">get_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#labml.analytics.DeepValueCollection.get_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dictionary of values</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
