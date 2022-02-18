@@ -1,4 +1,5 @@
 import sys
+import inspect
 import asyncio
 from typing import Callable, Dict, Any
 
@@ -42,7 +43,7 @@ def _get_user_profile(token: str):
     return res.json()
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.analytics.AnalyticsEvent.time_this(None)
 async def sign_in(request: Request) -> EndPointRes:
     json = await request.json()
     if 'token' in json:
@@ -53,7 +54,7 @@ async def sign_in(request: Request) -> EndPointRes:
     else:
         u = user.get_or_create_user(user.AuthOInfo(**json))
 
-    utils.mix_panel.MixPanelEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
+    utils.analytics.AnalyticsEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
 
     token_id = ''  # generate different token for every login
     at = app_token.get_or_create(token_id)
@@ -64,8 +65,8 @@ async def sign_in(request: Request) -> EndPointRes:
     return {'is_successful': True, 'app_token': at.token_id}
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
-def sign_out(request: Request) -> EndPointRes:
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def sign_out(request: Request) -> EndPointRes:
     token_id = request.headers.get('Authorization', '')
     at = app_token.get_or_create(token_id)
 
@@ -74,7 +75,7 @@ def sign_out(request: Request) -> EndPointRes:
     return {'is_successful': True}
 
 
-@utils.mix_panel.MixPanelEvent.time_this(0.4)
+@utils.analytics.AnalyticsEvent.time_this(0.4)
 async def _update_run(request: Request, labml_token: str, run_uuid: str, labml_version: str):
     errors = []
 
@@ -107,14 +108,14 @@ async def _update_run(request: Request, labml_token: str, run_uuid: str, labml_v
     if not r and not p:
         if labml_token:
             errors.append({'error': 'invalid_token',
-                     'message': 'Please create a valid token at https://app.labml.ai.\n'
-                                'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'})
+                           'message': 'Please create a valid token at https://app.labml.ai.\n'
+                                      'Click on the experiment link to monitor the experiment and '
+                                      'add it to your experiments list.'})
         elif not settings.IS_LOCAL_SETUP:
             errors.append({'warning': 'empty_token',
-                     'message': 'Please create a valid token at https://app.labml.ai.\n'
-                                'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'})
+                           'message': 'Please create a valid token at https://app.labml.ai.\n'
+                                      'Click on the experiment link to monitor the experiment and '
+                                      'add it to your experiments list.'})
 
     r = run.get_or_create(request, run_uuid, token)
     s = r.status.load()
@@ -155,7 +156,7 @@ async def update_run(request: Request) -> EndPointRes:
     return res
 
 
-@utils.mix_panel.MixPanelEvent.time_this(0.4)
+@utils.analytics.AnalyticsEvent.time_this(0.4)
 async def _update_session(request: Request, labml_token: str, session_uuid: str, computer_uuid: str,
                           labml_version: str):
     errors = []
@@ -195,14 +196,14 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
     if not c and not p:
         if labml_token:
             errors.append({'error': 'invalid_token',
-                     'message': 'Please create a valid token at https://app.labml.ai.\n'
-                                'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'})
+                           'message': 'Please create a valid token at https://app.labml.ai.\n'
+                                      'Click on the experiment link to monitor the experiment and '
+                                      'add it to your experiments list.'})
         elif not settings.IS_LOCAL_SETUP:
             errors.append({'warning': 'empty_token',
-                     'message': 'Please create a valid token at https://app.labml.ai.\n'
-                                'Click on the experiment link to monitor the experiment and '
-                                'add it to your experiments list.'})
+                           'message': 'Please create a valid token at https://app.labml.ai.\n'
+                                      'Click on the experiment link to monitor the experiment and '
+                                      'add it to your experiments list.'})
 
     c = session.get_or_create(request, session_uuid, computer_uuid, token)
     s = c.status.load()
@@ -238,8 +239,8 @@ async def update_session(request: Request) -> EndPointRes:
     return res
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
-def claim_run(request: Request, run_uuid: str) -> EndPointRes:
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def claim_run(request: Request, run_uuid: str) -> EndPointRes:
     r = run.get(run_uuid)
     at = auth.get_app_token(request)
 
@@ -260,14 +261,14 @@ def claim_run(request: Request, run_uuid: str) -> EndPointRes:
             r.owner = u.email
             r.save()
 
-            utils.mix_panel.MixPanelEvent.track(request, 'run_claimed', {'run_uuid': r.run_uuid})
-            utils.mix_panel.MixPanelEvent.run_claimed_set(u.email)
+            utils.analytics.AnalyticsEvent.track(request, 'run_claimed', {'run_uuid': r.run_uuid})
+            utils.analytics.AnalyticsEvent.run_claimed_set(u.email)
 
     return {'is_successful': True}
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
-def claim_session(request: Request, session_uuid: str) -> EndPointRes:
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def claim_session(request: Request, session_uuid: str) -> EndPointRes:
     c = session.get(session_uuid)
     at = auth.get_app_token(request)
 
@@ -287,14 +288,14 @@ def claim_session(request: Request, session_uuid: str) -> EndPointRes:
             c.owner = u.email
             c.save()
 
-            utils.mix_panel.MixPanelEvent.track(request, 'session_claimed', {'session_uuid': c.session_uuid})
-            utils.mix_panel.MixPanelEvent.computer_claimed_set(u.email)
+            utils.analytics.AnalyticsEvent.track(request, 'session_claimed', {'session_uuid': c.session_uuid})
+            utils.analytics.AnalyticsEvent.computer_claimed_set(u.email)
 
     return {'is_successful': True}
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
-def get_run(request: Request, run_uuid: str) -> JSONResponse:
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def get_run(request: Request, run_uuid: str) -> JSONResponse:
     run_data = {}
     status_code = 404
 
@@ -309,8 +310,8 @@ def get_run(request: Request, run_uuid: str) -> JSONResponse:
     return response
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
-def get_session(request: Request, session_uuid: str) -> JSONResponse:
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def get_session(request: Request, session_uuid: str) -> JSONResponse:
     session_data = {}
     status_code = 404
 
@@ -352,8 +353,8 @@ async def edit_session(request: Request, session_uuid: str) -> EndPointRes:
     return {'errors': errors}
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
-def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_data = {}
     status_code = 404
 
@@ -368,8 +369,8 @@ def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     return response
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
-def get_session_status(request: Request, session_uuid: str) -> JSONResponse:
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def get_session_status(request: Request, session_uuid: str) -> JSONResponse:
     status_data = {}
     status_code = 404
 
@@ -385,9 +386,9 @@ def get_session_status(request: Request, session_uuid: str) -> JSONResponse:
 
 
 @auth.login_required
-@utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.analytics.AnalyticsEvent.time_this(None)
 @auth.check_labml_token_permission
-def get_runs(request: Request, labml_token: str) -> EndPointRes:
+async def get_runs(request: Request, labml_token: str) -> EndPointRes:
     u = auth.get_auth_user(request)
 
     if labml_token:
@@ -409,9 +410,9 @@ def get_runs(request: Request, labml_token: str) -> EndPointRes:
 
 
 @auth.login_required
-@utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.analytics.AnalyticsEvent.time_this(None)
 @auth.check_labml_token_permission
-def get_sessions(request: Request, labml_token: str) -> EndPointRes:
+async def get_sessions(request: Request, labml_token: str) -> EndPointRes:
     u = auth.get_auth_user(request)
 
     if labml_token:
@@ -432,7 +433,7 @@ def get_sessions(request: Request, labml_token: str) -> EndPointRes:
     return {'sessions': res, 'labml_token': labml_token}
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.analytics.AnalyticsEvent.time_this(None)
 @auth.login_required
 async def delete_runs(request: Request) -> EndPointRes:
     json = await request.json()
@@ -444,11 +445,11 @@ async def delete_runs(request: Request) -> EndPointRes:
     return {'is_successful': True}
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.analytics.AnalyticsEvent.time_this(None)
 @auth.login_required
 async def delete_sessions(request: Request) -> EndPointRes:
     json = await request.json()
-    session_uuids = json
+    session_uuids = json['session_uuids']
 
     u = auth.get_auth_user(request)
     u.default_project.delete_sessions(session_uuids, u.email)
@@ -457,7 +458,7 @@ async def delete_sessions(request: Request) -> EndPointRes:
 
 
 @auth.login_required
-def add_run(request: Request, run_uuid: str) -> EndPointRes:
+async def add_run(request: Request, run_uuid: str) -> EndPointRes:
     u = auth.get_auth_user(request)
 
     u.default_project.add_run(run_uuid)
@@ -466,7 +467,7 @@ def add_run(request: Request, run_uuid: str) -> EndPointRes:
 
 
 @auth.login_required
-def add_session(request: Request, session_uuid: str) -> EndPointRes:
+async def add_session(request: Request, session_uuid: str) -> EndPointRes:
     u = auth.get_auth_user(request)
 
     u.default_project.add_session(session_uuid)
@@ -475,15 +476,15 @@ def add_session(request: Request, session_uuid: str) -> EndPointRes:
 
 
 @auth.login_required
-@utils.mix_panel.MixPanelEvent.time_this(None)
-def get_computer(request: Request, computer_uuid: str) -> EndPointRes:
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def get_computer(request: Request, computer_uuid: str) -> EndPointRes:
     c = computer.get_or_create(computer_uuid)
 
     return c.get_data()
 
 
 @auth.login_required
-@utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.analytics.AnalyticsEvent.time_this(None)
 async def set_user(request: Request) -> EndPointRes:
     json = await request.json()
     data = json['user']
@@ -495,19 +496,19 @@ async def set_user(request: Request) -> EndPointRes:
 
 
 @auth.login_required
-@utils.mix_panel.MixPanelEvent.time_this(None)
-def get_user(request: Request) -> EndPointRes:
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def get_user(request: Request) -> EndPointRes:
     u = auth.get_auth_user(request)
 
     return u.get_data()
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
-def is_user_logged(request: Request) -> EndPointRes:
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def is_user_logged(request: Request) -> EndPointRes:
     return {'is_user_logged': auth.get_is_user_logged(request)}
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.analytics.AnalyticsEvent.time_this(None)
 async def sync_computer(request: Request) -> EndPointRes:
     """End point to sync UI-server and UI-computer. runs: to sync with the server.
         """
@@ -529,7 +530,7 @@ async def sync_computer(request: Request) -> EndPointRes:
     return {'runs': res}
 
 
-@utils.mix_panel.MixPanelEvent.time_this(60.4)
+@utils.analytics.AnalyticsEvent.time_this(60.4)
 async def polling(request: Request) -> EndPointRes:
     """End point to sync UI-server and UI-computer. jobs: statuses of jobs.
     pending jobs will be returned in the response if there any
@@ -565,7 +566,7 @@ async def polling(request: Request) -> EndPointRes:
 
 
 @auth.login_required
-@utils.mix_panel.MixPanelEvent.time_this(30.4)
+@utils.analytics.AnalyticsEvent.time_this(30.4)
 async def start_tensor_board(request: Request, computer_uuid: str) -> EndPointRes:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.
             """
@@ -593,7 +594,7 @@ async def start_tensor_board(request: Request, computer_uuid: str) -> EndPointRe
 
 
 @auth.login_required
-@utils.mix_panel.MixPanelEvent.time_this(30.4)
+@utils.analytics.AnalyticsEvent.time_this(30.4)
 async def clear_checkpoints(request: Request, computer_uuid: str) -> EndPointRes:
     """End point to clear checkpoints for set of runs. runs: all the runs should be from a same computer.
             """
@@ -621,10 +622,16 @@ async def clear_checkpoints(request: Request, computer_uuid: str) -> EndPointRes
 
 
 def _add_server(app: FastAPI, method: str, func: Callable, url: str):
+    if not inspect.iscoroutinefunction(func):
+        raise ValueError(f'{func.__name__} is not a async function')
+
     app.add_api_route(f'/api/v1/{url}', endpoint=func, methods=[method])
 
 
 def _add_ui(app: FastAPI, method: str, func: Callable, url: str):
+    if not inspect.iscoroutinefunction(func):
+        raise ValueError(f'{func.__name__} is not a async function')
+
     app.add_api_route(f'/api/v1/{url}', endpoint=func, methods=[method])
 
 

@@ -5,6 +5,7 @@ from labml.logger import inspect
 
 def test():
     inspect("test")
+    inspect((1, 2))
     inspect([1, 2])
     inspect({'x': 2, 4: '5'})
     small_torch = torch.arange(0, 10)

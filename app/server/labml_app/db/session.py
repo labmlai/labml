@@ -118,9 +118,9 @@ def get_or_create(request: Request, session_uuid: str, computer_uuid: str, labml
         is_claimed = True
 
         identifier = user.get_token_owner(labml_token)
-        utils.mix_panel.MixPanelEvent.track(request, 'session_claimed', {'session_uuid': session_uuid},
-                                            identifier=identifier)
-        utils.mix_panel.MixPanelEvent.computer_claimed_set(identifier)
+        utils.analytics.AnalyticsEvent.track(request, 'session_claimed', {'session_uuid': session_uuid},
+                                             identifier=identifier)
+        utils.analytics.AnalyticsEvent.computer_claimed_set(identifier)
 
     time_now = time.time()
 
@@ -142,8 +142,8 @@ def get_or_create(request: Request, session_uuid: str, computer_uuid: str, labml
 
     computer.add_session(computer_uuid, session_uuid)
 
-    utils.mix_panel.MixPanelEvent.track(request, 'session_created',
-                                        {'session_uuid': session_uuid, 'labml_token': labml_token})
+    utils.analytics.AnalyticsEvent.track(request, 'session_created',
+                                         {'session_uuid': session_uuid, 'labml_token': labml_token})
 
     return session
 
@@ -161,7 +161,7 @@ def delete(session_uuid: str) -> None:
 
         SessionIndex.delete(session_uuid)
 
-        analyses.AnalysisManager.delete_run(session_uuid)
+        analyses.AnalysisManager.delete_session(session_uuid)
 
 
 def get_sessions(labml_token: str) -> List[Session]:

@@ -11,6 +11,11 @@ from labml.internal.analytics.altair import histogram as _histogram
 from labml.internal.analytics.altair import scatter as _scatter
 from labml.internal.analytics.altair import binned_heatmap as _binned_heatmap
 from labml.internal.analytics.indicators import IndicatorCollection as _IndicatorCollection
+from labml.internal.analytics.models import ModelProbe as _ModelProbe
+from labml.internal.analytics.models import ValueCollection as _ValueCollection
+from labml.internal.analytics.models import DeepValueCollection as _DeepValueCollection
+from labml.internal.analytics.viz import text_attention as _text_attention
+from labml.internal.analytics.viz import init_inline_viz as _init_inline_viz
 
 
 def _remove_names_prefix(names: List[Union[str, List[str]]]) -> List[str]:
@@ -63,6 +68,37 @@ class IndicatorCollection(_IndicatorCollection):
     >>> losses = indicators.train_loss + indicators.validation_loss
     """
     pass
+
+
+class ModelProbe(_ModelProbe):
+    r"""
+    You can wrap any PyTorch model with :class:`ModelProbe` to access it's parameters, activations and gradients.
+
+    `Here's a notebook with example usage <https://github.com/labmlai/labml/blob/master/guides/model_probe.ipynb>`_
+
+    >>> from labml.analytics import ModelProbe
+    >>> probe = ModelProbe(model)
+    >>> outputs = model(inputs)
+    >>> outputs.backward()
+    >>> probe.forward_output["*attention*"].get_dict()
+    >>> probe.parameters['*.bias'].get_list()
+    """
+    pass
+
+
+class ValueCollection(_ValueCollection):
+    pass
+
+class DeepValueCollection(_DeepValueCollection):
+    pass
+
+
+def text_attention(attn: 'torch.Tensor', src_tokens: List[str], tgt_tokens: List[str]):
+    _text_attention(attn, src_tokens, tgt_tokens)
+
+
+def init_inline_viz():
+    _init_inline_viz()
 
 
 def runs(*uuids: str):

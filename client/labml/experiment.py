@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Optional, Set, Dict, List, TYPE_CHECKING, overload, Tuple
 
 import numpy as np
-
 from labml.configs import BaseConfigs
 from labml.internal.experiment import \
     create_experiment as _create_experiment, \
@@ -16,6 +15,8 @@ from labml.internal.monitor import monitor_singleton as monitor
 
 if TYPE_CHECKING:
     import torch
+
+AVAILABLE_WRITERS = {'screen', 'web_api', 'sqlite', 'tensorboard', 'wandb', 'comet', 'file'}
 
 
 def generate_uuid() -> str:
@@ -67,11 +68,10 @@ def create(*,
         from labml.internal.util.tensorboard_writer import has_tensorboard
         if has_tensorboard():
             writers.add('tensorboard')
-        try:
-            import wandb
-            writers.add('wandb')
-        except ImportError:
-            pass
+
+    for w in writers:
+        if w not in AVAILABLE_WRITERS:
+            raise ValueError(f'Unknown writer: {w}')
 
     if disable_screen and 'screen' in writers:
         writers.remove('screen')
@@ -83,6 +83,7 @@ def create(*,
         uuid = generate_uuid()
 
     monitor().clear()
+
     _create_experiment(uuid=uuid,
                        name=name,
                        python_file=python_file,

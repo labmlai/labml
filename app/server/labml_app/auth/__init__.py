@@ -24,16 +24,16 @@ def get_app_token(request: Request) -> 'app_token.AppToken':
 
 def check_labml_token_permission(func) -> functools.wraps:
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         labml_token = kwargs.get('labml_token', '')
 
         p = project.get_project(labml_token)
         if p and p.is_sharable:
-            return func(*args, **kwargs)
+            return await func(*args, **kwargs)
 
         kwargs['labml_token'] = None
 
-        return func(*args, **kwargs)
+        return await func(*args, **kwargs)
 
     return wrapper
 

@@ -19,9 +19,6 @@ server-prod: ## compile and start server in prod
 clean-db: ## clean float-project and move samples to float-project
 	cd server &&  pipenv run python -m labml_app.scripts.clean_ups
 
-check-db: ## db checks
-	cd server &&  pipenv run python -m labml_app.scripts.db_checks
-
 compile: ## Compile JS
 	rm -rf static
 	mkdir -p static/js

@@ -243,7 +243,7 @@ class HyperParamsAnalysis(Analysis):
 
 
 @Analysis.route('GET', 'hyper_params/{run_uuid}')
-def get_hyper_params_tracking(request: Request, run_uuid: str) -> Any:
+async def get_hyper_params_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     status_code = 404
 
@@ -259,7 +259,7 @@ def get_hyper_params_tracking(request: Request, run_uuid: str) -> Any:
 
 
 @Analysis.route('GET', 'hyper_params/preferences/{run_uuid}')
-def get_hyper_params_preferences(request: Request, run_uuid: str) -> Any:
+async def get_hyper_params_preferences(request: Request, run_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = HyperParamsPreferencesIndex.get(run_uuid)

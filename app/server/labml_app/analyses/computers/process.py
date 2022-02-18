@@ -13,7 +13,8 @@ from ..series_collection import SeriesCollection
 from ..preferences import Preferences
 
 SERIES_NAMES = ['rss', 'vms', 'cpu', 'threads', 'user', 'system']
-STATIC_NAMEs = ['name', 'create_time', 'pid', 'ppid', 'dead', 'exe', 'cmdline']
+OTHER_SERIES_NAMES = ['ppid', 'iowait']
+STATIC_NAMES = ['name', 'create_time', 'pid', 'ppid', 'dead', 'exe', 'cmdline']
 
 ALMOST_ZERO = 1.0E-2
 
@@ -117,6 +118,31 @@ class ProcessAnalysis(Analysis):
                 res[ind] = s
 
         self.process.track(res)
+        self.clean_dead_processes()
+
+    def clean_dead_processes(self):
+        series_names = SERIES_NAMES + OTHER_SERIES_NAMES
+
+        process_ids_to_remove = {process_id for process_id in self.process.dead if self.process.dead[process_id]}
+
+        inds_to_remove = {}
+        for process_id in process_ids_to_remove:
+            for s in series_names:
+                ind = f'{process_id}.{s}'
+                inds_to_remove[ind] = process_id
+
+        inds = list(self.process.tracking.keys())
+
+        removed = 0
+        for ind in inds:
+            if ind in inds_to_remove:
+                ret = self.process.tracking.pop(ind, None)
+                if ret:
+                    removed += 1
+                    self.process.dead.pop(inds_to_remove[ind], None)
+
+        self.process.save()
+        logger.info(f'processes: {removed} number of series removed, {len(self.process.tracking)} remaining')
 
     def get_tracking(self):
         res = {}
@@ -250,7 +276,7 @@ class ProcessAnalysis(Analysis):
 
 
 @Analysis.route('GET', 'process/{session_uuid}')
-def get_process_tracking(request: Request, session_uuid: str) -> Any:
+async def get_process_tracking(request: Request, session_uuid: str) -> Any:
     track_data = []
     summary_data = []
     status_code = 404
@@ -267,7 +293,7 @@ def get_process_tracking(request: Request, session_uuid: str) -> Any:
 
 
 @Analysis.route('GET', 'process/zero_cpu/{session_uuid}')
-def get_zero_cpu_processes(request: Request, session_uuid: str) -> Any:
+async def get_zero_cpu_processes(request: Request, session_uuid: str) -> Any:
     track_data = []
     status_code = 404
 
@@ -283,7 +309,7 @@ def get_zero_cpu_processes(request: Request, session_uuid: str) -> Any:
 
 
 @Analysis.route('GET', 'process/{session_uuid}/details/{process_id}')
-def get_process_detail(request: Request, session_uuid: str, process_id: str) -> Any:
+async def get_process_detail(request: Request, session_uuid: str, process_id: str) -> Any:
     data = {}
     status_code = 404
 
@@ -299,7 +325,7 @@ def get_process_detail(request: Request, session_uuid: str, process_id: str) -> 
 
 
 @Analysis.route('GET', 'process/preferences/{session_uuid}')
-def get_process_preferences(request: Request, session_uuid: str) -> Any:
+async def get_process_preferences(request: Request, session_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = ProcessPreferencesIndex.get(session_uuid)

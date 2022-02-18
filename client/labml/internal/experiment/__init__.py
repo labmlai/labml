@@ -2,15 +2,14 @@ import json
 import os
 import pathlib
 import time
-from typing import Optional, List, Set, Dict, Union, TYPE_CHECKING, Any
+from typing import Optional, List, Set, Dict, Union, TYPE_CHECKING
 
 import git
-from labml.internal.api.dynamic import DynamicUpdateHandler
-
 from labml import logger, monit
+from labml.internal.api.dynamic import DynamicUpdateHandler
 from labml.internal.configs.base import Configs
-from labml.internal.configs.processor import ConfigProcessor, FileConfigsSaver
 from labml.internal.configs.dynamic_hyperparam import DynamicHyperParam
+from labml.internal.configs.processor import ConfigProcessor, FileConfigsSaver
 from labml.internal.experiment.experiment_run import Run, struct_time_to_time, struct_time_to_date
 from labml.internal.experiment.watcher import ExperimentWatcher
 from labml.internal.lab import lab_singleton
@@ -23,6 +22,8 @@ from labml.utils.notice import labml_notice
 
 if TYPE_CHECKING:
     from labml.internal.api.experiment import ApiExperiment
+    from labml.internal.tracker.writers.wandb import Writer as WandBWriter
+    from labml.internal.tracker.writers.comet import Writer as CometWriter
 
 
 class ModelSaver:
@@ -32,6 +33,7 @@ class ModelSaver:
     The implementation should keep a reference to the model and load and save the model
     parameters.
     """
+
     def save(self, checkpoint_path: pathlib.Path) -> any:
         """
         Saves the model in the given checkpoint path
@@ -178,7 +180,8 @@ class Experiment:
         tags (Set[str], optional): Set of tags for experiment
     """
     web_api: Optional['ApiExperiment']
-    wandb: Optional[Any]
+    wandb: Optional['WandBWriter']
+    comet: Optional['CometWriter']
 
     is_started: bool
     run: Run
@@ -264,6 +267,7 @@ class Experiment:
         self.is_evaluate = is_evaluate
         self.web_api = None
         self.wandb = None
+        self.comet = None
         self.writers = writers
         self.is_started = False
         self.distributed_rank = 0
@@ -401,6 +405,13 @@ class Experiment:
         else:
             self.wandb = None
 
+        if 'comet' in self.writers:
+            from labml.internal.tracker.writers import comet
+            self.comet = comet.Writer()
+            tracker().add_writer(self.comet)
+        else:
+            self.comet = None
+
         if 'file' in self.writers:
             from labml.internal.tracker.writers import file
             tracker().add_writer(file.Writer(self.run.log_file))
@@ -466,6 +477,11 @@ class Experiment:
                     self.wandb.init(self.run.name, self.run.run_path)
                     if self.configs_processor is not None:
                         self.configs_processor.add_saver(self.wandb.get_configs_saver())
+
+                if self.comet is not None:
+                    self.comet.init(self.run.name)
+                    if self.configs_processor is not None:
+                        self.configs_processor.add_saver(self.comet.get_configs_saver())
 
                 tracker().save_indicators(self.run.indicators_path)
 
