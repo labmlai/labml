@@ -49,13 +49,16 @@ def _launcher():
             master_port=os.environ['MASTER_PORT'])
     main(local_rank, rank, world_size, run_uuid, 'env://')
 
+def spawned(rank, world_size, uuid):
+    main(rank, rank, world_size, uuid)
+
 
 if __name__ == '__main__':
     # Run single GPU
     # main(0, 1, experiment.generate_uuid())
 
     # Spawn multiple GPU
-    # torch.multiprocessing.spawn(main, args=(3, experiment.generate_uuid()), nprocs=3, join=True)
+    torch.multiprocessing.spawn(spawned, args=(2, experiment.generate_uuid()), nprocs=2, join=True)
 
     # Run with `labml launch`, same arguments as `torch.distributed.launch`
-    _launcher()
+    # _launcher()
