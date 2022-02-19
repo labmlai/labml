@@ -9,6 +9,7 @@ from labml import logger, experiment
 from labml.experiment import generate_uuid
 from labml.internal.api import ApiCaller, SimpleApiDataSource
 from labml.internal.api.logs import ApiLogs
+from labml.internal.api.url import ApiUrlHandler
 from labml.logger import Text
 from typing.io import IO
 
@@ -85,14 +86,8 @@ def _capture(args: List[str]):
         'time': time.time()
     }
 
-    def _started(url):
-        if url is None:
-            return None
-
-        logger.log([('Monitor experiment at ', Text.meta), (url, Text.link)])
-        webbrowser.open(url)
-
-    api_caller.has_data(SimpleApiDataSource(data, callback=_started))
+    api_caller.add_handler(ApiUrlHandler(True, 'Monitor output at '))
+    api_caller.has_data(SimpleApiDataSource(data))
     api_logs.set_api(api_caller, frequency=0)
 
     thread = ExecutorThread(' '.join(args), api_logs)
