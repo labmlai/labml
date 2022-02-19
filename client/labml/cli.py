@@ -1,8 +1,8 @@
 import argparse
+import os
 import subprocess
 import threading
 import time
-import webbrowser
 from typing import List
 
 from labml import logger, experiment
@@ -52,7 +52,7 @@ class ExecutorThread(threading.Thread):
             data = stream.read(1024).decode('utf-8')
             if len(data) == 0:
                 break
-            print(data)
+            print(data, end='')
             self.api_logs.outputs(**{name: data})
 
     def _read_stdout(self):
@@ -62,7 +62,17 @@ class ExecutorThread(threading.Thread):
         self._read(self.process.stderr, 'stderr_')
 
     def run(self):
-        self.process = subprocess.Popen(self.command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        shell = os.environ.get('SHELL', '/bin/sh')
+
+        self.process = subprocess.Popen(
+            self.command,
+            # [shell, '-i', '-c', self.command],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
+            env=os.environ.copy(),
+            executable=shell,
+        )
 
         while True:
             self._read_stdout()
