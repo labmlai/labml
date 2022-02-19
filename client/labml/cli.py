@@ -1,6 +1,7 @@
 import argparse
 import os
 import subprocess
+import sys
 import threading
 import time
 from typing import List
@@ -48,12 +49,18 @@ class ExecutorThread(threading.Thread):
         self.exit_code = 0
 
     def _read(self, stream: IO, name: str):
+        buffer = ''
         while stream.readable():
-            data = stream.read(1024).decode('utf-8')
+            data = stream.read(1)
             if len(data) == 0:
                 break
+            buffer += data
             print(data, end='')
-            self.api_logs.outputs(**{name: data})
+            if '\n' in buffer or len(buffer) > 100:
+                self.api_logs.outputs(**{name: buffer})
+                buffer = ''
+        if len(buffer) > 0:
+            self.api_logs.outputs(**{name: buffer})
 
     def _read_stdout(self):
         self._read(self.process.stdout, 'stdout_')
@@ -67,11 +74,13 @@ class ExecutorThread(threading.Thread):
         self.process = subprocess.Popen(
             self.command,
             # [shell, '-i', '-c', self.command],
+            encoding='utf-8',
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=True,
             env=os.environ.copy(),
             executable=shell,
+            bufsize=0,
         )
 
         while True:
@@ -100,9 +109,26 @@ def _capture(args: List[str]):
     api_caller.has_data(SimpleApiDataSource(data))
     api_logs.set_api(api_caller, frequency=0)
 
-    thread = ExecutorThread(' '.join(args), api_logs)
-    thread.start()
-    thread.join()
+    logger.log('Start capturing...', Text.meta)
+    if args:
+        thread = ExecutorThread(' '.join(args), api_logs)
+        thread.start()
+        thread.join()
+    else:
+        buffer = ''
+        stdin = sys.stdin
+        while stdin.readable():
+            data = stdin.read(1)
+            if len(data) == 0:
+                break
+            print(data, end='')
+            buffer += data
+            if '\n' in buffer or len(buffer) > 100:
+                api_logs.outputs(stdout_=buffer)
+                buffer = ''
+        if len(buffer) > 0:
+            api_logs.outputs(stdout_=buffer)
+
     data = {
         'rank': 0,
         'status': 'completed',
@@ -201,3 +227,11 @@ def main():
         _service_run()
     else:
         raise ValueError('Unknown command', args.command)
+
+
+def _test_capture():
+    _capture([])
+
+
+if __name__ == '__main__':
+    _test_capture()
