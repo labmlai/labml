@@ -58,7 +58,7 @@ conda init
 For example,
 
 ```sh
-source "~/miniconda/etc/profile.d/conda.sh"
+source ~/miniconda/etc/profile.d/conda.sh
 conda init
 ```
 
