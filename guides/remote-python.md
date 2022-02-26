@@ -197,6 +197,22 @@ And if you use `pipenv`,
 pipenv run python [PYTHON_SCRIPT_FILE]
 ```
 
+## Installing CUDA
+
+You can install CUDA with conda but it sometimes doesn't work with deep speed.
+In this case you need to install the CUDA version that matches the PyTorch or TensorFlow version.
+
+You can see available versions with `apt-cache policy cuda`.
+If it says `Unable to locate package cuda` you will have to download the
+[packages from NVIDIA](https://developer.nvidia.com/cuda-toolkit-archive).
+But before you install check the versions with `apt-cache policy cuda`.
+
+Then install the respective versions; for example,
+
+```bash
+sudo apt-get install cuda=11.3.1-1
+```
+
 ## [labml.ai remote](https://github.com/labmlai/labml/tree/master/remote)
 
 This is still a tedious process with many commands. We have created an
