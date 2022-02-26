@@ -32,6 +32,12 @@ Then, install it.
 bash miniconda.sh -b -p "[CONDA_PATH]"
 ```
 
+For example,
+
+```sh
+bash miniconda.sh -b -p ~/miniconda
+```
+
 **`[CONDA_PATH]`** is the path for the conda installation. We use `~/miniconda`. 
 
 Even though we installed miniconda, if you run
@@ -46,6 +52,13 @@ To activate `conda`, you will need to run the following commands and restart you
 
 ```sh
 source "[CONDA_PATH]/etc/profile.d/conda.sh"
+conda init
+```
+
+For example,
+
+```sh
+source "~/miniconda/etc/profile.d/conda.sh"
 conda init
 ```
 
