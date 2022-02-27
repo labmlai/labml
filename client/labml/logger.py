@@ -142,17 +142,17 @@ def log(*args, is_new_line: bool = True, is_reset: bool = True):
 
 
 @overload
-def inspect(items: Dict):
+def inspect(items: Dict, _expand: bool = False, _n: int = 10):
     ...
 
 
 @overload
-def inspect(items: List):
+def inspect(items: List, _expand: bool = False, _n: int = 10):
     ...
 
 
 @overload
-def inspect(*items: any):
+def inspect(*items: any, _expand: bool = False, _n: int = 10):
     ...
 
 
@@ -167,14 +167,21 @@ def inspect(*args, **kwargs):
 
     This has multiple overloads
 
-    .. function:: inspect(items: Dict)
+    .. function:: inspect(items: Dict, _expand: bool = False, _n: int = 10)
         :noindex:
 
-    .. function:: inspect(items: List)
+    .. function:: inspect(items: List, _expand: bool = False, _n: int = 10)
         :noindex:
 
-    .. function:: inspect(*items: any)
+    .. function:: inspect(*items: any, _expand: bool = False, _n: int = 10)
         :noindex:
+
+    .. function:: inspect(**items: any, _expand: bool = False, _n: int = 10)
+        :noindex:
+
+    Keyword Arguments:
+        _expand (bool): whether to expand items
+        _n (int): number of items to show. -1 for all
     """
 
     from labml.internal.logger import logger_singleton as _internal

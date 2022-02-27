@@ -1,8 +1,8 @@
+import collections
 import math
 from typing import TYPE_CHECKING, List, Tuple
 
 from labml.internal.util.colors import StyleCode
-
 from ....logger import Text
 
 if TYPE_CHECKING:
@@ -267,19 +267,29 @@ class Inspect:
     def __init__(self, logger: 'Logger'):
         self.__logger = logger
 
-    def _log_key_value(self, items: List[Tuple[any, any]], is_show_count=True):
+    def _log_key_value(self, items: List[Tuple[any, any]],
+                       is_show_count: bool = True,
+                       is_expand: bool = False,
+                       n_key_values: int = 10):
         max_key_len = 0
         for k, v in items:
             max_key_len = max(max_key_len, len(str(k)))
 
         count = len(items)
-        if count > 12:
-            items = items[:10]
-        for k, v in items:
-            spaces = " " * (max_key_len - len(str(k)))
-            self.__logger.log([(f"{spaces}{k}: ", Text.key)] +
-                              _get_value_line(v))
-        if count > 12:
+        if n_key_values > 0 and count > n_key_values + 1:
+            items = items[:n_key_values]
+
+        if is_expand:
+            for k, v in items:
+                self.__logger.log([(k, Text.heading)])
+                self.__logger.log(_get_value_full(v))
+        else:
+            for k, v in items:
+                spaces = " " * (max_key_len - len(str(k)))
+                self.__logger.log([(f"{spaces}{k}: ", Text.key)] +
+                                  _get_value_line(v))
+
+        if n_key_values > 0 and count > n_key_values + 1:
             self.__logger.log([("...", Text.meta)])
 
         if is_show_count:
@@ -289,23 +299,57 @@ class Inspect:
                 " item(s)"])
 
     def info(self, *args, **kwargs):
+        if '_expand' in kwargs:
+            is_expand = kwargs['_expand']
+            del kwargs['_expand']
+        else:
+            is_expand = False
+
+        if '_n' in kwargs:
+            n_key_values = kwargs['_n']
+            del kwargs['_n']
+        else:
+            n_key_values = 10
+
         if len(args) == 0:
-            self._log_key_value([(k, v) for k, v in kwargs.items()], False)
+            self._log_key_value([(k, v) for k, v in kwargs.items()],
+                                is_show_count=False,
+                                n_key_values=n_key_values,
+                                is_expand=is_expand)
         elif len(args) == 1:
             assert len(kwargs.keys()) == 0
             arg = args[0]
+            if isinstance(arg, collections.UserList):
+                arg = list(*arg)
+
             if isinstance(arg, list) or isinstance(arg, tuple):
-                self._log_key_value([(i, v) for i, v in enumerate(arg)])
-            elif isinstance(arg, dict):
+                self._log_key_value([(i, v) for i, v in enumerate(arg)],
+                                    n_key_values=n_key_values,
+                                    is_expand=is_expand)
+                return
+
+            if isinstance(arg, collections.UserDict):
+                arg = dict(**arg)
+            if isinstance(arg, dict):
                 keys = list(arg.keys())
                 keys.sort(key=lambda x: str(x))
-                self._log_key_value([(k, arg[k]) for k in keys])
-            else:
-                from labml.internal.analytics.models import ValueCollection
-                if isinstance(arg, ValueCollection):
-                    self._log_key_value([(i, v) for i, v in enumerate(arg.keys())])
-                else:
-                    self.__logger.log(_get_value_full(arg))
+                self._log_key_value([(k, arg[k]) for k in keys],
+                                    n_key_values=n_key_values,
+                                    is_expand=is_expand)
+
+                return
+
+            from labml.internal.analytics.models import ValueCollection
+            if isinstance(arg, ValueCollection):
+                self._log_key_value([(i, v) for i, v in enumerate(arg.keys())],
+                                    n_key_values=n_key_values,
+                                    is_expand=is_expand)
+                return
+
+            self.__logger.log(_get_value_full(arg))
         else:
             assert len(kwargs.keys()) == 0
-            self._log_key_value([(i, v) for i, v in enumerate(args)], False)
+            self._log_key_value([(i, v) for i, v in enumerate(args)],
+                                is_show_count=False,
+                                n_key_values=n_key_values,
+                                is_expand=is_expand)
