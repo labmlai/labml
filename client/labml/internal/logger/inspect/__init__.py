@@ -18,6 +18,9 @@ def _format_int(value: int):
 
 
 def _format_float(value: float):
+    if math.isnan(value):
+        return ' ' * 5 + 'nan'
+
     if abs(value) < 1e-9:
         lg = 0
     else:
