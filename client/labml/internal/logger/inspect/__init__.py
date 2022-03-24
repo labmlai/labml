@@ -266,9 +266,9 @@ def _get_value_line(value: any):
     return _shrink(s)
 
 
-class Inspect:
-    def __init__(self, logger: 'Logger'):
-        self.__logger = logger
+class _InspectLogger:
+    def __init__(self):
+        self.parts = []
 
     def _log_key_value(self, items: List[Tuple[any, any]],
                        is_show_count: bool = True,
@@ -284,19 +284,19 @@ class Inspect:
 
         if is_expand:
             for k, v in items:
-                self.__logger.log([(k, Text.heading)])
-                self.__logger.log(_get_value_full(v))
+                self.parts.append([(k, Text.heading)])
+                self.parts.append(_get_value_full(v))
         else:
             for k, v in items:
                 spaces = " " * (max_key_len - len(str(k)))
-                self.__logger.log([(f"{spaces}{k}: ", Text.key)] +
+                self.parts.append([(f"{spaces}{k}: ", Text.key)] +
                                   _get_value_line(v))
 
         if n_key_values > 0 and count > n_key_values + 1:
-            self.__logger.log([("...", Text.meta)])
+            self.parts.append([("...", Text.meta)])
 
         if is_show_count:
-            self.__logger.log([
+            self.parts.append([
                 "Total ",
                 (str(count), Text.meta),
                 " item(s)"])
@@ -349,10 +349,27 @@ class Inspect:
                                     is_expand=is_expand)
                 return
 
-            self.__logger.log(_get_value_full(arg))
+            self.parts.append(_get_value_full(arg))
         else:
             assert len(kwargs.keys()) == 0
             self._log_key_value([(i, v) for i, v in enumerate(args)],
                                 is_show_count=False,
                                 n_key_values=n_key_values,
                                 is_expand=is_expand)
+
+
+class Inspect:
+    def __init__(self, logger: 'Logger'):
+        self.__logger = logger
+
+    def info(self, *args, **kwargs):
+        ins = _InspectLogger()
+        ins.info(*args, **kwargs)
+
+        parts = []
+
+        for ps in ins.parts:
+            parts += ['\n'] + ps
+
+        if parts:
+            self.__logger.log(parts[1:])
