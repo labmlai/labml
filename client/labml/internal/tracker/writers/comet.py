@@ -1,8 +1,8 @@
 from typing import Dict, Any, Optional
 
 import comet_ml
-from labml.internal.configs.processor import ConfigsSaver
 
+from labml.internal.configs.processor import ConfigsSaver
 from . import Writer as WriteBase
 from ..indicators import Indicator
 from ..indicators.numeric import NumericIndicator
@@ -21,6 +21,10 @@ class CometConfigsSaver(ConfigsSaver):
                 values[k] = v['value']
             elif v['computed'] is not None:
                 values[k] = v['computed']
+
+            if k in values and isinstance(values[k], str) and len(values[k]) > 80:
+                values[k] = f'{values[k][:80]}...'
+
         self.run.log_parameters(values)
 
 
