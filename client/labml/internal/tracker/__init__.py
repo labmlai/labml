@@ -55,6 +55,9 @@ class Tracker:
     def add_writer(self, writer: Writer):
         self.__writers.append(writer)
 
+    def remove_writer(self, writer: Writer):
+        self.__writers.remove(writer)
+
     def reset_writers(self):
         self.__writers = []
         self.is_indicators_updated = True

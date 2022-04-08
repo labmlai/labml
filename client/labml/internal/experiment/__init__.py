@@ -479,7 +479,14 @@ class Experiment:
                         self.configs_processor.add_saver(self.wandb.get_configs_saver())
 
                 if self.comet is not None:
-                    self.comet.init(self.run.name)
+                    try:
+                        self.comet.init(self.run.name)
+                    except ValueError as e:
+                        logger.log(str(e), Text.danger)
+                        tracker().remove_writer(self.comet)
+                        self.comet = None
+
+                if self.comet is not None:
                     if self.configs_processor is not None:
                         self.configs_processor.add_saver(self.comet.get_configs_saver())
 
