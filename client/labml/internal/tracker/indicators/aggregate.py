@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, Union, Tuple, Dict
+from typing import TYPE_CHECKING, Union, Tuple, Dict, Optional
 
 from labml.utils.pytorch import store_model_indicators, store_optimizer_indicators
-
 from . import Indicator
 
 if TYPE_CHECKING:
@@ -10,8 +9,8 @@ if TYPE_CHECKING:
 
 
 class PyTorchModule(Indicator):
-    def __init__(self, name: str, is_print=False):
-        super().__init__(name=name, is_print=is_print)
+    def __init__(self, name: str, is_print: bool = False, options: Optional[Dict] = None):
+        super().__init__(name=name, is_print=is_print, options=options)
 
     def is_empty(self) -> bool:
         return True
@@ -23,12 +22,12 @@ class PyTorchModule(Indicator):
         return None
 
     def copy(self, key: str):
-        return PyTorchModule(key, is_print=self.is_print)
+        return PyTorchModule(key, is_print=self.is_print, options=self.options)
 
 
 class PyTorchOptimizer(Indicator):
-    def __init__(self, name: str, is_print=False):
-        super().__init__(name=name, is_print=is_print)
+    def __init__(self, name: str, is_print: bool = False, options: Optional[Dict] = None):
+        super().__init__(name=name, is_print=is_print, options=options)
 
     def is_empty(self) -> bool:
         return True
@@ -43,4 +42,4 @@ class PyTorchOptimizer(Indicator):
         return None
 
     def copy(self, key: str):
-        return PyTorchModule(key, is_print=self.is_print)
+        return PyTorchModule(key, is_print=self.is_print, options=self.options)

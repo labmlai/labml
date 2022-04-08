@@ -13,8 +13,8 @@ from . import Indicator
 
 
 class Artifact(Indicator, ABC):
-    def __init__(self, *, name: str, is_print: bool):
-        super().__init__(name=name, is_print=is_print)
+    def __init__(self, *, name: str, is_print: bool, options: Optional[Dict]):
+        super().__init__(name=name, is_print=is_print, options=options)
 
     def _collect_value(self, key: str, value):
         raise NotImplementedError()
@@ -52,8 +52,8 @@ class _Collection(Artifact, ABC):
     _last_add_step: int
     _values: Dict[str, Any]
 
-    def __init__(self, name: str, is_print: bool = False, density: Optional[float] = None):
-        super().__init__(name=name, is_print=is_print)
+    def __init__(self, name: str, is_print: bool, density: Optional[float], options: Optional[Dict]):
+        super().__init__(name=name, is_print=is_print, options=options)
         self._values = OrderedDict()
         self._density = density
         self._last_add_step = -1
@@ -84,8 +84,8 @@ class _Collection(Artifact, ABC):
 
 
 class Tensor(_Collection):
-    def __init__(self, name: str, is_once: bool = False):
-        super().__init__(name=name, is_print=False)
+    def __init__(self, name: str, is_once: bool = False, options: Optional[Dict] = None):
+        super().__init__(name=name, is_print=False, density=None, options=options)
         self.is_once = is_once
 
     def to_dict(self) -> Dict:
@@ -98,7 +98,7 @@ class Tensor(_Collection):
         return None
 
     def copy(self, key: str):
-        return Tensor(key, is_once=self.is_once)
+        return Tensor(key, is_once=self.is_once, options=self.options)
 
     def _collect_value(self, key: str, value):
         self._values[key] = to_numpy(value)
@@ -150,7 +150,7 @@ class Image(_Collection):
         plt.show()
 
     def copy(self, key: str):
-        return Image(key, is_print=self.is_print, density=self._density)
+        return Image(key, is_print=self.is_print, density=self._density, options=self.options)
 
 
 class Text(_Collection):
@@ -163,7 +163,7 @@ class Text(_Collection):
             logger.log(t, TextStyle.value)
 
     def copy(self, key: str):
-        return Text(key, is_print=self.is_print)
+        return Text(key, is_print=self.is_print, density=self._density, options=self.options)
 
     def equals(self, value: any) -> bool:
         if not isinstance(value, Text):
@@ -172,8 +172,8 @@ class Text(_Collection):
 
 
 class IndexedText(_Collection):
-    def __init__(self, name: str, title: Optional[str] = None, is_print=False):
-        super().__init__(name=name, is_print=is_print)
+    def __init__(self, name: str, title: Optional[str] = None, is_print: bool = False, options: Optional[Dict] = None):
+        super().__init__(name=name, is_print=is_print, density=None, options=options)
         self.title = title
 
     @_Collection.is_indexed.getter
@@ -187,7 +187,7 @@ class IndexedText(_Collection):
         return self._values[key]
 
     def copy(self, key: str):
-        return IndexedText(key, title=self.title, is_print=self.is_print)
+        return IndexedText(key, title=self.title, is_print=self.is_print, options=self.options)
 
     def equals(self, value: any) -> bool:
         if not super().equals(value):

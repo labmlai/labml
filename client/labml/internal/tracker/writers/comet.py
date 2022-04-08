@@ -54,6 +54,9 @@ class Writer(WriteBase):
         if indicator.is_empty():
             return
 
+        if not indicator.options.get('comet', True):
+            return
+
         if isinstance(indicator, NumericIndicator):
             self.run.log_metrics({self._parse_key(indicator.mean_key): indicator.get_mean()},
                                  step=global_step)

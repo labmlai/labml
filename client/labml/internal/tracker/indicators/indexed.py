@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Optional, Dict
 
 import numpy as np
 
@@ -6,8 +7,8 @@ from .numeric import NumericIndicator
 
 
 class IndexedIndicator(NumericIndicator, ABC):
-    def __init__(self, name: str):
-        super().__init__(name=name, is_print=False)
+    def __init__(self, name: str,  options: Optional[Dict] = None):
+        super().__init__(name=name, is_print=False, options=options)
         self._values = []
         self._indexes = []
 
@@ -58,4 +59,4 @@ class IndexedScalar(IndexedIndicator):
         return None
 
     def copy(self, key: str):
-        return IndexedScalar(key)
+        return IndexedScalar(key, options=self.options)

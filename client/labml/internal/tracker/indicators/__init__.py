@@ -1,10 +1,16 @@
-from typing import Dict
+import copy
+from typing import Dict, Optional
 
 
 class Indicator:
-    def __init__(self, *, name: str, is_print: bool):
+    def __init__(self, *, name: str, is_print: bool, options: Optional[Dict]):
         self.is_print = is_print
         self.name = name
+        if options is None:
+            options = {}
+        else:
+            options = copy.deepcopy(options)
+        self.options = options
 
     def clear(self):
         pass

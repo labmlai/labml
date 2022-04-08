@@ -1,11 +1,11 @@
 from abc import ABC
 from collections import deque
-from typing import Dict
+from typing import Dict, Optional
 
 import numpy as np
 
-from . import Indicator
 from labml.internal.util.values import to_numpy
+from . import Indicator
 
 
 class NumericIndicator(Indicator, ABC):
@@ -21,8 +21,8 @@ class NumericIndicator(Indicator, ABC):
 
 
 class Queue(NumericIndicator):
-    def __init__(self, name: str, queue_size=10, is_print=False):
-        super().__init__(name=name, is_print=is_print)
+    def __init__(self, name: str, queue_size=10, is_print=False, options: Optional[Dict] = None):
+        super().__init__(name=name, is_print=is_print, options=options)
         self.queue_size = queue_size
         self._values = deque(maxlen=queue_size)
         self._is_empty = True
@@ -53,7 +53,7 @@ class Queue(NumericIndicator):
         return f'{self.name}.mean'
 
     def copy(self, key: str):
-        return Queue(key, queue_size=self.queue_size, is_print=self.is_print)
+        return Queue(key, queue_size=self.queue_size, is_print=self.is_print, options=self.options)
 
     def equals(self, value: any) -> bool:
         if not super().equals(value):
@@ -62,8 +62,8 @@ class Queue(NumericIndicator):
 
 
 class _Collection(NumericIndicator, ABC):
-    def __init__(self, name: str, is_print: bool):
-        super().__init__(name=name, is_print=is_print)
+    def __init__(self, name: str, is_print: bool, options: Optional[Dict] = None):
+        super().__init__(name=name, is_print=is_print, options=options)
         self._values = []
 
     def _merge(self):
@@ -97,7 +97,7 @@ class _Collection(NumericIndicator, ABC):
 
 class Histogram(_Collection):
     def copy(self, key: str):
-        return Histogram(key, is_print=self.is_print)
+        return Histogram(key, is_print=self.is_print, options=self.options)
 
 
 class Scalar(_Collection):
@@ -105,7 +105,7 @@ class Scalar(_Collection):
         return None
 
     def copy(self, key: str):
-        return Scalar(key, is_print=self.is_print)
+        return Scalar(key, is_print=self.is_print, options=self.options)
 
     @property
     def mean_key(self):

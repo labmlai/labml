@@ -28,7 +28,8 @@ def find_best_pattern(key: str, patterns: Iterable[str]):
                 if c not in {'*', '?'}:
                     s += 1
 
-            if s > max_score:
+            # Find the last one
+            if s >= max_score:
                 max_score = s
                 best = p
 
