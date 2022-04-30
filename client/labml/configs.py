@@ -158,8 +158,6 @@ def calculate(name: any, *args: any):
             option_name = arg
         elif isinstance(arg, list):
             pass_params = arg
-        elif type(arg) == type:
-            func = arg
         else:
             func = arg
 
