@@ -153,7 +153,7 @@ labml monitor
 
 #### [Setting up a local Ubuntu workstation for deep learning](https://github.com/labmlai/labml/blob/master/guides/local-ubuntu.md)
 
-#### [Setting up a local cloud computer for deep learning](https://github.com/labmlai/labml/blob/master/guides/remote-python.md)
+#### [Setting up a cloud computer for deep learning](https://github.com/labmlai/labml/blob/master/guides/remote-python.md)
 
 ## Citing
 
