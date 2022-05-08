@@ -260,7 +260,7 @@ class Experiment:
                               (str(lab_singleton().path), Text.value)])
             self.run.commit = 'unknown'
             self.run.commit_message = ''
-            self.run.is_dirty = True
+            self.run.is_dirty = False
             self.run.diff = ''
 
         self.checkpoint_saver = CheckpointSaver(self.run.checkpoint_path)
