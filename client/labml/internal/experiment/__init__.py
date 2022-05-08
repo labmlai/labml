@@ -254,7 +254,7 @@ class Experiment:
             self.run.commit_message = repo.head.commit.message.strip()
             self.run.is_dirty = repo.is_dirty()
             self.run.diff = repo.git.diff()
-        except git.InvalidGitRepositoryError:
+        except (git.InvalidGitRepositoryError, ValueError):
             if not is_colab() and not is_kaggle():
                 labml_notice(["Not a valid git repository: ",
                               (str(lab_singleton().path), Text.value)])
