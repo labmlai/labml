@@ -37,6 +37,7 @@ class Writer(WriteBase):
 
     def init(self, name: str):
         self.run = self.comet.Experiment(project_name=name)
+        self.run.log_other('Created from', 'LabML')
 
     @staticmethod
     def _parse_key(key: str):
