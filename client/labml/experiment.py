@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Optional, Set, Dict, List, TYPE_CHECKING, overload, Tuple
 
 import numpy as np
+
 from labml.configs import BaseConfigs
 from labml.internal.experiment import \
     create_experiment as _create_experiment, \
@@ -68,6 +69,10 @@ def create(*,
         from labml.internal.util.tensorboard_writer import has_tensorboard
         if has_tensorboard():
             writers.add('tensorboard')
+
+    if 'labml' in writers:
+        writers.remove('labml')
+        writers.add('web_api')
 
     for w in writers:
         if w not in AVAILABLE_WRITERS:
