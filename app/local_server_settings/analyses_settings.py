@@ -10,6 +10,7 @@ from .analyses.computers.memory import MemoryAnalysis
 from .analyses.computers.network import NetworkAnalysis
 from .analyses.computers.disk import DiskAnalysis
 from .analyses.computers.process import ProcessAnalysis
+from .analyses.computers.battery import BatteryAnalysis
 
 experiment_analyses = [GradientsAnalysis,
                        OutputsAnalysis,
@@ -22,5 +23,6 @@ computer_analyses = [CPUAnalysis,
                      MemoryAnalysis,
                      NetworkAnalysis,
                      DiskAnalysis,
+                     BatteryAnalysis,
                      ProcessAnalysis]
 
