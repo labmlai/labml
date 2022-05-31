@@ -39,7 +39,7 @@ def check_labml_token_permission(func) -> functools.wraps:
 
 
 def _login_not_required():
-    at = app_token.get_or_create('local')
+    at = app_token.get_or_create(token_id='local', is_local_user=True)
     if not at.user:
         u = user.get_or_create_user(user.AuthOInfo(
             **{k: '' for k in ('name', 'email', 'sub', 'email_verified', 'picture')}))

@@ -20,24 +20,31 @@ class AppToken(Model['Session']):
     token_id: str
     expiration: float
     user: Key['user.User']
+    is_local_user: bool
 
     @classmethod
     def defaults(cls):
         return dict(token_id='',
                     expiration='',
-                    user=None
+                    user=None,
+                    is_local_user=False,
                     )
 
     @property
     def is_auth(self) -> bool:
-        return self.user is not None and self.expiration > time.time()
+        if self.user is None:
+            return False
+        if self.is_local_user:
+            return True
+
+        return self.expiration > time.time()
 
 
 class AppTokenIndex(Index['AppToken']):
     pass
 
 
-def get_or_create(token_id: str) -> AppToken:
+def get_or_create(token_id: str, is_local_user: bool = False) -> AppToken:
     if not token_id:
         token_id = gen_token_id()
 
@@ -45,7 +52,8 @@ def get_or_create(token_id: str) -> AppToken:
 
     if not app_token_key:
         app_token = AppToken(token_id=token_id,
-                             expiration=gen_expiration()
+                             expiration=gen_expiration(),
+                             is_local_user=is_local_user,
                              )
         app_token.save()
         AppTokenIndex.set(app_token.token_id, app_token.key)
