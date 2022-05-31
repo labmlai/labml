@@ -1,6 +1,6 @@
 import subprocess
 
-from settings import PORT
+from labml_app.settings import PORT
 
 
 def start_server():
