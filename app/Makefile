@@ -51,13 +51,24 @@ watch-ui: compile ## Compile and Watch JS & CSS
 
 build-ui: compile ## build production ui
 
+build-ui-package: ## build production ui for the package
+	rm -rf static
+	rm -rf ui/src/env.ts
+	cp local_server_settings/env.ts ui/src/
+	mkdir -p static/js
+	cp ui/src/index.html static/index.html
+	cp ui/src/site.webmanifest static/site.webmanifest
+	cp ui/images/favicon.ico static/favicon.ico
+	cp -r ui/images static/
+	cd ui && npm run build
+
 clean: clean-pycache ## Cleanup builds
 	rm -rf server/labml_app/static
 	rm -rf server/build
 	rm -rf server/dist
 	rm -rf static
 
-package: build-ui clean-pycache ## Build PIPy Package
+package: build-ui-package clean-pycache ## Build PIPy Package
 	rm -rf server/labml_app/static
 	cp -r static/ server/labml_app/static
 	rm -f server/labml_app/analyses_settings.py

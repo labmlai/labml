@@ -1,5 +1,5 @@
-SERVER_URL = 'http://localhost:5000'
-WEB_URL = 'http://localhost:5000'
+SERVER_URL = 'http://localhost:5005'
+WEB_URL = 'http://localhost:5005'
 SLACK_BOT_TOKEN = ''
 SLACK_CHANNEL = ''
 AUTH0_DOMAIN = ''
