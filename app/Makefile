@@ -9,7 +9,7 @@ setup: ## install server and ui dependencies
 	cd server && pipenv install --ignore-pipfile
 
 server-dev: ## start and watch server
-	cd server &&  pipenv run uvicorn labml_app.flask_app:app --reload --host 0.0.0.0 --port 5000
+	cd server &&  pipenv run uvicorn labml_app.flask_app:app --reload --host 0.0.0.0 --port 5005
 
 server-prod: ## compile and start server in prod
 	# pkill gunicorn
@@ -74,7 +74,7 @@ package: build-ui-package clean-pycache ## Build PIPy Package
 	rm -f server/labml_app/analyses_settings.py
 	rm -f server/labml_app/block_uuids.py
 	rm -f server/labml_app/settings.py
-	cp local_server_settings/server*.py server/labml_app/
+	cp local_server_settings/server/*.py server/labml_app/
 	cd server && python setup.py sdist bdist_wheel
 
 check-package:  ## List contents of PIPy Package

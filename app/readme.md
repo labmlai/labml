@@ -42,13 +42,13 @@ Start the server
 labml app-server
 ```
 
-Set the web api url to `http://localhost:5000/api/v1/track?` when you run experiments.
+Set the web api url to `http://localhost:5005/api/v1/track?` when you run experiments.
 You can also [set this on `.labml.yaml`](https://github.com/labmlai/labml/blob/master/guides/labml_yaml_file.md).
 
 ```python
 from labml import tracker, experiment
 
-with experiment.record(name='sample', token='http://localhost:5000/api/v1/track?'):
+with experiment.record(name='sample', token='http://localhost:5005/api/v1/track?'):
     for i in range(50):
         loss, accuracy = train()
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})
