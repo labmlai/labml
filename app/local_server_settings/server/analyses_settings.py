@@ -3,6 +3,7 @@ from .analyses.experiments.gradients import GradientsAnalysis
 from .analyses.experiments.metrics import MetricsAnalysis
 from .analyses.experiments.outputs import OutputsAnalysis
 from .analyses.experiments.hyperparameters import HyperParamsAnalysis
+from .analyses.experiments import comparison
 
 from .analyses.computers.cpu import CPUAnalysis
 from .analyses.computers.gpu import GPUAnalysis
