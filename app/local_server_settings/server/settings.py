@@ -1,5 +1,6 @@
-SERVER_URL = 'http://localhost:5005'
-WEB_URL = 'http://localhost:5005'
+PORT = '5005'
+SERVER_URL = f'http://localhost:{PORT}'
+WEB_URL = f'http://localhost:{PORT}'
 SLACK_BOT_TOKEN = ''
 SLACK_CHANNEL = ''
 AUTH0_DOMAIN = ''
