@@ -70,9 +70,7 @@ class Event:
         return meta
 
     def track(self, request: Request, event: str, data: Union[NamedTuple, Dict], identifier: str = '') -> None:
-        if not settings.ANALYTICS_TO_SERVER:
-            return
-        if isinstance(data, NamedTuple):
+        if isinstance(data, type(NamedTuple)):
             data = dict(data)
 
         user = auth.get_auth_user(request)
