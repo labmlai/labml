@@ -69,9 +69,8 @@ class Event:
 
         return meta
 
-    def track(self, request: Request, event: str, data: Union[NamedTuple, Dict], identifier: str = '') -> None:
-        if isinstance(data, type(NamedTuple)):
-            data = dict(data)
+    def track(self, request: Request, event: str, data: Dict, identifier: str = '') -> None:
+        assert isinstance(data, dict)
 
         user = auth.get_auth_user(request)
         if user:
