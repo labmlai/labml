@@ -60,6 +60,10 @@ clean: clean-pycache ## Cleanup builds
 package: build-ui clean-pycache ## Build PIPy Package
 	rm -rf server/labml_app/static
 	cp -r static/ server/labml_app/static
+	rm -f server/labml_app/analyses_settings.py
+	rm -f server/labml_app/block_uuids.py
+	rm -f server/labml_app/settings.py
+	cp server_static/*.py server/labml_app/
 	cd server && python setup.py sdist bdist_wheel
 
 check-package:  ## List contents of PIPy Package
