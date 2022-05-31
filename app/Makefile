@@ -63,7 +63,7 @@ package: build-ui clean-pycache ## Build PIPy Package
 	rm -f server/labml_app/analyses_settings.py
 	rm -f server/labml_app/block_uuids.py
 	rm -f server/labml_app/settings.py
-	cp server_static/*.py server/labml_app/
+	cp local_server_settings/*.py server/labml_app/
 	cd server && python setup.py sdist bdist_wheel
 
 check-package:  ## List contents of PIPy Package
