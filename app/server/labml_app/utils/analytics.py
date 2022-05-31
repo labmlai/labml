@@ -70,6 +70,7 @@ class Event:
         return meta
 
     def track(self, request: Request, event: str, data: Dict, identifier: str = '') -> None:
+
         assert isinstance(data, dict)
 
         user = auth.get_auth_user(request)
