@@ -54,7 +54,7 @@ build-ui: compile ## build production ui
 build-ui-package: ## build production ui for the package
 	rm -rf static
 	rm -rf ui/src/env.ts
-	cp local_server_settings/env.ts ui/src/
+	cp local_server_settings/ui/env.ts ui/src/
 	mkdir -p static/js
 	cp ui/src/index.html static/index.html
 	cp ui/src/site.webmanifest static/site.webmanifest
@@ -74,7 +74,7 @@ package: build-ui-package clean-pycache ## Build PIPy Package
 	rm -f server/labml_app/analyses_settings.py
 	rm -f server/labml_app/block_uuids.py
 	rm -f server/labml_app/settings.py
-	cp local_server_settings/*.py server/labml_app/
+	cp local_server_settings/server*.py server/labml_app/
 	cd server && python setup.py sdist bdist_wheel
 
 check-package:  ## List contents of PIPy Package
