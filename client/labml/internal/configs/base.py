@@ -122,6 +122,7 @@ class Configs:
         self.__cached = {}
         self.__cached_configs = {}
 
+        self.__ancestry = []  # List of parent keys
         classes = _get_base_classes(type(self))
 
         self.__types = {}
@@ -133,7 +134,7 @@ class Configs:
         self.__meta = {}
         self.__aggregates = {}
         self.__aggregates_options = {}
-        self.__secondary_values = {}
+        self.__secondary_values = {}  # Values set with a dictionary
 
         self.__order = {}
         self.__n_calculated = 0
@@ -318,7 +319,9 @@ class Configs:
 
         if item in self.__options and value in self.__options[item]:
             func = self.__options[item][value]
-            with monit.section(f'Prepare {item}', is_not_in_loop=True):
+            name = '.'.join(self.__ancestry + [item])
+
+            with monit.section(f'Prepare {name}', is_not_in_loop=True):
                 calc_value = func(self)
 
             if isinstance(func.config_names, list) and len(func.config_names) > 1:
@@ -334,9 +337,13 @@ class Configs:
         else:
             self.__set_calculated_value(item, value)
 
+    def _set_ancestry(self, ancestry: List[str]):
+        self.__ancestry = ancestry
+
     def __set_calculated_value(self, item: str, value: Any):
         if isinstance(value, Configs):
             self.__cached_configs[item] = value
+            value._set_ancestry(self.__ancestry + [item])
             value._reset_explicitly_specified()
             if item in self.__secondary_values:
                 s_values = self.__secondary_values[item]
