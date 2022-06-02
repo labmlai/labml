@@ -109,6 +109,7 @@ class Loop:
                     is_timed: bool,
                     is_partial: bool,
                     total_steps: float,
+                    is_track: bool,
                     parents: List[str]):
         key = '.'.join(parents + [name])
         if key not in self.__looping_sections:
@@ -116,7 +117,7 @@ class Loop:
                                                           name=name,
                                                           is_silent=is_silent,
                                                           is_timed=is_timed,
-                                                          is_track=self._is_track,
+                                                          is_track=is_track,
                                                           is_partial=is_partial,
                                                           total_steps=total_steps,
                                                           parents=parents)

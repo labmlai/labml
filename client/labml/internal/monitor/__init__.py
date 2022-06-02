@@ -44,6 +44,7 @@ class Monitor:
                 is_silent: bool,
                 is_children_silent: bool,
                 is_timed: bool,
+                is_track: bool,
                 section: Optional[Section]):
         return Iterator(logger=self,
                         name=name,
@@ -53,12 +54,14 @@ class Monitor:
                         total_steps=total_steps,
                         is_children_silent=is_children_silent,
                         is_enumerate=False,
+                        is_track=is_track,
                         section=section)
 
     def enum(self, name, iterable: typing.Sized, *,
              is_silent: bool,
              is_children_silent: bool,
              is_timed: bool,
+             is_track: bool,
              section: Optional[Section]):
         return Iterator(logger=self,
                         name=name,
@@ -68,6 +71,7 @@ class Monitor:
                         total_steps=None,
                         is_children_silent=is_children_silent,
                         is_enumerate=True,
+                        is_track=is_track,
                         section=section)
 
     def section(self, name, *,
@@ -76,7 +80,8 @@ class Monitor:
                 is_partial: bool,
                 is_new_line: bool,
                 is_children_silent: bool,
-                total_steps: float) -> Section:
+                total_steps: float,
+                is_track: bool) -> Section:
         if self.__is_looping:
             if len(self.__sections) != 0:
                 is_silent = True
@@ -86,6 +91,7 @@ class Monitor:
                                               is_timed=is_timed,
                                               is_partial=is_partial,
                                               total_steps=total_steps,
+                                              is_track=is_track,
                                               parents=[s.name for s in self.__sections])
             self.__sections.append(section)
         else:
@@ -101,7 +107,8 @@ class Monitor:
                                                 is_new_line=is_new_line,
                                                 is_children_silent=is_children_silent,
                                                 total_steps=total_steps,
-                                                level=len(self.__sections)))
+                                                level=len(self.__sections),
+                                                is_track=is_track))
 
         return self.__sections[-1]
 
