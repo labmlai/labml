@@ -84,6 +84,7 @@ class Mix:
                                                                total_steps=it.size,
                                                                is_children_silent=False,
                                                                is_new_line=True,
+                                                               is_not_in_loop=False,
                                                                is_track=False)
                             self.section.__enter__()
                         self.current_iterator = it

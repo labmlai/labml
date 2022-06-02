@@ -45,6 +45,7 @@ class Monitor:
                 is_children_silent: bool,
                 is_timed: bool,
                 is_track: bool,
+                is_not_in_loop: bool,
                 section: Optional[Section]):
         return Iterator(logger=self,
                         name=name,
@@ -55,6 +56,7 @@ class Monitor:
                         is_children_silent=is_children_silent,
                         is_enumerate=False,
                         is_track=is_track,
+                        is_not_in_loop=is_not_in_loop,
                         section=section)
 
     def enum(self, name, iterable: typing.Sized, *,
@@ -62,6 +64,7 @@ class Monitor:
              is_children_silent: bool,
              is_timed: bool,
              is_track: bool,
+             is_not_in_loop: bool,
              section: Optional[Section]):
         return Iterator(logger=self,
                         name=name,
@@ -72,6 +75,7 @@ class Monitor:
                         is_children_silent=is_children_silent,
                         is_enumerate=True,
                         is_track=is_track,
+                        is_not_in_loop=is_not_in_loop,
                         section=section)
 
     def section(self, name, *,
@@ -80,9 +84,10 @@ class Monitor:
                 is_partial: bool,
                 is_new_line: bool,
                 is_children_silent: bool,
+                is_not_in_loop: bool,
                 total_steps: float,
                 is_track: bool) -> Section:
-        if self.__is_looping:
+        if self.__is_looping and not is_not_in_loop:
             if len(self.__sections) != 0:
                 is_silent = True
 
@@ -99,6 +104,7 @@ class Monitor:
                 if self.__sections[-1].is_silent or self.__sections[-1].is_children_silent:
                     is_silent = True
                     is_children_silent = True
+            level = len([s for s in self.__sections if isinstance(s, OuterSection)])
             self.__sections.append(OuterSection(monitor=self,
                                                 name=name,
                                                 is_silent=is_silent,
@@ -107,7 +113,7 @@ class Monitor:
                                                 is_new_line=is_new_line,
                                                 is_children_silent=is_children_silent,
                                                 total_steps=total_steps,
-                                                level=len(self.__sections),
+                                                level=level,
                                                 is_track=is_track))
 
         return self.__sections[-1]
@@ -183,7 +189,8 @@ class Monitor:
             logger().log(parts, is_new_line=False)
 
     def __log_line(self):
-        if self.__is_looping:
+        if (self.__is_looping and
+                not (self.__sections and isinstance(self.__sections[-1], OuterSection))):
             self.__log_looping_line()
             return
 

@@ -318,7 +318,7 @@ class Configs:
 
         if item in self.__options and value in self.__options[item]:
             func = self.__options[item][value]
-            with monit.section(f'Prepare {item}'):
+            with monit.section(f'Prepare {item}', is_not_in_loop=True):
                 calc_value = func(self)
 
             if isinstance(func.config_names, list) and len(func.config_names) > 1:

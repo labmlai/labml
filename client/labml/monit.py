@@ -16,6 +16,7 @@ def func(name, *,
          is_new_line: bool = True,
          is_children_silent: bool = False,
          is_track: bool = False,
+         is_not_in_loop: bool = False,
          total_steps: float = 1.0):
     """
     This is similar to :func:`section` but can be used as a decorator.
@@ -47,6 +48,7 @@ def func(name, *,
                          is_new_line=is_new_line,
                          is_children_silent=is_children_silent,
                          is_track=is_track,
+                         is_not_in_loop=is_not_in_loop,
                          total_steps=total_steps):
                 return f(*args, **kwargs)
 
@@ -61,6 +63,7 @@ def iterate(name, iterable: Union[Iterable, Sized, int],
             is_children_silent: bool = False,
             is_timed: bool = True,
             is_track: bool = False,
+            is_not_in_loop: bool = False,
             context=None):
     """
     This creates a monitored iterator.
@@ -85,6 +88,7 @@ def iterate(name, iterable: Union[Iterable, Sized, int],
                                is_children_silent=is_children_silent,
                                is_timed=is_timed,
                                is_track=is_track,
+                               is_not_in_loop=is_not_in_loop,
                                section=context)
 
 
@@ -93,6 +97,7 @@ def enum(name, iterable: Sized, *,
          is_children_silent: bool = False,
          is_timed: bool = True,
          is_track: bool = False,
+         is_not_in_loop: bool = False,
          context=None):
     """
     This creates a monitored enumerator.
@@ -115,6 +120,7 @@ def enum(name, iterable: Sized, *,
                             is_children_silent=is_children_silent,
                             is_timed=is_timed,
                             is_track=is_track,
+                            is_not_in_loop=is_not_in_loop,
                             section=context)
 
 
@@ -125,6 +131,7 @@ def section(name, *,
             is_new_line: bool = True,
             is_children_silent: bool = False,
             is_track: bool = False,
+            is_not_in_loop: bool = False,
             total_steps: float = 1.0):
     """
     This creates a monitored ``with`` block.
@@ -151,6 +158,7 @@ def section(name, *,
                                total_steps=total_steps,
                                is_new_line=is_new_line,
                                is_track=is_track,
+                               is_not_in_loop=is_not_in_loop,
                                is_children_silent=is_children_silent)
 
 
