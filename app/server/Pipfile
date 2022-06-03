@@ -16,8 +16,11 @@ redis = "*"
 mixpanel = "*"
 slack-sdk = "*"
 fastapi = "*"
+pydantic = "*"
 uvicorn = "*"
 aiofiles = "*"
+argon2-cffi = "*"
+libgravatar = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.9"

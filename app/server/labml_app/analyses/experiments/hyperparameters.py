@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Union
+from typing import Dict, Any, List, Union, Optional
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -13,6 +13,7 @@ from ..analysis import Analysis
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection
 from .. import preferences
+from ...db import user
 
 
 class HyperParamPreferences(preferences.Preferences):
@@ -288,8 +289,8 @@ async def set_hyper_params_preferences(request: Request, run_uuid: str) -> Any:
 
 
 @Analysis.route('POST', 'hyper_params/{run_uuid}', True)
-async def set_hyper_params(request: Request, run_uuid: str) -> Any:
-    p = auth.get_auth_user(request).default_project
+async def set_hyper_params(request: Request, run_uuid: str, token: Optional[str] = None) -> Any:
+    p = user.get_by_session_token(token).default_project
     if not p.is_project_run(run_uuid):
         return {'errors': []}
 

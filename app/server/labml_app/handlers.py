@@ -1,24 +1,26 @@
-import sys
-import inspect
 import asyncio
-from typing import Callable, Dict, Any
+import inspect
+import sys
+from typing import Callable, Dict, Any, Optional
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from .logger import logger
-from . import settings
-from . import auth
-from .db import run
-from .db import computer
-from .db import session
-from .db import app_token
-from .db import user
-from .db import project
-from .db import blocked_uuids
-from .db import job
-from . import utils
 from . import analyses
+from . import auth
+from . import settings
+from . import utils
+from .auth.auth_models import SignInModel, SignUpModel
+from .db import app_token
+from .db import blocked_uuids
+from .db import computer
+from .db import job
+from .db import project
+from .db import run
+from .db import session
+from .db import user
+from .logger import logger
+from .utils import gen_token
 
 try:
     import requests
@@ -26,6 +28,8 @@ except ImportError:
     pass
 
 EndPointRes = Dict[str, Any]
+UNKNOWN_ERROR_MESSAGE = 'Something went wrong. Please try again later. If the problem persists, please reach us via ' \
+                        'contact@labml.ai'
 
 
 def _is_new_run_added(request: Request) -> bool:
@@ -44,35 +48,42 @@ def _get_user_profile(token: str):
 
 
 @utils.analytics.AnalyticsEvent.time_this(None)
-async def sign_in(request: Request) -> EndPointRes:
-    json = await request.json()
-    if 'token' in json:
-        user_profile = _get_user_profile(json['token'])
+async def sign_in(request: Request, data: SignInModel):
+    authenticated_token = user.authenticate(data.email, data.password)
+    if authenticated_token is None:
+        return JSONResponse({'is_successful': False, 'error': 'The email or password is incorrect'}, status_code=401)
 
-        u = user.get_or_create_user(user.AuthOInfo(
-            **{k: user_profile.get(k, '') for k in ('name', 'email', 'sub', 'email_verified', 'picture')}))
-    else:
-        u = user.get_or_create_user(user.AuthOInfo(**json))
-
+    u = user.get_user_secure(authenticated_token)
     utils.analytics.AnalyticsEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
 
-    token_id = ''  # generate different token for every login
-    at = app_token.get_or_create(token_id)
-
-    at.user = u.key
-    at.save()
-
-    return {'is_successful': True, 'app_token': at.token_id}
+    return JSONResponse({'is_successful': True, 'token': authenticated_token}, status_code=200)
 
 
 @utils.analytics.AnalyticsEvent.time_this(None)
-async def sign_out(request: Request) -> EndPointRes:
-    token_id = request.headers.get('Authorization', '')
-    at = app_token.get_or_create(token_id)
+async def sign_up(request: Request, data: SignUpModel):
+    u = user.get_or_create_user(gen_token())
+    if not u:
+        return JSONResponse({'is_successful': False, 'error': 'Bots are not allowed to sign up'}, status_code=401)
+    result = u.upgrade_user(data.email, data.password, data.handle)
+    if result == -1:
+        return JSONResponse({'is_successful': False, 'error': 'The account is already created'}, status_code=405)
+    elif result == -2:
+        return JSONResponse({'is_successful': False, 'error': 'The email is already in use'}, status_code=422)
+    elif result == -4:
+        return JSONResponse({'is_successful': False, 'error': 'The handle is already in use'}, status_code=422)
+    elif result != 0:
+        return JSONResponse({'is_successful': False, 'error': UNKNOWN_ERROR_MESSAGE}, status_code=500)
 
-    app_token.delete(at)
+    authenticated_token = user.authenticate(data.email, data.password)
+    utils.analytics.AnalyticsEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
 
-    return {'is_successful': True}
+    return {'is_successful': True, 'token': authenticated_token}
+
+
+@auth.login_required
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def sign_out(request: Request, token: Optional[str] = None) -> EndPointRes:
+    return {'is_successful': user.invalidate_token(token), 'token': ''}
 
 
 @utils.analytics.AnalyticsEvent.time_this(0.4)
@@ -239,15 +250,12 @@ async def update_session(request: Request) -> EndPointRes:
     return res
 
 
+@auth.login_required
 @utils.analytics.AnalyticsEvent.time_this(None)
-async def claim_run(request: Request, run_uuid: str) -> EndPointRes:
+async def claim_run(request: Request, run_uuid: str, token: Optional[str] = None) -> EndPointRes:
     r = run.get(run_uuid)
-    at = auth.get_app_token(request)
+    u = user.get_by_session_token(token)
 
-    if not at.user:
-        return {'is_successful': False}
-
-    u = at.user.load()
     default_project = u.default_project
 
     if r.run_uuid not in default_project.runs:
@@ -267,15 +275,12 @@ async def claim_run(request: Request, run_uuid: str) -> EndPointRes:
     return {'is_successful': True}
 
 
+@auth.login_required
 @utils.analytics.AnalyticsEvent.time_this(None)
-async def claim_session(request: Request, session_uuid: str) -> EndPointRes:
+async def claim_session(request: Request, session_uuid: str, token: Optional[str] = None) -> EndPointRes:
     c = session.get(session_uuid)
-    at = auth.get_app_token(request)
+    u = user.get_by_session_token(token)
 
-    if not at.user:
-        return {'is_successful': False}
-
-    u = at.user.load()
     default_project = u.default_project
 
     if c.session_uuid not in default_project.sessions:
@@ -327,7 +332,7 @@ async def get_session(request: Request, session_uuid: str) -> JSONResponse:
 
 
 @auth.login_required
-async def edit_run(request: Request, run_uuid: str) -> EndPointRes:
+async def edit_run(request: Request, run_uuid: str, token: Optional[str] = None) -> EndPointRes:
     r = run.get(run_uuid)
     errors = []
 
@@ -388,8 +393,8 @@ async def get_session_status(request: Request, session_uuid: str) -> JSONRespons
 @auth.login_required
 @utils.analytics.AnalyticsEvent.time_this(None)
 @auth.check_labml_token_permission
-async def get_runs(request: Request, labml_token: str) -> EndPointRes:
-    u = auth.get_auth_user(request)
+async def get_runs(request: Request, labml_token: str, token: Optional[str] = None) -> EndPointRes:
+    u = user.get_by_session_token(token)
 
     if labml_token:
         runs_list = run.get_runs(labml_token)
@@ -412,8 +417,8 @@ async def get_runs(request: Request, labml_token: str) -> EndPointRes:
 @auth.login_required
 @utils.analytics.AnalyticsEvent.time_this(None)
 @auth.check_labml_token_permission
-async def get_sessions(request: Request, labml_token: str) -> EndPointRes:
-    u = auth.get_auth_user(request)
+async def get_sessions(request: Request, labml_token: str, token: Optional[str] = None) -> EndPointRes:
+    u = user.get_by_session_token(token)
 
     if labml_token:
         sessions_list = session.get_sessions(labml_token)
@@ -435,11 +440,11 @@ async def get_sessions(request: Request, labml_token: str) -> EndPointRes:
 
 @utils.analytics.AnalyticsEvent.time_this(None)
 @auth.login_required
-async def delete_runs(request: Request) -> EndPointRes:
+async def delete_runs(request: Request, token: Optional[str] = None) -> EndPointRes:
     json = await request.json()
     run_uuids = json['run_uuids']
 
-    u = auth.get_auth_user(request)
+    u = user.get_by_session_token(token)
     u.default_project.delete_runs(run_uuids, u.email)
 
     return {'is_successful': True}
@@ -447,19 +452,19 @@ async def delete_runs(request: Request) -> EndPointRes:
 
 @utils.analytics.AnalyticsEvent.time_this(None)
 @auth.login_required
-async def delete_sessions(request: Request) -> EndPointRes:
+async def delete_sessions(request: Request, token: Optional[str] = None) -> EndPointRes:
     json = await request.json()
     session_uuids = json['session_uuids']
 
-    u = auth.get_auth_user(request)
+    u = user.get_by_session_token(token)
     u.default_project.delete_sessions(session_uuids, u.email)
 
     return {'is_successful': True}
 
 
 @auth.login_required
-async def add_run(request: Request, run_uuid: str) -> EndPointRes:
-    u = auth.get_auth_user(request)
+async def add_run(request: Request, run_uuid: str, token: Optional[str] = None) -> EndPointRes:
+    u = user.get_by_session_token(token)
 
     u.default_project.add_run(run_uuid)
 
@@ -467,8 +472,8 @@ async def add_run(request: Request, run_uuid: str) -> EndPointRes:
 
 
 @auth.login_required
-async def add_session(request: Request, session_uuid: str) -> EndPointRes:
-    u = auth.get_auth_user(request)
+async def add_session(request: Request, session_uuid: str, token: Optional[str] = None) -> EndPointRes:
+    u = user.get_by_session_token(token)
 
     u.default_project.add_session(session_uuid)
 
@@ -486,21 +491,27 @@ async def get_computer(request: Request, computer_uuid: str) -> EndPointRes:
 @auth.login_required
 @utils.analytics.AnalyticsEvent.time_this(None)
 async def set_user(request: Request) -> EndPointRes:
+    u = auth.get_auth_user(request)
     json = await request.json()
     data = json['user']
-    u = auth.get_auth_user(request)
     if u:
-        u.set_user(data)
+        u.update_and_save(data)
 
     return {'is_successful': True}
 
 
 @auth.login_required
 @utils.analytics.AnalyticsEvent.time_this(None)
-async def get_user(request: Request) -> EndPointRes:
-    u = auth.get_auth_user(request)
+async def get_user(request: Request, token: Optional[str] = None):
+    u = user.get_user_secure(token)
+    json = await request.json()
+    if json is None:
+        return {'is_successful': False, 'error': 'Malformed request'}, 400
+    if u is None:
+        return {'is_successful': False, 'error': 'You need to be authenticated to perform this request'}, 401
 
-    return u.get_data()
+    session_token = u.generate_session_token(token)
+    return {'is_successful': True, 'user': u.get_data(), 'token': session_token}, 200
 
 
 @utils.analytics.AnalyticsEvent.time_this(None)
@@ -567,7 +578,7 @@ async def polling(request: Request) -> EndPointRes:
 
 @auth.login_required
 @utils.analytics.AnalyticsEvent.time_this(30.4)
-async def start_tensor_board(request: Request, computer_uuid: str) -> EndPointRes:
+async def start_tensor_board(request: Request, computer_uuid: str, token: Optional[str] = None) -> EndPointRes:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.
             """
     c = computer.get_or_create(computer_uuid)
@@ -595,7 +606,7 @@ async def start_tensor_board(request: Request, computer_uuid: str) -> EndPointRe
 
 @auth.login_required
 @utils.analytics.AnalyticsEvent.time_this(30.4)
-async def clear_checkpoints(request: Request, computer_uuid: str) -> EndPointRes:
+async def clear_checkpoints(request: Request, computer_uuid: str, token: Optional[str] = None) -> EndPointRes:
     """End point to clear checkpoints for set of runs. runs: all the runs should be from a same computer.
             """
     c = computer.get_or_create(computer_uuid)
@@ -648,9 +659,6 @@ def add_handlers(app: FastAPI):
 
     _add_ui(app, 'GET', get_computer, 'computer/{computer_uuid}')
 
-    _add_ui(app, 'GET', get_user, 'user')
-    _add_ui(app, 'POST', set_user, 'user')
-
     _add_ui(app, 'GET', get_run, 'run/{run_uuid}')
     _add_ui(app, 'POST', edit_run, 'run/{run_uuid}')
     _add_ui(app, 'PUT', add_run, 'run/{run_uuid}/add')
@@ -663,7 +671,10 @@ def add_handlers(app: FastAPI):
     _add_ui(app, 'PUT', claim_session, 'session/{session_uuid}/claim')
     _add_ui(app, 'GET', get_session_status, 'session/status/{session_uuid}')
 
+    _add_ui(app, 'POST', set_user, 'user')
+    _add_ui(app, 'GET', get_user, 'auth/user')
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
+    _add_ui(app, 'POST', sign_up, 'auth/sign_up')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
     _add_ui(app, 'GET', is_user_logged, 'auth/is_logged')
 

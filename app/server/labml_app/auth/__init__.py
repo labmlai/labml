@@ -1,25 +1,38 @@
 import functools
 import inspect
+import json
 from typing import Optional
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from ..db import app_token
+from .. import settings
 from ..db import project
 from ..db import user
-from .. import settings
+from ..db.user import User
 
 
-def get_app_token(request: Request) -> 'app_token.AppToken':
-    token_id = request.headers.get('Authorization', '')
-
+def get_app_token(request: Request) -> ('str', User):
     if not settings.IS_LOGIN_REQUIRED:
-        at = _login_not_required()
-    else:
-        at = app_token.get_or_create(token_id)
+        token, u = _login_not_required()
+        return token, u
 
-    return at
+    res = request.headers.get('Authorization', '')
+    try:
+        res = json.loads(res)
+    except ValueError:
+        res = {}
+
+    token = res.get('token')
+    u = None
+    if token is None:
+        token = request.cookies.get('Authorization', '')
+    if 'user' in request.url.path:
+        u = user.get_user_secure(token)
+    else:
+        u = user.get_by_session_token(token)
+
+    return token, u
 
 
 def check_labml_token_permission(func) -> functools.wraps:
@@ -38,61 +51,60 @@ def check_labml_token_permission(func) -> functools.wraps:
     return wrapper
 
 
+# TODO: fix this
 def _login_not_required():
-    at = app_token.get_or_create(token_id='local', is_local_user=True)
-    if not at.user:
-        u = user.get_or_create_user(user.AuthOInfo(
-            **{k: '' for k in ('name', 'email', 'sub', 'email_verified', 'picture')}))
+    u = user.get_or_create_user(identifier='local', is_local_user=True)
 
-        at.user = u.key
-        at.save()
-
-    return at
+    return 'local', u
 
 
 def login_required(func) -> functools.wraps:
     @functools.wraps(func)
     async def wrapper(request: Request, *args, **kwargs):
-        token_id = request.headers.get('Authorization', '')
-        at = app_token.get_or_create(token_id)
-        if not settings.IS_LOGIN_REQUIRED:
-            at = _login_not_required()
+        token, u = get_app_token(request)
 
-        if at.is_auth:
-            if inspect.iscoroutinefunction(func):
-                return await func(request, *args, **kwargs)
-            else:
-                return func(request, *args, **kwargs)
-        else:
-            response = JSONResponse()
+        kwargs['token'] = token
+        if u is not None:
+            error_end = 'view this content' if request.method == 'GET' else 'perform this action'
+            response = JSONResponse({'data': {'error': f'You need to be authorized to {error_end}'}, 'meta': {}})
             response.status_code = 403
 
             return response
+
+        if inspect.iscoroutinefunction(func):
+            res = await func(request, *args, **kwargs)
+        else:
+            res = func(request, *args, **kwargs)
+
+        if isinstance(res, tuple):
+            res, res_code = res
+        else:
+            res_code = 200 if res else 404
+
+        if res.get('token'):
+            token = res['token']
+
+        response = JSONResponse({'data': res})
+
+        response.headers["Authorization"] = f'{token}'
+        response.set_cookie("Authorization", f'{token}')
+        response.status_code = res_code
+
+        return response
 
     return wrapper
 
 
 def get_auth_user(request: Request) -> Optional['user.User']:
-    s = get_app_token(request)
-
-    u = None
-    if s.user:
-        u = s.user.load()
-
-    if not settings.IS_LOGIN_REQUIRED:
-        at = _login_not_required()
-        u = at.user.load()
+    token, u = get_app_token(request)
 
     return u
 
 
 def get_is_user_logged(request: Request) -> bool:
-    s = get_app_token(request)
+    token, u = get_app_token(request)
 
-    if not settings.IS_LOGIN_REQUIRED:
-        s = _login_not_required()
+    if u is None:
+        return False
 
-    if s.is_auth:
-        return True
-
-    return False
+    return True
