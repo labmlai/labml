@@ -6,21 +6,19 @@ from typing import Callable, Dict, Any, Optional
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from . import analyses
-from . import auth
+from .logger import logger
 from . import settings
-from . import utils
-from .auth.auth_models import SignInModel, SignUpModel
-from .db import app_token
-from .db import blocked_uuids
-from .db import computer
-from .db import job
-from .db import project
+from . import auth
 from .db import run
+from .db import computer
 from .db import session
 from .db import user
-from .logger import logger
-from .utils import gen_token
+from .db import project
+from .db import blocked_uuids
+from .db import job
+from . import utils
+from . import analyses
+from .auth.auth_models import SignInModel, SignUpModel
 
 try:
     import requests
