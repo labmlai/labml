@@ -5,7 +5,7 @@ import {RunHandler} from './views/run_view'
 import {PageNotFoundHandler} from './views/errors/page_not_found_view'
 import {RunsListHandler} from './views/runs_list_view'
 import {SessionsListHandler} from './views/sessions_list_view'
-import {LoginHandler} from './views/login_view'
+import {SignInHandler} from './views/auth/signin_view'
 import {SettingsHandler} from './views/settings_view'
 
 import {experimentAnalyses, sessionAnalyses} from "./analyses/analyses"
@@ -17,12 +17,14 @@ import {SENTRY_DSN} from './env'
 import {AuthErrorHandler} from './views/errors/auth_error_view'
 import {OtherErrorHandler} from './views/errors/other_error_view'
 import {NetworkErrorHandler} from './views/errors/network_error_view'
+import {SignOutHandler} from './views/auth/signout_view'
 
 ROUTER.route(/^(.*)$/g, [() => {
     ROUTER.navigate('/404')
 }])
 
-new LoginHandler()
+new SignInHandler()
+new SignOutHandler()
 
 new PageNotFoundHandler()
 new AuthErrorHandler()

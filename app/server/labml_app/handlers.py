@@ -41,12 +41,6 @@ def _is_new_run_added(request: Request) -> bool:
     return is_run_added
 
 
-def _get_user_profile(token: str):
-    res = requests.get(f'{settings.AUTH0_DOMAIN}/userinfo', headers={'Authorization': f'Bearer {token}'})
-
-    return res.json()
-
-
 @utils.analytics.AnalyticsEvent.time_this(None)
 async def sign_in(request: Request, data: SignInModel):
     authenticated_token = user.authenticate(data.email, data.password)

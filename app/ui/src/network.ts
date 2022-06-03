@@ -1,8 +1,17 @@
 import {API_BASE_URL, APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN, MOBILE_APP_NAMESPACE} from './env'
-import {User} from './models/user'
+import {SignInModel, SignUpModel, User} from './models/user'
+
+export function getAppToken() {
+    return localStorage.getItem('app_token')
+}
+
+export function setAppToken(newToken: string) {
+    localStorage.setItem('app_token', newToken)
+}
 
 class Network {
     baseURL: string
+    private sessionToken?: string
 
     constructor(baseURL: string) {
         this.baseURL = baseURL
@@ -65,37 +74,39 @@ class Network {
     }
 
     async getUser(): Promise<any> {
-        return this.sendHttpRequest('GET', `/user`, {})
+        let res = await this.sendHttpRequest('POST', `/auth/user`, {
+            device: {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                appName: navigator.appName,
+                appCodeName: navigator.appCodeName,
+                engine: navigator.product,
+                appVersion: navigator.appVersion,
+                height: window.screen.height,
+                width: window.screen.width
+            },
+            referrer: window.document.referrer,
+
+        }, false)
+        if (res != null && res.user != null && res.user.identifier != null) {
+            setAppToken(res.user.identifier)
+        }
+        return res
     }
 
     async setUser(user: User): Promise<any> {
         return this.sendHttpRequest('POST', `/user`, {'user': user})
     }
 
-    async signIn(token: string): Promise<any> {
-        let data = {token: token}
-
+    async signIn(data: SignInModel): Promise<any> {
         return this.sendHttpRequest('POST', `/auth/sign_in`, data)
     }
 
+    async signUp(data: SignUpModel): Promise<any> {
+        return this.sendHttpRequest('POST', `/auth/sign_up`, data)
+    }
     async signOut(): Promise<any> {
-        return this.sendHttpRequest('DELETE', `/auth/sign_out`)
-    }
-
-    redirectLogin() {
-        let redirectURI = `${APP_BASE_URL}/login`
-        if (window.localStorage.getItem('platform') === 'cordova') {
-            redirectURI = `${MOBILE_APP_NAMESPACE}://${AUTH0_DOMAIN}/cordova/${MOBILE_APP_NAMESPACE}/callback`
-        }
-        window.location.href = `https://${AUTH0_DOMAIN}/authorize?response_type=token&client_id=${AUTH0_CLIENT_ID}&redirect_uri=${redirectURI}&scope=openid%20profile%20email`
-    }
-
-    redirectLogout() {
-        window.location.href = `https://${AUTH0_DOMAIN}/v2/logout?client_id=${AUTH0_CLIENT_ID}&returnTo=${APP_BASE_URL}`
-    }
-
-    async getIsUserLogged(): Promise<any> {
-        return this.sendHttpRequest('GET', `/auth/is_logged`)
+        return this.sendHttpRequest('POST', `/auth/sign_out`)
     }
 
     async getAnalysis(url: string, runUUID: string): Promise<any> {
@@ -126,23 +137,42 @@ class Network {
         return this.sendHttpRequest('POST', `/clear_checkpoints/${computerUUId}`, {'runs': runUUIDs})
     }
 
-    private sendHttpRequest = (method: string, url: string, data: object = {}) => {
+    private sendHttpRequest = (method: string, url: string, data: object = {}, retryAuth: boolean = true): Promise<any> => {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest()
             xhr.withCredentials = true
             xhr.open(method, this.baseURL + url)
             xhr.responseType = 'json'
 
-            let authToken = localStorage.getItem('app_token')
-            if (authToken) {
-                xhr.setRequestHeader('Authorization', authToken)
+            let appToken = url.includes('/auth/') && !url.includes('/auth/send_verification_email') ? getAppToken() : this.sessionToken
+            if (appToken) {
+                let authDict = {'token': appToken}
+                xhr.setRequestHeader('Authorization', JSON.stringify(authDict))
             }
 
             if (data) {
                 xhr.setRequestHeader('Content-Type', 'application/json')
             }
 
-            xhr.onload = () => {
+            xhr.onload = async () => {
+                let token = xhr.getResponseHeader('Authorization')
+                if (token != null) {
+                    if (url.includes('/auth/sign_in') || url.includes('/auth/sign_up')) {
+                        setAppToken(token)
+                    } else {
+                        this.updateSession(token)
+                    }
+                }
+                if (xhr.status == 401 && retryAuth) {
+                    await this.getUser()
+                    try {
+                        let res = await this.sendHttpRequest(method, url, data, false)
+                        resolve(res)
+                    } catch (e) {
+                        reject(e)
+                    }
+                }
+
                 if (xhr.status >= 400) {
                     if (xhr.status != 403) {
                         reject(new NetworkError(xhr.status, url, JSON.stringify(xhr.response)))
@@ -158,6 +188,9 @@ class Network {
 
             xhr.send(JSON.stringify(data))
         })
+    }
+    private updateSession(token?: string) {
+        this.sessionToken = token
     }
 }
 

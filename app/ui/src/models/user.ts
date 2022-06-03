@@ -31,14 +31,13 @@ export class User {
     }
 }
 
-export interface IsUserLoggedModel {
-    is_user_logged: boolean
+
+export interface SignInModel {
+    email: string
+    password: string
 }
 
-export class IsUserLogged {
-    is_user_logged: boolean
-
-    constructor(isUserLogged: IsUserLoggedModel) {
-        this.is_user_logged = isUserLogged.is_user_logged
-    }
+export interface SignUpModel {
+    email: string
+    password: string
 }
