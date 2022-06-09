@@ -132,8 +132,7 @@ class ScreenWriter(Writer):
             if plt is None:
                 logger.log(('matplotlib', logger.Text.highlight),
                            ' not found. So cannot display images')
-            images = [to_numpy(v) for v in indicator.get_values().values()]
-            images = np.concatenate(images)
+            images = indicator.get_images()
             n_images = len(images)
             cols = max(1, int(math.sqrt(n_images)))
             fig: plt.Figure
@@ -151,10 +150,6 @@ class ScreenWriter(Writer):
                     img = img[0, :, :]
                 else:
                     img = img.transpose(1, 2, 0)
-                if img.dtype.type in (np.float32, np.float64):
-                    img = np.clip(img, 0., 1.)
-                else:
-                    img = np.clip(img, 0, 255)
 
                 ax.imshow(img)
             plt.show()

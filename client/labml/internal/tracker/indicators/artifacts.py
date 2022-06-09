@@ -104,6 +104,17 @@ class Image(_Collection):
     def copy(self, key: str):
         return Image(key, is_print=self.is_print, density=self._density, options=self.options)
 
+    def get_images(self):
+        images = [to_numpy(v) for v in self.get_values().values()]
+        images = np.concatenate(images)
+
+        if images.dtype.type in (np.float32, np.float64):
+            images = np.clip(images, 0., 1.)
+        else:
+            images = np.clip(images, 0, 255)
+
+        return images
+
 
 class Text(_Collection):
     def copy(self, key: str):

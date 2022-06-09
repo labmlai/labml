@@ -1,11 +1,9 @@
 from typing import Dict, Any, Optional
 
 import comet_ml
-import numpy as np
 
 from labml.internal.configs.processor import ConfigsSaver
 from labml.internal.tracker.indicators.artifacts import Image
-from labml.internal.util.values import to_numpy
 from . import Writer as WriteBase
 from ..indicators import Indicator
 from ..indicators.numeric import NumericIndicator
@@ -65,8 +63,7 @@ class Writer(WriteBase):
             self.run.log_metrics({self._parse_key(indicator.mean_key): indicator.get_mean()},
                                  step=global_step)
         elif isinstance(indicator, Image):
-            images = [to_numpy(v) for v in indicator.get_values().values()]
-            images = np.concatenate(images)
+            images = indicator.get_images()
             for i, img in enumerate(images):
                 self.run.log_image(img, self._parse_key(indicator.name), image_channels='first')
 
