@@ -130,11 +130,12 @@ class Lab:
             web_api_frequency=0,
             web_api_verify_connection=True,
             web_api_open_browser=True,
-            indicators=[{
-                'class_name': 'Scalar',
-                'is_print': True,
-                'name': '*'
-            },
+            indicators=[
+                {
+                    'class_name': 'Scalar',
+                    'is_print': True,
+                    'name': '*'
+                },
                 {
                     'class_name': 'Scalar',
                     'is_print': False,

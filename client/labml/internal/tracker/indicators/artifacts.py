@@ -38,6 +38,9 @@ class Artifact(Indicator, ABC):
     def get_value(self, key: str):
         return None
 
+    def get_values(self):
+        return None
+
     def collect_value(self, value):
         if type(value) == tuple and len(value) == 2:
             key = value[0]
@@ -52,7 +55,7 @@ class _Collection(Artifact, ABC):
     _last_add_step: int
     _values: Dict[str, Any]
 
-    def __init__(self, name: str, is_print: bool, density: Optional[float], options: Optional[Dict]):
+    def __init__(self, name: str, is_print: bool, density: Optional[float] = None, options: Optional[Dict] = None):
         super().__init__(name=name, is_print=is_print, options=options)
         self._values = OrderedDict()
         self._density = density
@@ -81,6 +84,9 @@ class _Collection(Artifact, ABC):
 
     def get_value(self, key: str):
         return self._values[key]
+
+    def get_values(self):
+        return self._values
 
 
 class Tensor(_Collection):

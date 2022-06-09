@@ -65,7 +65,7 @@ class AccuracyMovingAvg(Metric):
         pred.masked_fill_(mask, self.ignore_index)
         n_masked = mask.sum().item()
         if len(target) - n_masked > 0:
-            tracker.add('accuracy.', (pred.eq(target).sum().item() - n_masked) / len(target) - n_masked)
+            tracker.add('accuracy.', (pred.eq(target).sum().item() - n_masked) / (len(target) - n_masked))
 
     def create_state(self):
         return None
