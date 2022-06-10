@@ -26,6 +26,8 @@ class Iterator:
                  total_steps: Optional[int],
                  is_children_silent: bool,
                  is_enumerate: bool,
+                 is_track: bool,
+                 is_not_in_loop: bool,
                  section: Optional[Section]):
         if is_enumerate:
             total_steps = len(iterable)
@@ -37,6 +39,8 @@ class Iterator:
             sized: typing.Sized = iterable
             total_steps = len(sized)
 
+        self.is_not_in_loop = is_not_in_loop
+        self.is_track = is_track
         self.is_children_silent = is_children_silent
         self._logger = logger
         self._name = name
@@ -64,7 +68,9 @@ class Iterator:
                 is_partial=False,
                 total_steps=self._total_steps,
                 is_children_silent=self.is_children_silent,
-                is_new_line=True)
+                is_new_line=True,
+                is_track=self.is_track,
+                is_not_in_loop=self.is_not_in_loop)
         self._iterator = iter(self._iterable)
         if not self.is_section_specified:
             self._section.__enter__()

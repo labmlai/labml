@@ -1,4 +1,3 @@
-import math
 from abc import ABC
 from collections import OrderedDict
 from typing import Dict, Optional, Any
@@ -6,9 +5,7 @@ from uuid import uuid1
 
 import numpy as np
 
-from labml import logger
 from labml.internal.util.values import to_numpy
-from labml.logger import Text as TextStyle
 from . import Indicator
 
 
@@ -19,23 +16,17 @@ class Artifact(Indicator, ABC):
     def _collect_value(self, key: str, value):
         raise NotImplementedError()
 
-    def get_print_length(self) -> Optional[int]:
-        raise NotImplementedError()
-
     @property
     def is_indexed(self) -> bool:
         return False
-
-    def get_string(self, key: str, others: Dict[str, 'Artifact']) -> Optional[str]:
-        return None
-
-    def print_all(self):
-        pass
 
     def keys(self):
         raise NotImplementedError()
 
     def get_value(self, key: str):
+        return None
+
+    def get_values(self):
         return None
 
     def collect_value(self, value):
@@ -52,7 +43,7 @@ class _Collection(Artifact, ABC):
     _last_add_step: int
     _values: Dict[str, Any]
 
-    def __init__(self, name: str, is_print: bool, density: Optional[float], options: Optional[Dict]):
+    def __init__(self, name: str, is_print: bool, density: Optional[float] = None, options: Optional[Dict] = None):
         super().__init__(name=name, is_print=is_print, options=options)
         self._values = OrderedDict()
         self._density = density
@@ -82,6 +73,9 @@ class _Collection(Artifact, ABC):
     def get_value(self, key: str):
         return self._values[key]
 
+    def get_values(self):
+        return self._values
+
 
 class Tensor(_Collection):
     def __init__(self, name: str, is_once: bool = False, options: Optional[Dict] = None):
@@ -93,9 +87,6 @@ class Tensor(_Collection):
                     name=self.name,
                     is_print=self.is_print,
                     is_once=self.is_once)
-
-    def get_print_length(self) -> Optional[int]:
-        return None
 
     def copy(self, key: str):
         return Tensor(key, is_once=self.is_once, options=self.options)
@@ -110,58 +101,22 @@ class Tensor(_Collection):
 
 
 class Image(_Collection):
-    def get_print_length(self) -> Optional[int]:
-        return None
-
-    def print_all(self):
-        try:
-            import matplotlib.pyplot as plt
-        except (ImportError, ModuleNotFoundError):
-            plt = None
-
-        if plt is None:
-            logger.log(('matplotlib', logger.Text.highlight),
-                       ' not found. So cannot display images')
-        images = [to_numpy(v) for v in self._values.values()]
-        images = np.concatenate(images)
-        n_images = len(images)
-        cols = max(1, int(math.sqrt(n_images)))
-        fig: plt.Figure
-        fig, axs = plt.subplots((n_images + cols - 1) // cols, cols,
-                                sharex='all', sharey='all',
-                                figsize=(8, 10))
-        from labml import tracker
-        fig.suptitle(f'{self.name}-{tracker.get_global_step()}')
-        for i, img in enumerate(images):
-            if len(images) > 1:
-                ax: plt.Axes = axs[i // cols, i % cols]
-            else:
-                ax = axs
-            if img.shape[0] == 1:
-                img = img[0, :, :]
-            else:
-                img = img.transpose(1, 2, 0)
-            if img.dtype.type in (np.float32, np.float64):
-                img = np.clip(img, 0., 1.)
-            else:
-                img = np.clip(img, 0, 255)
-
-            ax.imshow(img)
-        plt.show()
-
     def copy(self, key: str):
         return Image(key, is_print=self.is_print, density=self._density, options=self.options)
 
+    def get_images(self):
+        images = [to_numpy(v) for v in self.get_values().values()]
+        images = np.concatenate(images)
+
+        if images.dtype.type in (np.float32, np.float64):
+            images = np.clip(images, 0., 1.)
+        else:
+            images = np.clip(images, 0, 255)
+
+        return images
+
 
 class Text(_Collection):
-    def get_print_length(self) -> Optional[int]:
-        return None
-
-    def print_all(self):
-        logger.log(self.name, TextStyle.heading)
-        for t in self._values.values():
-            logger.log(t, TextStyle.value)
-
     def copy(self, key: str):
         return Text(key, is_print=self.is_print, density=self._density, options=self.options)
 
@@ -179,12 +134,6 @@ class IndexedText(_Collection):
     @_Collection.is_indexed.getter
     def is_indexed(self) -> bool:
         return True
-
-    def get_print_length(self) -> Optional[int]:
-        return max((len(v) for v in self._values.values()))
-
-    def get_string(self, key: str, others: Dict[str, Artifact]) -> Optional[str]:
-        return self._values[key]
 
     def copy(self, key: str):
         return IndexedText(key, title=self.title, is_print=self.is_print, options=self.options)

@@ -91,9 +91,14 @@ class RunInfo:
         """
         run_info_path = run_path / 'run.yaml'
 
-        with open(str(run_info_path), 'r') as f:
-            data = util.yaml_load(f.read())
-            return cls.from_dict(run_path.parent, data)
+        try:
+            with open(str(run_info_path), 'r') as f:
+                data = util.yaml_load(f.read())
+                if not isinstance(data, dict):
+                    raise RunLoadError()
+                return cls.from_dict(run_path.parent, data)
+        except FileNotFoundError:
+            raise RunLoadError()
 
     @classmethod
     def from_dict(cls, experiment_path: Path, data: Dict[str, any]):

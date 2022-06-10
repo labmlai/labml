@@ -4,7 +4,7 @@ from typing import List, Tuple
 import numpy as np
 
 from labml.internal.analytics.indicators import IndicatorClass, Indicator, Run, IndicatorCollection, \
-    StepSelect
+    StepSelect, RunsSet
 from labml.internal.analytics.sqlite import SQLiteAnalytics
 from labml.internal.analytics.tensorboard import TensorBoardAnalytics
 
@@ -22,6 +22,10 @@ def get_run(uuid: str) -> Run:
         _RUNS[uuid] = Run(uuid)
 
     return _RUNS[uuid]
+
+
+def get_experiment_runs(experiment_name: str) -> List[str]:
+    return RunsSet().get_runs(experiment_name)
 
 
 def get_name(ind: Indicator) -> List[str]:

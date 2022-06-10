@@ -1,7 +1,6 @@
 import signal
-from typing import Optional, Tuple, Any, Collection
-
 import typing
+from typing import Optional, Tuple, Any, Collection
 
 from labml import tracker, logger, experiment, monit
 from labml.configs import BaseConfigs, meta_config, option
@@ -51,6 +50,7 @@ class TrainingLoopIterator(Collection):
 
 
 class TrainingLoop:
+    _iter: Optional[TrainingLoopIterator]
     __loop: Loop
     __signal_received: Optional[Tuple[Any, Any]]
 
@@ -88,6 +88,16 @@ class TrainingLoop:
         except ValueError:
             pass
         return self
+
+    @property
+    def idx(self):
+        if not self._iter:
+            return 0
+        if not self._iter.i:
+            return 0
+        if self.__loop_step is None:
+            return self._iter.i
+        return self._iter.i / self.__loop_step
 
     def __finish(self):
         try:

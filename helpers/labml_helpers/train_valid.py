@@ -109,7 +109,9 @@ class Trainer:
                  data_loader: torch.utils.data.DataLoader,
                  inner_iterations: int,
                  state_modules: List[StateModule],
+                 is_track_time: bool,
                  step: Callable[[any, 'BatchIndex'], None]):
+        self.is_track_time = is_track_time
         self.mode = mode
         self.name = name
         self.step = step
@@ -142,7 +144,7 @@ class Trainer:
                 sm.on_epoch_end()
 
     def __iterate(self):
-        with monit.section(self.name, is_partial=True):
+        with monit.section(self.name, is_partial=True, is_track=self.is_track_time):
             if self._batch_index.idx == 0:
                 monit.progress(0)
             while not self._batch_index.iteration_completed:
@@ -238,6 +240,8 @@ class TrainValidConfigs(TrainingLoopConfigs):
 
     inner_iterations: int = 1
 
+    is_track_time: bool = False
+
     def init(self):
         pass
 
@@ -275,6 +279,7 @@ def _default_trainer(c: TrainValidConfigs):
                    data_loader=c.train_loader,
                    inner_iterations=c.inner_iterations,
                    state_modules=c.state_modules,
+                   is_track_time=c.is_track_time,
                    step=c.step)
 
 
@@ -285,6 +290,7 @@ def _default_validator(c: TrainValidConfigs):
                    data_loader=c.valid_loader,
                    inner_iterations=c.inner_iterations,
                    state_modules=c.state_modules,
+                   is_track_time=c.is_track_time,
                    step=c.step)
 
 

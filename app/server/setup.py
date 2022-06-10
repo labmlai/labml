@@ -5,7 +5,7 @@ with open("../readme.md", "r") as f:
 
 setuptools.setup(
     name='labml_app',
-    version='0.0.9',
+    version='0.0.10',
     author="Varuna Jayasiri, Nipun, Aditya",
     author_email="vpjayasiri@gmail.com",
     description="",

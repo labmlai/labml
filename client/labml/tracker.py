@@ -149,8 +149,7 @@ def set_tensor(name: str, is_once: bool = False):
 
     Arguments:
         name (str): Name of the indicator
-        is_print: (bool, optional): Whether to show the image with ``matplotlib``.
-            Defaults to ``False``.
+        is_once: (bool, optional): Whether this is tracked once only
     """
     from labml.internal.tracker.indicators.artifacts import Tensor
     _internal().add_indicator(Tensor(name, is_once=is_once))

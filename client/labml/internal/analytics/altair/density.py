@@ -42,6 +42,7 @@ def _render_density(table: alt.Data, *,
                     x_name: str,
                     levels: int,
                     alpha: float,
+                    color_scheme: str = 'tableau10',
                     series_selection: alt.Selection = None,
                     selection: alt.Selection = None,
                     x_scale: alt.Scale = alt.Undefined,
@@ -55,7 +56,7 @@ def _render_density(table: alt.Data, *,
             x=alt.X('step:Q', scale=x_scale),
             y=alt.Y(y, scale=y_scale),
             y2=alt.Y2(y2),
-            color=alt.Color('series:N', scale=alt.Scale(scheme='tableau10'))
+            color=alt.Color('series:N', scale=alt.Scale(scheme=color_scheme))
         )
 
         if series_selection:
@@ -70,7 +71,7 @@ def _render_density(table: alt.Data, *,
 
     encode = dict(x=alt.X('step:Q', scale=x_scale, title=x_name),
                   y=alt.Y("v5:Q", scale=y_scale, title='Value'),
-                  color=alt.Color('series:N', scale=alt.Scale(scheme='tableau10')))
+                  color=alt.Color('series:N', scale=alt.Scale(scheme=color_scheme)))
 
     if series_selection:
         encode['opacity'] = alt.condition(series_selection, alt.value(1), alt.value(0.001))
@@ -102,6 +103,7 @@ def _render_density(table: alt.Data, *,
 def render(table: alt.Data, *,
            levels=5,
            alpha=0.6,
+           color_scheme='tableau10',
            height: int,
            width: int,
            height_minimap: int):
@@ -112,12 +114,14 @@ def render(table: alt.Data, *,
                                x_name='',
                                levels=levels,
                                alpha=alpha,
-                               selection=zoom)
+                               selection=zoom,
+                               color_scheme=color_scheme)
 
     details = _render_density(table,
                               x_name='Step',
                               levels=levels,
                               alpha=alpha,
+                              color_scheme=color_scheme,
                               series_selection=selection,
                               x_scale=alt.Scale(domain={'selection': zoom.name,
                                                         "encoding": "x"}),

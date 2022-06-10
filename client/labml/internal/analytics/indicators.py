@@ -10,20 +10,28 @@ from labml.internal.util.strings import is_pattern_match
 
 class RunsSet:
     _runs: Dict[str, Tuple[Path, str]]
+    _experiments: Dict[str, List[str]]
 
     def __init__(self):
         experiment_path = Path(lab.get_experiments_path())
         runs = {}
+        experiments = {}
         for exp_path in experiment_path.iterdir():
+            experiments[exp_path.name] = []
             for run_path in exp_path.iterdir():
-                runs[run_path.name] = (run_path, experiment_path.name)
+                runs[run_path.name] = (run_path, exp_path.name)
+                experiments[exp_path.name].append(run_path.name)
 
         self._runs = runs
+        self._experiments = experiments
 
     def get(self, uuid: str) -> Tuple[RunInfo, str]:
         run = RunInfo.from_path(self._runs[uuid][0])
 
         return run, self._runs[uuid][1]
+
+    def get_runs(self, experiment_name: str) -> List[str]:
+        return self._experiments.get(experiment_name, [])
 
 
 class IndicatorClass(Enum):

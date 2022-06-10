@@ -5,7 +5,7 @@ with open("readme.md", "r") as f:
 
 setuptools.setup(
     name='labml-helpers',
-    version='0.4.85',
+    version='0.4.88',
     author="Varuna Jayasiri, Nipun Wijerathne",
     author_email="vpjayasiri@gmail.com, hnipun@gmail.com",
     description="A collection of classes and functions to automate common deep learning training patterns",
@@ -17,7 +17,7 @@ setuptools.setup(
     },
     packages=setuptools.find_packages(exclude=('test',
                                                'test.*')),
-    install_requires=['labml>=0.4.133',
+    install_requires=['labml>=0.4.152',
                       'torch'],
     classifiers=[
         "Programming Language :: Python :: 3",

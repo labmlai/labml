@@ -19,7 +19,10 @@ def get_runs(experiments_path: Path) -> Generator[Path, None, None]:
 
 
 def get_experiments(experiments_path: Path) -> Generator[Path, None, None]:
-    if not experiments_path.exists():
+    try:
+        if not experiments_path.exists():
+            return
+    except OSError:
         return
 
     for exp_path in experiments_path.iterdir():

@@ -89,6 +89,7 @@ class ModelProbe(_ModelProbe):
 class ValueCollection(_ValueCollection):
     pass
 
+
 class DeepValueCollection(_DeepValueCollection):
     pass
 
@@ -123,6 +124,10 @@ def runs(*uuids: str):
     return indicators
 
 
+def get_experiment_runs(experiment_name: str):
+    return _cache.get_experiment_runs(experiment_name)
+
+
 def get_run(uuid: str):
     r"""
     Returns ``Run`` object
@@ -146,6 +151,7 @@ def set_preferred_db(db: str):
 def distribution(indicators: IndicatorCollection, *,
                  names: Optional[List[str]] = None,
                  levels: int = 5, alpha: int = 0.6,
+                 color_scheme: str = 'tableau10',
                  height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
 
@@ -154,6 +160,7 @@ def distribution(indicators: IndicatorCollection, *,
 def distribution(series: List[Union[np.ndarray, 'torch.Tensor']], *,
                  names: Optional[List[str]] = None,
                  levels: int = 5, alpha: int = 0.6,
+                 color_scheme: str = 'tableau10',
                  height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
 
@@ -163,6 +170,7 @@ def distribution(series: List[Union[np.ndarray, 'torch.Tensor']],
                  step: np.ndarray, *,
                  names: Optional[List[str]] = None,
                  levels: int = 5, alpha: int = 0.6,
+                 color_scheme: str = 'tableau10',
                  height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
 
@@ -171,6 +179,7 @@ def distribution(series: List[Union[np.ndarray, 'torch.Tensor']],
 def distribution(series: Union[np.ndarray, 'torch.Tensor'], *,
                  names: Optional[List[str]] = None,
                  levels: int = 5, alpha: int = 0.6,
+                 color_scheme: str = 'tableau10',
                  height: int = 400, width: int = 800, height_minimap: int = 100):
     ...
 
@@ -178,6 +187,7 @@ def distribution(series: Union[np.ndarray, 'torch.Tensor'], *,
 def distribution(*args: any,
                  names: Optional[List[str]] = None,
                  levels: int = 5, alpha: int = 0.6,
+                 color_scheme: str = 'tableau10',
                  height: int = 400, width: int = 800, height_minimap: int = 100):
     r"""
     Creates a distribution plot distribution with Altair
@@ -205,6 +215,7 @@ def distribution(*args: any,
         names(List[str]): List of names of series
         levels: how many levels of the distribution to be plotted
         alpha: opacity of the distribution
+        color_scheme: color scheme
         height: height of the visualization
         width: width of the visualization
         height_minimap: height of the view finder
@@ -251,6 +262,7 @@ def distribution(*args: any,
         tables,
         levels=levels,
         alpha=alpha,
+        color_scheme=color_scheme,
         width=width,
         height=height,
         height_minimap=height_minimap)

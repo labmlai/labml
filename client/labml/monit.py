@@ -15,6 +15,8 @@ def func(name, *,
          is_partial: bool = False,
          is_new_line: bool = True,
          is_children_silent: bool = False,
+         is_track: bool = False,
+         is_not_in_loop: bool = False,
          total_steps: float = 1.0):
     """
     This is similar to :func:`section` but can be used as a decorator.
@@ -30,6 +32,8 @@ def func(name, *,
         is_new_line (bool, optional): Whether to print a new line. Defaults to ``True``.
         is_children_silent (bool, optional): Whether to make child sections silent.
             Defaults to ``True``.
+        is_track (bool, optional): Whether to track the time.
+            Defaults to ``False``.
         total_steps (float, optional): Total number of steps. This is used to measure progress when
             :func:`progress` gets called. Defaults to ``1``.
     """
@@ -43,6 +47,8 @@ def func(name, *,
                          is_partial=is_partial,
                          is_new_line=is_new_line,
                          is_children_silent=is_children_silent,
+                         is_track=is_track,
+                         is_not_in_loop=is_not_in_loop,
                          total_steps=total_steps):
                 return f(*args, **kwargs)
 
@@ -56,6 +62,8 @@ def iterate(name, iterable: Union[Iterable, Sized, int],
             is_silent: bool = False,
             is_children_silent: bool = False,
             is_timed: bool = True,
+            is_track: bool = False,
+            is_not_in_loop: bool = False,
             context=None):
     """
     This creates a monitored iterator.
@@ -71,12 +79,16 @@ def iterate(name, iterable: Union[Iterable, Sized, int],
         is_timed (bool, optional): Whether to measure time. Default to ``True``.
         is_children_silent (bool, optional): Whether to make child sections silent.
             Defaults to ``True``.
+        is_track (bool, optional): Whether to track the time.
+            Defaults to ``False``.
         context (optional): Reference to another section that will be used for monitoring the iteration.
     """
     return _internal().iterate(name, iterable, total_steps,
                                is_silent=is_silent,
                                is_children_silent=is_children_silent,
                                is_timed=is_timed,
+                               is_track=is_track,
+                               is_not_in_loop=is_not_in_loop,
                                section=context)
 
 
@@ -84,6 +96,8 @@ def enum(name, iterable: Sized, *,
          is_silent: bool = False,
          is_children_silent: bool = False,
          is_timed: bool = True,
+         is_track: bool = False,
+         is_not_in_loop: bool = False,
          context=None):
     """
     This creates a monitored enumerator.
@@ -97,12 +111,16 @@ def enum(name, iterable: Sized, *,
         is_timed (bool, optional): Whether to measure time. Default to ``True``.
         is_children_silent (bool, optional): Whether to make child sections silent.
             Defaults to ``True``.
+        is_track (bool, optional): Whether to track the time.
+            Defaults to ``False``.
         context (optional): Reference to another section that will be used for monitoring the iteration.
     """
     return _internal().enum(name, iterable,
                             is_silent=is_silent,
                             is_children_silent=is_children_silent,
                             is_timed=is_timed,
+                            is_track=is_track,
+                            is_not_in_loop=is_not_in_loop,
                             section=context)
 
 
@@ -112,6 +130,8 @@ def section(name, *,
             is_partial: bool = False,
             is_new_line: bool = True,
             is_children_silent: bool = False,
+            is_track: bool = False,
+            is_not_in_loop: bool = False,
             total_steps: float = 1.0):
     """
     This creates a monitored ``with`` block.
@@ -127,6 +147,8 @@ def section(name, *,
         is_new_line (bool, optional): Whether to print a new line. Defaults to ``True``.
         is_children_silent (bool, optional): Whether to make child sections silent.
             Defaults to ``True``.
+        is_track (bool, optional): Whether to track the time.
+            Defaults to ``False``.
         total_steps (float, optional): Total number of steps. This is used to measure progress when
             :func:`progress` gets called. Defaults to ``1``.
     """
@@ -135,6 +157,8 @@ def section(name, *,
                                is_partial=is_partial,
                                total_steps=total_steps,
                                is_new_line=is_new_line,
+                               is_track=is_track,
+                               is_not_in_loop=is_not_in_loop,
                                is_children_silent=is_children_silent)
 
 

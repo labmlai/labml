@@ -16,6 +16,8 @@ def get_caller_file(ignore_callers: Set[str] = None) -> str:
         module_path = Path(f.filename)
         if str(module_path).startswith(os.path.join(lab_src, '')):
             continue
+        if '/labml_helpers/' in str(module_path):
+            continue
         if str(module_path) in ignore_callers:
             continue
         if str(module_path).startswith('<stdin'):

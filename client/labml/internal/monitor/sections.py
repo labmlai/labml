@@ -22,7 +22,9 @@ class Section:
                  is_timed: bool,
                  is_partial: bool,
                  is_children_silent: bool,
-                 total_steps: float):
+                 total_steps: float,
+                 is_track: bool):
+        self.is_track = is_track
         self.is_children_silent = is_children_silent
         self._monitor = monitor
         self._name = name
@@ -80,7 +82,8 @@ class Section:
 
         self._end_progress = self._progress
 
-        self.track_progress()
+        if self.is_track:
+            self.track_progress()
 
         self._monitor.section_exit(self)
 
@@ -123,7 +126,8 @@ class OuterSection(Section):
                  is_children_silent: bool,
                  is_new_line: bool,
                  total_steps: float,
-                 level: int):
+                 level: int,
+                 is_track: bool):
         if is_partial:
             raise RuntimeError("Only sections within the loop can be partial.")
 
@@ -131,6 +135,7 @@ class OuterSection(Section):
                          name=name,
                          is_silent=is_silent,
                          is_timed=is_timed,
+                         is_track=is_track,
                          is_partial=is_partial,
                          is_children_silent=is_children_silent,
                          total_steps=total_steps)
@@ -196,6 +201,7 @@ class LoopingSection(Section):
                          is_silent=is_silent,
                          is_timed=is_timed,
                          is_partial=is_partial,
+                         is_track=is_track,
                          is_children_silent=False,
                          total_steps=total_steps)
         self._beta_pow = 1.
