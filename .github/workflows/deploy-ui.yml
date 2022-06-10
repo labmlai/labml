@@ -24,6 +24,7 @@ jobs:
           repository: 'vpj/weya'
           submodules: 'recursive'
           path: 'app/lib/weya'
+          ref: 'jsdom'
 
       - name: Setup Node
         uses: actions/setup-node@v2
