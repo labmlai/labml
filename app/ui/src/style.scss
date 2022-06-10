@@ -1165,3 +1165,38 @@ $keyFontSize: 0.8rem;
   left: 50%;
   transform: translate(-50%);
 }
+
+.auth-container {
+  margin: 20px 10px 10px;
+
+  .input-list-container {
+    ul {
+      margin: 0;
+      li {
+        background: none !important;
+        padding: 0;
+        .item-key {
+          color: inherit;
+        }
+      }
+    }
+  }
+
+  > .nav-link {
+    margin-top: 40px;
+  }
+
+  .footer {
+    text-align: center;
+
+    a {
+      color: inherit;
+    }
+  }
+
+  .nav-link.tab {
+    margin: 20px 5px !important;
+    font-weight: bold;
+    text-align: center;
+  }
+}

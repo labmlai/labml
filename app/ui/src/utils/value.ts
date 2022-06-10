@@ -117,3 +117,13 @@ export function pickHex(weight: number) {
     return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`
 }
 
+
+export function valueOrDefault(x: string | null | undefined, defaultValue: string) {
+    if (x == null) {
+        return defaultValue
+    }
+    if (x.trim().length == 0) {
+        return defaultValue
+    }
+    return x
+}

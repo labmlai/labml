@@ -12,7 +12,7 @@ from labml_db.serializer.pickle import PickleSerializer
 from labml.internal.computer.configs import computer_singleton
 
 from .. import settings
-from . import project
+from . import project, password_reset
 from . import user
 from . import status
 from . import app_token
@@ -24,6 +24,7 @@ from . import blocked_uuids
 from .. import analyses
 
 Models = [(YamlSerializer(), user.User),
+          (YamlSerializer(), password_reset.PasswordReset),
           (YamlSerializer(), project.Project),
           (JsonSerializer(), status.Status),
           (JsonSerializer(), status.RunStatus),
@@ -37,7 +38,11 @@ Indexes = [project.ProjectIndex,
            user.UserIndex,
            blocked_uuids.BlockedRunIndex,
            blocked_uuids.BlockedSessionIndex,
+           user.UserEmailIndex,
+           user.UserTokenIndex,
+           user.UserSessionTokenIndex,
            user.TokenOwnerIndex,
+           password_reset.PasswordResetIndex,
            app_token.AppTokenIndex,
            run.RunIndex,
            session.SessionIndex,

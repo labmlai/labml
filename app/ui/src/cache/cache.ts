@@ -1,12 +1,13 @@
 import {AnalysisDataModel, Run} from "../models/run"
 import {Status} from "../models/status"
-import NETWORK from "../network"
-import {IsUserLogged, User} from "../models/user"
+import NETWORK, {NetworkError} from "../network"
+import {PasswordResetModel, SignInModel, SignUpModel, User} from "../models/user"
 import {RunsList} from '../models/run_list'
 import {AnalysisPreference} from "../models/preferences"
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
 import {Job} from '../models/job'
+import {showError} from '../utils/document'
 
 const RELOAD_TIMEOUT = 60 * 1000
 const FORCE_RELOAD_TIMEOUT = 5 * 1000
@@ -298,25 +299,81 @@ export class UserCache extends CacheObject<User> {
     async load(): Promise<User> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getUser()
-            return new User(res)
+            return new User(res.user)
         })
     }
 
     async setUser(user: User) {
         await NETWORK.setUser(user)
     }
-}
 
-export class IsUserLoggedCache extends CacheObject<IsUserLogged> {
-    set userLogged(is_user_logged: boolean) {
-        this.data = new IsUserLogged({is_user_logged: is_user_logged})
+    async signIn(data: SignInModel) {
+        try {
+            let res = await NETWORK.signIn(data)
+            if (!res.is_successful) {
+                showError(res.error)
+                return false
+            }
+
+            this.data = null
+            await this.get()
+            CACHE.invalidateCache()
+            return true
+        } catch (ex) {
+            showError(ex instanceof NetworkError ? ex.errorDescription : null)
+            return false
+        }
     }
 
-    async load(): Promise<IsUserLogged> {
-        return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.getIsUserLogged()
-            return new IsUserLogged(res)
-        })
+    async signUp(data: SignUpModel) {
+        try {
+            let res = await NETWORK.signUp(data)
+            if (!res.is_successful) {
+                showError(res.error)
+                return false
+            }
+
+            this.data = null
+            await this.get()
+            CACHE.invalidateCache()
+            return true
+        } catch (ex) {
+            showError(ex instanceof NetworkError ? ex.errorDescription : null)
+            return false
+        }
+    }
+
+    async resetPassword(data: PasswordResetModel) {
+        try {
+            let res = await NETWORK.passwordReset(data)
+            if (!res.is_successful) {
+                showError(res.error)
+                return false
+            }
+
+            this.data = null
+            CACHE.invalidateCache()
+            return true
+        } catch (ex) {
+            showError(ex instanceof NetworkError ? ex.errorDescription : null)
+            return false
+        }
+    }
+
+    async signOut() {
+        try {
+            let res = await NETWORK.signOut()
+            if (!res.is_successful) {
+                showError(res.error)
+                return false
+            }
+
+            this.invalidate_cache()
+            CACHE.invalidateCache()
+            return true
+        } catch (ex) {
+            return false
+        }
     }
 }
 
@@ -380,13 +437,12 @@ export class AnalysisPreferenceCache extends CacheObject<AnalysisPreference> {
 }
 
 class Cache {
-    private readonly runs: { [uuid: string]: RunCache }
-    private readonly sessions: { [uuid: string]: SessionCache }
-    private readonly runStatuses: { [uuid: string]: RunStatusCache }
-    private readonly sessionStatuses: { [uuid: string]: SessionStatusCache }
+    private runs: { [uuid: string]: RunCache }
+    private sessions: { [uuid: string]: SessionCache }
+    private runStatuses: { [uuid: string]: RunStatusCache }
+    private sessionStatuses: { [uuid: string]: SessionStatusCache }
 
     private user: UserCache | null
-    private isUserLogged: IsUserLoggedCache | null
     private runsList: RunsListCache | null
     private sessionsList: SessionsListCache | null
 
@@ -398,7 +454,6 @@ class Cache {
         this.user = null
         this.runsList = null
         this.sessionsList = null
-        this.isUserLogged = null
     }
 
     getRun(uuid: string) {
@@ -457,12 +512,15 @@ class Cache {
         return this.user
     }
 
-    getIsUserLogged() {
-        if (this.isUserLogged == null) {
-            this.isUserLogged = new IsUserLoggedCache()
-        }
+    invalidateCache() {
 
-        return this.isUserLogged
+        this.runs = {}
+        this.sessions = {}
+        this.runStatuses = {}
+        this.sessionStatuses = {}
+        this.user = null
+        this.runsList = null
+        this.sessionsList = null
     }
 }
 

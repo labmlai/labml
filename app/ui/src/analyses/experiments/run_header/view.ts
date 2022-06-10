@@ -1,7 +1,7 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
-import CACHE, {IsUserLoggedCache, RunCache, RunsListCache, RunStatusCache} from "../../../cache/cache"
+import CACHE, {RunCache, RunsListCache, RunStatusCache, UserCache} from "../../../cache/cache"
 import {Status} from "../../../models/status"
 import {
     BackButton,
@@ -18,13 +18,13 @@ import {DataLoader} from "../../../components/loader"
 import {BadgeView} from "../../../components/badge"
 import {StatusView} from "../../../components/status"
 import mix_panel from "../../../mix_panel"
-import {IsUserLogged} from '../../../models/user'
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {UserMessages} from "../../../components/user_messages"
 import {openInNewTab} from "../../../utils/new_tab"
 import {formatFixed} from "../../../utils/value"
 import {ScreenView} from '../../../screen_view'
+import {User} from '../../../models/user'
 
 class RunHeaderView extends ScreenView {
     elem: HTMLDivElement
@@ -33,8 +33,8 @@ class RunHeaderView extends ScreenView {
     runListCache: RunsListCache
     status: Status
     statusCache: RunStatusCache
-    isUserLogged: IsUserLogged
-    isUserLoggedCache: IsUserLoggedCache
+    user: User
+    userCache: UserCache
     isEditMode: boolean
     uuid: string
     actualWidth: number
@@ -59,7 +59,7 @@ class RunHeaderView extends ScreenView {
         this.runCache = CACHE.getRun(this.uuid)
         this.runListCache = CACHE.getRunsList()
         this.statusCache = CACHE.getRunStatus(this.uuid)
-        this.isUserLoggedCache = CACHE.getIsUserLogged()
+        this.userCache = CACHE.getUser()
         this.isEditMode = false
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
@@ -77,7 +77,7 @@ class RunHeaderView extends ScreenView {
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
-            this.isUserLogged = await this.isUserLoggedCache.get(force)
+            this.user = await this.userCache.get(force)
         })
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
@@ -254,7 +254,7 @@ class RunHeaderView extends ScreenView {
                 }).render($)
             })
         })
-        this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.run.is_claimed))
+        this.deleteButton.hide(!(this.user.is_complete && this.run.is_claimed))
     }
 
     onToggleEdit = () => {

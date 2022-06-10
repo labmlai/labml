@@ -20,25 +20,39 @@ export class User {
     default_project: object
 
     constructor(user: UserModel) {
-        this.sub = user.sub
-        this.email = user.email
-        this.name = user.name
-        this.picture = user.picture
-        this.theme = user.theme
-        this.email_verified = user.email_verified
-        this.projects = user.projects
-        this.default_project = user.default_project
+        this.sub = user?.sub
+        this.email = user?.email
+        this.name = user?.name
+        this.picture = user?.picture
+        this.theme = user?.theme
+        this.email_verified = user?.email_verified
+        this.projects = user?.projects
+        this.default_project = user?.default_project
+    }
+
+    get is_complete(): boolean {
+        if (this.email == null) {
+            return false
+        }
+        if (this.name == null) {
+            return false
+        }
+        return this.default_project != null
     }
 }
 
-export interface IsUserLoggedModel {
-    is_user_logged: boolean
+export interface SignInModel {
+    email: string
+    password: string
 }
 
-export class IsUserLogged {
-    is_user_logged: boolean
+export interface SignUpModel {
+    name: string
+    email: string
+    password: string
+}
 
-    constructor(isUserLogged: IsUserLoggedModel) {
-        this.is_user_logged = isUserLogged.is_user_logged
-    }
+export interface PasswordResetModel {
+    reset_token: string
+    new_password: string
 }

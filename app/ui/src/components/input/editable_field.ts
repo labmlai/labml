@@ -6,6 +6,9 @@ interface EditableFieldOptions {
     placeholder?: string
     isEditable?: boolean
     numEditRows?: number
+    type?: string
+    autocomplete?: string
+    required?: boolean
 }
 
 export default class EditableField {
@@ -16,6 +19,9 @@ export default class EditableField {
     numEditRows: number
     inputElem: HTMLInputElement | HTMLTextAreaElement
     valueElem: HTMLSpanElement
+    protected type: string
+    private autocomplete?: string
+    private required: boolean
 
     constructor(opt: EditableFieldOptions) {
         this.name = opt.name
@@ -23,6 +29,16 @@ export default class EditableField {
         this.placeholder = opt.placeholder
         this.isEditable = opt.isEditable
         this.numEditRows = opt.numEditRows
+        this.type = opt.type
+        this.autocomplete = opt.autocomplete
+        this.required = opt.required ?? false
+    }
+
+    private _disabled: boolean
+
+    set disabled(value: boolean) {
+        this._disabled = value
+        this.inputElem.disabled = value
     }
 
     getInput() {
@@ -43,16 +59,21 @@ export default class EditableField {
                             this.inputElem = <HTMLTextAreaElement>$('textarea', {
                                     rows: this.numEditRows,
                                     placeholder: this.placeholder,
-                                    value: this.value
+                                    value: this.value,
+                                    autocomplete: this.autocomplete,
                                 }
                             )
                         } else {
                             this.inputElem = <HTMLInputElement>$('input', {
                                     placeholder: this.placeholder,
-                                    value: this.value
+                                    value: this.value,
+                                    type: this.type,
+                                    autocomplete: this.autocomplete,
                                 }
                             )
                         }
+                        this.inputElem.required = this.required
+                        this.inputElem.disabled = this._disabled
                     })
                 })
             } else {
@@ -62,3 +83,4 @@ export default class EditableField {
         })
     }
 }
+

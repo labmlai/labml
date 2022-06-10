@@ -1,11 +1,10 @@
 import {Status} from "../models/status"
-import {IsUserLogged} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
 import {BackButton, CustomButton, ShareButton} from "../components/buttons"
 import {Card} from "../analyses/types"
-import CACHE, {IsUserLoggedCache, SessionCache, SessionsListCache, SessionStatusCache} from "../cache/cache"
+import CACHE, {SessionCache, SessionsListCache, SessionStatusCache, UserCache} from "../cache/cache"
 import {Session} from '../models/session'
 import {SessionHeaderCard} from '../analyses/sessions/session_header/card'
 import {sessionAnalyses} from '../analyses/analyses'
@@ -15,6 +14,7 @@ import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
+import {User} from '../models/user'
 
 class SessionView extends ScreenView {
     uuid: string
@@ -23,8 +23,8 @@ class SessionView extends ScreenView {
     status: Status
     statusCache: SessionStatusCache
     sessionsListCache: SessionsListCache
-    isUserLogged: IsUserLogged
-    isUserLoggedCache: IsUserLoggedCache
+    user: User
+    userCache: UserCache
     actualWidth: number
     elem: HTMLDivElement
     sessionHeaderCard: SessionHeaderCard
@@ -42,7 +42,7 @@ class SessionView extends ScreenView {
         this.uuid = uuid
         this.sessionCache = CACHE.getSession(this.uuid)
         this.statusCache = CACHE.getSessionStatus(this.uuid)
-        this.isUserLoggedCache = CACHE.getIsUserLogged()
+        this.userCache = CACHE.getUser()
         this.sessionsListCache = CACHE.getSessionsList()
 
         this.userMessages = new UserMessages()
@@ -50,7 +50,7 @@ class SessionView extends ScreenView {
         this.loader = new DataLoader(async (force) => {
             this.session = await this.sessionCache.get(force)
             this.status = await this.statusCache.get(force)
-            this.isUserLogged = await this.isUserLoggedCache.get(force)
+            this.user = await this.userCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.share = new ShareButton({
@@ -126,7 +126,7 @@ class SessionView extends ScreenView {
                     text: 'Claim',
                     parent: this.constructor.name
                 }).render($)
-            } else if (!this.session.is_project_session || !this.isUserLogged.is_user_logged) {
+            } else if (!this.session.is_project_session || !this.user.is_complete) {
                 new CustomButton({
                     onButtonClick: this.onSessionAction.bind(this, false),
                     text: 'Add',
@@ -137,9 +137,9 @@ class SessionView extends ScreenView {
     }
 
     async onSessionAction(isSessionClaim: boolean) {
-        if (!this.isUserLogged.is_user_logged) {
+        if (!this.user.is_complete) {
             mix_panel.track('Claim Button Click', {uuid: this.uuid, analysis: this.constructor.name})
-            ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+            ROUTER.navigate(`/login?return_url=${window.location.pathname}`)
         } else {
             try {
                 if (isSessionClaim) {

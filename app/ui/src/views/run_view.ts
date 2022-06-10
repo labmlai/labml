@@ -1,6 +1,6 @@
 import {Run} from '../models/run'
 import {Status} from "../models/status"
-import {IsUserLogged} from '../models/user'
+import {User} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
@@ -9,7 +9,7 @@ import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
-import CACHE, {IsUserLoggedCache, RunCache, RunsListCache, RunStatusCache} from "../cache/cache"
+import CACHE, {RunCache, RunsListCache, RunStatusCache, UserCache} from "../cache/cache"
 import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
@@ -23,8 +23,8 @@ class RunView extends ScreenView {
     status: Status
     statusCache: RunStatusCache
     runListCache: RunsListCache
-    isUserLogged: IsUserLogged
-    isUserLoggedCache: IsUserLoggedCache
+    user: User
+    userCache: UserCache
     actualWidth: number
     elem: HTMLDivElement
     runHeaderCard: RunHeaderCard
@@ -42,7 +42,7 @@ class RunView extends ScreenView {
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
-        this.isUserLoggedCache = CACHE.getIsUserLogged()
+        this.userCache = CACHE.getUser()
         this.runListCache = CACHE.getRunsList()
 
         this.userMessages = new UserMessages()
@@ -50,7 +50,7 @@ class RunView extends ScreenView {
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
-            this.isUserLogged = await this.isUserLoggedCache.get(force)
+            this.user = await this.userCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.share = new ShareButton({
@@ -130,7 +130,7 @@ class RunView extends ScreenView {
                     title: 'own this run',
                     parent: this.constructor.name
                 }).render($)
-            } else if (!this.run.is_project_run || !this.isUserLogged.is_user_logged) {
+            } else if (!this.run.is_project_run || !this.user.is_complete) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, false),
                     text: 'Add',
@@ -148,8 +148,8 @@ class RunView extends ScreenView {
     }
 
     async onRunAction(isRunClaim: boolean) {
-        if (!this.isUserLogged.is_user_logged) {
-            ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+        if (!this.user.is_complete) {
+            ROUTER.navigate(`/login?return_url=${window.location.pathname}`)
         } else {
             try {
                 if (isRunClaim) {
