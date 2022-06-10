@@ -3,7 +3,7 @@ import {ROUTER, SCREEN} from '../../app'
 import {Weya as $} from '../../../../lib/weya/weya'
 import {Loader} from "../../components/loader"
 import CACHE, {UserCache} from "../../cache/cache"
-import {handleNetworkError, handleNetworkErrorInplace} from '../../utils/redirect';
+import {handleNetworkErrorInplace} from '../../utils/redirect';
 import {clearChildElements, getPath, setTitle} from '../../utils/document'
 import {ScreenView} from '../../screen_view'
 import {HamburgerMenuView} from '../../components/hamburger_menu'
@@ -89,31 +89,35 @@ class SignInView extends ScreenView {
     }
 
     renderLogin() {
-        if (this.user != null) {
+        if (this.user.is_complete) {
             ROUTER.navigate(this.returnUrl)
             return
         }
 
         clearChildElements(this.loginContainer)
         $(this.loginContainer, $ => {
-            this.emailField = new EditableField({
-                name: 'Email',
-                value: null,
-                isEditable: true,
-                type: 'email',
-                autocomplete: 'email',
-                required: true,
+            $('div', '.input-list-container', $ => {
+                $('ul', $ => {
+                    this.emailField = new EditableField({
+                        name: 'Email',
+                        value: null,
+                        isEditable: true,
+                        type: 'email',
+                        autocomplete: 'email',
+                        required: true,
+                    })
+                    this.emailField.render($)
+                    this.passwordField = new EditableField({
+                        name: 'Password',
+                        value: null,
+                        isEditable: true,
+                        type: 'password',
+                        autocomplete: 'current-password',
+                        required: true,
+                    })
+                    this.passwordField.render($)
+                })
             })
-            this.emailField.render($)
-            this.passwordField = new EditableField({
-                name: 'Password',
-                value: null,
-                isEditable: true,
-                type: 'password',
-                autocomplete: 'current-password',
-                required: true,
-            })
-            this.passwordField.render($)
             this.submitButton = $('input', {
                 type: 'submit', style: {
                     visibility: 'hidden',
@@ -183,7 +187,7 @@ class SignInView extends ScreenView {
 
     private handleSignUp(e: Event) {
         e.preventDefault()
-        ROUTER.navigate(`/auth/sign_up?redirect_url=${encodeURIComponent(getPath())}`)
+        ROUTER.navigate(`/auth/sign_up?return_url=${encodeURIComponent(getPath())}`)
     }
 }
 
@@ -194,7 +198,7 @@ export class SignInHandler {
 
     handleSignIn = () => {
         let urlParams = new URLSearchParams(window.location.search)
-        let redirectURL = decodeURIComponent(urlParams.get('redirect_url') ?? '/')
+        let redirectURL = decodeURIComponent(urlParams.get('return_url') ?? '/')
         SCREEN.setView(new SignInView(redirectURL))
     }
 }

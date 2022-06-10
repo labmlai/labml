@@ -126,7 +126,7 @@ class SessionView extends ScreenView {
                     text: 'Claim',
                     parent: this.constructor.name
                 }).render($)
-            } else if (!this.session.is_project_session || this.user == null) {
+            } else if (!this.session.is_project_session || !this.user.is_complete) {
                 new CustomButton({
                     onButtonClick: this.onSessionAction.bind(this, false),
                     text: 'Add',
@@ -137,9 +137,9 @@ class SessionView extends ScreenView {
     }
 
     async onSessionAction(isSessionClaim: boolean) {
-        if (this.user == null) {
+        if (!this.user.is_complete) {
             mix_panel.track('Claim Button Click', {uuid: this.uuid, analysis: this.constructor.name})
-            ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+            ROUTER.navigate(`/login?return_url=${window.location.pathname}`)
         } else {
             try {
                 if (isSessionClaim) {

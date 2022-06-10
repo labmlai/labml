@@ -2,9 +2,9 @@ from typing import List, Dict, Union, Optional
 
 from labml_db import Model, Key, Index
 
+from . import blocked_uuids
 from . import run
 from . import session
-from . import blocked_uuids
 from ..logger import logger
 
 
@@ -59,7 +59,9 @@ class Project(Model['Project']):
     def get_sessions(self) -> List['session.Session']:
         res = []
         for session_uuid, session_key in self.sessions.items():
-            res.append(session_key.load())
+            session_data = session_key.load()
+            if session_data is not None:
+                res.append(session_data)
 
         return res
 

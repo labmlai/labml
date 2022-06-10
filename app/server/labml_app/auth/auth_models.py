@@ -2,9 +2,9 @@ from pydantic import BaseModel
 
 
 class SignUpModel(BaseModel):
+    name: str
     email: str
     password: str
-    handle: str
 
 
 class SignInModel(BaseModel):

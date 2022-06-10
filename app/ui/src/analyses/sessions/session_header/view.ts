@@ -53,7 +53,7 @@ class SessionHeaderView extends ScreenView {
             this.session = await this.sessionCache.get(force)
             this.user = await this.userCache.get(force)
 
-            if (this.user != null) {
+            if (this.user.is_complete) {
                 let sessionsList = (await this.sessionListCache.get(force)).sessions
                 this.sessionsList = sessionsList.filter(session => this.sessionsFilter(session))
             }
@@ -179,7 +179,7 @@ class SessionHeaderView extends ScreenView {
                 }).render($)
             })
         })
-        this.deleteButton.hide(!(this.user != null && this.session.is_claimed))
+        this.deleteButton.hide(!(this.user.is_complete && this.session.is_claimed))
     }
 
     onItemClicked = (elem: SessionsListItemView) => {

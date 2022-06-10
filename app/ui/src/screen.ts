@@ -9,13 +9,11 @@ import {handleNetworkErrorInplace} from './utils/redirect'
 
 class ScreenContainer {
     view?: ScreenView
-    private userCache: UserCache
     private loader: Loader
     private windowWidth: number
 
     constructor() {
         this.view = null
-        this.userCache = CACHE.getUser()
         this.loader = new Loader(true)
         window.addEventListener('resize', this.onResize.bind(this))
         document.addEventListener('visibilitychange', this.onVisibilityChange.bind(this))
@@ -42,8 +40,8 @@ class ScreenContainer {
             document.body.className = theme
         }
         try {
-            let user = await this.userCache.get()
-            if (user != null) {
+            let user = await CACHE.getUser().get()
+            if (user.is_complete) {
                 theme = user.theme
                 localStorage.setItem('theme', theme)
             }
@@ -71,9 +69,9 @@ class ScreenContainer {
             document.body.append(this.view.render())
             return
         }
-        this.userCache.get().then(value => {
-            if (this.view.requiresAuth && value != null) {
-                ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+        CACHE.getUser().get().then(value => {
+            if (this.view.requiresAuth && !value.is_complete) {
+                ROUTER.navigate(`/auth/sign_in?return_url=${window.location.pathname}`)
                 return
             }
             document.body.innerHTML = ''

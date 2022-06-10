@@ -254,7 +254,7 @@ class RunHeaderView extends ScreenView {
                 }).render($)
             })
         })
-        this.deleteButton.hide(!(this.user != null && this.run.is_claimed))
+        this.deleteButton.hide(!(this.user.is_complete && this.run.is_claimed))
     }
 
     onToggleEdit = () => {

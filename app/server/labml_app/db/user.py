@@ -8,7 +8,14 @@ from .. import utils
 from ..utils import password_utils, gravatar_utils, gen_token
 
 SALT_LENGTH = 16
-PROTECTED_KEYS = ['password', 'email', 'tokens', 'session_token_owners', 'session_tokens', 'is_local_user']
+PROTECTED_KEYS = ['password',
+                  'email',
+                  'tokens',
+                  'session_token_owners',
+                  'session_tokens',
+                  'is_local_user',
+                  'projects',
+                  ]
 TOKEN_VALIDITY = 30 * 24 * 60 * 60
 SESSION_VALIDITY = 60 * 60
 
@@ -40,7 +47,8 @@ class User(Model['User']):
 
     @classmethod
     def defaults(cls):
-        return dict(name='',
+        return dict(identifier='',
+                    name='',
                     sub='',
                     email='',
                     picture='',
@@ -90,17 +98,16 @@ class User(Model['User']):
         self.update(res)
         self.save()
 
-    def upgrade_user(self, email: str, password: str, handle: str) -> int:
+    def upgrade_user(self, name: str, email: str, password: str) -> int:
         """
         Upgrade a guest user to a complete user
 
+        :param name: Name of the user
         :param email: Email address for login in (should be unique)
         :param password: Password for login in
-        :param handle: Username to be displayed publicly (Should be unique)
         :return: An int describing the result
                 - -1: If the user has been already upgraded
                 - -2: If the email is already in use
-                - -4: If the handle is already in use
                 - 0: If the upgrade completed successfully
         """
         if self.email is not None and self.email:
@@ -110,6 +117,7 @@ class User(Model['User']):
         if get_by_email(email) is not None:
             return -2
 
+        self.name = name
         self.email = email
         self.password = password_utils.create_hash(password)
         self.picture = gravatar_utils.get_image_url(self.email)

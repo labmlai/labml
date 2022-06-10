@@ -18,3 +18,7 @@ export function clearChildElements(elem: HTMLElement) {
         elem.firstChild.remove()
     }
 }
+
+export function showError(error?: string) {
+    alert(error ?? 'Something went wrong. Please try again later.\n\nIf the problem persist, please reach us at contact@labml.ai')
+}

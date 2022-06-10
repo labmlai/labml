@@ -77,7 +77,7 @@ class SignOutView extends ScreenView {
     }
 
     renderLogin() {
-        if (this.user == null) {
+        if (!this.user.is_complete) {
             ROUTER.navigate(this.returnUrl)
             return
         }
@@ -98,7 +98,7 @@ export class SignOutHandler {
 
     handleSignOut = () => {
         let urlParams = new URLSearchParams(window.location.search)
-        let redirectURL = decodeURIComponent(urlParams.get('redirect_url') ?? '/')
+        let redirectURL = decodeURIComponent(urlParams.get('return_url') ?? '/')
         SCREEN.setView(new SignOutView(redirectURL))
     }
 }

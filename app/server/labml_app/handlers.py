@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from .logger import logger
 from . import settings
 from . import auth
-from .db import run
+from .db import run, password_reset
 from .db import computer
 from .db import session
 from .db import user
@@ -48,15 +48,16 @@ async def sign_in(request: Request, data: SignInModel):
     u = user.get_user_secure(authenticated_token)
     utils.analytics.AnalyticsEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
 
-    return JSONResponse({'is_successful': True, 'token': authenticated_token}, status_code=200)
+    return JSONResponse({'is_successful': True, 'token': authenticated_token}, status_code=200,
+                        headers={'Authorization': authenticated_token})
 
 
 @utils.analytics.AnalyticsEvent.time_this(None)
 async def sign_up(request: Request, data: SignUpModel):
-    u = user.get_or_create_user(gen_token())
+    u = user.get_or_create_user(utils.gen_token())
     if not u:
         return JSONResponse({'is_successful': False, 'error': 'Bots are not allowed to sign up'}, status_code=401)
-    result = u.upgrade_user(data.email, data.password, data.handle)
+    result = u.upgrade_user(data.name, data.email, data.password)
     if result == -1:
         return JSONResponse({'is_successful': False, 'error': 'The account is already created'}, status_code=405)
     elif result == -2:
@@ -69,7 +70,43 @@ async def sign_up(request: Request, data: SignUpModel):
     authenticated_token = user.authenticate(data.email, data.password)
     utils.analytics.AnalyticsEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
 
-    return {'is_successful': True, 'token': authenticated_token}
+    return JSONResponse({'is_successful': True, 'token': authenticated_token}, status_code=200,
+                        headers={'Authorization': authenticated_token})
+
+
+@utils.analytics.AnalyticsEvent.time_this(None)
+async def reset_password(request: Request):
+    json = await request.json()
+    if 'reset_token' not in json or 'new_password' not in json:
+        return JSONResponse({'is_successful': False, 'error': 'Malformed request'}, status_code=400)
+
+    reset_token = json['reset_token']
+    new_password = json['new_password']
+
+    rp = password_reset.get(reset_token)
+    if not rp:
+        return JSONResponse({'is_successful': False,
+                             'error': 'The reset token is either invalid or expired. Please request a new password '
+                                      'reset link.'},
+                            status_code=401)
+    if not rp.is_valid:
+        password_reset.delete_token(rp)
+        return JSONResponse({'is_successful': False,
+                             'error': 'The reset token is either invalid or expired. Please request a new password '
+                                      'reset link.'},
+                            status_code=401)
+
+    # should not happen
+    if rp.reset_token != reset_token:
+        return JSONResponse({'is_successful': False,
+                             'error': 'Internal Error. If the problem persist, please reach us out at contact@labml.ai'},
+                            status_code=500)
+
+    u = rp.user.load()
+    u.reset_password(new_password)
+    password_reset.delete_token(rp)
+
+    return JSONResponse({'is_successful': True})
 
 
 @auth.login_required
@@ -482,28 +519,29 @@ async def get_computer(request: Request, computer_uuid: str) -> EndPointRes:
 
 @auth.login_required
 @utils.analytics.AnalyticsEvent.time_this(None)
-async def set_user(request: Request) -> EndPointRes:
+async def set_user(request: Request, token: Optional[str] = None) -> EndPointRes:
     u = auth.get_auth_user(request)
     json = await request.json()
     data = json['user']
     if u:
-        u.update_and_save(data)
+        u.set_user(data)
 
     return {'is_successful': True}
 
 
-@auth.login_required
 @utils.analytics.AnalyticsEvent.time_this(None)
-async def get_user(request: Request, token: Optional[str] = None):
-    u = user.get_user_secure(token)
+async def get_user(request: Request):
+    token, u = auth.get_app_token(request)
     json = await request.json()
     if json is None:
-        return {'is_successful': False, 'error': 'Malformed request'}, 400
+        return JSONResponse({'is_successful': False, 'error': 'Malformed request'}, status_code=400)
     if u is None:
-        return {'is_successful': False, 'error': 'You need to be authenticated to perform this request'}, 401
+        return JSONResponse({'is_successful': False, 'error': 'You need to be authenticated to perform this request'},
+                            status_code=200)
 
     session_token = u.generate_session_token(token)
-    return {'is_successful': True, 'user': u.get_data(), 'token': session_token}, 200
+    return JSONResponse({'is_successful': True, 'user': u.get_data(), 'token': session_token}, status_code=200,
+                        headers={'Authorization': session_token})
 
 
 @utils.analytics.AnalyticsEvent.time_this(None)
@@ -664,10 +702,11 @@ def add_handlers(app: FastAPI):
     _add_ui(app, 'GET', get_session_status, 'session/status/{session_uuid}')
 
     _add_ui(app, 'POST', set_user, 'user')
-    _add_ui(app, 'GET', get_user, 'auth/user')
+    _add_ui(app, 'POST', get_user, 'auth/user')
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'POST', sign_up, 'auth/sign_up')
-    _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
+    _add_ui(app, 'POST', sign_out, 'auth/sign_out')
+    _add_ui(app, 'POST', reset_password, 'auth/password_reset')
     _add_ui(app, 'GET', is_user_logged, 'auth/is_logged')
 
     _add_ui(app, 'POST', start_tensor_board, 'start_tensorboard/{computer_uuid}')

@@ -1,12 +1,13 @@
 import {AnalysisDataModel, Run} from "../models/run"
 import {Status} from "../models/status"
-import NETWORK from "../network"
-import {SignInModel, SignUpModel, User} from "../models/user"
+import NETWORK, {NetworkError} from "../network"
+import {PasswordResetModel, SignInModel, SignUpModel, User} from "../models/user"
 import {RunsList} from '../models/run_list'
 import {AnalysisPreference} from "../models/preferences"
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
 import {Job} from '../models/job'
+import {showError} from '../utils/document'
 
 const RELOAD_TIMEOUT = 60 * 1000
 const FORCE_RELOAD_TIMEOUT = 5 * 1000
@@ -298,7 +299,7 @@ export class UserCache extends CacheObject<User> {
     async load(): Promise<User> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getUser()
-            return new User(res)
+            return new User(res.user)
         })
     }
 
@@ -310,6 +311,7 @@ export class UserCache extends CacheObject<User> {
         try {
             let res = await NETWORK.signIn(data)
             if (!res.is_successful) {
+                showError(res.error)
                 return false
             }
 
@@ -318,6 +320,7 @@ export class UserCache extends CacheObject<User> {
             CACHE.invalidateCache()
             return true
         } catch (ex) {
+            showError(ex instanceof NetworkError ? ex.errorDescription : null)
             return false
         }
     }
@@ -326,6 +329,7 @@ export class UserCache extends CacheObject<User> {
         try {
             let res = await NETWORK.signUp(data)
             if (!res.is_successful) {
+                showError(res.error)
                 return false
             }
 
@@ -334,6 +338,24 @@ export class UserCache extends CacheObject<User> {
             CACHE.invalidateCache()
             return true
         } catch (ex) {
+            showError(ex instanceof NetworkError ? ex.errorDescription : null)
+            return false
+        }
+    }
+
+    async resetPassword(data: PasswordResetModel) {
+        try {
+            let res = await NETWORK.passwordReset(data)
+            if (!res.is_successful) {
+                showError(res.error)
+                return false
+            }
+
+            this.data = null
+            CACHE.invalidateCache()
+            return true
+        } catch (ex) {
+            showError(ex instanceof NetworkError ? ex.errorDescription : null)
             return false
         }
     }
@@ -342,6 +364,7 @@ export class UserCache extends CacheObject<User> {
         try {
             let res = await NETWORK.signOut()
             if (!res.is_successful) {
+                showError(res.error)
                 return false
             }
 

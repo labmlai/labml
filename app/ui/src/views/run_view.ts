@@ -130,7 +130,7 @@ class RunView extends ScreenView {
                     title: 'own this run',
                     parent: this.constructor.name
                 }).render($)
-            } else if (!this.run.is_project_run || this.user != null) {
+            } else if (!this.run.is_project_run || !this.user.is_complete) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, false),
                     text: 'Add',
@@ -148,8 +148,8 @@ class RunView extends ScreenView {
     }
 
     async onRunAction(isRunClaim: boolean) {
-        if (this.user == null) {
-            ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+        if (!this.user.is_complete) {
+            ROUTER.navigate(`/login?return_url=${window.location.pathname}`)
         } else {
             try {
                 if (isRunClaim) {

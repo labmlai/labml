@@ -1,5 +1,5 @@
-import {API_BASE_URL, APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN, MOBILE_APP_NAMESPACE} from './env'
-import {SignInModel, SignUpModel, User} from './models/user'
+import {API_BASE_URL} from './env'
+import {PasswordResetModel, SignInModel, SignUpModel, User} from './models/user'
 
 export function getAppToken() {
     return localStorage.getItem('app_token')
@@ -88,8 +88,8 @@ class Network {
             referrer: window.document.referrer,
 
         }, false)
-        if (res != null && res.user != null && res.user.identifier != null) {
-            setAppToken(res.user.identifier)
+        if (res != null && res.user != null && res.user.token != null) {
+            setAppToken(res.user.token)
         }
         return res
     }
@@ -105,8 +105,13 @@ class Network {
     async signUp(data: SignUpModel): Promise<any> {
         return this.sendHttpRequest('POST', `/auth/sign_up`, data)
     }
+
     async signOut(): Promise<any> {
         return this.sendHttpRequest('POST', `/auth/sign_out`)
+    }
+
+    async passwordReset(data: PasswordResetModel): Promise<any> {
+        return this.sendHttpRequest('POST', `/auth/password_reset`, data)
     }
 
     async getAnalysis(url: string, runUUID: string): Promise<any> {
@@ -145,7 +150,7 @@ class Network {
             xhr.responseType = 'json'
 
             let appToken = url.includes('/auth/') && !url.includes('/auth/send_verification_email') ? getAppToken() : this.sessionToken
-            if (appToken) {
+            if (appToken != null) {
                 let authDict = {'token': appToken}
                 xhr.setRequestHeader('Authorization', JSON.stringify(authDict))
             }
@@ -174,8 +179,16 @@ class Network {
                 }
 
                 if (xhr.status >= 400) {
+                    let errorMessage: string = null
+                    if (xhr.response != null) {
+                        if (xhr.response.hasOwnProperty('error')) {
+                            errorMessage = xhr.response.error
+                        } else if (xhr.response.hasOwnProperty('data') && xhr.response.data.hasOwnProperty('error')) {
+                            errorMessage = xhr.response.data.error
+                        }
+                    }
                     if (xhr.status != 403) {
-                        reject(new NetworkError(xhr.status, url, JSON.stringify(xhr.response)))
+                        reject(new NetworkError(xhr.status, url, JSON.stringify(xhr.response), errorMessage))
                     }
                 } else {
                     resolve(xhr.response)
@@ -189,6 +202,7 @@ class Network {
             xhr.send(JSON.stringify(data))
         })
     }
+
     private updateSession(token?: string) {
         this.sessionToken = token
     }
@@ -198,11 +212,13 @@ export class NetworkError {
     statusCode: number
     url: string
     message?: string
+    errorDescription?: string
 
-    constructor(statusCode: number, url: string, message?: string) {
+    constructor(statusCode: number, url: string, message?: string, description?: string) {
         this.statusCode = statusCode
         this.url = url
         this.message = message
+        this.errorDescription = description
     }
 }
 

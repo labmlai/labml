@@ -11,25 +11,24 @@ import EditableField from '../../components/input/editable_field'
 import {CustomButton} from '../../components/buttons'
 import {valueOrDefault} from '../../utils/value'
 
-class SignUpView extends ScreenView {
+class PasswordResetView extends ScreenView {
     private elem: HTMLDivElement
     private loader: DataLoader
     private actualWidth: number
     private userCache: UserCache
     private user: User
-    private returnUrl: string
-    private signUpContainer: HTMLDivElement
-    private nameField: EditableField
-    private emailField: EditableField
+    private token: string
+    private resetContainer: HTMLDivElement
     private passwordField: EditableField
-    private signUpButton: CustomButton
+    private passwordConfirmField: EditableField
+    private resetButton: CustomButton
     private submitButton: HTMLInputElement
 
-    constructor(returnUrl: string = '/runs') {
+    constructor(token: string ) {
         super()
 
         this.userCache = CACHE.getUser()
-        this.returnUrl = returnUrl
+        this.token = token
         this.loader = new DataLoader(async (force: boolean) => {
             this.user = await this.userCache.get(force)
         })
@@ -58,13 +57,18 @@ class SignUpView extends ScreenView {
     }
 
     async _render() {
-        setTitle({section: `Sign Up`})
+        if (valueOrDefault(this.token, '').length == 0) {
+            window.alert('Invalid reset token. Please retry with the link you received.')
+            ROUTER.navigate('/')
+            return
+        }
+        setTitle({section: `Reset Password`})
         clearChildElements(this.elem)
         $(this.elem, $ => {
             $('div', '.page', {style: {width: `${this.actualWidth}px`}}, $ => {
                 $('div', $ => {
                     new HamburgerMenuView({
-                        title: `Sign Up`,
+                        title: `Reset Password`,
                     }).render($)
                 })
 
@@ -73,7 +77,7 @@ class SignUpView extends ScreenView {
                 $('form', {
                     on: {submit: this.onSubmit},
                 }, $ => {
-                    this.signUpContainer = $('div', '.auth-container')
+                    this.resetContainer = $('div', '.auth-container')
                 })
             })
         })
@@ -81,40 +85,24 @@ class SignUpView extends ScreenView {
         try {
             await this.loader.load(false)
 
-            this.renderSignUp()
+            this.renderResetPassword()
         } catch (e) {
             handleNetworkErrorInplace(e)
             return
         }
     }
 
-    renderSignUp() {
+    renderResetPassword() {
         if (this.user.is_complete) {
-            ROUTER.navigate(this.returnUrl)
+            window.alert('Please logout from your account before attempting a password reset.')
+            ROUTER.navigate('/')
             return
         }
 
-        clearChildElements(this.signUpContainer)
-        $(this.signUpContainer, $ => {
+        clearChildElements(this.resetContainer)
+        $(this.resetContainer, $ => {
             $('div', '.input-list-container', $ => {
                 $('ul', $ => {
-                    this.nameField = new EditableField({
-                        name: 'Name',
-                        value: null,
-                        isEditable: true,
-                        autocomplete: 'name',
-                        required: true,
-                    })
-                    this.nameField.render($)
-                    this.emailField = new EditableField({
-                        name: 'Email',
-                        value: null,
-                        isEditable: true,
-                        type: 'email',
-                        autocomplete: 'email',
-                        required: true,
-                    })
-                    this.emailField.render($)
                     this.passwordField = new EditableField({
                         name: 'Password',
                         value: null,
@@ -124,6 +112,15 @@ class SignUpView extends ScreenView {
                         required: true,
                     })
                     this.passwordField.render($)
+                    this.passwordConfirmField = new EditableField({
+                        name: 'Confirm Password',
+                        value: null,
+                        isEditable: true,
+                        type: 'password',
+                        autocomplete: 'new-password',
+                        required: true,
+                    })
+                    this.passwordConfirmField.render($)
                     this.submitButton = $('input', {
                         type: 'submit', style: {
                             visibility: 'hidden',
@@ -133,69 +130,59 @@ class SignUpView extends ScreenView {
                     })
                 })
             })
-            this.signUpButton = new CustomButton({
-                text: 'Sign Up',
+            this.resetButton = new CustomButton({
+                text: 'Reset',
                 parent: this.constructor.name,
                 onButtonClick: () => this.submitButton.click()
             })
-            this.signUpButton.render($)
-            $('div', '.footer', $ => {
-                $('span', 'Already have an account? ')
-                let linkElem = $('a', {href: '/auth/sign_in', on: {click: this.handleSignIn}})
-                linkElem.textContent = 'Sign In'
-            })
+            this.resetButton.render($)
         })
     }
 
-    async handleSignUp() {
-        if (valueOrDefault(this.nameField.getInput(), '').length == 0) {
-            window.alert("Enter Name!")
-            return
-        }
-        if (valueOrDefault(this.emailField.getInput(), '').length == 0) {
-            window.alert("Enter Email!")
-            return
-        }
+    async handlePasswordReset() {
         if (valueOrDefault(this.passwordField.getInput(), '').length == 0) {
-            window.alert("Enter Password!")
+            window.alert('Enter new password!')
+            return
+        }
+        if (valueOrDefault(this.passwordConfirmField.getInput(), '').length == 0) {
+            window.alert('Enter confirm password!')
+            return
+        }
+        if (this.passwordField.getInput() != this.passwordConfirmField.getInput()) {
+            window.alert('Passwords do not match')
             return
         }
 
-        this.signUpButton.disabled = true
-        let response = await this.userCache.signUp({
-            name: this.nameField.getInput(),
-            email: this.emailField.getInput(),
-            password: this.passwordField.getInput(),
+        this.resetButton.disabled = true
+        let response = await this.userCache.resetPassword({
+            reset_token: this.token,
+            new_password: this.passwordField.getInput(),
         })
 
         if (!response) {
-            this.signUpButton.disabled = false
+            this.resetButton.disabled = false
             return
         }
 
-        ROUTER.navigate(this.returnUrl)
+        window.alert('Password changed successfully. Please login back to your account.')
+        ROUTER.navigate('/auth/sign_in')
     }
 
     private onSubmit = (e: Event) => {
         e.preventDefault()
         e.stopPropagation()
-        this.handleSignUp().then()
-    }
-
-    private handleSignIn(e: Event) {
-        e.preventDefault()
-        ROUTER.navigate(`/auth/sign_in?return_url=${encodeURIComponent(getPath())}`)
+        this.handlePasswordReset().then()
     }
 }
 
-export class SignUpHandler {
+export class PasswordResetHandler {
     constructor() {
-        ROUTER.route('auth/sign_up', [this.handleSignUp])
+        ROUTER.route('auth/reset', [this.handlePasswordReset])
     }
 
-    handleSignUp = () => {
+    handlePasswordReset = () => {
         let urlParams = new URLSearchParams(window.location.search)
-        let redirectURL = decodeURIComponent(urlParams.get('return_url') ?? '/')
-        SCREEN.setView(new SignUpView(redirectURL))
+        let token = urlParams.get('token')
+        SCREEN.setView(new PasswordResetView(token))
     }
 }

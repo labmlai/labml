@@ -27,7 +27,7 @@ def get_app_token(request: Request) -> ('str', User):
     u = None
     if token is None:
         token = request.cookies.get('Authorization', '')
-    if 'user' in request.url.path:
+    if 'auth' in request.url.path:
         u = user.get_user_secure(token)
     else:
         u = user.get_by_session_token(token)
@@ -64,7 +64,7 @@ def login_required(func) -> functools.wraps:
         token, u = get_app_token(request)
 
         kwargs['token'] = token
-        if u is not None:
+        if u is None:
             error_end = 'view this content' if request.method == 'GET' else 'perform this action'
             response = JSONResponse({'data': {'error': f'You need to be authorized to {error_end}'}, 'meta': {}})
             response.status_code = 403
@@ -84,7 +84,7 @@ def login_required(func) -> functools.wraps:
         if res.get('token'):
             token = res['token']
 
-        response = JSONResponse({'data': res})
+        response = JSONResponse(res)
 
         response.headers["Authorization"] = f'{token}'
         response.set_cookie("Authorization", f'{token}')

@@ -18,6 +18,8 @@ import {AuthErrorHandler} from './views/errors/auth_error_view'
 import {OtherErrorHandler} from './views/errors/other_error_view'
 import {NetworkErrorHandler} from './views/errors/network_error_view'
 import {SignOutHandler} from './views/auth/signout_view'
+import {SignUpHandler} from './views/auth/signup_view'
+import {PasswordResetHandler} from './views/auth/password_reset_view'
 
 ROUTER.route(/^(.*)$/g, [() => {
     ROUTER.navigate('/404')
@@ -25,6 +27,8 @@ ROUTER.route(/^(.*)$/g, [() => {
 
 new SignInHandler()
 new SignOutHandler()
+new SignUpHandler()
+new PasswordResetHandler()
 
 new PageNotFoundHandler()
 new AuthErrorHandler()

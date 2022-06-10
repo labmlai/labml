@@ -5,14 +5,13 @@ from fastapi.responses import JSONResponse
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 
-from labml_app.logger import logger
 from labml_app.enums import SeriesEnums
-from labml_app import auth
-from ..series import Series
+from labml_app.logger import logger
+from .. import preferences
 from ..analysis import Analysis
+from ..series import Series
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection
-from .. import preferences
 from ...db import user
 
 
