@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional
 import comet_ml
 
 from labml.internal.configs.processor import ConfigsSaver
-from labml.internal.tracker.indicators.artifacts import Image
+from labml.internal.tracker.indicators.artifacts import Image, Text
 from . import Writer as WriteBase
 from ..indicators import Indicator
 from ..indicators.numeric import NumericIndicator
@@ -66,6 +66,10 @@ class Writer(WriteBase):
             images = indicator.get_images()
             for i, img in enumerate(images):
                 self.run.log_image(img, self._parse_key(indicator.name), image_channels='first')
+        elif isinstance(indicator, Text):
+            texts = indicator.get_values()
+            for text in texts.values():
+                self.run.log_text(text)
 
     def write(self, *,
               global_step: int,
