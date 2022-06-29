@@ -1,7 +1,6 @@
 import time
-from typing import List, Dict, Optional, Set, Any
-
 from labml_db import Model, Key, Index
+from typing import List, Dict, Optional, Set, Any
 
 from . import project
 from .. import utils
@@ -271,7 +270,8 @@ def get_by_session_token(token: str) -> Optional[User]:
             return u
 
         UserSessionTokenIndex.delete(token)
-        del u.session_tokens[token]
+        if token in u.session_tokens:
+            del u.session_tokens[token]
         u.save()
         return None
 
@@ -280,13 +280,6 @@ def get_by_session_token(token: str) -> Optional[User]:
 
 def get_user_secure(token: str) -> Optional[User]:
     u = get_by_token(token)
-
-    if u is None:
-        u = get(token)
-        if u is None:
-            return None
-        if u.password is not None:
-            return None
 
     return u
 
