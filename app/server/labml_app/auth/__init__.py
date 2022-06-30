@@ -23,10 +23,8 @@ def get_app_token(request: Request) -> ('str', User):
     except ValueError:
         res = {}
 
-    token = res.get('token')
+    token = res.get('token', '')
     u = None
-    if token is None:
-        token = request.cookies.get('Authorization', '')
     if 'auth' in request.url.path:
         u = user.get_user_secure(token)
     else:
@@ -87,7 +85,6 @@ def login_required(func) -> functools.wraps:
         response = JSONResponse(res)
 
         response.headers["Authorization"] = f'{token}'
-        response.set_cookie("Authorization", f'{token}')
         response.status_code = res_code
 
         return response
