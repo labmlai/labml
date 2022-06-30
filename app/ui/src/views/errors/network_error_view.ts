@@ -51,7 +51,7 @@ class NetworkErrorView extends ScreenView {
         setTitle({section: 'Network Error'})
         this.elem = $('div', '.error-container', $ => {
             $('h2', '.mt-5', 'Ooops!' + '')
-            $('p', 'There\'s a problem with the connection between you and us' + '')
+            $('p', 'There\'s a problem with the connection ' + '')
             $('div', '.btn-container.mt-3', $ => {
                 $('button', '.btn.nav-link',
                     {on: {click: this.events.retry}},
