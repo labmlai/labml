@@ -15,6 +15,7 @@ build/
 
 **/.idea/*
 **/!.idea/dictionaries
+*.iml
 
 .labml.yaml
 
