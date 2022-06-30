@@ -134,7 +134,7 @@ async def get_cpu_preferences(request: Request, session_uuid: str) -> Any:
     return cp.get_data()
 
 
-@Analysis.route('POST', 'cpu/preferences/<session_uuid>')
+@Analysis.route('POST', 'cpu/preferences/{session_uuid}')
 async def set_cpu_preferences(request: Request, session_uuid: str) -> Any:
     preferences_key = CPUPreferencesIndex.get(session_uuid)
 
