@@ -316,8 +316,8 @@ export class UserCache extends CacheObject<User> {
             }
 
             this.data = null
-            await this.get()
             CACHE.invalidateCache()
+            await this.get()
             return true
         } catch (ex) {
             showError(ex instanceof NetworkError ? ex.errorDescription : null)
@@ -513,12 +513,13 @@ class Cache {
     }
 
     invalidateCache() {
-
         this.runs = {}
         this.sessions = {}
         this.runStatuses = {}
         this.sessionStatuses = {}
-        this.user = null
+        if (this.user != null) {
+            this.user.invalidate_cache()
+        }
         this.runsList = null
         this.sessionsList = null
     }

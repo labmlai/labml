@@ -11,7 +11,7 @@ import {StatusView} from "../../../components/status"
 import mix_panel from "../../../mix_panel"
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {Session} from "../../../models/session"
-import {setTitle} from '../../../utils/document'
+import {getPath, setTitle} from '../../../utils/document'
 import {SessionsListItemModel} from "../../../models/session_list"
 import {SessionsListItemView} from "../../../components/sessions_list_item"
 import {ScreenView} from '../../../screen_view'
@@ -193,6 +193,15 @@ class SessionHeaderView extends ScreenView {
     renderSessionsList() {
         this.sessionsListContainer.innerHTML = ''
         $(this.sessionsListContainer, $ => {
+            if (!this.user.is_complete) {
+                $('div', '.text-center', $ => {
+                    $('span', 'You need to be authenticated to view this content. ')
+                    let linkElem = $('a', '.generic-link', {href: '/auth/sign_in', on: {click: this.handleSignIn}})
+                    linkElem.textContent = 'Sign In'
+                })
+
+                return
+            }
             for (let i = 0; i < this.sessionsList.length; i++) {
                 new SessionsListItemView({
                     item: this.sessionsList[i],
@@ -231,6 +240,11 @@ class SessionHeaderView extends ScreenView {
 
         this.sessionCache.setSession(this.session).then()
         this.onToggleEdit()
+    }
+
+    private handleSignIn(e: Event) {
+        e.preventDefault()
+        ROUTER.navigate(`/auth/sign_in?return_url=${encodeURIComponent(getPath())}`, {replace: true})
     }
 }
 
