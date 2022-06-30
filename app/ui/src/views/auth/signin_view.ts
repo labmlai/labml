@@ -90,7 +90,7 @@ class SignInView extends ScreenView {
 
     renderLogin() {
         if (this.user.is_complete) {
-            ROUTER.navigate(this.returnUrl)
+            ROUTER.navigate(this.returnUrl, {replace: true})
             return
         }
 
@@ -169,7 +169,7 @@ class SignInView extends ScreenView {
             return
         }
 
-        ROUTER.navigate(this.returnUrl)
+        ROUTER.navigate(this.returnUrl, {replace: true})
     }
 
     private sendPasswordResetEmail = (evt: Event) => {
@@ -187,7 +187,7 @@ class SignInView extends ScreenView {
 
     private handleSignUp(e: Event) {
         e.preventDefault()
-        ROUTER.navigate(`/auth/sign_up?return_url=${encodeURIComponent(getPath())}`)
+        ROUTER.navigate(`/auth/sign_up?return_url=${encodeURIComponent(getPath())}`, {replace: true})
     }
 }
 

@@ -90,7 +90,7 @@ class SignUpView extends ScreenView {
 
     renderSignUp() {
         if (this.user.is_complete) {
-            ROUTER.navigate(this.returnUrl)
+            ROUTER.navigate(this.returnUrl, {replace: true})
             return
         }
 
@@ -173,7 +173,7 @@ class SignUpView extends ScreenView {
             return
         }
 
-        ROUTER.navigate(this.returnUrl)
+        ROUTER.navigate(this.returnUrl, {replace: true})
     }
 
     private onSubmit = (e: Event) => {
@@ -184,7 +184,7 @@ class SignUpView extends ScreenView {
 
     private handleSignIn(e: Event) {
         e.preventDefault()
-        ROUTER.navigate(`/auth/sign_in?return_url=${encodeURIComponent(getPath())}`)
+        ROUTER.navigate(`/auth/sign_in?return_url=${encodeURIComponent(getPath())}`, {replace: true})
     }
 }
 
