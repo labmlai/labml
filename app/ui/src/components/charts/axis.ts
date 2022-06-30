@@ -67,7 +67,7 @@ export class BottomTimeAxis {
     constructor(opt: TimeAxisOptions) {
         this.numTicks = opt.numTicks | 5
         this.id = `${opt.chartId}_axis_bottom`
-        this.axis = d3.axisBottom(opt.scale as d3.AxisScale<d3.AxisDomain>).ticks(this.numTicks, d3.timeFormat("%b-%d:%H:%M"))
+        this.axis = d3.axisBottom(opt.scale as d3.AxisScale<d3.AxisDomain>).ticks(this.numTicks, d3.timeFormat("%b-%d %H:%M"))
     }
 
     render($: WeyaElementFunction) {
