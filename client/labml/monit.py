@@ -234,7 +234,7 @@ def loop(iterator_: Union[Collection, range, int], *,
                                 is_print_iteration_time=is_print_iteration_time)
 
 
-def mix(total_iterations, *iterators: Tuple[str, Sized],
+def mix(total_iterations: Union[Collection, range, int], *iterators: Tuple[str, Sized],
         is_monit: bool = True):
     """
     Mix a set of iterators.
