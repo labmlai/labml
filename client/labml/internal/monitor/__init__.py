@@ -33,11 +33,13 @@ class Monitor:
     def silent(self, is_silent: bool = True):
         self.__is_silent = is_silent
 
-    def mix(self, total_iterations, iterators: List[Tuple[str, typing.Sized]],
+    def mix(self, total_iterations: int, iterators: List[Tuple[str, typing.Sized]],
             is_monit: bool):
         return Mix(total_iterations=total_iterations,
                    iterators=iterators,
-                   is_monit=is_monit, logger=self)
+                   is_monit=is_monit and self.__is_looping,
+                   monitor=self,
+                   )
 
     def iterate(self, name, iterable: Union[typing.Iterable, typing.Sized, int],
                 total_steps: Optional[int], *,

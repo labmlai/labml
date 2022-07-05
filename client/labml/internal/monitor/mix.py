@@ -1,28 +1,27 @@
 from typing import Tuple, Union, Callable, Any, List, cast, Sized, TYPE_CHECKING, Iterator
 
 Receiver = Union[str, Callable[[Any], None]]
-MyIterator = Union[Sized, int]
 
 if TYPE_CHECKING:
     from ..monitor import Monitor
 
 
 class SplitIterator:
-    def __init__(self, iterator: Tuple[Receiver, MyIterator]):
+    def __init__(self, iterator: Tuple[Receiver, Sized]):
         receiver, it = iterator
         if isinstance(receiver, str):
             self.name = receiver
             self.callback = None
-        else:
+            self.is_iterate = True
+        elif callable(receiver):
             self.name = receiver.__name__
             self.callback = receiver
-
-        if isinstance(it, int):
-            self.iterator = range(it)
-            self.size = it
+            self.is_iterate = False
         else:
-            self.iterator = it
-            self.size = len(it)
+            raise ValueError('receiver must be str or callable', receiver)
+
+        self.iterator = it
+        self.size = len(it)
 
         self.idx = 0
 
@@ -47,13 +46,15 @@ class SplitIterator:
 class Mix:
     iterators: List[SplitIterator]
     it: List[SplitIterator]
+    current_iterator: SplitIterator
 
     def __init__(self, *,
                  total_iterations,
-                 iterators: List[Tuple[Receiver, MyIterator]],
+                 iterators: List[Tuple[Receiver, Sized]],
                  is_monit: bool,
-                 logger: 'Monitor'):
-        self.logger = logger
+                 monitor: 'Monitor',
+                 ):
+        self.monitor = monitor
         self.is_monit = is_monit
         self.total_iterations = total_iterations
         self.iterators = [SplitIterator(it) for it in iterators]
@@ -64,7 +65,7 @@ class Mix:
         self.idx = 0
         return self
 
-    def __next__(self):
+    def get_next(self):
         finished = False
         if self.section is not None:
             self.section.progress(self.current_iterator.idx)
@@ -77,22 +78,32 @@ class Mix:
                     finished = False
                     if it.idx < (self.idx + 1) * len(it) // self.total_iterations:
                         if self.is_monit:
-                            self.section = self.logger.section(it.name,
-                                                               is_partial=True,
-                                                               is_silent=False,
-                                                               is_timed=True,
-                                                               total_steps=it.size,
-                                                               is_children_silent=False,
-                                                               is_new_line=True,
-                                                               is_not_in_loop=False,
-                                                               is_track=False)
+                            self.section = self.monitor.section(it.name,
+                                                                is_partial=True,
+                                                                is_silent=False,
+                                                                is_timed=True,
+                                                                total_steps=it.size,
+                                                                is_children_silent=False,
+                                                                is_new_line=True,
+                                                                is_not_in_loop=False,
+                                                                is_track=False)
                             self.section.__enter__()
                         self.current_iterator = it
-                        return it.name, next(it)
+                        if it.is_iterate:
+                            return it.name, next(it)
+                        else:
+                            next(it)
+                            return None
 
             self.idx += 1
 
         raise StopIteration()
+
+    def __next__(self):
+        while True:
+            n = self.get_next()
+            if n is not None:
+                return n
 
 
 class Enumerate(Sized):

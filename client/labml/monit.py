@@ -1,5 +1,5 @@
 import functools
-from typing import Iterable, Sized, Collection, Callable, Tuple
+from typing import Iterable, Sized, Collection, Callable, Tuple, Any
 from typing import Union, Optional, overload
 
 from labml.internal.monitor import monitor_singleton as _internal
@@ -234,25 +234,65 @@ def loop(iterator_: Union[Collection, range, int], *,
                                 is_print_iteration_time=is_print_iteration_time)
 
 
-def mix(total_iterations: Union[Collection, range, int], *iterators: Tuple[str, Sized],
+@overload
+def mix(*iterators: Tuple[Union[str, Callable[[Any], None]], Union[Sized, int]],
+        is_monit: bool = True):
+    ...
+
+
+@overload
+def mix(total_iterations: int, *iterators: Tuple[Union[str, Callable[[Any], None]], Union[Sized, int]],
+        is_monit: bool = True):
+    ...
+
+
+def mix(*args,
         is_monit: bool = True):
     """
-    Mix a set of iterators.
+    This has two overloads
+
+    .. function:: mix(*iterators: Tuple[Union[str, Callable[[Any], None]], Union[Sized, int]], is_monit: bool = True)
+        :noindex:
+
+    .. function:: mix(total_iterations: int, *iterators: Tuple[Union[str, Callable[[Any], None]], Union[Sized, int]], is_monit: bool = True):
+        :noindex:
 
     This will iterate through a list of iterators while mixing among them.
-    This is useful when you want to mix training and validation steps within an epoch.
-    It gives a tuple of iterator name and the element as you iterate.
+    This is useful, for instance, when you want to mix training, validation, sampling steps within an epoch.
+
+    You can give it tuples of iterator names and iterators.
+    It will yield the names along with the iterator values.
+
+    If you pass a function instead of a name it will call that function with the iterator value, instead of
+    yielding it.
 
     Arguments:
         total_iterations (Union[Collection, range, int]): The number of times to mix
-        iterators (Tuple[str, Sized]): Are iterators and their names
-        is_monit (bool, optional): Whether to monitor the iteration
+        iterators (Tuple[Union[str, Callable[[Any], None]], Union[Sized, int]]): Are iterators and their names or callback function
+        is_monit (bool, optional): Whether to monitor the iterations, when inside :func:`loop`. Default to ``True``.
     """
+
+    total_iterations = None
+    iterators = []
+    for arg in args:
+        if isinstance(arg, tuple):
+            r, it = arg
+            if isinstance(it, int):
+                it = range(it)
+            iterators.append((r, it))
+        elif isinstance(arg, int):
+            total_iterations = arg
+        else:
+            raise ValueError(f'Unknown argument type: {type(arg)}, {arg}')
+
+    if total_iterations is None:
+        total_iterations = max(len(iterator[1]) for iterator in iterators)
+
     return _internal().mix(total_iterations, list(iterators), is_monit=is_monit)
 
 
 def finish_loop() -> None:
     """
-    Finish the loop and flush all the loop related montoring stats.
+    Finish the loop and flush all the loop related monitoring stats.
     """
     _internal().finish_loop()
