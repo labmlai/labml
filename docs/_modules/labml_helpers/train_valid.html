@@ -336,7 +336,9 @@
                  <span class="n">data_loader</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span>
                  <span class="n">inner_iterations</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                  <span class="n">state_modules</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StateModule</span><span class="p">],</span>
+                 <span class="n">is_track_time</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
                  <span class="n">step</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">any</span><span class="p">,</span> <span class="s1">&#39;BatchIndex&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_track_time</span> <span class="o">=</span> <span class="n">is_track_time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">step</span>
@@ -369,7 +371,7 @@
                 <span class="n">sm</span><span class="o">.</span><span class="n">on_epoch_end</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">monit</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">is_partial</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">monit</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">is_partial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_track</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_track_time</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_index</span><span class="o">.</span><span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">monit</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_index</span><span class="o">.</span><span class="n">iteration_completed</span><span class="p">:</span>
@@ -465,6 +467,8 @@
 
     <span class="n">inner_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 
+    <span class="n">is_track_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
     <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
@@ -502,6 +506,7 @@
                    <span class="n">data_loader</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">train_loader</span><span class="p">,</span>
                    <span class="n">inner_iterations</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">inner_iterations</span><span class="p">,</span>
                    <span class="n">state_modules</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">state_modules</span><span class="p">,</span>
+                   <span class="n">is_track_time</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">is_track_time</span><span class="p">,</span>
                    <span class="n">step</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
 
 
@@ -512,6 +517,7 @@
                    <span class="n">data_loader</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">valid_loader</span><span class="p">,</span>
                    <span class="n">inner_iterations</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">inner_iterations</span><span class="p">,</span>
                    <span class="n">state_modules</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">state_modules</span><span class="p">,</span>
+                   <span class="n">is_track_time</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">is_track_time</span><span class="p">,</span>
                    <span class="n">step</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
 
 

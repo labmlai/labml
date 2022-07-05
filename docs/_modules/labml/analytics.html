@@ -302,7 +302,7 @@
 <span class="sd">    You can wrap any PyTorch model with :class:`ModelProbe` to access it&#39;s parameters, activations and gradients.</span>
 
 <span class="sd">    `Here&#39;s a notebook with example usage &lt;https://github.com/labmlai/labml/blob/master/guides/model_probe.ipynb&gt;`_</span>
-<span class="sd">    </span>
+
 <span class="sd">    &gt;&gt;&gt; from labml.analytics import ModelProbe</span>
 <span class="sd">    &gt;&gt;&gt; probe = ModelProbe(model)</span>
 <span class="sd">    &gt;&gt;&gt; outputs = model(inputs)</span>
@@ -315,6 +315,7 @@
 
 <div class="viewcode-block" id="ValueCollection"><a class="viewcode-back" href="../../api/analytics.html#labml.analytics.ValueCollection">[docs]</a><span class="k">class</span> <span class="nc">ValueCollection</span><span class="p">(</span><span class="n">_ValueCollection</span><span class="p">):</span>
     <span class="k">pass</span></div>
+
 
 <div class="viewcode-block" id="DeepValueCollection"><a class="viewcode-back" href="../../api/analytics.html#labml.analytics.DeepValueCollection">[docs]</a><span class="k">class</span> <span class="nc">DeepValueCollection</span><span class="p">(</span><span class="n">_DeepValueCollection</span><span class="p">):</span>
     <span class="k">pass</span></div>
@@ -350,6 +351,10 @@
     <span class="k">return</span> <span class="n">indicators</span></div>
 
 
+<span class="k">def</span> <span class="nf">get_experiment_runs</span><span class="p">(</span><span class="n">experiment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_cache</span><span class="o">.</span><span class="n">get_experiment_runs</span><span class="p">(</span><span class="n">experiment_name</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="get_run"><a class="viewcode-back" href="../../api/analytics.html#labml.analytics.get_run">[docs]</a><span class="k">def</span> <span class="nf">get_run</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns ``Run`` object</span>
@@ -373,6 +378,7 @@
 <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="n">indicators</span><span class="p">:</span> <span class="n">IndicatorCollection</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">levels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
+                 <span class="n">color_scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;tableau10&#39;</span><span class="p">,</span>
                  <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">800</span><span class="p">,</span> <span class="n">height_minimap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
     <span class="o">...</span>
 
@@ -381,6 +387,7 @@
 <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="s1">&#39;torch.Tensor&#39;</span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">levels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
+                 <span class="n">color_scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;tableau10&#39;</span><span class="p">,</span>
                  <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">800</span><span class="p">,</span> <span class="n">height_minimap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
     <span class="o">...</span>
 
@@ -390,6 +397,7 @@
                  <span class="n">step</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">levels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
+                 <span class="n">color_scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;tableau10&#39;</span><span class="p">,</span>
                  <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">800</span><span class="p">,</span> <span class="n">height_minimap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
     <span class="o">...</span>
 
@@ -398,6 +406,7 @@
 <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="s1">&#39;torch.Tensor&#39;</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">levels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
+                 <span class="n">color_scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;tableau10&#39;</span><span class="p">,</span>
                  <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">800</span><span class="p">,</span> <span class="n">height_minimap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
     <span class="o">...</span>
 
@@ -405,6 +414,7 @@
 <div class="viewcode-block" id="distribution"><a class="viewcode-back" href="../../api/analytics.html#labml.analytics.distribution">[docs]</a><span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">any</span><span class="p">,</span>
                  <span class="n">names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">levels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
+                 <span class="n">color_scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;tableau10&#39;</span><span class="p">,</span>
                  <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">800</span><span class="p">,</span> <span class="n">height_minimap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a distribution plot distribution with Altair</span>
@@ -432,6 +442,7 @@
 <span class="sd">        names(List[str]): List of names of series</span>
 <span class="sd">        levels: how many levels of the distribution to be plotted</span>
 <span class="sd">        alpha: opacity of the distribution</span>
+<span class="sd">        color_scheme: color scheme</span>
 <span class="sd">        height: height of the visualization</span>
 <span class="sd">        width: width of the visualization</span>
 <span class="sd">        height_minimap: height of the view finder</span>
@@ -478,6 +489,7 @@
         <span class="n">tables</span><span class="p">,</span>
         <span class="n">levels</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span>
         <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+        <span class="n">color_scheme</span><span class="o">=</span><span class="n">color_scheme</span><span class="p">,</span>
         <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
         <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
         <span class="n">height_minimap</span><span class="o">=</span><span class="n">height_minimap</span><span class="p">)</span></div>

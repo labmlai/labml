@@ -291,19 +291,32 @@ Each element should be either a string or a tuple of string and styles.</p></li>
 <p>This has multiple overloads</p>
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">labml.logger.</code><code class="sig-name descname">inspect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">items</span><span class="p">:</span> <span class="n">Dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/logger.html#inspect"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">labml.logger.</code><code class="sig-name descname">inspect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">items</span><span class="p">:</span> <span class="n">Dict</span></em>, <em class="sig-param"><span class="n">_expand</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">_n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/logger.html#inspect"><span class="viewcode-link">[source]</span></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">labml.logger.</code><code class="sig-name descname">inspect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">items</span><span class="p">:</span> <span class="n">List</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/logger.html#inspect"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">labml.logger.</code><code class="sig-name descname">inspect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">items</span><span class="p">:</span> <span class="n">List</span></em>, <em class="sig-param"><span class="n">_expand</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">_n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/logger.html#inspect"><span class="viewcode-link">[source]</span></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">labml.logger.</code><code class="sig-name descname">inspect</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">items</span><span class="p">:</span> <span class="n">any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/logger.html#inspect"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">labml.logger.</code><code class="sig-name descname">inspect</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">items</span><span class="p">:</span> <span class="n">any</span></em>, <em class="sig-param"><span class="n">_expand</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">_n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/logger.html#inspect"><span class="viewcode-link">[source]</span></a></dt>
 <dd></dd></dl>
 
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.logger.</code><code class="sig-name descname">inspect</code><span class="sig-paren">(</span><em class="sig-param">**items: any</em>, <em class="sig-param">_expand: bool = False</em>, <em class="sig-param">_n: int = 10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/logger.html#inspect"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_expand</strong> (<em>bool</em>) – whether to expand items</p></li>
+<li><p><strong>_n</strong> (<em>int</em>) – number of items to show. -1 for all</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <div class="section" id="styling">

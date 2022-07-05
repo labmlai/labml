@@ -369,17 +369,17 @@
 
 
 <span class="nd">@overload</span>
-<span class="k">def</span> <span class="nf">inspect</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">inspect</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">_expand</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
     <span class="o">...</span>
 
 
 <span class="nd">@overload</span>
-<span class="k">def</span> <span class="nf">inspect</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">inspect</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">_expand</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
     <span class="o">...</span>
 
 
 <span class="nd">@overload</span>
-<span class="k">def</span> <span class="nf">inspect</span><span class="p">(</span><span class="o">*</span><span class="n">items</span><span class="p">:</span> <span class="nb">any</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">inspect</span><span class="p">(</span><span class="o">*</span><span class="n">items</span><span class="p">:</span> <span class="nb">any</span><span class="p">,</span> <span class="n">_expand</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
     <span class="o">...</span>
 
 
@@ -394,14 +394,21 @@
 
 <span class="sd">    This has multiple overloads</span>
 
-<span class="sd">    .. function:: inspect(items: Dict)</span>
+<span class="sd">    .. function:: inspect(items: Dict, _expand: bool = False, _n: int = 10)</span>
 <span class="sd">        :noindex:</span>
 
-<span class="sd">    .. function:: inspect(items: List)</span>
+<span class="sd">    .. function:: inspect(items: List, _expand: bool = False, _n: int = 10)</span>
 <span class="sd">        :noindex:</span>
 
-<span class="sd">    .. function:: inspect(*items: any)</span>
+<span class="sd">    .. function:: inspect(*items: any, _expand: bool = False, _n: int = 10)</span>
 <span class="sd">        :noindex:</span>
+
+<span class="sd">    .. function:: inspect(**items: any, _expand: bool = False, _n: int = 10)</span>
+<span class="sd">        :noindex:</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        _expand (bool): whether to expand items</span>
+<span class="sd">        _n (int): number of items to show. -1 for all</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="kn">from</span> <span class="nn">labml.internal.logger</span> <span class="kn">import</span> <span class="n">logger_singleton</span> <span class="k">as</span> <span class="n">_internal</span>
