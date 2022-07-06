@@ -439,6 +439,9 @@
 <span class="sd">    .. function:: loop(iterator_: int, *, is_track=True, is_print_iteration_time=True)</span>
 <span class="sd">        :noindex:</span>
 
+<span class="sd">    .. function:: loop(iterator_: Collection, *, is_track=True, is_print_iteration_time=True)</span>
+<span class="sd">        :noindex:</span>
+
 <span class="sd">    This creates a monitored loop. This is designed for training loops.</span>
 <span class="sd">    It has better monitoring than using :func:`iterate` or :func:`enum`.</span>
 
@@ -481,7 +484,7 @@
 <span class="sd">    .. function:: mix(*iterators: Tuple[Union[str, Callable[[Any], None]], Union[Sized, int]], is_monit: bool = True)</span>
 <span class="sd">        :noindex:</span>
 
-<span class="sd">    .. function:: mix(total_iterations: int, *iterators: Tuple[Union[str, Callable[[Any], None]], Union[Sized, int]], is_monit: bool = True):</span>
+<span class="sd">    .. function:: mix(total_iterations: int, *iterators: Tuple[Union[str, Callable[[Any], None]], Union[Sized, int]], is_monit: bool = True)</span>
 <span class="sd">        :noindex:</span>
 
 <span class="sd">    This will iterate through a list of iterators while mixing among them.</span>

@@ -368,7 +368,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">False</
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">mix(total_iterations: int, *iterators: Tuple[Union[str, Callable[[Any], None]], Union[Sized, int]], is_monit: bool = True):</code></dt>
+<code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">mix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">total_iterations</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">iterators</span><span class="p">:</span> <span class="n">Tuple[Union[str, Callable[[Any], None]], Union[Sized, int]]</span></em>, <em class="sig-param"><span class="n">is_monit</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#mix"><span class="viewcode-link">[source]</span></a></dt>
 <dd></dd></dl>
 
 <p>This will iterate through a list of iterators while mixing among them.
@@ -403,6 +403,11 @@ yielding it.</p>
 <dl class="py function">
 <dt>
 <code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">loop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterator_</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">is_track</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">is_print_iteration_time</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#loop"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">labml.monit.</code><code class="sig-name descname">loop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterator_</span><span class="p">:</span> <span class="n">Collection</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">is_track</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">is_print_iteration_time</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#loop"><span class="viewcode-link">[source]</span></a></dt>
 <dd></dd></dl>
 
 <p>This creates a monitored loop. This is designed for training loops.
