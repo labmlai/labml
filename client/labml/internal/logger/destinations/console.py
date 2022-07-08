@@ -42,7 +42,7 @@ class ConsoleDestination(Destination):
         if is_reset:
             self.print("\r" + text, end_char)
         else:
-            print(text, end_char)
+            print(text, end_char, flush=True)
 
     def print(self, text: str, end_char: str):
         if self.is_screen:
