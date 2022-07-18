@@ -106,12 +106,18 @@ class _WebApiThread(threading.Thread):
                 self.please_wait_count += 1
             retries = 0
             while True:
-                if self._process(packets):
+                try:
+                    is_successful = self._process(packets)
+                except Exception as e:
+                    print(e)
+                    is_successful = False
+
+                if is_successful:
                     break
-                else:
-                    logger.log(f'Retrying again in 10 seconds ({retries})...', Text.highlight)
-                    time.sleep(10)
-                    retries += 1
+
+                retries += 1
+                logger.log(f'Retrying again in {retries * 10} seconds ({retries})...', Text.highlight)
+                time.sleep(retries * 10)
             if self.is_stopped and self.queue.empty():
                 time.sleep(0.5)
                 if self.queue.empty():
@@ -128,21 +134,32 @@ class _WebApiThread(threading.Thread):
         try:
             response = self._send(data)
         except urllib.error.HTTPError as e:
-            labml_notice([f'Failed to send to {self.url}: ',
-                          (str(e.code), Text.value),
-                          '\n' + str(e.reason)])
+            labml_notice([
+                (str(e.reason), Text.key),
+                ' ',
+                (str(e.code), Text.value),
+                f': {self.url}',
+            ], is_lite=True)
             return False
         except urllib.error.URLError as e:
-            labml_notice([f'Failed to connect to {self.url}\n',
-                          str(e.reason)])
+            labml_notice([
+                (str(e.reason), Text.key),
+                ' ',
+                ('Failed to connect', Text.value),
+                f': {self.url}',
+            ], is_lite=True)
             return False
         except socket.timeout as e:
-            labml_notice([f'{self.url} timeout\n',
-                          str(e)])
+            labml_notice([
+                ('Timeout', Text.key),
+                f': {self.url}: ',
+            ], is_lite=True)
             return False
         except ConnectionResetError as e:
-            labml_notice([f'Connection reset by LabML App server {self.url}\n',
-                          str(e)])
+            labml_notice([
+                ('Connection Reset', Text.key),
+                f': {self.url}',
+            ], is_lite=True)
             return False
 
         for h in self.handlers:
