@@ -14,7 +14,7 @@ server-dev: ## start and watch server
 server-prod: ## compile and start server in prod
 	# pkill gunicorn
     # export PATH=~/miniconda/bin:$PATH
-	cd server && pipenv install --ignore-pipfile && pipenv run gunicorn --bind 0.0.0.0:5000 -w 2 -k uvicorn.workers.UvicornWorker labml_app.flask_app:app --daemon
+	cd server && pipenv install --ignore-pipfile && pipenv run gunicorn --bind 0.0.0.0:5000 -w 5 -k uvicorn.workers.UvicornWorker labml_app.flask_app:app --daemon
 
 clean-db: ## clean float-project and move samples to float-project
 	cd server &&  pipenv run python -m labml_app.scripts.clean_ups
