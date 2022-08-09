@@ -2,9 +2,11 @@ import {Weya} from "../../../lib/weya/weya"
 
 export class ErrorMessage {
     elem: HTMLDivElement
+    private readonly text: string
 
-    constructor() {
+    constructor(text?: string) {
         this.elem = null
+        this.text = text ?? 'Network error'
     }
 
     render(parent: HTMLDivElement) {
@@ -12,7 +14,7 @@ export class ErrorMessage {
         Weya(parent, $ => {
             this.elem = $('div', '.error.text-center.warning', $ => {
                 $('span', '.fas.fa-exclamation-triangle', '')
-                $('h4', '.text-uppercase', 'Network error')
+                $('h4', '.text-uppercase', this.text)
             })
         })
     }
