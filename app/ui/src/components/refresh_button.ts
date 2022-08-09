@@ -13,15 +13,32 @@ export class AwesomeRefreshButton {
     private refreshIcon: HTMLSpanElement
     private remainingTimeElem: HTMLSpanElement
     private remainingTime: number
+    private isDisabled: boolean
 
     constructor(refresh: () => Promise<void>) {
         this._refresh = refresh
         this.refreshTimeout = null
         this.isActive = false
+        this.isDisabled = false
+    }
+
+    set disabled(value: boolean) {
+        this.isDisabled = value
+
+        if (this.refreshButton) {
+            if (this.isDisabled) {
+                this.refreshButton.classList.add('disabled')
+                this._stop()
+                return
+            }
+            this.refreshButton.classList.remove('disabled')
+            this.start()
+            this.onRefreshClick().then()
+        }
     }
 
     render($: WeyaElementFunction) {
-        this.refreshButton = $('nav', `.nav-link.tab.float-right.btn-refresh`,
+        this.refreshButton = $('nav', `.nav-link.tab.float-right.btn-refresh${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onRefreshClick.bind(this)}, style: {display: 'none'}},
             $ => {
                 this.refreshIcon = $('span', '.fas.fa-sync', '')
@@ -43,32 +60,6 @@ export class AwesomeRefreshButton {
         }
         this.refreshButton.style.display = null
         this.isActive = true
-    }
-
-    private procTimerUpdate = async () => {
-        if (this.remainingTime > 0) {
-            this.remainingTimeElem.innerText = String(this.remainingTime--)
-        } else {
-            this.remainingTimeElem.innerText = ''
-            if (!this.isRefreshing) {
-                this.isRefreshing = true
-                await this.refresh()
-                this.remainingTime = AUTO_REFRESH_TIME
-                this.isRefreshing = false
-            }
-        }
-        if (this.handler) {
-            this.handler()
-        }
-        this.refreshTimeout = window.setTimeout(this.procTimerUpdate.bind(this), 1000)
-    }
-
-    private refresh = async () => {
-        this.refreshIcon.classList.add('spin')
-        this.refreshButton.classList.add('disabled')
-        await this._refresh()
-        this.refreshIcon.classList.remove('spin')
-        this.refreshButton.classList.remove('disabled')
     }
 
     _stop() {
@@ -106,5 +97,31 @@ export class AwesomeRefreshButton {
 
     attachHandler(handler?: () => void) {
         this.handler = handler
+    }
+
+    private procTimerUpdate = async () => {
+        if (this.remainingTime > 0) {
+            this.remainingTimeElem.innerText = String(this.remainingTime--)
+        } else {
+            this.remainingTimeElem.innerText = ''
+            if (!this.isRefreshing) {
+                this.isRefreshing = true
+                await this.refresh()
+                this.remainingTime = AUTO_REFRESH_TIME
+                this.isRefreshing = false
+            }
+        }
+        if (this.handler) {
+            this.handler()
+        }
+        this.refreshTimeout = window.setTimeout(this.procTimerUpdate.bind(this), 1000)
+    }
+
+    private refresh = async () => {
+        this.refreshIcon.classList.add('spin')
+        this.refreshButton.classList.add('disabled')
+        await this._refresh()
+        this.refreshIcon.classList.remove('spin')
+        this.refreshButton.classList.remove('disabled')
     }
 }

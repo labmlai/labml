@@ -138,6 +138,7 @@ class SessionsListView extends ScreenView {
 
     onEdit = () => {
         this.isEditMode = true
+        this.refresh.disabled = true
         this.deleteButton.disabled = this.sessionsDeleteSet.size === 0
         this.updateButtons()
     }
@@ -152,6 +153,7 @@ class SessionsListView extends ScreenView {
 
             await this.loader.load()
             await this.renderList()
+            this.refresh.disabled = false
         } catch (e) {
             this.userMessages.networkError()
         }
@@ -159,6 +161,7 @@ class SessionsListView extends ScreenView {
 
     onCancel = () => {
         this.isEditMode = false
+        this.refresh.disabled = false
         this.sessionsDeleteSet.clear()
         this.renderList().then()
     }

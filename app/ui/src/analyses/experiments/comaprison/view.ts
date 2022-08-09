@@ -202,6 +202,7 @@ class ComparisonView extends ScreenView {
 
     onToggleEdit = () => {
         this.isEditMode = !this.isEditMode
+        this.refresh.disabled = this.isEditMode
 
         this.renderFields()
         this.renderButtons()
@@ -218,6 +219,7 @@ class ComparisonView extends ScreenView {
                     this.shouldPreservePreferences = false
                     this.preferenceData.base_experiment = run.run_uuid
                     this.preferenceData.base_series_preferences = []
+                    this.updatePreferences()
                 }
                 SCREEN.setView(this)
             }, onCancel: () => {

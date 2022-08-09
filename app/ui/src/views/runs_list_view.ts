@@ -153,6 +153,7 @@ class RunsListView extends ScreenView {
         let isRunsSelected = this.selectedRunsSet.size === 0
 
         this.isEditMode = true
+        this.refresh.disabled = true
         this.deleteButton.disabled = isRunsSelected
         this.startTBButton.disabled = isRunsSelected || this.isTBProcessing
         this.startTBButton.isLoading = this.isTBProcessing
@@ -174,6 +175,7 @@ class RunsListView extends ScreenView {
 
             await this.loader.load()
             await this.renderList()
+            this.refresh.disabled = false
         } catch (e) {
             this.userMessages.networkError()
         }
@@ -231,6 +233,7 @@ class RunsListView extends ScreenView {
 
     onCancel = () => {
         this.isEditMode = false
+        this.refresh.disabled = false
         this.selectedRunsSet.clear()
         this.renderList().then()
     }
