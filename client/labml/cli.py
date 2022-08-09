@@ -6,13 +6,22 @@ import threading
 import time
 from typing import List
 
+from typing.io import IO
+
 from labml import logger, experiment
 from labml.experiment import generate_uuid
 from labml.internal.api import ApiCaller, SimpleApiDataSource
 from labml.internal.api.logs import ApiLogs
 from labml.internal.api.url import ApiUrlHandler
 from labml.logger import Text
-from typing.io import IO
+
+COMMAND_APP_SERVER = 'app-server'
+COMMAND_CAPTURE = 'capture'
+COMMAND_LAUNCH = 'launch'
+COMMAND_MONITOR = 'monitor'
+COMMAND_SERVICE = 'service'
+COMMAND_SERVICE_RUN = 'service-run'
+COMMAND_DASHBOARD = 'dashboard'
 
 
 def _open_dashboard():
@@ -194,36 +203,43 @@ def _service_run():
 
 
 def main():
-    parser = argparse.ArgumentParser(description='labml.ai CLI')
-    parser.add_argument('command', choices=[
-        'app-server',
-        'capture',
-        'launch',
-        'monitor',
-        'service',
-        'service-run',
-        'dashboard',
-    ])
-    parser.add_argument('args', nargs=argparse.REMAINDER)
+    parser = argparse.ArgumentParser(description='labml.ai CLI', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    subparser = parser.add_subparsers(title='command', dest='command', required=True)
+    app_server_parser = subparser.add_parser(COMMAND_APP_SERVER, help='Start a local instance of labml server',
+                                             formatter_class=parser.formatter_class)
+    app_server_parser.add_argument('--ip', type=str, default='0.0.0.0', help='IP to bind the server')
+    app_server_parser.add_argument('--port', type=int, default=5005, help='Port to run the server on')
+
+    capture_parser = subparser.add_parser(COMMAND_CAPTURE)
+    capture_parser.add_argument('args', nargs=argparse.REMAINDER)
+
+    launch_parser = subparser.add_parser(COMMAND_LAUNCH)
+    launch_parser.add_argument('args', nargs=argparse.REMAINDER)
+
+    subparser.add_parser(COMMAND_MONITOR, help='Start hardware monitoring')
+    subparser.add_parser(COMMAND_SERVICE, help='Setup and start a service for hardware monitoring')
+    subparser.add_parser(COMMAND_SERVICE_RUN, help='Start hardware monitoring (without opening the browser)')
+    subparser.add_parser(COMMAND_DASHBOARD, help='Open the labml dashboard (deprecated)')
 
     args = parser.parse_args()
 
-    if args.command == 'dashboard':
+    if args.command == COMMAND_DASHBOARD:
         logger.log([('labml dashboard', Text.heading),
                     (' is deprecated. Please use labml.ai app instead\n', Text.danger),
                     ('https://github.com/labmlai/labml/tree/master/app', Text.value)])
         _open_dashboard()
-    elif args.command == 'app-server':
-        _start_app_server()
-    elif args.command == 'capture':
+    elif args.command == COMMAND_APP_SERVER:
+        print(args)
+        # _start_app_server()
+    elif args.command == COMMAND_CAPTURE:
         _capture(args.args)
-    elif args.command == 'launch':
+    elif args.command == COMMAND_LAUNCH:
         _launch(args.args)
-    elif args.command == 'monitor':
+    elif args.command == COMMAND_MONITOR:
         _monitor()
-    elif args.command == 'service':
+    elif args.command == COMMAND_SERVICE:
         _service()
-    elif args.command == 'service-run':
+    elif args.command == COMMAND_SERVICE_RUN:
         _service_run()
     else:
         raise ValueError('Unknown command', args.command)
@@ -234,4 +250,4 @@ def _test_capture():
 
 
 if __name__ == '__main__':
-    _test_capture()
+    main()
