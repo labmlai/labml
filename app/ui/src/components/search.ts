@@ -1,5 +1,4 @@
 import {WeyaElementFunction} from '../../../lib/weya/weya'
-import Timeout = NodeJS.Timeout
 
 export interface SearchOptions {
     onSearch: (query: string) => void
@@ -8,7 +7,7 @@ export interface SearchOptions {
 export class SearchView {
     onSearch: () => void
     textbox: HTMLInputElement
-    inputTimeout: Timeout
+    inputTimeout: number
 
     constructor(opt: SearchOptions) {
         this.onSearch = () => {

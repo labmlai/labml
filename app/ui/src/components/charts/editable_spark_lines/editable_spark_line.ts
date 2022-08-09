@@ -5,7 +5,6 @@ import {getBaseColor} from "../constants"
 import {getExtent, getScale, getSelectedIdx} from "../utils"
 import {LineFill, LinePlot} from "../lines/plot"
 import {numberWithCommas, scientificFormat} from "../../../utils/value"
-import Timeout = NodeJS.Timeout
 
 export interface SparkLineOptions {
     name: string
@@ -49,7 +48,7 @@ export class EditableSparkLine {
     inputElements: HTMLDivElement
     primaryElem: SVGTextElement
     lastChanged: number
-    inputTimeout: Timeout
+    inputTimeout: number
 
     constructor(opt: SparkLineOptions) {
         this.name = opt.name
