@@ -9,6 +9,9 @@ import {DataLoader} from '../../../components/loader'
 import comparisonCache from './cache'
 import {CompareLineChart} from '../../../components/charts/compare_lines/chart'
 import {CompareSparkLines} from '../../../components/charts/compare_spark_lines/chart'
+import {NetworkError} from '../../../network'
+import {ErrorMessage} from '../../../components/error_message'
+import {DEBUG} from '../../../env'
 
 export class ComparisonCard extends Card {
     currentUuid: string
@@ -20,12 +23,13 @@ export class ComparisonCard extends Card {
     baseAnalysisCache: AnalysisDataCache
     currentAnalysisCache: AnalysisDataCache
     elem: HTMLDivElement
-    lineChartContainer: WeyaElement
+    lineChartContainer: HTMLDivElement
     sparkLinesContainer: WeyaElement
     preferenceCache: AnalysisPreferenceCache
     currentPlotIdx: number[] = []
     basePlotIdx: number[] = []
     private loader: DataLoader
+    private missingBaseExperiment: boolean
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -42,8 +46,17 @@ export class ComparisonCard extends Card {
             this.currentSeries = toPointValues(currentAnalysisData.series)
             if (this.baseUuid != null && this.baseUuid.length > 0) {
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
-                let baseAnalysisData = await this.baseAnalysisCache.get(force)
-                this.baseSeries = toPointValues(baseAnalysisData.series)
+                try {
+                    let baseAnalysisData = await this.baseAnalysisCache.get(force)
+                    this.baseSeries = toPointValues(baseAnalysisData.series)
+                    this.missingBaseExperiment = false
+                } catch (e) {
+                    if (e instanceof NetworkError && e.statusCode === 404) {
+                        this.missingBaseExperiment = true
+                    } else {
+                        throw e
+                    }
+                }
             }
         })
     }
@@ -72,11 +85,16 @@ export class ComparisonCard extends Card {
                 this.basePlotIdx = [...baseAnalysisPreferences]
             }
 
-            if (this.currentSeries.concat(this.baseSeries).length > 0) {
+            if (this.baseSeries != null && this.currentSeries.concat(this.baseSeries).length > 0) {
                 this.renderLineChart()
                 this.renderSparkLines()
+            } else if (this.missingBaseExperiment) {
+                (new ErrorMessage('Base Experiment Not Found')).render(this.lineChartContainer)
             }
         } catch (e) {
+            if (DEBUG) {
+                console.error(e)
+            }
         }
     }
 

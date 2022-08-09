@@ -19,6 +19,8 @@ import {CompareSparkLines} from '../../../components/charts/compare_spark_lines/
 import {ScreenView} from '../../../screen_view'
 import EditableSelectField from '../../../components/input/editable_select_field'
 import {RunsPickerView} from '../../../views/run_picker_view'
+import {NetworkError} from '../../../network'
+import {ErrorMessage} from '../../../components/error_message'
 
 class ComparisonView extends ScreenView {
     elem: HTMLDivElement
@@ -51,6 +53,7 @@ class ComparisonView extends ScreenView {
     private isEditMode: boolean
     private fieldsContainer: HTMLUListElement
     private shouldPreservePreferences: boolean
+    private missingBaseExperiment: boolean
 
     constructor(uuid: string) {
         super()
@@ -74,7 +77,19 @@ class ComparisonView extends ScreenView {
             this.currentSeries = toPointValues((await this.currentAnalysisCache.get(force)).series)
             if (this.baseUuid != null && this.baseUuid.length > 0) {
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
-                this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
+                try {
+                    let baseAnalysisData = await this.baseAnalysisCache.get(force)
+                    this.baseSeries = toPointValues(baseAnalysisData.series)
+                    this.missingBaseExperiment = false
+                } catch (e) {
+                    if (e instanceof NetworkError && e.statusCode === 404) {
+                        this.baseAnalysisCache = undefined
+                        this.baseSeries = undefined
+                        this.missingBaseExperiment = true
+                    } else {
+                        throw e
+                    }
+                }
             } else {
                 this.baseAnalysisCache = undefined
                 this.baseSeries = undefined
@@ -287,7 +302,10 @@ class ComparisonView extends ScreenView {
                 })
                 zxc.render($)
             })
+        } else if (this.missingBaseExperiment) {
+            (new ErrorMessage('Base Experiment Not Found')).render(this.lineChartContainer)
         }
+
     }
 
     renderSparkLines() {
