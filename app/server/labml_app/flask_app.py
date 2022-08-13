@@ -1,19 +1,19 @@
 import git
-import os
 import logging
+import os
 import time
-from pathlib import Path
-from time import strftime
-
 import uvicorn
 from fastapi import FastAPI, Request, Response
 from fastapi.logger import logger as flogger
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from pathlib import Path
+from time import strftime
 
+from labml_app import db
 from labml_app import handlers
 from labml_app.logger import logger
-from labml_app import db
+from labml_app.settings import WEB_URL
 
 
 def get_static_path():
@@ -63,7 +63,7 @@ app = create_app()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['https://app.labml.ai'],
+    allow_origins=['https://app.labml.ai', WEB_URL],
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,

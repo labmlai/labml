@@ -14,6 +14,7 @@ from labml.internal.api import ApiCaller, SimpleApiDataSource
 from labml.internal.api.logs import ApiLogs
 from labml.internal.api.url import ApiUrlHandler
 from labml.logger import Text
+from labml.utils.validators import ip_validator
 
 COMMAND_APP_SERVER = 'app-server'
 COMMAND_CAPTURE = 'capture'
@@ -36,7 +37,7 @@ def _open_dashboard():
     labml_dashboard.start_server()
 
 
-def _start_app_server():
+def _start_app_server(ip: str, port: int):
     try:
         import labml_app
     except (ImportError, ModuleNotFoundError):
@@ -45,7 +46,7 @@ def _start_app_server():
                    ('pip install labml-app', Text.value))
         return
 
-    labml_app.start_server()
+    labml_app.start_server(ip=ip, port=port)
 
 
 class ExecutorThread(threading.Thread):
@@ -207,7 +208,7 @@ def main():
     subparser = parser.add_subparsers(title='command', dest='command', required=True)
     app_server_parser = subparser.add_parser(COMMAND_APP_SERVER, help='Start a local instance of labml server',
                                              formatter_class=parser.formatter_class)
-    app_server_parser.add_argument('--ip', type=str, default='0.0.0.0', help='IP to bind the server')
+    app_server_parser.add_argument('--ip', type=ip_validator, default='0.0.0.0', help='IP to bind the server')
     app_server_parser.add_argument('--port', type=int, default=5005, help='Port to run the server on')
 
     capture_parser = subparser.add_parser(COMMAND_CAPTURE)
@@ -229,8 +230,7 @@ def main():
                     ('https://github.com/labmlai/labml/tree/master/app', Text.value)])
         _open_dashboard()
     elif args.command == COMMAND_APP_SERVER:
-        print(args)
-        # _start_app_server()
+        _start_app_server(ip=args.ip, port=args.port)
     elif args.command == COMMAND_CAPTURE:
         _capture(args.args)
     elif args.command == COMMAND_LAUNCH:
