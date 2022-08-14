@@ -195,7 +195,7 @@ def get_token_owner(labml_token: str) -> Optional[str]:
     return ''
 
 
-def get_or_create_user(identifier: str, is_local_user=True, **kwargs) -> User:
+def get_or_create_user(identifier: str, is_local_user=False, **kwargs) -> User:
     user_key = UserIndex.get(identifier)
 
     if not user_key:
@@ -204,10 +204,6 @@ def get_or_create_user(identifier: str, is_local_user=True, **kwargs) -> User:
         u = User(**kwargs)
         u.is_local_user = is_local_user
         u.projects.append(p.key)
-        if is_local_user:
-            u.tokens['local'] = float('inf')
-            u.session_token_owners['local'] = set()
-            UserTokenIndex.set('local', u.key)
 
         u.save()
         p.save()
@@ -215,9 +211,18 @@ def get_or_create_user(identifier: str, is_local_user=True, **kwargs) -> User:
         UserIndex.set(u.identifier, u.key)
         project.ProjectIndex.set(p.labml_token, p.key)
 
-        return u
+    else:
+        u = user_key.load()
 
-    return user_key.load()
+    if is_local_user:
+        u.tokens['local'] = float('inf')
+        u.session_token_owners['local'] = u.session_token_owners.get('local', {'local'})
+        u.session_tokens['local'] = float('inf')
+        UserTokenIndex.set('local', u.key)
+        UserSessionTokenIndex.set('local', u.key)
+        u.save()
+
+    return u
 
 
 def get(identifier: str) -> Optional[User]:

@@ -1,6 +1,10 @@
-PORT = '5005'
-SERVER_URL = f'http://localhost:{PORT}'
-WEB_URL = f'http://localhost:{PORT}'
+import os
+
+SERVER_IP = os.environ['LABML_APP_SERVER_IP']
+PORT = os.environ['LABML_APP_SERVER_PORT']
+SERVER_URL = f'http://{SERVER_IP}:{PORT}'
+WEB_URL = f'http://{SERVER_IP}:{PORT}'
+
 SLACK_BOT_TOKEN = ''
 SLACK_CHANNEL = ''
 SENTRY_DSN = ''
