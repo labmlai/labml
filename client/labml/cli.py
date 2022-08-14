@@ -211,10 +211,10 @@ def main():
     app_server_parser.add_argument('--ip', type=ip_validator, default='0.0.0.0', help='IP to bind the server')
     app_server_parser.add_argument('--port', type=int, default=5005, help='Port to run the server on')
 
-    capture_parser = subparser.add_parser(COMMAND_CAPTURE)
+    capture_parser = subparser.add_parser(COMMAND_CAPTURE, help='Create an experiment manually')
     capture_parser.add_argument('args', nargs=argparse.REMAINDER)
 
-    launch_parser = subparser.add_parser(COMMAND_LAUNCH)
+    launch_parser = subparser.add_parser(COMMAND_LAUNCH, help='Start a distributed training session')
     launch_parser.add_argument('args', nargs=argparse.REMAINDER)
 
     subparser.add_parser(COMMAND_MONITOR, help='Start hardware monitoring')
