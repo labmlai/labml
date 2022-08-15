@@ -10,8 +10,8 @@
 
     <p></p>
 
-labml.ai client reference
-=========================
+labml library reference
+=======================
 
 This is the Python API & CLI reference.
 Visit the `Github Repo <https://github.com/labmlai/labml>`_ for an overview
