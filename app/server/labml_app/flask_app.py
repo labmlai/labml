@@ -13,7 +13,7 @@ from time import strftime
 from labml_app import db
 from labml_app import handlers
 from labml_app.logger import logger
-from labml_app.settings import WEB_URL
+from labml_app.settings import WEB_URL, IS_LOCAL_SETUP
 
 
 def get_static_path():
@@ -50,7 +50,8 @@ def create_app():
         try:
             repo = git.Repo(search_parent_directories=True)
             sha = repo.head.object.hexsha
-            logger.error(f'THIS IS NOT AN ERROR: Server Deployed SHA : {sha}')
+            if not IS_LOCAL_SETUP:
+                logger.error(f'THIS IS NOT AN ERROR: Server Deployed SHA : {sha}')
         except git.InvalidGitRepositoryError:
             pass
 

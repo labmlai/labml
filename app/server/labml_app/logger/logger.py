@@ -1,6 +1,8 @@
 import logging
-from logging.handlers import RotatingFileHandler
 from logging import StreamHandler
+from logging.handlers import RotatingFileHandler
+
+from labml_app.settings import IS_LOCAL_SETUP
 
 _LOG_PATH = 'labml_app.log'
 _MAX_BYTES = 100000
@@ -47,4 +49,5 @@ logger = logging.getLogger('LabML logger')
 logger.setLevel(logging.INFO)
 
 logger.addHandler(_init_streaming_handler())
-logger.addHandler(_init_file_handler())
+if not IS_LOCAL_SETUP:
+    logger.addHandler(_init_file_handler())
