@@ -20,11 +20,16 @@ ________
 
 .. option:: app-server [*args*]
 
-   Start an instance of the labml server in the local machine.
+   Start `labml server <https://github.com/labmlai/labml/tree/master/app>`_.
+
+   .. image:: https://github.com/labmlai/labml/raw/master/images/cover-dark.png
+     :width: 400
+     :alt: labml mobile UI
 
    .. important::
 
       Requires :program:`labml-app` to be installed.
+      You can install it with :code:`pip install labml-app -U`.
 
    **args**:
 
@@ -48,19 +53,27 @@ ________
 
 .. option:: capture [*args*]
 
-   Manually create an experiment using the provided data.
+   Capture the output of any command or program as an experiment.
 
-   **args**: command to run to capture the data. If no command is specified, data from the STDIN will be used.
+   **args**: command to run. If no command is specified, data from the STDIN will be used; so you can pipe an output of a program to :code:`labml capture`.
+
+   .. note::
+
+      For example, :code:`labml capture python train.py`
 
 .. option:: launch [*args*]
 
-   Start a distributed training session and capture the data to a single experiment.
+   Run a distributed training session with :program:`torch.distributed.launch`.
 
-   **args**: command to run the distributed training session using :program:`torch.distributed.launch`.
+   **args**: command to run the distributed training session with :program:`torch.distributed.launch`.
 
 .. option:: monitor
 
-   Start monitoring the hardware of the computer.
+   `Monitor the hardware of the computer <https://github.com/labmlai/labml/blob/master/guides/hardware_monitoring.md>`_.
+
+   .. image:: https://github.com/labmlai/labml/raw/master/guides/hardware.png
+     :width: 150
+     :alt: labml mobile UI
 
    .. important::
 
@@ -69,20 +82,23 @@ ________
 
 .. option:: service
 
-   Install the hardware monitoring as a service and start monitoring.
+   Setup the hardware monitoring as a service and start monitoring.
 
    .. note::
 
-      Make sure to run :option:`monitor` first to make sure monitoring works without any issue.
+      Run :option:`monitor` first to make sure monitoring works without any issue, before setting up the service.
 
 .. option:: service-run
 
-   Same as :option:`monitor`. But, this doesn't automatically open the browser to view the monitoring session
-   after starting monitoring.
+   This is what gets called by the service installed usign :code:`labml service`.
+
+   .. note::
+
+      This is for internal use and you shouldn't run this manually.
 
 .. option:: dashboard
 
    Open the dashboard to view experiments.
 
    .. deprecated:: 0.4.118
-      Please use labml.ai app instead.
+      Use :code:`labml server` instead.

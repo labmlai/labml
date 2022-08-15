@@ -109,11 +109,11 @@ with experiment.record(name='sample', exp_conf=conf):
 
 ## Tools
 
-### [Hosting your own experiments server](https://github.com/labmlai/labml/tree/master/app)
+### [Hosting your own experiments server](https://docs.labml.ai/cli/labml.html#cmdoption-labml-arg-app-server)
 
 ```sh
 # Install the package
-pip install labml-app
+pip install labml-app -U
 
 # Start the server
 

@@ -219,7 +219,7 @@ def main():
 
     subparser.add_parser(COMMAND_MONITOR, help='Start hardware monitoring')
     subparser.add_parser(COMMAND_SERVICE, help='Setup and start a service for hardware monitoring')
-    subparser.add_parser(COMMAND_SERVICE_RUN, help='Start hardware monitoring (without opening the browser)')
+    subparser.add_parser(COMMAND_SERVICE_RUN, help='Start hardware monitoring (for internal use)')
     subparser.add_parser(COMMAND_DASHBOARD, help='Open the labml dashboard (deprecated)')
 
     args = parser.parse_args()

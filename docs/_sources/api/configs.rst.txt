@@ -18,8 +18,12 @@ Configs
 
     .. autofunction:: aggregate
 
-    Dynamic Hyper-parameters
-    ------------------------
+    `Dynamic Hyper-parameters <https://github.com/labmlai/labml/blob/master/guides/dynamic_hyperparameters.md>`_
+    ------------------------------------------------------------------------------------------------------------
+
+    .. image:: https://github.com/labmlai/labml/raw/master/guides/dynamic_hp_desktop.png
+     :width: 400
+     :alt: labml analytics
 
     .. autoclass:: DynamicHyperParam
 

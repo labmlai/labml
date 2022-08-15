@@ -136,7 +136,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api/configs.html">Configs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../api/configs.html#dynamic-hyper-parameters">Dynamic Hyper-parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/configs.html#id1">Dynamic Hyper-parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api/logger.html">Logger</a><ul>
@@ -258,10 +258,12 @@
 <dl class="std option">
 <dt id="cmdoption-labml-arg-app-server">
 <code class="sig-name descname">app-server</code><code class="sig-prename descclassname"> [*args*]</code><a class="headerlink" href="#cmdoption-labml-arg-app-server" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start an instance of the labml server in the local machine.</p>
+<dd><p>Start <a class="reference external" href="https://github.com/labmlai/labml/tree/master/app">labml server</a>.</p>
+<a class="reference internal image-reference" href="https://github.com/labmlai/labml/raw/master/images/cover-dark.png"><img alt="labml mobile UI" src="https://github.com/labmlai/labml/raw/master/images/cover-dark.png" style="width: 400px;" /></a>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Requires <strong class="program">labml-app</strong> to be installed.</p>
+<p>Requires <strong class="program">labml-app</strong> to be installed.
+You can install it with <code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">labml-app</span> <span class="pre">-U</span></code>.</p>
 </div>
 <p><strong>args</strong>:</p>
 <dl class="std option">
@@ -291,21 +293,26 @@ which makes the server accessible through all the assigned IPs of the computer.<
 <dl class="std option">
 <dt id="cmdoption-labml-arg-capture">
 <code class="sig-name descname">capture</code><code class="sig-prename descclassname"> [*args*]</code><a class="headerlink" href="#cmdoption-labml-arg-capture" title="Permalink to this definition">¶</a></dt>
-<dd><p>Manually create an experiment using the provided data.</p>
-<p><strong>args</strong>: command to run to capture the data. If no command is specified, data from the STDIN will be used.</p>
+<dd><p>Capture the output of any command or program as an experiment.</p>
+<p><strong>args</strong>: command to run. If no command is specified, data from the STDIN will be used; so you can pipe an output of a program to <code class="code docutils literal notranslate"><span class="pre">labml</span> <span class="pre">capture</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For example, <code class="code docutils literal notranslate"><span class="pre">labml</span> <span class="pre">capture</span> <span class="pre">python</span> <span class="pre">train.py</span></code></p>
+</div>
 </dd></dl>
 
 <dl class="std option">
 <dt id="cmdoption-labml-arg-launch">
 <code class="sig-name descname">launch</code><code class="sig-prename descclassname"> [*args*]</code><a class="headerlink" href="#cmdoption-labml-arg-launch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start a distributed training session and capture the data to a single experiment.</p>
-<p><strong>args</strong>: command to run the distributed training session using <strong class="program">torch.distributed.launch</strong>.</p>
+<dd><p>Run a distributed training session with <strong class="program">torch.distributed.launch</strong>.</p>
+<p><strong>args</strong>: command to run the distributed training session with <strong class="program">torch.distributed.launch</strong>.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt id="cmdoption-labml-arg-monitor">
 <code class="sig-name descname">monitor</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-labml-arg-monitor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start monitoring the hardware of the computer.</p>
+<dd><p><a class="reference external" href="https://github.com/labmlai/labml/blob/master/guides/hardware_monitoring.md">Monitor the hardware of the computer</a>.</p>
+<a class="reference internal image-reference" href="https://github.com/labmlai/labml/raw/master/guides/hardware.png"><img alt="labml mobile UI" src="https://github.com/labmlai/labml/raw/master/guides/hardware.png" style="width: 150px;" /></a>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <div class="line-block">
@@ -318,18 +325,21 @@ which makes the server accessible through all the assigned IPs of the computer.<
 <dl class="std option">
 <dt id="cmdoption-labml-arg-service">
 <code class="sig-name descname">service</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-labml-arg-service" title="Permalink to this definition">¶</a></dt>
-<dd><p>Install the hardware monitoring as a service and start monitoring.</p>
+<dd><p>Setup the hardware monitoring as a service and start monitoring.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Make sure to run <a class="reference internal" href="#cmdoption-labml-arg-monitor"><code class="xref std std-option docutils literal notranslate"><span class="pre">monitor</span></code></a> first to make sure monitoring works without any issue.</p>
+<p>Run <a class="reference internal" href="#cmdoption-labml-arg-monitor"><code class="xref std std-option docutils literal notranslate"><span class="pre">monitor</span></code></a> first to make sure monitoring works without any issue, before setting up the service.</p>
 </div>
 </dd></dl>
 
 <dl class="std option">
 <dt id="cmdoption-labml-arg-service-run">
 <code class="sig-name descname">service-run</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-labml-arg-service-run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Same as <a class="reference internal" href="#cmdoption-labml-arg-monitor"><code class="xref std std-option docutils literal notranslate"><span class="pre">monitor</span></code></a>. But, this doesn’t automatically open the browser to view the monitoring session
-after starting monitoring.</p>
+<dd><p>This is what gets called by the service installed usign <code class="code docutils literal notranslate"><span class="pre">labml</span> <span class="pre">service</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is for internal use and you shouldn’t run this manually.</p>
+</div>
 </dd></dl>
 
 <dl class="std option">
@@ -337,7 +347,7 @@ after starting monitoring.</p>
 <code class="sig-name descname">dashboard</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-labml-arg-dashboard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open the dashboard to view experiments.</p>
 <div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 0.4.118: </span>Please use labml.ai app instead.</p>
+<p><span class="versionmodified deprecated">Deprecated since version 0.4.118: </span>Use <code class="code docutils literal notranslate"><span class="pre">labml</span> <span class="pre">server</span></code> instead.</p>
 </div>
 </dd></dl>
 
