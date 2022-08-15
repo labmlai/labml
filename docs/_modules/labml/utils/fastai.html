@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>labml.utils.keras &mdash; labml.ai client library 0.4 documentation</title>
+  <title>labml.utils.fastai &mdash; labml.ai client library 0.4 documentation</title>
   
 
   
@@ -18,7 +18,7 @@
   
   
   
-    <link rel="canonical" href="https://docs.labml.ai/_modules/labml/utils/keras.html"/>
+    <link rel="canonical" href="https://docs.labml.ai/_modules/labml/utils/fastai.html"/>
   
 
   
@@ -221,7 +221,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>labml.utils.keras</li>
+      <li>labml.utils.fastai</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -236,57 +236,67 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for labml.utils.keras</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+  <h1>Source code for labml.utils.fastai</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">fastai.callback.core</span> <span class="kn">import</span> <span class="n">Callback</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">fastai.learner</span> <span class="kn">import</span> <span class="n">Learner</span>
 
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-
-<span class="kn">from</span> <span class="nn">labml</span> <span class="kn">import</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">logger</span>
-
-<span class="n">_MAP</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="s1">&#39;batch&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="s1">&#39;loss.train&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="s1">&#39;accuracy.train&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;val_loss&#39;</span><span class="p">:</span> <span class="s1">&#39;loss.valid&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;val_accuracy&#39;</span><span class="p">:</span> <span class="s1">&#39;accuracy.valid&#39;</span>
-<span class="p">}</span>
+<span class="kn">from</span> <span class="nn">labml</span> <span class="kn">import</span> <span class="n">tracker</span>
 
 
-<div class="viewcode-block" id="LabMLKerasCallback"><a class="viewcode-back" href="../../../api/framework_integrations.html#labml.utils.keras.LabMLKerasCallback">[docs]</a><span class="k">class</span> <span class="nc">LabMLKerasCallback</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">Callback</span><span class="p">):</span>
+<div class="viewcode-block" id="LabMLFastAICallback"><a class="viewcode-back" href="../../../api/framework_integrations.html#labml.utils.fastai.LabMLFastAICallback">[docs]</a><span class="k">class</span> <span class="nc">LabMLFastAICallback</span><span class="p">(</span><span class="n">Callback</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Keras callback integration.</span>
-<span class="sd">    Pass an instance of this class to Keras model ``fit`` method as argument ``callbacks``.</span>
-<span class="sd">    Keras will call relavent mehtods of this class to log metrics.</span>
+<span class="sd">    FastAI callback integration.</span>
+<span class="sd">    Pass an instance of this class to FastAI learner as argument ``cbs``.</span>
+<span class="sd">    FastAI will call relavent mehtods of this class to log metrics.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_batch_frequency</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_batch_frequency</span> <span class="o">=</span> <span class="n">save_batch_frequency</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_parse_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]]):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">logs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">data</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">logs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_MAP</span><span class="p">:</span>
-                <span class="n">k</span> <span class="o">=</span> <span class="n">_MAP</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">continue</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-            <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">def</span> <span class="nf">before_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
 
-        <span class="k">return</span> <span class="n">data</span>
-
-    <span class="k">def</span> <span class="nf">on_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">on_train_batch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">after_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">tracker</span><span class="o">.</span><span class="n">add_global_step</span><span class="p">()</span>
-        <span class="n">tracker</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">batch</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_batch_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;loss.train&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">learn</span><span class="o">.</span><span class="n">loss</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;loss.valid&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">learn</span><span class="o">.</span><span class="n">loss</span><span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">learn</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">metrics</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">after_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">learn</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">metrics</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="n">tracker</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
+        <span class="n">tracker</span><span class="o">.</span><span class="n">new_line</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">after_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<span class="nd">@patch</span>
+<span class="k">def</span> <span class="nf">labml_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Learner</span><span class="p">):</span>
+    <span class="n">configs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;n_epoch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">learn</span><span class="o">.</span><span class="n">n_epoch</span>
+        <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;model_class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">learn</span><span class="o">.</span><span class="n">model</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">configs</span>
 </pre></div>
 
            </div>

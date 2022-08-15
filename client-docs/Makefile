@@ -17,7 +17,7 @@ clean: ## Clean
 
 rebuild: clean build ## Rebuild docs
 
-pages: rebuild ## Create pages
+pages: rebuild ## Create docs.labml.ai
 	@mkdir -p ../docs
 	@echo "This file makes sure that Github Pages doesn't process" > ../docs/.nojekyll
 	@cp -r build/html/* ../docs

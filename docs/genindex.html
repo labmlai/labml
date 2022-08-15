@@ -98,7 +98,8 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">API</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="api/experiment.html">Experiment</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/experiment.html#create-experiment">Create Experiment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/experiment.html#checkpoints">Checkpoints</a></li>
@@ -161,6 +162,17 @@
 <li class="toctree-l2"><a class="reference internal" href="api/helpers.html#schedules">Schedules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/helpers.html#metrics">Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/helpers.html#utilies">Utilies</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">CLI</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli/labml.html">labml</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cli/labml.html#synopsis">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli/labml.html#options">Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cli/labml.html#commands">Commands</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -229,7 +241,8 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
+ <a href="#Symbols"><strong>Symbols</strong></a>
+ | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
@@ -252,6 +265,42 @@
  | <a href="#W"><strong>W</strong></a>
  
 </div>
+<h2 id="Symbols">Symbols</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    --help
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-h">labml command line option</a>, <a href="cli/labml.html#cmdoption-labml-h">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    --ip &lt;ip_address&gt;
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-ip">labml command line option</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    --port &lt;port&gt;
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-port">labml command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -h
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-h">labml command line option</a>, <a href="cli/labml.html#cmdoption-labml-h">[1]</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -265,16 +314,23 @@
 </li>
       <li><a href="api/tracker.html#labml.tracker.add_global_step">add_global_step() (in module labml.tracker)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/experiment.html#labml.experiment.add_model_savers">add_model_savers() (in module labml.experiment)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/experiment.html#labml.experiment.add_pytorch_models">add_pytorch_models() (in module labml.experiment)</a>
 </li>
       <li><a href="api/experiment.html#labml.experiment.add_sklearn_models">add_sklearn_models() (in module labml.experiment)</a>
 </li>
       <li><a href="api/configs.html#labml.configs.aggregate">aggregate() (in module labml.configs)</a>
 </li>
+      <li>
+    app-server [*args*]
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-app-server">labml command line option</a>
+</li>
+      </ul></li>
       <li><a href="api/analytics.html#labml.analytics.artifact_data">artifact_data() (in module labml.analytics)</a>
 </li>
   </ul></td>
@@ -315,12 +371,19 @@
 </li>
       <li><a href="api/configs.html#labml.configs.calculate">calculate() (in module labml.configs)</a>
 </li>
-      <li><a href="api/helpers.html#labml_helpers.datasets.cifar10.CIFAR10Configs">CIFAR10Configs (class in labml_helpers.datasets.cifar10)</a>
+      <li>
+    capture [*args*]
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-capture">labml command line option</a>
 </li>
-      <li><a href="api/helpers.html#labml_helpers.metrics.collector.Collector">Collector (class in labml_helpers.metrics.collector)</a>
+      </ul></li>
+      <li><a href="api/helpers.html#labml_helpers.datasets.cifar10.CIFAR10Configs">CIFAR10Configs (class in labml_helpers.datasets.cifar10)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/helpers.html#labml_helpers.metrics.collector.Collector">Collector (class in labml_helpers.metrics.collector)</a>
+</li>
       <li><a href="api/logger.html#labml.logger.Color">Color (class in labml.logger)</a>
 </li>
       <li><a href="api/experiment.html#labml.experiment.configs">configs() (in module labml.experiment)</a>
@@ -341,16 +404,23 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/logger.html#labml.logger.Text.danger">danger (labml.logger.Text attribute)</a>
 </li>
+      <li>
+    dashboard
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-dashboard">labml command line option</a>
+</li>
+      </ul></li>
       <li><a href="api/helpers.html#labml_helpers.datasets.remote.DatasetServer">DatasetServer (class in labml_helpers.datasets.remote)</a>
 </li>
       <li><a href="api/analytics.html#labml.analytics.ValueCollection.deep">deep() (labml.analytics.ValueCollection method)</a>
 </li>
       <li><a href="api/analytics.html#labml.analytics.DeepValueCollection">DeepValueCollection (class in labml.analytics)</a>
 </li>
-      <li><a href="api/utils.html#labml.utils.delayed_keyboard_interrupt.DelayedKeyboardInterrupt">DelayedKeyboardInterrupt (class in labml.utils.delayed_keyboard_interrupt)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/utils.html#labml.utils.delayed_keyboard_interrupt.DelayedKeyboardInterrupt">DelayedKeyboardInterrupt (class in labml.utils.delayed_keyboard_interrupt)</a>
+</li>
       <li><a href="api/helpers.html#labml_helpers.device.DeviceConfigs">DeviceConfigs (class in labml_helpers.device)</a>
 </li>
       <li><a href="api/experiment.html#labml.experiment.distributed">distributed() (in module labml.experiment)</a>
@@ -492,6 +562,33 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
+    labml command line option
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-h">--help</a>, <a href="cli/labml.html#cmdoption-labml-h">[1]</a>
+</li>
+        <li><a href="cli/labml.html#cmdoption-labml-ip">--ip &lt;ip_address&gt;</a>
+</li>
+        <li><a href="cli/labml.html#cmdoption-labml-port">--port &lt;port&gt;</a>
+</li>
+        <li><a href="cli/labml.html#cmdoption-labml-h">-h</a>, <a href="cli/labml.html#cmdoption-labml-h">[1]</a>
+</li>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-app-server">app-server [*args*]</a>
+</li>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-capture">capture [*args*]</a>
+</li>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-dashboard">dashboard</a>
+</li>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-launch">launch [*args*]</a>
+</li>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-monitor">monitor</a>
+</li>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-service">service</a>
+</li>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-service-run">service-run</a>
+</li>
+      </ul></li>
+      <li>
     labml.analytics
 
       <ul>
@@ -526,6 +623,8 @@
         <li><a href="api/logger.html#module-labml.logger">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     labml.manage
 
@@ -540,8 +639,6 @@
         <li><a href="api/monit.html#module-labml.monit">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     labml.tracker
 
@@ -549,8 +646,19 @@
         <li><a href="api/tracker.html#module-labml.tracker">module</a>
 </li>
       </ul></li>
+      <li><a href="api/framework_integrations.html#labml.utils.fastai.LabMLFastAICallback">LabMLFastAICallback (class in labml.utils.fastai)</a>
+</li>
       <li><a href="api/framework_integrations.html#labml.utils.keras.LabMLKerasCallback">LabMLKerasCallback (class in labml.utils.keras)</a>
 </li>
+      <li><a href="api/framework_integrations.html#labml.utils.lightning.LabMLLightningLogger">LabMLLightningLogger (class in labml.utils.lightning)</a>
+</li>
+      <li>
+    launch [*args*]
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-launch">labml command line option</a>
+</li>
+      </ul></li>
       <li><a href="api/logger.html#labml.logger.Style.light">light (labml.logger.Style attribute)</a>
 </li>
       <li><a href="api/logger.html#labml.logger.Text.link">link (labml.logger.Text attribute)</a>
@@ -618,6 +726,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/helpers.html#labml_helpers.module.Module">Module (class in labml_helpers.module)</a>
 </li>
+      <li>
+    monitor
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-monitor">labml command line option</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -726,18 +841,32 @@
 </li>
       <li><a href="api/helpers.html#labml_helpers.datasets.text.SequentialUnBatchedDataset">SequentialUnBatchedDataset (class in labml_helpers.datasets.text)</a>
 </li>
+      <li>
+    service
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-service">labml command line option</a>
+</li>
+      </ul></li>
+      <li>
+    service-run
+
+      <ul>
+        <li><a href="cli/labml.html#cmdoption-labml-arg-service-run">labml command line option</a>
+</li>
+      </ul></li>
       <li><a href="api/tracker.html#labml.tracker.set_global_step">set_global_step() (in module labml.tracker)</a>
 </li>
       <li><a href="api/tracker.html#labml.tracker.set_histogram">set_histogram() (in module labml.tracker)</a>
 </li>
       <li><a href="api/tracker.html#labml.tracker.set_image">set_image() (in module labml.tracker)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/tracker.html#labml.tracker.set_indexed_scalar">set_indexed_scalar() (in module labml.tracker)</a>
 </li>
       <li><a href="api/tracker.html#labml.tracker.set_indexed_text">set_indexed_text() (in module labml.tracker)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/analytics.html#labml.analytics.set_preferred_db">set_preferred_db() (in module labml.analytics)</a>
 </li>
       <li><a href="api/tracker.html#labml.tracker.set_queue">set_queue() (in module labml.tracker)</a>

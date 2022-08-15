@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Overview: module code &mdash; labml.ai client library 0.4 documentation</title>
+  <title>labml &mdash; labml.ai client library 0.4 documentation</title>
   
 
   
@@ -18,7 +18,7 @@
   
   
   
-    <link rel="canonical" href="https://docs.labml.ai/_modules/index.html"/>
+    <link rel="canonical" href="https://docs.labml.ai/cli/labml.html"/>
   
 
   
@@ -43,6 +43,7 @@
   <link rel="stylesheet" href="../_static/katex-math.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Helpers" href="../api/helpers.html" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
     <script>
@@ -165,11 +166,11 @@
 </li>
 </ul>
 <p class="caption"><span class="caption-text">CLI</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../cli/labml.html">labml</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../cli/labml.html#synopsis">Synopsis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cli/labml.html#options">Options</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../cli/labml.html#commands">Commands</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">labml</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#options">Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#commands">Commands</a></li>
 </ul>
 </li>
 </ul>
@@ -219,10 +220,14 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>Overview: module code</li>
+      <li>labml</li>
     
     
       <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/cli/labml.rst.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
     
@@ -234,50 +239,124 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="labml/analytics.html">labml.analytics</a></li>
-<li><a href="labml/configs.html">labml.configs</a></li>
-<li><a href="labml/experiment.html">labml.experiment</a></li>
-<li><a href="labml/internal/analytics/models.html">labml.internal.analytics.models</a></li>
-<li><a href="labml/internal/configs/dynamic_hyperparam.html">labml.internal.configs.dynamic_hyperparam</a></li>
-<li><a href="labml/internal/experiment.html">labml.internal.experiment</a></li>
-<li><a href="labml/internal/util/colors.html">labml.internal.util.colors</a></li>
-<li><a href="labml/lab.html">labml.lab</a></li>
-<li><a href="labml/logger.html">labml.logger</a></li>
-<li><a href="labml/manage.html">labml.manage</a></li>
-<li><a href="labml/monit.html">labml.monit</a></li>
-<li><a href="labml/tracker.html">labml.tracker</a></li>
-<li><a href="labml/utils/cache.html">labml.utils.cache</a></li>
-<li><a href="labml/utils/delayed_keyboard_interrupt.html">labml.utils.delayed_keyboard_interrupt</a></li>
-<li><a href="labml/utils/download.html">labml.utils.download</a></li>
-<li><a href="labml/utils/fastai.html">labml.utils.fastai</a></li>
-<li><a href="labml/utils/keras.html">labml.utils.keras</a></li>
-<li><a href="labml/utils/lightning.html">labml.utils.lightning</a></li>
-<li><a href="labml/utils/pytorch.html">labml.utils.pytorch</a></li>
-<li><a href="labml_helpers/datasets/cifar10.html">labml_helpers.datasets.cifar10</a></li>
-<li><a href="labml_helpers/datasets/csv.html">labml_helpers.datasets.csv</a></li>
-<li><a href="labml_helpers/datasets/mnist.html">labml_helpers.datasets.mnist</a></li>
-<li><a href="labml_helpers/datasets/remote/client.html">labml_helpers.datasets.remote.client</a></li>
-<li><a href="labml_helpers/datasets/remote/server.html">labml_helpers.datasets.remote.server</a></li>
-<li><a href="labml_helpers/datasets/text.html">labml_helpers.datasets.text</a></li>
-<li><a href="labml_helpers/device.html">labml_helpers.device</a></li>
-<li><a href="labml_helpers/metrics.html">labml_helpers.metrics</a></li>
-<ul><li><a href="labml_helpers/metrics/accuracy.html">labml_helpers.metrics.accuracy</a></li>
-<li><a href="labml_helpers/metrics/collector.html">labml_helpers.metrics.collector</a></li>
-<li><a href="labml_helpers/metrics/recall_precision.html">labml_helpers.metrics.recall_precision</a></li>
-<li><a href="labml_helpers/metrics/simple_state.html">labml_helpers.metrics.simple_state</a></li>
-</ul><li><a href="labml_helpers/module.html">labml_helpers.module</a></li>
-<li><a href="labml_helpers/optimizer.html">labml_helpers.optimizer</a></li>
-<li><a href="labml_helpers/schedule.html">labml_helpers.schedule</a></li>
-<li><a href="labml_helpers/seed.html">labml_helpers.seed</a></li>
-<li><a href="labml_helpers/train_valid.html">labml_helpers.train_valid</a></li>
-<li><a href="labml_helpers/training_loop.html">labml_helpers.training_loop</a></li>
-</ul>
+  <div class="section" id="labml">
+<h1>labml<a class="headerlink" href="#labml" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>labml</strong> [<em>options</em>] &lt;<em>command</em>&gt; [<em>command_specific_args</em>]</p>
+</div>
+<div class="section" id="options">
+<h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<dl class="std option">
+<dt id="cmdoption-labml-h">
+<span id="cmdoption-labml-help"></span><code class="sig-name descname">-h</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--help</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-labml-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display usage summary.</p>
+</dd></dl>
+
+<div class="section" id="commands">
+<h3>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h3>
+<dl class="std option">
+<dt id="cmdoption-labml-arg-app-server">
+<code class="sig-name descname">app-server</code><code class="sig-prename descclassname"> [*args*]</code><a class="headerlink" href="#cmdoption-labml-arg-app-server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start an instance of the labml server in the local machine.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Requires <strong class="program">labml-app</strong> to be installed.</p>
+</div>
+<p><strong>args</strong>:</p>
+<dl class="std option">
+<dt id="cmdoption-labml-ip">
+<code class="sig-name descname">--ip</code><code class="sig-prename descclassname"> &lt;ip_address&gt;</code><a class="headerlink" href="#cmdoption-labml-ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>IP address to bind the local server instance.
+If unspecified, it will bind to 0.0.0.0,
+which makes the server accessible through all the assigned IPs of the computer.</p>
+<p>Default: 0.0.0.0</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-labml-port">
+<code class="sig-name descname">--port</code><code class="sig-prename descclassname"> &lt;port&gt;</code><a class="headerlink" href="#cmdoption-labml-port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Port to use for the local server instance.</p>
+<p>Default: 5005</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-labml-h">
+<span id="cmdoption-labml-0"></span><code class="sig-name descname">-h</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--help</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-labml-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display usage summary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-labml-arg-capture">
+<code class="sig-name descname">capture</code><code class="sig-prename descclassname"> [*args*]</code><a class="headerlink" href="#cmdoption-labml-arg-capture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manually create an experiment using the provided data.</p>
+<p><strong>args</strong>: command to run to capture the data. If no command is specified, data from the STDIN will be used.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-labml-arg-launch">
+<code class="sig-name descname">launch</code><code class="sig-prename descclassname"> [*args*]</code><a class="headerlink" href="#cmdoption-labml-arg-launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a distributed training session and capture the data to a single experiment.</p>
+<p><strong>args</strong>: command to run the distributed training session using <strong class="program">torch.distributed.launch</strong>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-labml-arg-monitor">
+<code class="sig-name descname">monitor</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-labml-arg-monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start monitoring the hardware of the computer.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<div class="line-block">
+<div class="line">Requires <strong class="program">psutil</strong> to be installed.</div>
+<div class="line">Requires <strong class="program">py3nvml</strong> to be installed to monitor GPUs.</div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-labml-arg-service">
+<code class="sig-name descname">service</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-labml-arg-service" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install the hardware monitoring as a service and start monitoring.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure to run <a class="reference internal" href="#cmdoption-labml-arg-monitor"><code class="xref std std-option docutils literal notranslate"><span class="pre">monitor</span></code></a> first to make sure monitoring works without any issue.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-labml-arg-service-run">
+<code class="sig-name descname">service-run</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-labml-arg-service-run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="#cmdoption-labml-arg-monitor"><code class="xref std std-option docutils literal notranslate"><span class="pre">monitor</span></code></a>. But, this doesn’t automatically open the browser to view the monitoring session
+after starting monitoring.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-labml-arg-dashboard">
+<code class="sig-name descname">dashboard</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-labml-arg-dashboard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the dashboard to view experiments.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.4.118: </span>Please use labml.ai app instead.</p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
 
            </div>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../api/helpers.html" class="btn btn-neutral float-left" title="Helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

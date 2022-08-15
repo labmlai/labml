@@ -1,7 +1,7 @@
-from fastai.callback.core import Callback, to_detach, patch
+from fastai.callback.core import Callback, patch
 from fastai.learner import Learner
 
-from labml import tracker, experiment
+from labml import tracker
 
 
 class LabMLFastAICallback(Callback):
