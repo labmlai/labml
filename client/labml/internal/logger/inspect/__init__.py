@@ -302,17 +302,25 @@ class _InspectLogger:
                 " item(s)"])
 
     def info(self, *args, **kwargs):
-        if '_expand' in kwargs:
-            is_expand = kwargs['_expand']
-            del kwargs['_expand']
-        else:
-            is_expand = False
-
         if '_n' in kwargs:
             n_key_values = kwargs['_n']
             del kwargs['_n']
         else:
             n_key_values = 10
+
+        if '_expand' in kwargs:
+            is_expand = kwargs['_expand']
+            del kwargs['_expand']
+        else:
+            is_expand = None
+
+        if len(args) == 0 and len(kwargs) == 1 and is_expand != True:
+            self.parts.append([(next(iter(kwargs.keys())), [Text.heading, Text.key])])
+            args = [next(iter(kwargs.values()))]
+            kwargs = {}
+
+        if is_expand is None:
+            is_expand = False
 
         if len(args) == 0:
             self._log_key_value([(k, v) for k, v in kwargs.items()],
