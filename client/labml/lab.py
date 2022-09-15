@@ -1,7 +1,14 @@
-from pathlib import PurePath, Path
-from typing import Dict
+from pathlib import Path
+from typing import Dict, Any
 
 from labml.internal.lab import lab_singleton as _internal
+
+
+def get_info() -> Dict[str, Any]:
+    r"""
+    Returns information about lab
+    """
+    return _internal().get_info()
 
 
 def get_path() -> Path:

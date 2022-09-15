@@ -1,3 +1,4 @@
+from copy import deepcopy
 from pathlib import PurePath, Path
 from typing import List, Optional, Dict
 
@@ -44,6 +45,12 @@ class Lab:
             path = Path(path).resolve()
 
         self.__load_configs(path)
+
+    def get_info(self):
+        return {
+            'current_path': self.__current_path,
+            'configs': deepcopy(self.configs),
+        }
 
     def set_path(self, path: str):
         self.__load_configs(Path(path).resolve())
