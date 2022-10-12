@@ -48,7 +48,7 @@ You can also [set this on `.labml.yaml`](https://github.com/labmlai/labml/blob/m
 ```python
 from labml import tracker, experiment
 
-with experiment.record(name='sample', token='http://localhost:5005/api/v1/track?'):
+with experiment.record(name='sample', token='http://localhost:5005/api/v1/track?labml_token=YOURTOKEN&'):
     for i in range(50):
         loss, accuracy = train()
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})
