@@ -149,6 +149,8 @@ def section(name, *,
             Defaults to ``True``.
         is_track (bool, optional): Whether to track the time.
             Defaults to ``False``.
+        is_not_in_loop (bool, optional): Whether to forcefully track this outside :func:`loop`.
+            Defaults to ``False``.
         total_steps (float, optional): Total number of steps. This is used to measure progress when
             :func:`progress` gets called. Defaults to ``1``.
     """
