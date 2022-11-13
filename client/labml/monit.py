@@ -34,6 +34,8 @@ def func(name, *,
             Defaults to ``True``.
         is_track (bool, optional): Whether to track the time.
             Defaults to ``False``.
+        is_not_in_loop (bool, optional): Whether to forcefully track this outside :func:`loop`.
+            Defaults to ``False``.
         total_steps (float, optional): Total number of steps. This is used to measure progress when
             :func:`progress` gets called. Defaults to ``1``.
     """
@@ -81,6 +83,8 @@ def iterate(name, iterable: Union[Iterable, Sized, int],
             Defaults to ``True``.
         is_track (bool, optional): Whether to track the time.
             Defaults to ``False``.
+        is_not_in_loop (bool, optional): Whether to forcefully track this outside :func:`loop`.
+            Defaults to ``False``.
         context (optional): Reference to another section that will be used for monitoring the iteration.
     """
     return _internal().iterate(name, iterable, total_steps,
@@ -112,6 +116,8 @@ def enum(name, iterable: Sized, *,
         is_children_silent (bool, optional): Whether to make child sections silent.
             Defaults to ``True``.
         is_track (bool, optional): Whether to track the time.
+            Defaults to ``False``.
+        is_not_in_loop (bool, optional): Whether to forcefully track this outside :func:`loop`.
             Defaults to ``False``.
         context (optional): Reference to another section that will be used for monitoring the iteration.
     """

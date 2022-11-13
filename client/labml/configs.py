@@ -220,8 +220,8 @@ def aggregate(name: any, option_name: str, *args: Tuple[any, any]):
     config_class.aggregate(name, option_name, *args)
 
 
-__all__ = [option, calculate, hyperparams, meta_config, aggregate,
-           BaseConfigs,
-           DynamicHyperParam,
-           IntDynamicHyperParam, FloatDynamicHyperParam,
+__all__ = ['option', 'calculate', 'hyperparams', 'meta_config', 'aggregate',
+           'BaseConfigs',
+           'DynamicHyperParam',
+           'IntDynamicHyperParam', 'FloatDynamicHyperParam',
            ]
