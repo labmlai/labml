@@ -40,7 +40,10 @@ class ConsoleDestination(Destination):
         text = "".join(coded)
 
         if is_reset:
-            self.print("\r" + text, end_char)
+            if text:
+                self.print("\r" + " " * 100 + "\r" + text, end_char)
+            else:
+                self.print("\r" + text, end_char)
         else:
             print(text, end_char, flush=True)
 
