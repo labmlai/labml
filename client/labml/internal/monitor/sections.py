@@ -103,7 +103,11 @@ class Section:
         if self.is_silent:
             return False
 
-        if math.floor(self._progress * 100) != math.floor(old_progress * 100):
+        if old_progress == 0. and self._progress > 0:
+            return True
+
+        parts = max(10, int(self.get_estimated_time() * 2))
+        if math.floor(self._progress * parts) != math.floor(old_progress * parts):
             return True
         else:
             return False
