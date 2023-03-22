@@ -45,7 +45,7 @@ class ConsoleDestination(Destination):
             else:
                 self.print("\r" + text, end_char)
         else:
-            print(text, end_char, flush=True)
+            self.print(text, end_char)
 
     def print(self, text: str, end_char: str):
         if self.is_screen:
