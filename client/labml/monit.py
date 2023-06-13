@@ -1,7 +1,8 @@
 import functools
-from typing import Iterable, Sized, Collection, Callable, Tuple, Any
+from typing import Iterable, Sized, Collection, Callable, Tuple, Any, Dict
 from typing import Union, Optional, overload
 
+from labml.internal.monitor import TimeSummary
 from labml.internal.monitor import monitor_singleton as _internal
 
 
@@ -194,7 +195,7 @@ def record_time(name: str):
     return _internal().record_time(name)
 
 
-def get_recorded_times():
+def get_recorded_times() -> Dict[str, TimeSummary]:
     """
     Returns all the recorded times
     """

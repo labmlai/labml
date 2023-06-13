@@ -6,7 +6,7 @@ from .iterator import Iterator
 from .loop import Loop
 from .mix import Mix
 from .sections import Section, OuterSection
-from .time_recorder import TimeRecorder
+from .time_recorder import TimeRecorder, Summary as TimeSummary
 from ..logger import logger_singleton as logger
 from ..logger.types import LogPart
 from ..tracker import tracker_singleton as tracker
@@ -139,7 +139,7 @@ class Monitor:
     def record_time(self, name: str):
         return self.__time_recorder.record_time(name)
 
-    def get_recorded_times(self):
+    def get_recorded_times(self) -> typing.Dict[str, TimeSummary]:
         return self.__time_recorder.get_times()
 
     def loop(self, iterator_: typing.Collection, *,
