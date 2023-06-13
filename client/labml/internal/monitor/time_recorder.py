@@ -56,6 +56,16 @@ class TimeRecorder:
 
         time_values = np.array(time_values)
 
+        if not time_values:
+            return Summary(
+                events=len(time_values),
+                mean=0,
+                std=0,
+                min=0,
+                max=0,
+                ongoing=len(ongoing),
+            )
+        
         return Summary(
             events=len(time_values),
             mean=time_values.mean(),
