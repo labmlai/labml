@@ -139,8 +139,8 @@ class Monitor:
     def record_time(self, name: str):
         return self.__time_recorder.record_time(name)
 
-    def get_recorded_times(self) -> typing.Dict[str, TimeSummary]:
-        return self.__time_recorder.get_times()
+    def get_recorded_times(self, ignore_first: int, ignore_last: int) -> typing.Dict[str, TimeSummary]:
+        return self.__time_recorder.get_times(ignore_first, ignore_last)
 
     def loop(self, iterator_: typing.Collection, *,
              is_track: bool,

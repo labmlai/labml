@@ -195,11 +195,11 @@ def record_time(name: str):
     return _internal().record_time(name)
 
 
-def get_recorded_times() -> Dict[str, TimeSummary]:
+def get_recorded_times(ignore_first: int = 0, ignore_last: int = 0) -> Dict[str, TimeSummary]:
     """
     Returns all the recorded times
     """
-    return _internal().get_recorded_times()
+    return _internal().get_recorded_times(ignore_first, ignore_last)
 
 
 @overload

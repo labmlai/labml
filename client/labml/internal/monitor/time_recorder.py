@@ -44,10 +44,15 @@ class TimeRecorder:
     def set_time(self, name, idx, td):
         self.times[name][idx] = td
 
-    def get_summary(self, name: str):
+    def get_summary(self, name: str, ignore_first: int, ignore_last: int):
         times = self.times[name]
-        time_values = [td for td in times.values() if isinstance(td, float)]
-        ongoing = [td for td in times.values() if isinstance(td, Timer)]
+        times = [(int(idx), v) for idx, v in times.items()]
+        times.sort()
+        times = [td for _, td in times]
+        times = times[ignore_first: -ignore_last]
+
+        time_values = [td for td in times if isinstance(td, float)]
+        ongoing = [td for td in times if isinstance(td, Timer)]
 
         time_values = np.array(time_values)
 
@@ -60,5 +65,5 @@ class TimeRecorder:
             ongoing=len(ongoing),
         )
 
-    def get_times(self):
-        return {k: self.get_summary(k) for k in self.times}
+    def get_times(self, ignore_first: int, ignore_last: int):
+        return {k: self.get_summary(k, ignore_first, ignore_last) for k in self.times}
