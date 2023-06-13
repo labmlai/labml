@@ -6,6 +6,7 @@ from .iterator import Iterator
 from .loop import Loop
 from .mix import Mix
 from .sections import Section, OuterSection
+from .time_recorder import TimeRecorder
 from ..logger import logger_singleton as logger
 from ..logger.types import LogPart
 from ..tracker import tracker_singleton as tracker
@@ -23,6 +24,7 @@ class Monitor:
         self.__is_looping = False
         self.__loop_indicators = []
         self.__is_silent = False
+        self.__time_recorder = TimeRecorder()
 
     def clear(self):
         self.__loop: Optional[Loop] = None
@@ -133,6 +135,12 @@ class Monitor:
 
         self.__sections[-1].is_successful = is_successful
         self.__log_line()
+
+    def record_time(self, name: str):
+        return self.__time_recorder.record_time(name)
+
+    def get_recorded_times(self):
+        return self.__time_recorder.get_times()
 
     def loop(self, iterator_: typing.Collection, *,
              is_track: bool,

@@ -187,6 +187,20 @@ def fail():
     _internal().set_successful(False)
 
 
+def record_time(name: str):
+    """
+    Records time taken
+    """
+    return _internal().record_time(name)
+
+
+def get_recorded_times():
+    """
+    Returns all the recorded times
+    """
+    return _internal().get_recorded_times()
+
+
 @overload
 def loop(iterator_: int, *,
          is_track: bool = True,
