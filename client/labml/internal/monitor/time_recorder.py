@@ -49,7 +49,10 @@ class TimeRecorder:
         times = [(int(idx), v) for idx, v in times.items()]
         times.sort()
         times = [td for _, td in times]
-        times = times[ignore_first: -ignore_last]
+        if ignore_first:
+            times = times[ignore_first:]
+        if ignore_last:
+            times = times[:-ignore_last]
 
         time_values = [td for td in times if isinstance(td, float)]
         ongoing = [td for td in times if isinstance(td, Timer)]
@@ -65,7 +68,7 @@ class TimeRecorder:
                 max=0,
                 ongoing=len(ongoing),
             )
-        
+
         return Summary(
             events=len(time_values),
             mean=time_values.mean(),
