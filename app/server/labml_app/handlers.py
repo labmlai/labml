@@ -423,7 +423,6 @@ async def get_session_status(request: Request, session_uuid: str) -> JSONRespons
 @utils.analytics.AnalyticsEvent.time_this(None)
 @auth.check_labml_token_permission
 async def get_runs(request: Request, labml_token: str, token: Optional[str] = None) -> EndPointRes:
-    print(f'{request.url.hostname}:{request.url.port}')
     u = user.get_by_session_token(token)
 
     if labml_token:
