@@ -25,6 +25,9 @@ def generate_uuid() -> str:
     return uuid1().hex
 
 
+def worker():
+    _experiment_singleton().worker()
+
 def save_checkpoint():
     r"""
     Saves model checkpoints

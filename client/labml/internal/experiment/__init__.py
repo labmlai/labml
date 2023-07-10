@@ -277,6 +277,9 @@ class Experiment:
         if self.run.distributed_rank != 0:
             monitor().silent()
 
+    def worker(self):
+        if self.web_api is not None:
+            self.web_api.worker()
     def __print_info(self):
         """
         🖨 Print the experiment info and check git repo status
