@@ -48,6 +48,8 @@ def create(*,
            writers: Set[str] = None,
            ignore_callers: Set[str] = None,
            tags: Optional[Set[str]] = None,
+           distributed_rank: int = 0,
+           distributed_world_size: int = 0,
            disable_screen: bool = False):
     r"""
     Create an experiment
@@ -61,7 +63,9 @@ def create(*,
             Defaults to ``{'tensorboard', 'sqlite', 'web_api'}``.
         ignore_callers: (Set[str], optional): list of files to ignore when
             automatically determining ``python_file``
-        tags (Set[str], optional): Set of tags for experiment
+        tags (Set[str], optional): set of tags for experiment
+        distributed_rank (int, optional): rank if this is a distributed training session
+        distributed_world_size (int, optional): world_size if this is a distributed training session
     """
 
     if writers is None:
@@ -85,6 +89,15 @@ def create(*,
         ignore_callers = set()
 
     if uuid is None:
+        import os
+        if 'RUN_UUID' in os.environ:
+            uuid = os.environ['RUN_UUID']
+
+    if distributed_world_size > 0:
+        if uuid is None:
+            raise ValueError('You must provide a run UUID for distributed training sessions')
+
+    if uuid is None:
         uuid = generate_uuid()
 
     monitor().clear()
@@ -96,6 +109,8 @@ def create(*,
                        writers=writers,
                        ignore_callers=ignore_callers,
                        tags=tags,
+                       distributed_rank=distributed_rank,
+                       distributed_world_size=distributed_world_size,
                        is_evaluate=False)
 
 
@@ -397,6 +412,8 @@ def record(*,
            exp_conf: Dict[str, any] = None,
            lab_conf: Dict[str, any] = None,
            token: str = None,
+           distributed_rank: int = 0,
+           distributed_world_size: int = 0,
            disable_screen: bool = False):
     r"""
     This combines :func:`create`, :func:`configs` and :func:`start`.
@@ -414,6 +431,8 @@ def record(*,
         token (str, optional): a shortcut to provide LabML mobile app token (or url - ``web_api``)
          instead of including it in ``lab_conf``. You can set this with :func:`labml.lab.configure`,
          `or with a configuration file for the entire project <../guide/installation_setup.html>`_.
+        distributed_rank (int, optional): rank if this is a distributed training session
+        distributed_world_size (int, optional): world_size if this is a distributed training session
     """
 
     if token is not None:
@@ -431,6 +450,8 @@ def record(*,
            writers=writers,
            ignore_callers=None,
            tags=tags,
+           distributed_rank=distributed_rank,
+           distributed_world_size=distributed_world_size,
            disable_screen=disable_screen)
 
     if exp_conf is not None:

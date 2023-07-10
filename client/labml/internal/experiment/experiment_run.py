@@ -5,10 +5,10 @@ from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 
 import numpy as np
-
 from labml import logger, lab, monit
 from labml.internal.configs.processor import load_configs
 from labml.utils.download import download_file
+
 from .. import util
 from ..manage.runs import get_run_by_uuid, get_checkpoints
 from ...logger import Text
@@ -47,7 +47,10 @@ class RunInfo:
                  start_step: int = 0,
                  notes: str = '',
                  load_run: Optional[str] = None,
-                 tags: List[str]):
+                 tags: List[str],
+                 distributed_rank: int,
+                 distributed_world_size: int,
+                 ):
         self.name = name
         self.uuid = uuid
         if repo_remotes is None:
@@ -65,7 +68,14 @@ class RunInfo:
         self.load_run = load_run
 
         self.experiment_path = experiment_path
-        self.run_path = experiment_path / str(uuid)
+        self.distributed_rank = distributed_rank
+        self.distributed_world_size = distributed_world_size
+
+        if distributed_world_size > 0:
+            self.run_path = experiment_path / f'{uuid}.{self.distributed_rank}'
+        else:
+            self.run_path = experiment_path / str(uuid)
+
         self.pids_path = self.run_path / 'pids'
         self.checkpoint_path = self.run_path / "checkpoints"
         self.numpy_path = self.run_path / "numpy"
@@ -89,7 +99,13 @@ class RunInfo:
         """
         ## Create a new from path
         """
-        run_info_path = run_path / 'run.yaml'
+
+        if not (run_path / 'run.yaml').exists():
+            # TODO
+            raise NotImplementedError('Loading distributed sessions')
+            # run_info_path = run_path / '0' / 'run.yaml'
+        else:
+            run_info_path = run_path / 'run.yaml'
 
         try:
             with open(str(run_info_path), 'r') as f:
@@ -131,6 +147,8 @@ class RunInfo:
             start_step=self.start_step,
             notes=self.notes,
             tags=self.tags,
+            distributed_rank=self.distributed_rank,
+            distributed_world_size=self.distributed_world_size,
             load_run=self.load_run
         )
 
@@ -201,12 +219,18 @@ class Run(RunInfo):
                  experiment_path: Path,
                  start_step: int = 0,
                  notes: str = '',
-                 tags: List[str]):
-        super().__init__(python_file=python_file, trial_date=trial_date, trial_time=trial_time,
-                         name=name, comment=comment, uuid=uuid, experiment_path=experiment_path,
-                         repo_remotes=repo_remotes,
-                         commit=commit, commit_message=commit_message, is_dirty=is_dirty,
-                         start_step=start_step, notes=notes, tags=tags)
+                 tags: List[str],
+                 distributed_rank: int,
+                 distributed_world_size: int,
+                 ):
+        super().__init__(
+            python_file=python_file, trial_date=trial_date, trial_time=trial_time,
+            name=name, comment=comment, uuid=uuid, experiment_path=experiment_path,
+            repo_remotes=repo_remotes,
+            commit=commit, commit_message=commit_message, is_dirty=is_dirty,
+            start_step=start_step, notes=notes, tags=tags,
+            distributed_rank=distributed_rank, distributed_world_size=distributed_world_size,
+        )
         self.diff = None
 
     @classmethod
@@ -217,7 +241,10 @@ class Run(RunInfo):
                trial_time: time.struct_time,
                name: str,
                comment: str,
-               tags: List[str]):
+               tags: List[str],
+               distributed_rank: int,
+               distributed_world_size: int,
+               ):
         """
         ## Create a new trial
         """
@@ -228,7 +255,10 @@ class Run(RunInfo):
                    experiment_path=experiment_path,
                    name=name,
                    comment=comment,
-                   tags=tags)
+                   tags=tags,
+                   distributed_rank=distributed_rank,
+                   distributed_world_size=distributed_world_size,
+                   )
 
     def make_path(self):
         run_path = Path(self.run_path)

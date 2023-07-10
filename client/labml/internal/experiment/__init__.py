@@ -191,9 +191,6 @@ class Experiment:
     check_repo_dirty: bool
     checkpoint_saver: CheckpointSaver
 
-    distributed_rank: int
-    distributed_world_size: int
-
     def __init__(self, *,
                  uuid: str,
                  name: Optional[str],
@@ -202,6 +199,8 @@ class Experiment:
                  writers: Set[str],
                  ignore_callers: Set[str],
                  tags: Optional[Set[str]],
+                 distributed_rank: int,
+                 distributed_world_size: int,
                  is_evaluate: bool):
 
         if is_ipynb():
@@ -241,7 +240,10 @@ class Experiment:
             trial_time=time.localtime(),
             name=name,
             comment=comment,
-            tags=list(tags))
+            tags=list(tags),
+            distributed_rank=distributed_rank,
+            distributed_world_size=distributed_world_size,
+        )
 
         try:
             repo = git.Repo(lab_singleton().path)
@@ -270,8 +272,10 @@ class Experiment:
         self.comet = None
         self.writers = writers
         self.is_started = False
-        self.distributed_rank = 0
-        self.distributed_world_size = -1
+
+        # TODO: option
+        if self.run.distributed_rank != 0:
+            monitor().silent()
 
     def __print_info(self):
         """
@@ -310,7 +314,7 @@ class Experiment:
     def save_checkpoint(self):
         if self.is_evaluate:
             return
-        if self.distributed_rank != 0:
+        if self.run.distributed_rank != 0:
             return
 
         self.checkpoint_saver.save(tracker().global_step)
@@ -325,7 +329,7 @@ class Experiment:
 
         self.configs_processor = ConfigProcessor(configs, configs_override)
 
-        if self.distributed_rank == 0:
+        if self.run.distributed_rank == 0:
             logger.log()
 
     def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):
@@ -359,23 +363,13 @@ class Experiment:
 
     def _save_pid(self):
         if not self.run.pids_path.exists():
-            self.run.pids_path.mkdir()
+            self.run.pids_path.mkdir(parents=True)
 
-        pid_path = self.run.pids_path / f'{self.distributed_rank}.pid'
+        pid_path = self.run.pids_path / f'{self.run.distributed_rank}.pid'
         assert not pid_path.exists(), str(pid_path)
 
         with open(str(pid_path), 'w') as f:
             f.write(f'{os.getpid()}')
-
-    def distributed(self, rank: int, world_size: int):
-        self.distributed_rank = rank
-        self.distributed_world_size = world_size
-
-        if self.distributed_rank != 0:
-            monitor().silent()
-
-        # to make sure we have the path to save pid
-        self.run.make_path()
 
     def _start_tracker(self):
         tracker().reset_writers()
@@ -383,7 +377,7 @@ class Experiment:
         if self.is_evaluate:
             return
 
-        if self.distributed_rank != 0:
+        if self.run.distributed_rank != 0:
             return
 
         if 'screen' in self.writers:
@@ -452,7 +446,7 @@ class Experiment:
         self._start_tracker()
         tracker().set_start_global_step(global_step)
 
-        if self.distributed_rank == 0:
+        if self.run.distributed_rank == 0:
             self.__print_info()
             if self.check_repo_dirty and self.run.is_dirty:
                 logger.log([("[FAIL]", Text.danger),
@@ -460,14 +454,14 @@ class Experiment:
                 exit(1)
 
         if not self.is_evaluate:
-            if self.distributed_rank == 0:
+            if self.run.distributed_rank == 0:
                 from labml.internal.computer.configs import computer_singleton
                 computer_singleton().add_project(lab_singleton().path)
 
-                self.run.save_info()
+            self.run.save_info()
             self._save_pid()
 
-            if self.distributed_rank == 0:
+            if self.run.distributed_rank == 0:
                 if self.configs_processor is not None:
                     self.configs_processor.add_saver(FileConfigsSaver(self.run.configs_path))
 
@@ -504,7 +498,7 @@ class Experiment:
             with open(str(self.run.run_log_path), 'a') as f:
                 end_time = time.time()
                 data = json.dumps({'status': status,
-                                   'rank': self.distributed_rank,
+                                   'rank': self.run.distributed_rank,
                                    'details': details,
                                    'time': end_time}, indent=None)
                 f.write(data + '\n')
@@ -512,7 +506,7 @@ class Experiment:
         tracker().finish_loop()
 
         if self.web_api is not None:
-            self.web_api.status(self.distributed_rank, status, details, end_time)
+            self.web_api.status(self.run.distributed_rank, status, details, end_time)
 
 
 class GlobalParams:
@@ -559,6 +553,8 @@ def create_experiment(*,
                       writers: Set[str],
                       ignore_callers: Set[str],
                       tags: Optional[Set[str]],
+                      distributed_rank: int = 0,
+                      distributed_world_size: int = 0,
                       is_evaluate: bool):
     global _internal
 
@@ -569,4 +565,6 @@ def create_experiment(*,
                            writers=writers,
                            ignore_callers=ignore_callers,
                            tags=tags,
+                           distributed_rank=distributed_rank,
+                           distributed_world_size=distributed_world_size,
                            is_evaluate=is_evaluate)

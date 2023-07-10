@@ -174,7 +174,7 @@ def _launch(args: List[str]):
     else:
         os.environ['PYTHONPATH'] = f"{cwd}:{cwd}/src"
 
-    cmd = [sys.executable, '-u', '-m', 'torch.distributed.launch', *args]
+    cmd = [sys.executable, '-u', '-m', 'torch.distributed.run', *args]
     print(cmd)
     try:
         process = subprocess.Popen(cmd, env=os.environ)

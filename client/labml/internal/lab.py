@@ -122,9 +122,9 @@ class Lab:
                     raise RuntimeError(f'web_api ({web_api_url}) is not a valid URL')
                 else:
                     web_api_url = f"{base_url}labml_token={web_api_url}&"
-            is_default = web_api_url == self.__default_config()['web_api']
+            # is_default = web_api_url == self.__default_config()['web_api']
             # if is_default:
-            #     from labml.internal.computer.configs import computer_singleton
+                from labml.internal.computer.configs import computer_singleton
             #     if not computer_singleton().web_api.is_default:
             #         web_api_url = computer_singleton().web_api.url
             self.web_api = WebAPIConfigs(url=web_api_url,
