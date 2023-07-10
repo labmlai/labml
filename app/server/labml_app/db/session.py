@@ -46,7 +46,7 @@ class Session(Model['Session']):
 
     @property
     def url(self) -> str:
-        return f'{settings.WEB_URL}/session/{self.session_uuid}'
+        return f'session/{self.session_uuid}'
 
     @property
     def is_in_progress(self) -> bool:

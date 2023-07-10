@@ -181,7 +181,7 @@ async def _update_run(request: Request, labml_token: str, run_uuid: str, labml_v
 
     hp_values = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
 
-    return {'errors': errors, 'url': r.url, 'dynamic': hp_values}
+    return {'errors': errors, 'url': f'{request.url.hostname}:{request.url.port}/{r.url}', 'dynamic': hp_values}
 
 
 async def update_run(request: Request) -> EndPointRes:
@@ -263,7 +263,7 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
     logger.debug(
         f'update_session, session_uuid: {session_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
-    return {'errors': errors, 'url': c.url}
+    return {'errors': errors, 'url': f'{request.url.hostname}:{request.url.port}/{c.url}'}
 
 
 async def update_session(request: Request) -> EndPointRes:
@@ -423,7 +423,7 @@ async def get_session_status(request: Request, session_uuid: str) -> JSONRespons
 @utils.analytics.AnalyticsEvent.time_this(None)
 @auth.check_labml_token_permission
 async def get_runs(request: Request, labml_token: str, token: Optional[str] = None) -> EndPointRes:
-    print(request.url.hostname)
+    print(f'{request.url.hostname}:{request.url.port}')
     u = user.get_by_session_token(token)
 
     if labml_token:

@@ -95,7 +95,7 @@ class Run(Model['Run']):
 
     @property
     def url(self) -> str:
-        return f'{settings.WEB_URL}/run/{self.run_uuid}'
+        return f'run/{self.run_uuid}'
 
     @property
     def is_in_progress(self) -> bool:
