@@ -432,8 +432,8 @@ class Experiment:
                                                     frequency=web_api_conf.frequency))
             else:
                 logger.log('No labml server url specified. '
-                           'Please start a labml server and specify the URL: '
-                           'https://github.com/labmlai/labml/tree/master/app', Text.highlight)
+                           'Please start a labml server and specify the URL. '
+                           'Docs: https://github.com/labmlai/labml/tree/master/app', Text.highlight)
         else:
             self.web_api = None
 
