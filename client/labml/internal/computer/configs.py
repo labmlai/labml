@@ -5,6 +5,7 @@ from labml import logger, monit
 from labml.internal import util
 from labml.internal.api.configs import WebAPIConfigs
 from labml.internal.computer import CONFIGS_FOLDER
+from labml.internal.lab import get_api_url
 from labml.logger import Text
 
 
@@ -72,13 +73,18 @@ class Computer:
 
         self.uuid = config['uuid']
         web_api_url = config['web_api']
-        if web_api_url[0:4] != 'http':
-            web_api_url = f"https://api.labml.ai/api/v1/computer?labml_token={web_api_url}&"
+        if web_api_url is not None and web_api_url[0:4] != 'http':
+            base_url = get_api_url('computer')
+            if base_url is not None:
+                raise RuntimeError(f'web_api ({web_api_url}) is not a valid URL')
+            else:
+                web_api_url = f"{base_url}labml_token={web_api_url}&"
+
         self.web_api = WebAPIConfigs(url=web_api_url,
                                      frequency=config['web_api_frequency'],
                                      verify_connection=config['web_api_verify_connection'],
                                      open_browser=config['web_api_open_browser'],
-                                     is_default=web_api_url == self.__default_config()['web_api'])
+                                     is_default=False)
         self.web_api_sync = config['web_api_sync']
         self.web_api_polling = config['web_api_polling']
 
@@ -107,12 +113,12 @@ class Computer:
     @staticmethod
     def __default_config():
         return dict(
-            web_api='https://api.labml.ai/api/v1/computer?',
+            web_api=get_api_url('computer'),
             web_api_frequency=0,
             web_api_verify_connection=True,
             web_api_open_browser=True,
-            web_api_sync='https://api.labml.ai/api/v1/sync?',
-            web_api_polling='https://api.labml.ai/api/v1/polling?',
+            web_api_sync=get_api_url('sync'),
+            web_api_polling=get_api_url('polling'),
             tensorboard_port=6006,
             tensorboard_visible_port=6006,
             tensorboard_host='localhost',

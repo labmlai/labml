@@ -1,2 +1,4 @@
 !.labml.yaml
 data/
+/labml
+logs/

@@ -3,7 +3,7 @@ import numpy as np
 
 
 def is_pattern_match(key: str, pattern: str):
-    dp = np.zeros((len(key) + 1, len(pattern) + 1), dtype=np.bool)
+    dp = np.zeros((len(key) + 1, len(pattern) + 1), dtype='bool')
     dp[0, 0] = True
 
     for i in range(len(key)):

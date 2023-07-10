@@ -430,6 +430,10 @@ class Experiment:
                                              open_browser=web_api_conf.open_browser)
                 tracker().add_writer(web_api.Writer(api_caller,
                                                     frequency=web_api_conf.frequency))
+            else:
+                logger.log('No labml server url specified. '
+                           'Please start a labml server and specify the URL: '
+                           'https://github.com/labmlai/labml/tree/master/app', Text.highlight)
         else:
             self.web_api = None
 

@@ -56,7 +56,7 @@ class _WebApiThread(threading.Thread):
 
     def stop(self):
         self.is_stopped = True
-        logger.log('Still updating app.labml.ai, please wait for it to complete...', Text.highlight)
+        logger.log('Still updating labml server, please wait for it to complete...', Text.highlight)
         self.please_wait_count = 1
 
     def add_handler(self, handler: ApiResponseHandler):

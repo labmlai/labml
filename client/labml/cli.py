@@ -6,15 +6,15 @@ import threading
 import time
 from typing import List
 
-from typing.io import IO
-
 from labml import logger, experiment
 from labml.experiment import generate_uuid
 from labml.internal.api import ApiCaller, SimpleApiDataSource
 from labml.internal.api.logs import ApiLogs
 from labml.internal.api.url import ApiUrlHandler
+from labml.internal.lab import get_api_url
 from labml.logger import Text
 from labml.utils.validators import ip_validator
+from typing.io import IO
 
 COMMAND_APP_SERVER = 'app-server'
 COMMAND_CAPTURE = 'capture'
@@ -106,7 +106,12 @@ class ExecutorThread(threading.Thread):
 
 
 def _capture(args: List[str]):
-    api_caller = ApiCaller("https://api.labml.ai/api/v1/track?", {'run_uuid': generate_uuid()},
+    base_url = get_api_url('track')
+    if base_url is None:
+        raise RuntimeError(f'Please specify labml_server environment variable. '
+                           f'How to setup a labml server https://github.com/labmlai/labml/tree/master/app')
+
+    api_caller = ApiCaller(base_url, {'run_uuid': generate_uuid()},
                            timeout_seconds=120)
     api_logs = ApiLogs()
     data = {

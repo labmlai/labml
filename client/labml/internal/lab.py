@@ -1,6 +1,6 @@
 from copy import deepcopy
-from pathlib import PurePath, Path
-from typing import List, Optional, Dict
+from pathlib import Path
+from typing import Optional, Dict
 
 from labml.internal import util
 from labml.internal.api.configs import WebAPIConfigs
@@ -10,6 +10,26 @@ from labml.utils import get_caller_file
 from labml.utils.notice import labml_notice
 
 _CONFIG_FILE_NAME = '.labml.yaml'
+
+
+def get_api_url(handle: str):
+    import os
+    if 'labml_server' in os.environ:
+        base_url = os.environ['labml_server']
+        if not base_url.startswith('http'):
+            raise RuntimeError(f'labml_server environment variable should be a valid URL: {base_url}')
+        if base_url.endswith('/') or base_url.endswith('?'):
+            raise RuntimeError(f'labml_server environment variable should be a valid URL '
+                               f'that does not end with `/` or `?`: {base_url}')
+
+        if 'labml_token' in os.environ:
+            token = os.environ['labml_token']
+            return f'{base_url}/{handle}?labml_token={token}&'
+        else:
+            return f'{base_url}/{handle}?'
+
+    # return 'https://api.labml.ai/api/v1/track?'
+    return None
 
 
 class LabYamlNotfoundError(RuntimeError):
@@ -97,7 +117,11 @@ class Lab:
         if self.configs['web_api']:
             web_api_url = self.configs['web_api']
             if web_api_url[0:4] != 'http':
-                web_api_url = f"https://api.labml.ai/api/v1/track?labml_token={web_api_url}&"
+                base_url = get_api_url('track')
+                if base_url is not None:
+                    raise RuntimeError(f'web_api ({web_api_url}) is not a valid URL')
+                else:
+                    web_api_url = f"{base_url}labml_token={web_api_url}&"
             is_default = web_api_url == self.__default_config()['web_api']
             # if is_default:
             #     from labml.internal.computer.configs import computer_singleton
@@ -107,7 +131,7 @@ class Lab:
                                          frequency=self.configs['web_api_frequency'],
                                          verify_connection=self.configs['web_api_verify_connection'],
                                          open_browser=self.configs['web_api_open_browser'],
-                                         is_default=is_default)
+                                         is_default=False)
         else:
             self.web_api = None
 
@@ -133,7 +157,7 @@ class Lab:
             experiments_path='logs',
             analytics_path='analytics',
             analytics_templates={},
-            web_api='https://api.labml.ai/api/v1/track?',
+            web_api=get_api_url('track'),
             web_api_frequency=0,
             web_api_verify_connection=True,
             web_api_open_browser=True,
