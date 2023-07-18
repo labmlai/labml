@@ -1,6 +1,16 @@
 import numpy as np
 
 
+def _torch_to_numpy(tensor):
+    import torch
+    with torch.no_grad():
+        tensor = tensor.cpu()
+        if tensor.dtype == torch.bfloat16:
+            tensor = tensor.to(torch.float)
+
+        return tensor.numpy()
+
+
 def to_numpy(value):
     if isinstance(value, int) or isinstance(value, float):
         return np.array(value)
@@ -18,9 +28,9 @@ def to_numpy(value):
 
     if torch is not None:
         if isinstance(value, torch.nn.parameter.Parameter):
-            return value.data.cpu().numpy()
+            return _torch_to_numpy(value.data)
         elif isinstance(value, torch.Tensor):
-            return value.data.cpu().numpy()
+            return _torch_to_numpy(value)
 
     try:
         import jaxlib
