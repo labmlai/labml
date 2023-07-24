@@ -55,6 +55,7 @@ def create(*,
            tags: Optional[Set[str]] = None,
            distributed_rank: int = 0,
            distributed_world_size: int = 0,
+           distributed_main_rank: int = 0,
            disable_screen: bool = False):
     r"""
     Create an experiment
@@ -116,6 +117,7 @@ def create(*,
                        tags=tags,
                        distributed_rank=distributed_rank,
                        distributed_world_size=distributed_world_size,
+                       distributed_main_rank=distributed_main_rank,
                        is_evaluate=False)
 
 

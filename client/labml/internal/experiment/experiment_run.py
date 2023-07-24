@@ -50,6 +50,7 @@ class RunInfo:
                  tags: List[str],
                  distributed_rank: int,
                  distributed_world_size: int,
+                 distributed_main_rank: int,
                  ):
         self.name = name
         self.uuid = uuid
@@ -70,6 +71,7 @@ class RunInfo:
         self.experiment_path = experiment_path
         self.distributed_rank = distributed_rank
         self.distributed_world_size = distributed_world_size
+        self.distributed_main_rank = distributed_main_rank
 
         if distributed_world_size > 0:
             self.run_path = experiment_path / f'{uuid}.{self.distributed_rank}'
@@ -222,6 +224,7 @@ class Run(RunInfo):
                  tags: List[str],
                  distributed_rank: int,
                  distributed_world_size: int,
+                 distributed_main_rank: int
                  ):
         super().__init__(
             python_file=python_file, trial_date=trial_date, trial_time=trial_time,
@@ -230,6 +233,7 @@ class Run(RunInfo):
             commit=commit, commit_message=commit_message, is_dirty=is_dirty,
             start_step=start_step, notes=notes, tags=tags,
             distributed_rank=distributed_rank, distributed_world_size=distributed_world_size,
+            distributed_main_rank=distributed_main_rank,
         )
         self.diff = None
 
@@ -244,6 +248,7 @@ class Run(RunInfo):
                tags: List[str],
                distributed_rank: int,
                distributed_world_size: int,
+               distributed_main_rank: int,
                ):
         """
         ## Create a new trial
@@ -258,6 +263,7 @@ class Run(RunInfo):
                    tags=tags,
                    distributed_rank=distributed_rank,
                    distributed_world_size=distributed_world_size,
+                   distributed_main_rank=distributed_main_rank,
                    )
 
     def make_path(self):

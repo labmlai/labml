@@ -10,7 +10,7 @@ from labml.internal.api.dynamic import DynamicUpdateHandler
 from labml.internal.configs.base import Configs
 from labml.internal.configs.dynamic_hyperparam import DynamicHyperParam
 from labml.internal.configs.processor import ConfigProcessor, FileConfigsSaver
-from labml.internal.experiment.experiment_run import Run, struct_time_to_time, struct_time_to_date
+from labml.internal.experiment.experiment_run import Run
 from labml.internal.experiment.watcher import ExperimentWatcher
 from labml.internal.lab import lab_singleton
 from labml.internal.monitor import monitor_singleton as monitor
@@ -201,6 +201,7 @@ class Experiment:
                  tags: Optional[Set[str]],
                  distributed_rank: int,
                  distributed_world_size: int,
+                 distributed_main_rank: int,
                  is_evaluate: bool):
 
         if is_ipynb():
@@ -243,6 +244,7 @@ class Experiment:
             tags=list(tags),
             distributed_rank=distributed_rank,
             distributed_world_size=distributed_world_size,
+            distributed_main_rank=distributed_main_rank,
         )
 
         try:
@@ -274,12 +276,13 @@ class Experiment:
         self.is_started = False
 
         # TODO: option
-        if self.run.distributed_rank != 0:
+        if self.run.distributed_rank != self.run.distributed_main_rank:
             monitor().silent()
 
     def worker(self):
         if self.web_api is not None:
             self.web_api.worker()
+
     def __print_info(self):
         """
         🖨 Print the experiment info and check git repo status
@@ -317,7 +320,7 @@ class Experiment:
     def save_checkpoint(self):
         if self.is_evaluate:
             return
-        if self.run.distributed_rank != 0:
+        if self.run.distributed_rank != self.run.distributed_main_rank:
             return
 
         self.checkpoint_saver.save(tracker().global_step)
@@ -332,7 +335,7 @@ class Experiment:
 
         self.configs_processor = ConfigProcessor(configs, configs_override)
 
-        if self.run.distributed_rank == 0:
+        if self.run.distributed_rank == self.run.distributed_main_rank:
             logger.log()
 
     def __start_from_checkpoint(self, run_uuid: str, checkpoint: Optional[int]):
@@ -380,7 +383,7 @@ class Experiment:
         if self.is_evaluate:
             return
 
-        if self.run.distributed_rank != 0:
+        if self.run.distributed_rank != self.run.distributed_main_rank:
             return
 
         if 'screen' in self.writers:
@@ -449,7 +452,7 @@ class Experiment:
         self._start_tracker()
         tracker().set_start_global_step(global_step)
 
-        if self.run.distributed_rank == 0:
+        if self.run.distributed_rank == self.run.distributed_main_rank:
             self.__print_info()
             if self.check_repo_dirty and self.run.is_dirty:
                 logger.log([("[FAIL]", Text.danger),
@@ -457,14 +460,14 @@ class Experiment:
                 exit(1)
 
         if not self.is_evaluate:
-            if self.run.distributed_rank == 0:
+            if self.run.distributed_rank == self.run.distributed_main_rank:
                 from labml.internal.computer.configs import computer_singleton
                 computer_singleton().add_project(lab_singleton().path)
 
             self.run.save_info()
             self._save_pid()
 
-            if self.run.distributed_rank == 0:
+            if self.run.distributed_rank == self.run.distributed_main_rank:
                 if self.configs_processor is not None:
                     self.configs_processor.add_saver(FileConfigsSaver(self.run.configs_path))
 
@@ -558,6 +561,7 @@ def create_experiment(*,
                       tags: Optional[Set[str]],
                       distributed_rank: int = 0,
                       distributed_world_size: int = 0,
+                      distributed_main_rank: int = 0,
                       is_evaluate: bool):
     global _internal
 
@@ -570,4 +574,5 @@ def create_experiment(*,
                            tags=tags,
                            distributed_rank=distributed_rank,
                            distributed_world_size=distributed_world_size,
+                           distributed_main_rank=distributed_main_rank,
                            is_evaluate=is_evaluate)
