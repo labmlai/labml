@@ -34,7 +34,7 @@ class InsightEnums:
 
 INDICATORS = [SeriesEnums.GRAD,
               SeriesEnums.PARAM,
-              SeriesEnums.TIME,
+              # SeriesEnums.TIME,
               SeriesEnums.MODULE,
               SeriesEnums.METRIC,
               SeriesEnums.HYPERPARAMS]

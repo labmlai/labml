@@ -71,13 +71,13 @@ export class CompareLineChart {
         }
 
         for (let i = 0; i < this.currentPlotIdx.length; i++) {
-            if (this.currentPlotIdx[i] >= 0) {
+            if (this.currentPlotIdx[i] >= 0 && this.currentSeries[i] != null) {
                 this.filteredCurrentPlotIdx.push(i)
                 this.currentPlot.push(this.currentSeries[i])
             }
         }
         for (let i = 0; i < this.basePlotIdx.length; i++) {
-            if (this.basePlotIdx[i] >= 0) {
+            if (this.basePlotIdx[i] >= 0 && this.baseSeries[i] != null) {
                 this.filteredBasePlotIdx.push(i)
                 this.basePlot.push(this.baseSeries[i])
             }
