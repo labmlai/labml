@@ -6,7 +6,10 @@
     "sourceMap": true,
     "outDir": "dist",
     "allowJs": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
   "include": [
     "ui/src",
