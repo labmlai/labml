@@ -1061,6 +1061,7 @@ $keyFontSize: 0.8rem;
 
 .code-sample {
   box-shadow: 3px 3px 6px #666, -3px -3px 6px #999;
+  user-select: text;
 
   pre {
     max-width: 400px;
