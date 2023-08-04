@@ -72,15 +72,14 @@ class _Collection(NumericIndicator, ABC):
         elif len(self._values) == 1:
             return self._values[0]
         else:
-            merged = np.concatenate(self._values, axis=0)
+            values = [to_numpy(v).ravel() for v in self._values]
+            merged = np.concatenate(values, axis=0)
             self._values = [merged]
 
             return merged
 
     def collect_value(self, value):
-        value = to_numpy(value).ravel()
-        if len(value) > 0:
-            self._values.append(to_numpy(value).ravel())
+        self._values.append(value)
 
     def clear(self):
         self._values = []
