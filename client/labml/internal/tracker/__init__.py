@@ -215,7 +215,7 @@ class Tracker:
         self.__last_global_step = self.global_step
         self.__set_looping_indicators = None
         for w in self.__writers:
-            w.flush()
+            w.finish()
 
 
 _internal: Optional[Tracker] = None

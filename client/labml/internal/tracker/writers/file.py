@@ -5,11 +5,10 @@ from pathlib import PurePath
 from queue import Queue
 from typing import Dict, Optional
 
-import numpy as np
-
 from . import Writer as WriteBase
 from ..indicators import Indicator
 from ..indicators.numeric import NumericIndicator
+from ...util.values import to_numpy
 
 MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5
@@ -35,13 +34,15 @@ class FileWriterThread(threading.Thread):
                 self._process(data)
 
     def _process(self, data: Dict[str, any]):
-        res = self._send(data['packet'])
-        if 'accept' in data:
-            data['accept'](res)
+        self._send(data['packet'])
 
     def _send(self, data: Dict[str, any]):
         with open(str(self.file_path), 'a') as f:
             f.write(json.dumps(data) + '\n')
+
+
+def _to_list(value):
+    return to_numpy(value).tolist()
 
 
 class Writer(WriteBase):
@@ -58,6 +59,7 @@ class Writer(WriteBase):
         self.indicators = {}
 
         self.thread = FileWriterThread(file_path)
+        self.is_thread_started = False
 
     @staticmethod
     def _parse_key(key: str):
@@ -68,30 +70,17 @@ class Writer(WriteBase):
             return
 
         if isinstance(indicator, NumericIndicator):
-            mean_value = indicator.get_mean()
-            hist = indicator.get_histogram()
-            if hist:
-                if len(hist) > 1:
-                    hist, bins = np.histogram(hist)
-                    hist = {'hist': hist.tolist(), 'bins': bins.tolist()}
-                else:
-                    hist = None
+            values = indicator.get_all_values()
             key = self._parse_key(indicator.mean_key)
             if key not in self.indicators:
-                self.indicators[key] = {
-                    'mean': [],
-                    'hist': []
-                }
+                self.indicators[key] = []
 
-            self.indicators[key]['mean'].append((global_step, mean_value))
-            self.indicators[key]['hist'].append(hist)
+            self.indicators[key].append((global_step, _to_list(values)))
 
     def write(self, *,
               global_step: int,
               indicators: Dict[str, Indicator]):
         for ind in indicators.values():
-            # if not ind.is_print:
-            #     continue
             self._write_indicator(global_step, ind)
 
         t = time.time()
@@ -107,23 +96,7 @@ class Writer(WriteBase):
         data = {}
 
         for key, ind_values in self.indicators.items():
-            value = np.array(ind_values['mean'])
-            step: np.ndarray = value[:, 0]
-            value: np.ndarray = value[:, 1]
-            while value.shape[0] > MAX_BUFFER_SIZE:
-                if value.shape[0] % 2 == 1:
-                    value = np.concatenate((value, value[-1:]))
-                    step = np.concatenate((step, step[-1:]))
-
-                n = value.shape[0] // 2
-                step = np.mean(step.reshape(n, 2), axis=-1)
-                value = np.mean(value.reshape(n, 2), axis=-1)
-
-            data[key] = {
-                'step': step.tolist(),
-                'value': value.tolist(),
-                'hist': ind_values['hist']
-            }
+            data[key] = ind_values
 
         self.indicators = {}
 
@@ -131,5 +104,10 @@ class Writer(WriteBase):
             'track': data,
             'time': time.time()
         }})
-        if not self.thread.is_alive():
+        if not self.is_thread_started:
+            self.is_thread_started = True
             self.thread.start()
+
+    def finish(self):
+        self.flush()
+        self.thread.push('done')

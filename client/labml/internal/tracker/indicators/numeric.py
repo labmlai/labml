@@ -15,6 +15,11 @@ class NumericIndicator(Indicator, ABC):
     def get_histogram(self):
         raise NotImplementedError()
 
+    def get_all_values(self):
+        values = self.get_histogram()
+        assert values is not None
+        return values
+
     @property
     def mean_key(self):
         return f'{self.name}.mean'
@@ -102,6 +107,9 @@ class Histogram(_Collection):
 class Scalar(_Collection):
     def get_histogram(self):
         return None
+
+    def get_all_values(self):
+        return self._merge()
 
     def copy(self, key: str):
         return Scalar(key, is_print=self.is_print, options=self.options)

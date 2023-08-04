@@ -12,5 +12,8 @@ class Writer:
     def flush(self):
         pass
 
+    def finish(self):
+        self.flush()
+
     def save_indicators(self, dot_indicators: Dict[str, Indicator], indicators: Dict[str, Indicator]):
         pass
