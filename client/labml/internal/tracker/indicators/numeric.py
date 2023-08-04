@@ -75,7 +75,7 @@ class _Collection(NumericIndicator, ABC):
         if len(self._values) == 0:
             return []
         elif len(self._values) == 1:
-            return self._values[0]
+            return to_numpy(self._values[0]).ravel()
         else:
             values = [to_numpy(v).ravel() for v in self._values]
             merged = np.concatenate(values, axis=0)
