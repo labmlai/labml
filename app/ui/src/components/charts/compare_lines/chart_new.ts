@@ -24,8 +24,6 @@ interface LineChartOptions extends ChartOptions {
 export class LineChart {
     series: SeriesModel[]
     plotIdx: number[]
-    plot: SeriesModel[] = []
-    filteredPlotIdx: number[] = []
     chartType: string
     chartWidth: number
     chartHeight: number
@@ -61,17 +59,6 @@ export class LineChart {
             this.plotIdx = defaultSeriesToPlot(this.series)
         }
 
-        for (let i = 0; i < this.plotIdx.length; i++) {
-            if (this.plotIdx[i] >= 0) {
-                this.filteredPlotIdx.push(i)
-                this.plot.push(this.series[i])
-            }
-        }
-        if (this.plotIdx.length > 0 && Math.max(...this.plotIdx) < 0) {
-            this.plot = [this.series[0]]
-            this.filteredPlotIdx = [0]
-        }
-
         const stepExtent = getExtent(this.series.map(s => s.series), d => d.step)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
@@ -81,7 +68,7 @@ export class LineChart {
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     changeScale() {
-        let plotSeries = this.plot.map(s => s.series)
+        let plotSeries = this.series.flatMap((s, i) => this.plotIdx[i]<0 ? [] : [s.series])
 
         if (this.chartType === 'log') {
             this.yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -this.chartHeight)
@@ -168,24 +155,30 @@ export class LineChart {
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
-                                        if (this.plot.length < 3) {
-                                            this.plot.map((s, i) => {
+                                        if (this.series.flatMap((s, i) => this.plotIdx[i]<0 ? [] : [s]).length < 3) { // todo keep filtered plot length
+                                            this.series.map((s, i) => {
+                                                if (this.plotIdx[i] < 0) {
+                                                    return;
+                                                }
                                                 new LineFill({
                                                     series: s.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
-                                                    color: this.chartColors.getColor(this.filteredPlotIdx[i]),
-                                                    colorIdx: this.filteredPlotIdx[i],
+                                                    color: this.chartColors.getColor(i),
+                                                    colorIdx: i,
                                                     chartId: this.chartId
                                                 }).render($)
                                             })
                                         }
-                                        this.plot.map((s, i) => {
+                                        this.series.map((s, i) => {
+                                            if (this.plotIdx[i] < 0) {
+                                                    return;
+                                                }
                                             let linePlot = new LinePlot({
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.chartColors.getColor(this.filteredPlotIdx[i])
+                                                color: this.chartColors.getColor(i)
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
