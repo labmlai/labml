@@ -8,7 +8,7 @@ import {DEBUG} from "../../../env"
 import {clearChildElements} from "../../../utils/document"
 import {toPointValues} from "../../../components/charts/utils"
 import {SeriesModel} from "../../../models/run"
-import {LineChart} from "../../../components/charts/lines/chart";
+import {LineChart} from "../../../components/charts/compare_lines/chart_new"
 
 export class ComparisonCard extends Card {
     private readonly  currentUUID: string
@@ -86,15 +86,10 @@ export class ComparisonCard extends Card {
         $(this.lineChartContainer, $ => {
             new LineChart({
                 series: this.currentSeries,
+                baseSeries: this.baseSeries,
+                currentPlotIndex: [],
+                basePlotIdx: [],
                 width: this.width,
-                plotIdx: [],
-                chartType: 'linear',
-                isDivergent: true
-            }).render($)
-            new LineChart({
-                series: this.baseSeries,
-                width: this.width,
-                plotIdx: [],
                 chartType: 'linear',
                 isDivergent: true
             }).render($)
