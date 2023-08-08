@@ -18,7 +18,7 @@ import networkAnalysis from './sessions/network'
 import processAnalysis from './sessions/process'
 import batteryAnalysis from './sessions/battery'
 import sessionConfigsAnalysis from "./sessions/configs"
-import comparisonAnalysis from './experiments/comparison_new'
+import comparisonAnalysis from './experiments/comaprison'
 
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
