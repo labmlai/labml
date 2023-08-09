@@ -18,7 +18,8 @@ export class ComparisonCard extends Card {
     private baseSeries: SeriesModel[]
     private currentSeries: SeriesModel[]
     private currentAnalysisCache: AnalysisDataCache
-    private currentPreferenceCache: AnalysisPreferenceCache
+    private preferenceCache: AnalysisPreferenceCache
+    private preferenceData: ComparisonPreferenceModel
     private loader: DataLoader
 
     private lineChartContainer: HTMLDivElement
@@ -31,11 +32,11 @@ export class ComparisonCard extends Card {
         this.currentUUID = opt.uuid
         this.width = opt.width
         this.currentAnalysisCache = comparisonCache.getAnalysis(this.currentUUID)
-        this.currentPreferenceCache = comparisonCache.getPreferences(this.currentUUID)
+        this.preferenceCache = comparisonCache.getPreferences(this.currentUUID)
 
         this.loader = new DataLoader(async (force: boolean) => {
-            let preferenceData = <ComparisonPreferenceModel> await this.currentPreferenceCache.get(force)
-            this.baseUUID = preferenceData.base_experiment
+            this.preferenceData = <ComparisonPreferenceModel> await this.preferenceCache.get(force)
+            this.baseUUID = this.preferenceData.base_experiment
 
             let currentAnalysisData = await this.currentAnalysisCache.get(force)
             this.currentSeries = toPointValues(currentAnalysisData.series)
@@ -87,8 +88,8 @@ export class ComparisonCard extends Card {
             new LineChart({
                 series: this.currentSeries,
                 baseSeries: this.baseSeries,
-                currentPlotIndex: [],
-                basePlotIdx: [],
+                currentPlotIndex: [...(this.preferenceData.series_preferences ?? [])],
+                basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
                 width: this.width,
                 chartType: 'linear',
                 isDivergent: true
