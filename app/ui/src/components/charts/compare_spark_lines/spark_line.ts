@@ -47,7 +47,9 @@ export class CompareSparkLine {
         this.selected = opt.selected
         this.onClick = opt.onClick
         this.isMouseMoveOpt = opt.isMouseMoveOpt
-        this.color = this.selected >= 0 ? opt.color : getBaseColor()
+        // this.color = this.selected >= 0 ? opt.color : getBaseColor()
+        // This changes the color of text to make it look like that values with same name have different colors
+        this.color = opt.color
         this.chartWidth = Math.min(300, Math.round(opt.width * .60))
         this.titleWidth = (opt.width - this.chartWidth) / 2
         this.minLastValue = opt.minLastValue
