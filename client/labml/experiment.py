@@ -141,17 +141,6 @@ def evaluate():
                        is_evaluate=True)
 
 
-def distributed(rank: int, world_size: int):
-    """
-    Set the ``rank`` and ``world_size`` of the current process
-    in an distributed training setup.
-
-    Arguments:
-        rank (int): rank of the current process
-        world_size (int): number of training processes
-    """
-    _experiment_singleton().distributed(rank, world_size)
-
 
 def add_model_savers(savers: Dict[str, ModelSaver]):
     """
