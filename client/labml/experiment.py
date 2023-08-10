@@ -27,6 +27,9 @@ def generate_uuid() -> str:
 
 
 def worker():
+    """
+    A worker like a data loader
+    """
     if _has_experiment():
         _experiment_singleton().worker()
 

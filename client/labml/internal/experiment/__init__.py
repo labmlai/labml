@@ -383,9 +383,6 @@ class Experiment:
         if self.is_evaluate:
             return
 
-        if self.run.distributed_rank != self.run.distributed_main_rank:
-            return
-
         if 'screen' in self.writers:
             from labml.internal.tracker.writers import screen
             tracker().add_writer(screen.ScreenWriter())
@@ -423,7 +420,9 @@ class Experiment:
                 from labml.internal.api import ApiCaller
                 from labml.internal.api.experiment import ApiExperiment
                 api_caller = ApiCaller(web_api_conf.url,
-                                       {'run_uuid': self.run.uuid},
+                                       {'run_uuid': self.run.uuid,
+                                        'rank': self.run.distributed_rank,
+                                        'world_size': self.run.distributed_world_size},
                                        timeout_seconds=120)
                 self.web_api = ApiExperiment(api_caller,
                                              frequency=web_api_conf.frequency,
@@ -471,12 +470,13 @@ class Experiment:
                 if self.configs_processor is not None:
                     self.configs_processor.add_saver(FileConfigsSaver(self.run.configs_path))
 
-                if self.web_api is not None:
-                    self.web_api.start(self.run)
-                    if self.configs_processor is not None:
-                        self.configs_processor.add_saver(self.web_api.get_configs_saver())
-                        self.web_api.set_dynamic_handler(ExperimentDynamicUpdateHandler(self.configs_processor))
+            if self.web_api is not None:
+                self.web_api.start(self.run)
+                if self.configs_processor is not None:
+                    self.configs_processor.add_saver(self.web_api.get_configs_saver())
+                    self.web_api.set_dynamic_handler(ExperimentDynamicUpdateHandler(self.configs_processor))
 
+            if self.run.distributed_rank == self.run.distributed_main_rank:
                 if self.wandb is not None:
                     self.wandb.init(self.run.name, self.run.run_path)
                     if self.configs_processor is not None:
