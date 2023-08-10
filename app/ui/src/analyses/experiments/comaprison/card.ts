@@ -9,6 +9,7 @@ import {clearChildElements} from "../../../utils/document"
 import {toPointValues} from "../../../components/charts/utils"
 import {SeriesModel} from "../../../models/run"
 import {LineChart} from "../../../components/charts/compare_lines/chart_new"
+import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
 
 export class ComparisonCard extends Card {
     private readonly  currentUUID: string
@@ -99,6 +100,16 @@ export class ComparisonCard extends Card {
 
     private renderSparkLines() {
         clearChildElements(this.sparkLinesContainer)
+        $(this.sparkLinesContainer, $ => {
+            new CompareSparkLines({
+                series: this.currentSeries,
+                baseSeries: this.baseSeries,
+                currentPlotIdx: [...(this.preferenceData.series_preferences ?? [])],
+                basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
+                width: this.width,
+                isDivergent: true
+            }).render($)
+        })
     }
 
     onClick = () => {
