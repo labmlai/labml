@@ -116,8 +116,8 @@ async def sign_out(request: Request, token: Optional[str] = None) -> EndPointRes
 
 
 @utils.analytics.AnalyticsEvent.time_this(0.4)
-async def _update_run(request: Request, labml_token: str, labml_version: str, run_uuid: str, rank: int = None,
-                      world_size: int = None):
+async def _update_run(request: Request, labml_token: str, labml_version: str, run_uuid: str, rank: int,
+                      world_size: int):
     errors = []
 
     token = labml_token
@@ -158,7 +158,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
                                       'Click on the experiment link to monitor the experiment and '
                                       'add it to your experiments list.'})
 
-    if world_size is not None and world_size > 1 and rank > 0:
+    if world_size > 1 and rank > 0:
         run_uuid = f'{run_uuid}_{rank}'
 
     r = run.get_or_create(request, run_uuid, rank, world_size, token)
@@ -193,13 +193,8 @@ async def update_run(request: Request) -> EndPointRes:
     labml_version = request.query_params.get('labml_version', '')
 
     run_uuid = request.query_params.get('run_uuid', '')
-    rank = request.query_params.get('rank', None)
-    world_size = request.query_params.get('world_size', None)
-
-    if rank is not None:
-        rank = int(rank)
-    if world_size is not None:
-        world_size = int(world_size)
+    rank = int(request.query_params.get('rank', 0))
+    world_size = int(request.query_params.get('world_size', 0))
 
     res = await _update_run(request, labml_token, labml_version, run_uuid, rank, world_size)
 
@@ -447,7 +442,7 @@ async def get_runs(request: Request, labml_token: str, token: Optional[str] = No
     res = []
     for r in runs_list:
         s = run.get_status(r.run_uuid)
-        if r.run_uuid:
+        if r.run_uuid and r.rank == 0:
             res.append({**r.get_summary(), **s.get_data()})
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
