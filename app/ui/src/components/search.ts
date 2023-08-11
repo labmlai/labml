@@ -7,7 +7,7 @@ export interface SearchOptions {
 export class SearchView {
     onSearch: () => void
     textbox: HTMLInputElement
-    inputTimeout: number //NodeJS.Timeout
+    inputTimeout: NodeJS.Timeout
 
     constructor(opt: SearchOptions) {
         this.onSearch = () => {
