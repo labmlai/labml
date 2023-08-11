@@ -35,6 +35,8 @@ class Run(Model['Run']):
     start_time: float
     run_ip: str
     run_uuid: str
+    rank: int
+    world_size: int
     python_file: str
     repo_remotes: str
     commit: str
@@ -68,6 +70,8 @@ class Run(Model['Run']):
                     tags=[],
                     start_time=None,
                     run_uuid='',
+                    rank=None,
+                    world_size=None,
                     python_file='',
                     repo_remotes='',
                     commit='',
@@ -292,7 +296,8 @@ class RunIndex(Index['Run']):
     pass
 
 
-def get_or_create(request: Request, run_uuid: str, labml_token: str = '') -> 'Run':
+def get_or_create(request: Request, run_uuid: str, rank: int = None, world_size: int = None,
+                  labml_token: str = '') -> 'Run':
     p = project.get_project(labml_token)
 
     if run_uuid in p.runs:
@@ -312,6 +317,8 @@ def get_or_create(request: Request, run_uuid: str, labml_token: str = '') -> 'Ru
 
     s = status.create_status()
     run = Run(run_uuid=run_uuid,
+              rank=rank,
+              world_size=world_size,
               owner=identifier,
               start_time=time_now,
               run_ip=request.client.host,
