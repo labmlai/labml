@@ -1,73 +1,56 @@
-import {Run, SeriesModel} from "../../../models/run"
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunCache, RunStatusCache} from "../../../cache/cache"
-import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
-import {Status} from "../../../models/status"
-import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
-import {BackButton, CancelButton, EditButton, SaveButton, ToggleButton} from "../../../components/buttons"
-import {RunHeaderCard} from "../run_header/card"
-import {ComparisonPreferenceModel} from "../../../models/preferences"
-import comparisonCache from "./cache"
-import {getChartType, toPointValues} from "../../../components/charts/utils"
-import mix_panel from "../../../mix_panel"
+import {ScreenView} from "../../../screen_view"
 import {ViewHandler} from "../../types"
-import {AwesomeRefreshButton} from '../../../components/refresh_button'
-import {handleNetworkErrorInplace} from '../../../utils/redirect'
-import {setTitle} from '../../../utils/document'
-import {CompareLineChart} from '../../../components/charts/compare_lines/chart'
-import {CompareSparkLines} from '../../../components/charts/compare_spark_lines/chart'
-import {ScreenView} from '../../../screen_view'
-import EditableSelectField from '../../../components/input/editable_select_field'
-import {RunsPickerView} from '../../../views/run_picker_view'
-import {NetworkError} from '../../../network'
-import {ErrorMessage} from '../../../components/error_message'
+import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunCache, RunStatusCache} from "../../../cache/cache"
+import comparisonCache from "./cache"
+import {DataLoader} from "../../../components/loader"
+import {ComparisonPreferenceModel} from "../../../models/preferences"
+import {Status} from "../../../models/status"
+import {Run, SeriesModel} from "../../../models/run"
+import {toPointValues} from "../../../components/charts/utils"
+import mix_panel from "../../../mix_panel"
+import {clearChildElements, setTitle} from "../../../utils/document"
+import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
+import {BackButton} from "../../../components/buttons"
+import {RunHeaderCard} from "../run_header/card"
+import {LineChart} from "../../../components/charts/compare_lines/chart_new"
+import {ErrorMessage} from "../../../components/error_message"
+import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
+import {NetworkError} from "../../../network";
 
 class ComparisonView extends ScreenView {
-    elem: HTMLDivElement
-    currentUuid: string
-    baseUuid: string
-    status: Status
-    currentPlotIdx: number[] = []
-    basePlotIdx: number[] = []
-    currentChart: number
-    statusCache: RunStatusCache
-    currentSeries: SeriesModel[]
-    baseSeries: SeriesModel[]
-    preferenceData: ComparisonPreferenceModel
-    baseAnalysisCache: AnalysisDataCache
-    currentAnalysisCache: AnalysisDataCache
-    preferenceCache: AnalysisPreferenceCache
-    runHeaderCard: RunHeaderCard
-    sparkLines: CompareSparkLines
-    lineChartContainer: HTMLDivElement
-    sparkLinesContainer: HTMLDivElement
-    buttonsContainer: HTMLDivElement
-    toggleButtonContainer: HTMLDivElement
-    saveButton: SaveButton
-    isUpdateDisable: boolean
-    actualWidth: number
-    private loader: DataLoader;
-    private refresh: AwesomeRefreshButton;
+    private elem: HTMLDivElement
+    private readonly currentUuid: string
+    private baseUuid: string
+    private preferenceCache: AnalysisPreferenceCache
     private runCache: RunCache
+    private statusCache: RunStatusCache
+    private currentAnalysisCache: AnalysisDataCache
+    private baseAnalysisCache: AnalysisDataCache
+    private preferenceData: ComparisonPreferenceModel
+    private loader: DataLoader
+    private status: Status
     private run: Run
-    private isEditMode: boolean
-    private fieldsContainer: HTMLUListElement
-    private shouldPreservePreferences: boolean
-    private missingBaseExperiment: boolean
+    private currentSeries: SeriesModel[]
+    private baseSeries: SeriesModel[]
+    private actualWidth: number
+    private backButton: BackButton
+    private runHeaderCard: RunHeaderCard
+    private baseRunHeaderCard: RunHeaderCard
+    private headerContainer: HTMLDivElement
+    private lineChartContainer: HTMLDivElement
+    private sparkLineContainer: HTMLDivElement
+    private missingBaseExperiment: Boolean
+    private sparkLines: CompareSparkLines
 
     constructor(uuid: string) {
         super()
 
         this.currentUuid = uuid
-        this.currentChart = 0
         this.runCache = CACHE.getRun(this.currentUuid)
         this.statusCache = CACHE.getRunStatus(this.currentUuid)
-        this.currentAnalysisCache = comparisonCache.getAnalysis(this.currentUuid)
         this.preferenceCache = comparisonCache.getPreferences(this.currentUuid)
-
-        this.isUpdateDisable = true
-        this.shouldPreservePreferences = false
-        this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
+        this.currentAnalysisCache = comparisonCache.getAnalysis(this.currentUuid)
 
         this.loader = new DataLoader(async (force) => {
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
@@ -75,11 +58,18 @@ class ComparisonView extends ScreenView {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get()
             this.currentSeries = toPointValues((await this.currentAnalysisCache.get(force)).series)
-            if (this.baseUuid != null && this.baseUuid.length > 0) {
+            this.runHeaderCard = new RunHeaderCard({
+                uuid: this.currentUuid,
+                width: this.actualWidth/2
+            })
+            if (!!this.baseUuid) {
+                this.baseRunHeaderCard = new RunHeaderCard({
+                    uuid: this.baseUuid,
+                    width: this.actualWidth/2
+                })
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
                 try {
-                    let baseAnalysisData = await this.baseAnalysisCache.get(force)
-                    this.baseSeries = toPointValues(baseAnalysisData.series)
+                    this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
                     this.missingBaseExperiment = false
                 } catch (e) {
                     if (e instanceof NetworkError && e.statusCode === 404) {
@@ -93,15 +83,17 @@ class ComparisonView extends ScreenView {
             } else {
                 this.baseAnalysisCache = undefined
                 this.baseSeries = undefined
+                this.missingBaseExperiment = true
             }
         })
-        this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
         mix_panel.track('Analysis View', {uuid: this.currentUuid, analysis: this.constructor.name})
+
+        this.backButton = new BackButton({text: 'Run', parent: this.constructor.name})
     }
 
     get requiresAuth(): boolean {
-        return false
+        return  false
     }
 
     onResize(width: number) {
@@ -114,56 +106,90 @@ class ComparisonView extends ScreenView {
         }
     }
 
-    async _render() {
-        setTitle({section: 'Comparison'})
-        this.elem.innerHTML = ''
-        $(this.elem, $ => {
-            $('div', '.page',
-                {style: {width: `${this.actualWidth}px`}},
-                $ => {
-                    $('div', $ => {
-                        $('div', '.nav-container', $ => {
-                            new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                            this.buttonsContainer = $('div')
-                            this.refresh.render($)
-                        })
-                        this.runHeaderCard = new RunHeaderCard({
-                            uuid: this.currentUuid,
-                            width: this.actualWidth
-                        })
-                        this.runHeaderCard.render($).then()
-                        $('div', '.input-list-container', $ => {
-                            this.fieldsContainer = $('ul', {style: {margin: '0'}})
-                        })
-                        this.toggleButtonContainer = $('div')
-                        $('h2', '.header.text-center', 'Comparison')
-                        this.loader.render($)
-                        $('div', '.detail-card', $ => {
-                            this.lineChartContainer = $('div', '.fixed-chart')
-                            this.sparkLinesContainer = $('div')
-                        })
-                    })
+    private renderHeaders() {
+        clearChildElements(this.headerContainer)
+        $(this.headerContainer,  $=> {
+            $('div', '',
+                async $ => {
+                    await this.runHeaderCard.render($)
+                })
+            $('span', '.fas.fa-exchange-alt', '')
+            $('div', '',
+                async $ => {
+                    await this.baseRunHeaderCard.render($)
                 })
         })
+    }
 
+    private renderLineChart() {
+        clearChildElements(this.lineChartContainer)
+
+        if (!!this.baseSeries) {
+            $(this.lineChartContainer, $ => {
+                new LineChart({
+                    series: this.currentSeries,
+                    baseSeries: this.baseSeries,
+                    currentPlotIndex: [...(this.preferenceData.series_preferences ?? [])],
+                    basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
+                    width: this.actualWidth,
+                    chartType: 'linear', // todo chart type
+                    isDivergent: true,
+                    isCursorMoveOpt: true,
+                    onCursorMove: [this.sparkLines.changeCursorValues]
+                }).render($)
+            })
+        } else if (this.missingBaseExperiment) {
+            (new ErrorMessage('Base Experiment Not Found')).render(this.lineChartContainer)
+        }
+    }
+
+    private renderSparkLineChart() {
+        clearChildElements(this.sparkLineContainer)
+        $(this.sparkLineContainer, $=> {
+            if (!!this.baseSeries) {
+                this.sparkLines = new CompareSparkLines({
+                    series: this.currentSeries,
+                    baseSeries: this.baseSeries,
+                    currentPlotIdx: [...(this.preferenceData.series_preferences ?? [])],
+                    basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
+                    width: this.actualWidth,
+                    isDivergent: true,
+                    // todo: onCurrentSelect
+                    // todo: onBaseSelect
+                })
+                this.sparkLines.render($)
+            }
+        })
+    }
+
+    async _render(): Promise<void> {
+        setTitle({section: 'Comparison'})
+        clearChildElements(this.elem)
+        $(this.elem, $ => {
+            $('div', '.page', {style: {width: `${this.actualWidth}px`}}, $ => {
+                $('div', '.nav-container', $ => {
+                    this.backButton.render($)
+                })
+                this.loader.render($)
+                this.headerContainer = $('div', '.compare-header')
+
+                $('div', '.detail-card', $ => {
+                    this.lineChartContainer = $('div', '.fixed-chart')
+                    this.sparkLineContainer = $('div')
+                })
+            })
+        })
         try {
             await this.loader.load()
-
-            setTitle({section: 'Comparison', item: this.run.name})
-            this.calcPreferences()
-
-            this.renderSparkLines()
+            this.renderHeaders()
+            this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
             this.renderLineChart()
-            this.renderButtons()
-            this.renderFields()
-            this.renderToggleButton()
+            setTitle({section: 'Comparison', item: this.run.name})
         } catch (e) {
-            handleNetworkErrorInplace(e)
+            // todo handle network error
+            console.log(e)
         } finally {
-            if (this.status && this.status.isRunning) {
-                this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
-                this.refresh.start()
-            }
+            // todo refresh
         }
     }
 
@@ -173,249 +199,6 @@ class ComparisonView extends ScreenView {
         this._render().then()
 
         return this.elem
-    }
-
-    destroy() {
-        this.refresh.stop()
-    }
-
-    async onRefresh() {
-        try {
-            await this.loader.load(true)
-
-            this.calcPreferences()
-            this.renderSparkLines()
-            this.renderLineChart()
-        } catch (e) {
-
-        } finally {
-            if (this.status && !this.status.isRunning) {
-                this.refresh.stop()
-            }
-            await this.runHeaderCard.refresh().then()
-        }
-    }
-
-    onVisibilityChange() {
-        this.refresh.changeVisibility(!document.hidden)
-    }
-
-    onToggleEdit = () => {
-        this.isEditMode = !this.isEditMode
-        this.refresh.disabled = this.isEditMode
-
-        this.renderFields()
-        this.renderButtons()
-    }
-
-    onCompareEdit = () => {
-        SCREEN.setView(new RunsPickerView({
-            title: 'Select run for comparison',
-            excludedRuns: new Set<string>([this.run.run_uuid]),
-            onPicked: run => {
-                if (this.preferenceData.base_experiment !== run.run_uuid) {
-                    this.onToggleEdit()
-                    this.isUpdateDisable = false
-                    this.shouldPreservePreferences = false
-                    this.preferenceData.base_experiment = run.run_uuid
-                    this.preferenceData.base_series_preferences = []
-                    this.updatePreferences()
-                }
-                SCREEN.setView(this)
-            }, onCancel: () => {
-                if (this.preferenceData.base_experiment != null) {
-                    this.onToggleEdit()
-                    this.isUpdateDisable = false
-                    this.shouldPreservePreferences = false
-                    this.preferenceData.base_experiment = ''
-                    this.preferenceData.base_series_preferences = []
-                }
-                SCREEN.setView(this)
-            }
-        }))
-    }
-
-    renderButtons() {
-        this.saveButton.disabled = this.isUpdateDisable
-        this.buttonsContainer.innerHTML = ''
-        $(this.buttonsContainer, $ => {
-            this.saveButton.render($)
-            if (this.isEditMode) {
-                new CancelButton({
-                    onButtonClick: this.onToggleEdit,
-                    parent: this.constructor.name
-                }).render($)
-            } else {
-                new EditButton({
-                    onButtonClick: this.onToggleEdit,
-                    parent: this.constructor.name
-                }).render($)
-            }
-        })
-    }
-
-    renderFields() {
-        this.fieldsContainer.innerHTML = ''
-        $(this.fieldsContainer, $ => {
-            new EditableSelectField({
-                name: 'Compared with',
-                value: this.preferenceData.base_experiment,
-                isEditable: this.isEditMode,
-                onEdit: this.onCompareEdit,
-                onClick: this.openRun
-            }).render($)
-        })
-    }
-
-    openRun = () => {
-        if (this.preferenceData.base_experiment) {
-            ROUTER.navigate(`/run/${this.preferenceData.base_experiment}`)
-        }
-    }
-
-    renderToggleButton() {
-        if (this.baseSeries && this.baseSeries.length > 0) {
-            this.toggleButtonContainer.innerHTML = ''
-            $(this.toggleButtonContainer, $ => {
-                new ToggleButton({
-                    onButtonClick: this.onChangeScale,
-                    text: 'Log',
-                    isToggled: this.currentChart > 0,
-                    parent: this.constructor.name
-                }).render($)
-            })
-        }
-    }
-
-    renderLineChart() {
-        if (this.baseSeries && this.baseSeries.length > 0) {
-            this.lineChartContainer.innerHTML = ''
-            $(this.lineChartContainer, $ => {
-                let zxc = new CompareLineChart({
-                    series: this.currentSeries,
-                    baseSeries: this.baseSeries,
-                    width: this.actualWidth,
-                    currentPlotIdx: this.currentPlotIdx,
-                    basePlotIdx: this.basePlotIdx,
-                    chartType: getChartType(this.currentChart),
-                    onCursorMove: [this.sparkLines.changeCursorValues],
-                    isCursorMoveOpt: true,
-                    isDivergent: true
-                })
-                zxc.render($)
-            })
-        } else if (this.missingBaseExperiment) {
-            (new ErrorMessage('Base Experiment Not Found')).render(this.lineChartContainer)
-        }
-
-    }
-
-    renderSparkLines() {
-        if (this.baseSeries && this.baseSeries.length > 0) {
-            this.sparkLinesContainer.innerHTML = ''
-            $(this.sparkLinesContainer, $ => {
-                this.sparkLines = new CompareSparkLines({
-                    series: this.currentSeries,
-                    baseSeries: this.baseSeries,
-                    currentPlotIdx: this.currentPlotIdx,
-                    basePlotIdx: this.basePlotIdx,
-                    width: this.actualWidth,
-                    onCurrentSelect: this.toggleCurrentChart,
-                    onBaseSelect: this.toggleBaseChart,
-                    isDivergent: true
-                })
-                this.sparkLines.render($)
-            })
-        }
-    }
-
-    toggleCurrentChart = (idx: number) => {
-        this.isUpdateDisable = false
-        this.shouldPreservePreferences = true
-
-        if (this.currentPlotIdx[idx] >= 0) {
-            this.currentPlotIdx[idx] = -1
-        } else {
-            this.currentPlotIdx[idx] = Math.max(...this.currentPlotIdx) + 1
-        }
-
-        if (this.currentPlotIdx.length > 1) {
-            this.currentPlotIdx = new Array<number>(...this.currentPlotIdx)
-        }
-
-        this.renderSparkLines()
-        this.renderLineChart()
-        this.renderButtons()
-    }
-    toggleBaseChart = (idx: number) => {
-        this.isUpdateDisable = false
-        this.shouldPreservePreferences = true
-
-        if (this.basePlotIdx[idx] >= 0) {
-            this.basePlotIdx[idx] = -1
-        } else {
-            this.basePlotIdx[idx] = Math.max(...this.basePlotIdx) + 1
-        }
-
-        if (this.basePlotIdx.length > 1) {
-            this.basePlotIdx = new Array<number>(...this.basePlotIdx)
-        }
-
-        this.renderSparkLines()
-        this.renderLineChart()
-        this.renderButtons()
-    }
-
-    onChangeScale = () => {
-        this.isUpdateDisable = false
-        this.shouldPreservePreferences = true
-
-        if (this.currentChart === 1) {
-            this.currentChart = 0
-        } else {
-            this.currentChart = this.currentChart + 1
-        }
-
-        this.renderLineChart()
-        this.renderButtons()
-    }
-
-    updatePreferences = () => {
-        this.preferenceData.series_preferences = this.currentPlotIdx
-        this.preferenceData.base_series_preferences = this.basePlotIdx
-        this.preferenceData.chart_type = this.currentChart
-        this.preferenceCache.setPreference(this.preferenceData).then()
-
-        this.isUpdateDisable = true
-        this.shouldPreservePreferences = false
-        this.renderButtons()
-    }
-
-    private calcPreferences() {
-        if (!this.shouldPreservePreferences) {
-            this.currentChart = this.preferenceData.chart_type
-
-            let currentAnalysisPreferences = this.preferenceData.series_preferences
-            if (currentAnalysisPreferences && currentAnalysisPreferences.length > 0) {
-                this.currentPlotIdx = [...currentAnalysisPreferences]
-            } else if (this.currentSeries) {
-                let res: number[] = []
-                for (let i = 0; i < this.currentSeries.length; i++) {
-                    res.push(i)
-                }
-                this.currentPlotIdx = res
-            }
-            let baseAnalysisPreferences = this.preferenceData.base_series_preferences
-            if (baseAnalysisPreferences && baseAnalysisPreferences.length > 0) {
-                this.basePlotIdx = [...baseAnalysisPreferences]
-            } else if (this.baseSeries) {
-                let res: number[] = []
-                for (let i = 0; i < this.baseSeries.length; i++) {
-                    res.push(i)
-                }
-                this.basePlotIdx = res
-            }
-        }
     }
 }
 

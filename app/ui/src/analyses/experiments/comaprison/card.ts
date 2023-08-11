@@ -10,6 +10,7 @@ import {toPointValues} from "../../../components/charts/utils"
 import {SeriesModel} from "../../../models/run"
 import {LineChart} from "../../../components/charts/compare_lines/chart_new"
 import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
+import {ROUTER} from "../../../app"
 
 export class ComparisonCard extends Card {
     private readonly  currentUUID: string
@@ -113,6 +114,6 @@ export class ComparisonCard extends Card {
     }
 
     onClick = () => {
-       throw new Error("Not implemented")
+       ROUTER.navigate(`/run/${this.currentUUID}/compare`)
     }
 }

@@ -1,5 +1,7 @@
 @import "neumorphism";
 
+$mobile: 400px;
+
 html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   touch-action: manipulation;
@@ -1204,4 +1206,24 @@ $keyFontSize: 0.8rem;
 
 a.generic-link {
   color: inherit;
+}
+
+.compare-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  @media screen and (max-width: $mobile) {
+    flex-direction: column;
+  }
+
+  .fas {
+    margin-top: auto;
+    margin-bottom: auto;
+
+    @media screen and (max-width: $mobile) {
+      margin: unset auto;
+    }
+    font-size: 30px;
+  }
 }
