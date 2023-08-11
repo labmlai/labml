@@ -2,6 +2,9 @@ import {Config, ConfigModel} from "./config"
 
 export interface RunModel {
     run_uuid: string
+    rank: number
+    world_size: number
+    other_rank_run_uuids: { [uuid: number]: string }
     name: string
     comment: string
     tags: string[]
@@ -57,6 +60,9 @@ export interface AnalysisDataModel {
 
 export class Run {
     run_uuid: string
+    rank: number
+    world_size: number
+    other_rank_run_uuids: { [uuid: number]: string }
     name: string
     comment: string
     note: string
@@ -81,6 +87,9 @@ export class Run {
 
     constructor(run: RunModel) {
         this.run_uuid = run.run_uuid
+        this.rank = run.rank
+        this.world_size = run.world_size
+        this.other_rank_run_uuids = run.other_rank_run_uuids
         this.name = run.name
         this.comment = run.comment
         this.note = run.note

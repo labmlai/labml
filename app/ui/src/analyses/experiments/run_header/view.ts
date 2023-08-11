@@ -162,6 +162,14 @@ class RunHeaderView extends ScreenView {
                     isEditable: this.isEditMode
                 })
                 this.nameField.render($)
+                new EditableField({
+                    name: 'Rank',
+                    value: this.run.rank,
+                }).render($)
+                new EditableField({
+                    name: 'World Size',
+                    value: this.run.world_size,
+                }).render($)
                 this.commentField = new EditableField({
                     name: 'Comment',
                     value: this.run.comment,

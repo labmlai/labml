@@ -51,6 +51,17 @@ html, body {
   opacity: 0.7;
 }
 
+.rank {
+  font-size: 12px;
+  padding-left: 10px;
+  padding-right: 10px;
+  opacity: 0.8;
+}
+
+.rank-link {
+  margin-right: 10px;
+}
+
 .labml-card {
   border-radius: .25rem;
   padding-top: 10px;
@@ -1173,9 +1184,11 @@ $keyFontSize: 0.8rem;
   .input-list-container {
     ul {
       margin: 0;
+
       li {
         background: none !important;
         padding: 0;
+
         .item-key {
           color: inherit;
         }

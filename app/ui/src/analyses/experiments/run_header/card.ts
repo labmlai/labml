@@ -64,6 +64,12 @@ export class RunHeaderCard {
                         $('h3', `${this.run.name}`)
                         $('h5', `${this.run.comment}`)
                     })
+
+                    if (this.run.world_size > 0) {
+                        $('div', '.rank.mt-2', $ => {
+                            $('span', `Rank ${this.run.rank + 1} of ${this.run.world_size}`)
+                        })
+                    }
                 })
             })
 

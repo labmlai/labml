@@ -248,9 +248,15 @@ class Run(Model['Run']):
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         formatted_repo = self.format_remote_repo(self.repo_remotes)
 
+        if self.rank == 0 and self.world_size > 1:
+            other_rank_run_uuids = {rank: f'{self.run_uuid}_{rank}' for rank in range(1, self.world_size)}
+        else:
+            other_rank_run_uuids = {}
+
         return {
             'run_uuid': self.run_uuid,
             'rank': self.rank,
+            'other_rank_run_uuids': other_rank_run_uuids,
             'world_size': self.world_size,
             'is_project_run': is_project_run,
             'name': self.name,

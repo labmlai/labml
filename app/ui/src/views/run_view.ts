@@ -32,6 +32,7 @@ class RunView extends ScreenView {
     lastUpdated: number
     buttonsContainer: HTMLSpanElement
     private cardContainer: HTMLDivElement
+    private rankElems: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
     private userMessages: UserMessages
@@ -97,6 +98,7 @@ class RunView extends ScreenView {
                         })
                         this.loader.render($)
                         this.runHeaderCard.render($)
+                        this.rankElems = $('div')
                         this.cardContainer = $('div')
                     })
                 })
@@ -108,6 +110,7 @@ class RunView extends ScreenView {
             setTitle({section: 'Run', item: this.run.name})
             this.renderButtons()
             this.renderClaimMessage()
+            this.renderRanks()
             this.share.text = `${this.run.name} run`
             this.renderCards()
         } catch (e) {
@@ -216,6 +219,17 @@ class RunView extends ScreenView {
                 this.cards.push(card)
                 card.render($)
             })
+        })
+    }
+
+    private renderRanks() {
+        this.rankElems.innerHTML = ''
+        $(this.rankElems, $ => {
+            for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
+                $('a', '.rank-link', {href: `/run/${run_uuid}`, target: "_blank"}, $ => {
+                    $('span', `Rank ${+rank + 1}`)
+                })
+            }
         })
     }
 }
