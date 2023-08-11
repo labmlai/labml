@@ -7,7 +7,7 @@ export interface SearchOptions {
 export class SearchView {
     onSearch: () => void
     textbox: HTMLInputElement
-    inputTimeout: NodeJS.Timeout
+    inputTimeout: number //NodeJS.Timeout
 
     constructor(opt: SearchOptions) {
         this.onSearch = () => {
@@ -21,7 +21,7 @@ export class SearchView {
     render($: WeyaElementFunction) {
         $('div', '.search-container.mt-3.mb-3.px-2', $ => {
             $('div', '.search-content', $ => {
-                $('span', '.icon', $=>{
+                $('span', '.icon', $ => {
                     $('span', '.fas.fa-search', '')
                 })
                 this.textbox = $('input', '.search-input', {
