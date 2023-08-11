@@ -196,6 +196,11 @@ async def update_run(request: Request) -> EndPointRes:
     rank = request.query_params.get('rank', None)
     world_size = request.query_params.get('world_size', None)
 
+    if rank is not None:
+        rank = int(rank)
+    if world_size is not None:
+        world_size = int(world_size)
+
     res = await _update_run(request, labml_token, labml_version, run_uuid, rank, world_size)
 
     await asyncio.sleep(3)
