@@ -7,16 +7,16 @@ import {DataLoader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {Status} from "../../../models/status"
 import {Run, SeriesModel} from "../../../models/run"
-import {toPointValues} from "../../../components/charts/utils"
+import {getChartType, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {clearChildElements, setTitle} from "../../../utils/document"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
-import {BackButton} from "../../../components/buttons"
+import {BackButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {LineChart} from "../../../components/charts/compare_lines/chart_new"
 import {ErrorMessage} from "../../../components/error_message"
 import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
-import {NetworkError} from "../../../network";
+import {NetworkError} from "../../../network"
 
 class ComparisonView extends ScreenView {
     private elem: HTMLDivElement
@@ -42,6 +42,7 @@ class ComparisonView extends ScreenView {
     private sparkLineContainer: HTMLDivElement
     private missingBaseExperiment: Boolean
     private sparkLines: CompareSparkLines
+    private toggleButtonContainer: HTMLDivElement
 
     constructor(uuid: string) {
         super()
@@ -106,6 +107,12 @@ class ComparisonView extends ScreenView {
         }
     }
 
+    private onChangeScale() {
+        this.preferenceData.chart_type ^= 1
+
+        this.renderLineChart()
+    }
+
     private renderHeaders() {
         clearChildElements(this.headerContainer)
         $(this.headerContainer,  $=> {
@@ -121,6 +128,21 @@ class ComparisonView extends ScreenView {
         })
     }
 
+    private renderToggleButtons() {
+        clearChildElements(this.toggleButtonContainer)
+        if (!!this.baseSeries) {
+            $(this.toggleButtonContainer, $ => {
+                new ToggleButton({
+                    onButtonClick: this.onChangeScale.bind(this),
+                    text: 'Log',
+                    isToggled: this.preferenceData.chart_type > 0,
+                    parent: this.constructor.name
+                })
+                    .render($)
+            })
+        }
+    }
+
     private renderLineChart() {
         clearChildElements(this.lineChartContainer)
 
@@ -132,7 +154,7 @@ class ComparisonView extends ScreenView {
                     currentPlotIndex: [...(this.preferenceData.series_preferences ?? [])],
                     basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
                     width: this.actualWidth,
-                    chartType: 'linear', // todo chart type
+                    chartType: getChartType(this.preferenceData.chart_type),
                     isDivergent: true,
                     isCursorMoveOpt: true,
                     onCursorMove: [this.sparkLines.changeCursorValues]
@@ -172,7 +194,8 @@ class ComparisonView extends ScreenView {
                 })
                 this.loader.render($)
                 this.headerContainer = $('div', '.compare-header')
-
+                this.toggleButtonContainer = $('div')
+                $('h2', '.header.text-center', 'Comparison')
                 $('div', '.detail-card', $ => {
                     this.lineChartContainer = $('div', '.fixed-chart')
                     this.sparkLineContainer = $('div')
@@ -184,6 +207,7 @@ class ComparisonView extends ScreenView {
             this.renderHeaders()
             this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
             this.renderLineChart()
+            this.renderToggleButtons()
             setTitle({section: 'Comparison', item: this.run.name})
         } catch (e) {
             // todo handle network error
