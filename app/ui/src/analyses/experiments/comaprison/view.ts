@@ -13,7 +13,7 @@ import {clearChildElements, setTitle} from "../../../utils/document"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {BackButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
-import {LineChart} from "../../../components/charts/compare_lines/chart_new"
+import {CompareLineChart} from "../../../components/charts/compare_lines/chart"
 import {ErrorMessage} from "../../../components/error_message"
 import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
 import {NetworkError} from "../../../network"
@@ -113,6 +113,28 @@ class ComparisonView extends ScreenView {
         this.renderLineChart()
     }
 
+    private toggleCurrentChart = (idx: number) => {
+        if (this.preferenceData.series_preferences[idx] == -1) {
+            this.preferenceData.series_preferences[idx] = Math.max(...this.preferenceData.series_preferences) + 1
+        } else {
+            this.preferenceData.series_preferences[idx] = -1
+        }
+
+        this.renderSparkLineChart()
+        this.renderLineChart()
+    }
+
+    private toggleBaseChart = (idx: number) => {
+        if (this.preferenceData.base_series_preferences[idx] == -1) {
+            this.preferenceData.base_series_preferences[idx] = Math.max(...this.preferenceData.base_series_preferences) + 1
+        } else {
+            this.preferenceData.base_series_preferences[idx] = -1
+        }
+
+        this.renderSparkLineChart()
+        this.renderLineChart()
+    }
+
     private renderHeaders() {
         clearChildElements(this.headerContainer)
         $(this.headerContainer,  $=> {
@@ -148,10 +170,10 @@ class ComparisonView extends ScreenView {
 
         if (!!this.baseSeries) {
             $(this.lineChartContainer, $ => {
-                new LineChart({
+                new CompareLineChart({
                     series: this.currentSeries,
                     baseSeries: this.baseSeries,
-                    currentPlotIndex: [...(this.preferenceData.series_preferences ?? [])],
+                    currentPlotIdx: [...(this.preferenceData.series_preferences ?? [])],
                     basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
                     width: this.actualWidth,
                     chartType: getChartType(this.preferenceData.chart_type),
@@ -176,8 +198,8 @@ class ComparisonView extends ScreenView {
                     basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
                     width: this.actualWidth,
                     isDivergent: true,
-                    // todo: onCurrentSelect
-                    // todo: onBaseSelect
+                    onCurrentSelect: this.toggleCurrentChart,
+                    onBaseSelect: this.toggleBaseChart
                 })
                 this.sparkLines.render($)
             }
