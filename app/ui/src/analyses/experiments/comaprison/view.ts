@@ -111,7 +111,7 @@ class ComparisonView extends ScreenView {
     }
 
     private onChangeScale() {
-        this.preferenceData.chart_type ^= 1
+        this.currentChart ^= 1
 
         this.renderLineChart()
     }
