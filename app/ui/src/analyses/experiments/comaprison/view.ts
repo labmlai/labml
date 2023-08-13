@@ -43,6 +43,9 @@ class ComparisonView extends ScreenView {
     private missingBaseExperiment: Boolean
     private sparkLines: CompareSparkLines
     private toggleButtonContainer: HTMLDivElement
+    private currentPlotIdx: number[]
+    private basePlotIdx: number[]
+    private currentChart: number // log or linear
 
     constructor(uuid: string) {
         super()
@@ -114,10 +117,14 @@ class ComparisonView extends ScreenView {
     }
 
     private toggleCurrentChart = (idx: number) => {
-        if (this.preferenceData.series_preferences[idx] == -1) {
-            this.preferenceData.series_preferences[idx] = Math.max(...this.preferenceData.series_preferences) + 1
+        if (this.currentPlotIdx[idx] >= 0) {
+            this.currentPlotIdx[idx] = -1
         } else {
-            this.preferenceData.series_preferences[idx] = -1
+            this.currentPlotIdx[idx] = Math.max(...this.currentPlotIdx) + 1
+        }
+
+        if (this.currentPlotIdx.length > 1) {
+            this.currentPlotIdx = new Array<number>(...this.currentPlotIdx)
         }
 
         this.renderSparkLineChart()
@@ -125,14 +132,44 @@ class ComparisonView extends ScreenView {
     }
 
     private toggleBaseChart = (idx: number) => {
-        if (this.preferenceData.base_series_preferences[idx] == -1) {
-            this.preferenceData.base_series_preferences[idx] = Math.max(...this.preferenceData.base_series_preferences) + 1
+        if (this.basePlotIdx[idx] >= 0) {
+            this.basePlotIdx[idx] = -1
         } else {
-            this.preferenceData.base_series_preferences[idx] = -1
+            this.basePlotIdx[idx] = Math.max(...this.basePlotIdx) + 1
+        }
+
+        if (this.basePlotIdx.length > 1) {
+            this.basePlotIdx = new Array<number>(...this.basePlotIdx)
         }
 
         this.renderSparkLineChart()
         this.renderLineChart()
+    }
+
+    private calcPreferences() {
+        this.currentChart = this.preferenceData.chart_type
+
+        let currentAnalysisPreferences = this.preferenceData.series_preferences
+        if (currentAnalysisPreferences && currentAnalysisPreferences.length > 0) {
+            this.currentPlotIdx = [...currentAnalysisPreferences]
+        } else if (this.currentSeries) {
+            let res: number[] = []
+            for (let i = 0; i < this.currentSeries.length; i++) {
+                res.push(i)
+            }
+            this.currentPlotIdx = res
+        }
+
+        let baseAnalysisPreferences = this.preferenceData.base_series_preferences
+        if (baseAnalysisPreferences && baseAnalysisPreferences.length > 0) {
+            this.basePlotIdx = [...baseAnalysisPreferences]
+        } else if (this.baseSeries) {
+            let res: number[] = []
+            for (let i = 0; i < this.baseSeries.length; i++) {
+                res.push(i)
+            }
+            this.basePlotIdx = res
+        }
     }
 
     private renderHeaders() {
@@ -157,7 +194,7 @@ class ComparisonView extends ScreenView {
                 new ToggleButton({
                     onButtonClick: this.onChangeScale.bind(this),
                     text: 'Log',
-                    isToggled: this.preferenceData.chart_type > 0,
+                    isToggled: this.currentChart > 0,
                     parent: this.constructor.name
                 })
                     .render($)
@@ -173,10 +210,10 @@ class ComparisonView extends ScreenView {
                 new CompareLineChart({
                     series: this.currentSeries,
                     baseSeries: this.baseSeries,
-                    currentPlotIdx: [...(this.preferenceData.series_preferences ?? [])],
-                    basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
+                    currentPlotIdx: this.currentPlotIdx,
+                    basePlotIdx: this.basePlotIdx,
                     width: this.actualWidth,
-                    chartType: getChartType(this.preferenceData.chart_type),
+                    chartType: getChartType(this.currentChart),
                     isDivergent: true,
                     isCursorMoveOpt: true,
                     onCursorMove: [this.sparkLines.changeCursorValues]
@@ -194,8 +231,8 @@ class ComparisonView extends ScreenView {
                 this.sparkLines = new CompareSparkLines({
                     series: this.currentSeries,
                     baseSeries: this.baseSeries,
-                    currentPlotIdx: [...(this.preferenceData.series_preferences ?? [])],
-                    basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
+                    currentPlotIdx: this.currentPlotIdx,
+                    basePlotIdx: this.basePlotIdx,
                     width: this.actualWidth,
                     isDivergent: true,
                     onCurrentSelect: this.toggleCurrentChart,
@@ -226,11 +263,14 @@ class ComparisonView extends ScreenView {
         })
         try {
             await this.loader.load()
+
+            setTitle({section: 'Comparison', item: this.run.name})
+            this.calcPreferences()
+
             this.renderHeaders()
             this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
             this.renderLineChart()
             this.renderToggleButtons()
-            setTitle({section: 'Comparison', item: this.run.name})
         } catch (e) {
             // todo handle network error
             console.log(e)
