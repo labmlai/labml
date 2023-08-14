@@ -17,6 +17,7 @@ import {CompareLineChart} from "../../../components/charts/compare_lines/chart"
 import {ErrorMessage} from "../../../components/error_message"
 import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
 import {NetworkError} from "../../../network"
+import {RunsPickerView} from "../../../views/run_picker_view"
 
 class ComparisonView extends ScreenView {
     private elem: HTMLDivElement
@@ -31,6 +32,7 @@ class ComparisonView extends ScreenView {
     private loader: DataLoader
     private status: Status
     private run: Run
+    private baseRun: Run
     private currentSeries: SeriesModel[]
     private baseSeries: SeriesModel[]
     private actualWidth: number
@@ -46,6 +48,7 @@ class ComparisonView extends ScreenView {
     private currentPlotIdx: number[]
     private basePlotIdx: number[]
     private currentChart: number // log or linear
+    private runPickerElem: HTMLDivElement
 
     constructor(uuid: string) {
         super()
@@ -71,6 +74,7 @@ class ComparisonView extends ScreenView {
                     uuid: this.baseUuid,
                     width: this.actualWidth/2
                 })
+                this.baseRun = await CACHE.getRun(this.baseUuid).get()
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
                 try {
                     this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
@@ -171,6 +175,22 @@ class ComparisonView extends ScreenView {
             this.basePlotIdx = res
         }
     }
+    private onEditClick = () => {
+        clearChildElements(this.runPickerElem)
+        this.runPickerElem.classList.add("fullscreen-cover")
+        this.runPickerElem.append(new RunsPickerView({
+                title: 'Select run for comparison',
+                excludedRuns: new Set<string>([this.run.run_uuid]),
+                onPicked: run => {
+                    this.runPickerElem.classList.remove("fullscreen-cover")
+                    clearChildElements(this.runPickerElem)
+                }, onCancel: () => {
+                    this.runPickerElem.classList.remove("fullscreen-cover")
+                    clearChildElements(this.runPickerElem)
+                }
+            })
+                .render())
+    }
 
     private renderHeaders() {
         clearChildElements(this.headerContainer)
@@ -179,7 +199,13 @@ class ComparisonView extends ScreenView {
                 async $ => {
                     await this.runHeaderCard.render($)
                 })
-            $('span', '.fas.fa-exchange-alt', '')
+            $('span', '.compared-with', $ => {
+                $('span', '.text', 'Compared With')
+                new EditButton({
+                    onButtonClick: this.onEditClick,
+                    parent: this.constructor.name
+                }).render($)
+            })
             $('div', '',
                 async $ => {
                     await this.baseRunHeaderCard.render($)
@@ -247,6 +273,7 @@ class ComparisonView extends ScreenView {
         setTitle({section: 'Comparison'})
         clearChildElements(this.elem)
         $(this.elem, $ => {
+            this.runPickerElem = $('div')
             $('div', '.page', {style: {width: `${this.actualWidth}px`}}, $ => {
                 $('div', '.nav-container', $ => {
                     this.backButton.render($)

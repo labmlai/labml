@@ -70,6 +70,10 @@ $dark-success: #28a745;
 body.light {
   background-color: $light-background;
 
+  .fullscreen-cover {
+    background-color: $light-background;
+  }
+
   .detail-card, .loader-container, .toast {
     background-color: $light-background;
   }
@@ -338,6 +342,10 @@ body.light {
 
 body.dark {
   background-color: $dark-background;
+
+  .fullscreen-cover {
+    background-color: $dark-background;
+  }
 
   .detail-card, .loader-container, .toast {
     background-color: $dark-background;
