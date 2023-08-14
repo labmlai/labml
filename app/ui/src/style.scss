@@ -688,6 +688,12 @@ button.sparkline-list-item {
     display: inline-block;
     text-align: left;
 
+    &.faded {
+      > * {
+        opacity: 0.3;
+      }
+    }
+
     span {
       vertical-align: middle;
       font-weight: bold;

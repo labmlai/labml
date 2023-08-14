@@ -47,8 +47,6 @@ export class CompareSparkLine {
         this.selected = opt.selected
         this.onClick = opt.onClick
         this.isMouseMoveOpt = opt.isMouseMoveOpt
-        // this.color = this.selected >= 0 ? opt.color : getBaseColor()
-        // This changes the color of text to make it look like that values with same name have different colors
         this.color = opt.color
         this.chartWidth = Math.min(300, Math.round(opt.width * .60))
         this.titleWidth = (opt.width - this.chartWidth) / 2
@@ -93,7 +91,7 @@ export class CompareSparkLine {
 
     render($: WeyaElementFunction) {
         $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
-            $('div.sparkline-content', {style: {width: `${Math.min(this.titleWidth * 2 + this.chartWidth, 450)}px`}}, $ => {
+            $(`div.sparkline-content${this.selected >= 0 ? "" : ".faded"}`, {style: {width: `${Math.min(this.titleWidth * 2 + this.chartWidth, 450)}px`}}, $ => {
                 $('span', '.title', this.name, {style: {color: this.color}})
                 $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth * 2}px`}, height: 36}, $ => {
                     $('g', {transform: `translate(${this.titleWidth}, 30)`}, $ => {
