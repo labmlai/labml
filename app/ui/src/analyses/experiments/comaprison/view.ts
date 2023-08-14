@@ -11,7 +11,7 @@ import {getChartType, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {clearChildElements, setTitle} from "../../../utils/document"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
-import {BackButton, ToggleButton} from "../../../components/buttons"
+import {BackButton, EditButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {CompareLineChart} from "../../../components/charts/compare_lines/chart"
 import {ErrorMessage} from "../../../components/error_message"
@@ -49,6 +49,10 @@ class ComparisonView extends ScreenView {
     private basePlotIdx: number[]
     private currentChart: number // log or linear
     private runPickerElem: HTMLDivElement
+    private saveButton: SaveButton
+    private buttonContainer: HTMLDivElement
+    private shouldPreservePreferences: boolean
+    private isUpdateDisabled: boolean
 
     constructor(uuid: string) {
         super()
@@ -58,6 +62,8 @@ class ComparisonView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.currentUuid)
         this.preferenceCache = comparisonCache.getPreferences(this.currentUuid)
         this.currentAnalysisCache = comparisonCache.getAnalysis(this.currentUuid)
+        this.shouldPreservePreferences = false
+        this.isUpdateDisabled = true
 
         this.loader = new DataLoader(async (force) => {
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
@@ -98,6 +104,7 @@ class ComparisonView extends ScreenView {
         mix_panel.track('Analysis View', {uuid: this.currentUuid, analysis: this.constructor.name})
 
         this.backButton = new BackButton({text: 'Run', parent: this.constructor.name})
+        this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
     }
 
     get requiresAuth(): boolean {
@@ -115,12 +122,19 @@ class ComparisonView extends ScreenView {
     }
 
     private onChangeScale() {
+        this.shouldPreservePreferences = true
+        this.isUpdateDisabled = false
+
         this.currentChart ^= 1
 
         this.renderLineChart()
+        this.renderButtons()
     }
 
     private toggleCurrentChart = (idx: number) => {
+        this.shouldPreservePreferences = true
+        this.isUpdateDisabled = false
+
         if (this.currentPlotIdx[idx] >= 0) {
             this.currentPlotIdx[idx] = -1
         } else {
@@ -133,9 +147,13 @@ class ComparisonView extends ScreenView {
 
         this.renderSparkLineChart()
         this.renderLineChart()
+        this.renderButtons()
     }
 
     private toggleBaseChart = (idx: number) => {
+        this.shouldPreservePreferences = true
+        this.isUpdateDisabled = false
+
         if (this.basePlotIdx[idx] >= 0) {
             this.basePlotIdx[idx] = -1
         } else {
@@ -148,9 +166,13 @@ class ComparisonView extends ScreenView {
 
         this.renderSparkLineChart()
         this.renderLineChart()
+        this.renderButtons()
     }
 
     private calcPreferences() {
+        if (this.shouldPreservePreferences)
+            return
+
         this.currentChart = this.preferenceData.chart_type
 
         let currentAnalysisPreferences = this.preferenceData.series_preferences
@@ -175,6 +197,19 @@ class ComparisonView extends ScreenView {
             this.basePlotIdx = res
         }
     }
+
+    private updatePreferences = () => {
+        this.preferenceData.series_preferences = this.currentPlotIdx
+        this.preferenceData.base_series_preferences = this.basePlotIdx
+        this.preferenceData.chart_type = this.currentChart
+        this.preferenceCache.setPreference(this.preferenceData).then()
+
+        this.shouldPreservePreferences = false
+        this.isUpdateDisabled = true
+
+        this.renderButtons()
+    }
+
     private onEditClick = () => {
         clearChildElements(this.runPickerElem)
         this.runPickerElem.classList.add("fullscreen-cover")
@@ -228,6 +263,14 @@ class ComparisonView extends ScreenView {
         }
     }
 
+    private renderButtons() {
+        clearChildElements(this.buttonContainer)
+        this.saveButton.disabled = this.isUpdateDisabled
+        $(this.buttonContainer, $ => {
+            this.saveButton.render($)
+        })
+    }
+
     private renderLineChart() {
         clearChildElements(this.lineChartContainer)
 
@@ -277,6 +320,7 @@ class ComparisonView extends ScreenView {
             $('div', '.page', {style: {width: `${this.actualWidth}px`}}, $ => {
                 $('div', '.nav-container', $ => {
                     this.backButton.render($)
+                    this.buttonContainer = $('div')
                 })
                 this.loader.render($)
                 this.headerContainer = $('div', '.compare-header')
@@ -298,6 +342,7 @@ class ComparisonView extends ScreenView {
             this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
             this.renderLineChart()
             this.renderToggleButtons()
+            this.renderButtons()
         } catch (e) {
             // todo handle network error
             console.log(e)
