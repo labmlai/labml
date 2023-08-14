@@ -13,7 +13,7 @@ import {clearChildElements, setTitle} from "../../../utils/document"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {BackButton, EditButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
-import {CompareLineChart} from "../../../components/charts/compare_lines/chart"
+import {LineChart} from "../../../components/charts/compare_lines/chart"
 import {ErrorMessage} from "../../../components/error_message"
 import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
 import {NetworkError} from "../../../network"
@@ -322,10 +322,10 @@ class ComparisonView extends ScreenView {
 
         if (!!this.baseSeries) {
             $(this.lineChartContainer, $ => {
-                new CompareLineChart({
+                new LineChart({
                     series: this.currentSeries,
                     baseSeries: this.baseSeries,
-                    currentPlotIdx: this.currentPlotIdx,
+                    currentPlotIndex: this.currentPlotIdx,
                     basePlotIdx: this.basePlotIdx,
                     width: this.actualWidth,
                     chartType: getChartType(this.currentChart),

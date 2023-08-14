@@ -4,13 +4,13 @@ import {FillOptions, PlotOptions} from '../types'
 import {PointValue} from "../../../models/run"
 import {getSelectedIdx} from "../utils"
 
-export interface CompareLinePlotOptions extends PlotOptions {
+export interface LinePlotOptions extends PlotOptions {
     xScale: d3.ScaleLinear<number, number>
     series: PointValue[]
     isDotted?: boolean
 }
 
-export class CompareLinePlot {
+export class LinePlot {
     series: PointValue[]
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
@@ -21,7 +21,7 @@ export class CompareLinePlot {
     bisect: d3.Bisector<number, number>
     isDotted: boolean
 
-    constructor(opt: CompareLinePlotOptions) {
+    constructor(opt: LinePlotOptions) {
         this.series = opt.series
         this.xScale = opt.xScale
         this.yScale = opt.yScale

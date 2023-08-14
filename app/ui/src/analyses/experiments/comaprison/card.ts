@@ -8,7 +8,7 @@ import {DEBUG} from "../../../env"
 import {clearChildElements} from "../../../utils/document"
 import {toPointValues} from "../../../components/charts/utils"
 import {SeriesModel} from "../../../models/run"
-import {LineChart} from "../../../components/charts/compare_lines/chart_new"
+import {LineChart} from "../../../components/charts/compare_lines/chart"
 import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
 import {ROUTER} from "../../../app"
 

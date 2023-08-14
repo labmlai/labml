@@ -3,9 +3,9 @@ import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {PointValue} from "../../../models/run"
 import {getBaseColor} from "../constants"
 import {getExtent, getScale, getSelectedIdx} from "../utils"
-import {LineFill, LinePlot} from "../lines/plot"
+import {LineFill} from "../lines/plot"
 import {formatFixed} from "../../../utils/value"
-import {CompareLinePlot} from '../compare_lines/plot'
+import {LinePlot} from '../compare_lines/plot'
 
 export interface CompareSparkLineOptions {
     name: string
@@ -104,7 +104,7 @@ export class CompareSparkLine {
                             color: '#7f8c8d',
                             colorIdx: 9
                         }).render($)
-                        this.linePlot = new CompareLinePlot({
+                        this.linePlot = new LinePlot({
                             series: this.series,
                             xScale: this.xScale,
                             yScale: this.yScale,
