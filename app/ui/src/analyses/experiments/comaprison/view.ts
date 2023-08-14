@@ -18,6 +18,9 @@ import {ErrorMessage} from "../../../components/error_message"
 import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
 import {NetworkError} from "../../../network"
 import {RunsPickerView} from "../../../views/run_picker_view"
+import {AwesomeRefreshButton} from "../../../components/refresh_button"
+import {DEBUG} from "../../../env"
+import {handleNetworkErrorInplace} from "../../../utils/redirect"
 
 class ComparisonView extends ScreenView {
     private elem: HTMLDivElement
@@ -53,6 +56,7 @@ class ComparisonView extends ScreenView {
     private buttonContainer: HTMLDivElement
     private shouldPreservePreferences: boolean
     private isUpdateDisabled: boolean
+    private refresh: AwesomeRefreshButton
 
     constructor(uuid: string) {
         super()
@@ -105,6 +109,7 @@ class ComparisonView extends ScreenView {
 
         this.backButton = new BackButton({text: 'Run', parent: this.constructor.name})
         this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
+        this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
     }
 
     get requiresAuth(): boolean {
@@ -227,6 +232,28 @@ class ComparisonView extends ScreenView {
                 .render())
     }
 
+    onVisibilityChange() {
+        this.refresh.changeVisibility(!document.hidden)
+    }
+
+    async onRefresh() {
+        try {
+            await this.loader.load(true)
+
+            this.calcPreferences()
+            this.renderSparkLineChart()
+            this.renderLineChart()
+        } catch (e) {
+
+        } finally {
+            if (this.status && !this.status.isRunning) {
+                this.refresh.stop()
+            }
+            await this.runHeaderCard.refresh()
+            await this.baseRunHeaderCard.refresh()
+        }
+    }
+
     private renderHeaders() {
         clearChildElements(this.headerContainer)
         $(this.headerContainer,  $=> {
@@ -321,6 +348,7 @@ class ComparisonView extends ScreenView {
                 $('div', '.nav-container', $ => {
                     this.backButton.render($)
                     this.buttonContainer = $('div')
+                    this.refresh.render($)
                 })
                 this.loader.render($)
                 this.headerContainer = $('div', '.compare-header')
@@ -344,10 +372,15 @@ class ComparisonView extends ScreenView {
             this.renderToggleButtons()
             this.renderButtons()
         } catch (e) {
-            // todo handle network error
-            console.log(e)
+            handleNetworkErrorInplace(e)
+            if (DEBUG) {
+                console.log(e)
+            }
         } finally {
-            // todo refresh
+            if (this.status?.isRunning == true) {
+                this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
+                this.refresh.start()
+            }
         }
     }
 
