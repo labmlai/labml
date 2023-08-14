@@ -222,6 +222,25 @@ class ComparisonView extends ScreenView {
                 title: 'Select run for comparison',
                 excludedRuns: new Set<string>([this.run.run_uuid]),
                 onPicked: run => {
+                    if (this.preferenceData.base_experiment !== run.run_uuid) {
+                        this.isUpdateDisabled = true
+                        this.shouldPreservePreferences = false
+                        this.preferenceData.base_experiment = run.run_uuid
+                        this.preferenceData.base_series_preferences = []
+                        this.baseRunHeaderCard = new RunHeaderCard({
+                            uuid: run.run_uuid,
+                            width: this.actualWidth/2
+                        })
+
+                        this.calcPreferences()
+                        this.updatePreferences()
+
+                        this.renderHeaders()
+                        this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
+                        this.renderLineChart()
+                        this.renderToggleButtons()
+                        this.renderButtons()
+                    }
                     this.runPickerElem.classList.remove("fullscreen-cover")
                     clearChildElements(this.runPickerElem)
                 }, onCancel: () => {
