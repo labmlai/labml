@@ -1210,21 +1210,19 @@ a.generic-link {
 
 .compare-header {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
+  margin-left: 10px;
+  margin-right: 10px;
 
-  @media screen and (max-width: $mobile) {
-    flex-direction: column;
-  }
-
-  .fas {
-    margin-top: auto;
-    margin-bottom: auto;
-
-    @media screen and (max-width: $mobile) {
-      margin: unset auto;
+  .compared-with {
+    display: flex;
+    justify-content: flex-start;
+    .text {
+      font-size: 20px;
+      margin-bottom: auto;
+      margin-top: auto;
+      margin-right: 10px;
     }
-    font-size: 30px;
   }
 }
 
