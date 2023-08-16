@@ -35,7 +35,6 @@ class ComparisonView extends ScreenView {
     private loader: DataLoader
     private status: Status
     private run: Run
-    private baseRun: Run
     private currentSeries: SeriesModel[]
     private baseSeries: SeriesModel[]
     private actualWidth: number
@@ -84,7 +83,6 @@ class ComparisonView extends ScreenView {
                     uuid: this.baseUuid,
                     width: this.actualWidth/2
                 })
-                this.baseRun = await CACHE.getRun(this.baseUuid).get()
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
                 try {
                     this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
@@ -221,19 +219,35 @@ class ComparisonView extends ScreenView {
         this.runPickerElem.append(new RunsPickerView({
                 title: 'Select run for comparison',
                 excludedRuns: new Set<string>([this.run.run_uuid]),
-                onPicked: run => {
+                onPicked: async run => {
+                    // todo maybe add a loader
                     if (this.preferenceData.base_experiment !== run.run_uuid) {
                         this.isUpdateDisabled = true
                         this.shouldPreservePreferences = false
+
+                        this.baseUuid = run.run_uuid
                         this.preferenceData.base_experiment = run.run_uuid
                         this.preferenceData.base_series_preferences = []
                         this.baseRunHeaderCard = new RunHeaderCard({
                             uuid: run.run_uuid,
                             width: this.actualWidth/2
                         })
-
                         this.calcPreferences()
                         this.updatePreferences()
+
+                        this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
+                        try {
+                            this.baseSeries = toPointValues((await this.baseAnalysisCache.get(false)).series)
+                            this.missingBaseExperiment = false
+                        } catch (e) {
+                            if (e instanceof NetworkError && e.statusCode === 404) {
+                                this.baseAnalysisCache = undefined
+                                this.baseSeries = undefined
+                                this.missingBaseExperiment = true
+                            } else {
+                                throw e
+                            }
+                        }
 
                         this.renderHeaders()
                         this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
