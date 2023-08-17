@@ -11,6 +11,7 @@ import {SeriesModel} from "../../../models/run"
 import {LineChart} from "../../../components/charts/compare_lines/chart"
 import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
 import {ROUTER} from "../../../app"
+import {NetworkError} from "../../../network";
 
 export class ComparisonCard extends Card {
     private readonly  currentUUID: string
@@ -23,7 +24,7 @@ export class ComparisonCard extends Card {
     private preferenceCache: AnalysisPreferenceCache
     private preferenceData: ComparisonPreferenceModel
     private loader: DataLoader
-
+    private missingBaseExperiment: boolean
     private lineChartContainer: HTMLDivElement
     private sparkLinesContainer: HTMLDivElement
     private elem: HTMLDivElement
@@ -47,9 +48,16 @@ export class ComparisonCard extends Card {
                 try {
                     let baseAnalysisData = await this.baseAnalysisCache.get(force)
                     this.baseSeries = toPointValues(baseAnalysisData.series)
+                    this.missingBaseExperiment = false
                 } catch (e) {
-                    // TODO handle series error
+                    if (e instanceof NetworkError && e.statusCode === 404) {
+                        this.missingBaseExperiment = true
+                    } else {
+                        throw e
+                    }
                 }
+            } else {
+                this.missingBaseExperiment = true
             }
         })
 
@@ -75,13 +83,24 @@ export class ComparisonCard extends Card {
         try {
             await this.loader.load()
 
-            this.renderLineChart()
-            this.renderSparkLines()
+            if (!this.missingBaseExperiment) {
+                this.renderLineChart()
+                this.renderSparkLines()
+            } else {
+                this.renderEmptyChart()
+            }
         } catch (e) {
             if (DEBUG) {
                 console.error(e)
             }
         }
+    }
+
+    private renderEmptyChart() {
+        clearChildElements(this.lineChartContainer)
+        $(this.lineChartContainer, $ => {
+            $('div', '.empty-chart-message', `${screen.width < 500 ? "Tap" : "Click"} here to compare with another experiment`)
+        })
     }
 
     private renderLineChart() {
