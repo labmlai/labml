@@ -56,6 +56,7 @@ class ComparisonView extends ScreenView {
     private shouldPreservePreferences: boolean
     private isUpdateDisabled: boolean
     private refresh: AwesomeRefreshButton
+    private baseRun: Run
 
     constructor(uuid: string) {
         super()
@@ -84,6 +85,7 @@ class ComparisonView extends ScreenView {
                     width: this.actualWidth/2
                 })
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
+                this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
                 try {
                     this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
                     this.missingBaseExperiment = false
@@ -99,7 +101,6 @@ class ComparisonView extends ScreenView {
             } else {
                 this.baseAnalysisCache = undefined
                 this.baseSeries = undefined
-                this.missingBaseExperiment = true
             }
         })
 
@@ -237,6 +238,7 @@ class ComparisonView extends ScreenView {
                         this.updatePreferences()
 
                         this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
+                        this.baseRun = await CACHE.getRun(this.baseUuid).get(false)
                         try {
                             this.baseSeries = toPointValues((await this.baseAnalysisCache.get(false)).series)
                             this.missingBaseExperiment = false
@@ -293,21 +295,19 @@ class ComparisonView extends ScreenView {
     private renderHeaders() {
         clearChildElements(this.headerContainer)
         $(this.headerContainer,  $=> {
-            $('div', '',
-                async $ => {
-                    await this.runHeaderCard.render($)
-                })
             $('span', '.compared-with', $ => {
-                $('span', '.text', 'Compared With')
+                $('span', '.title', `${this.run.name} `)
+                $('span', '.sub', 'Compared With ')
+                if (this.baseRun == null) {
+                    $('span', '.title', 'No run selected')
+                } else {
+                    $('span', '.title', `${this.baseRun.name} `)
+                }
                 new EditButton({
                     onButtonClick: this.onEditClick,
                     parent: this.constructor.name
                 }).render($)
             })
-            $('div', '',
-                async $ => {
-                    await this.baseRunHeaderCard.render($)
-                })
         })
     }
 

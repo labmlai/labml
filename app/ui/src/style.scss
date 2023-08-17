@@ -1217,17 +1217,23 @@ a.generic-link {
 .compare-header {
   display: flex;
   flex-direction: column;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin: 30px 5px;
 
   .compared-with {
     display: flex;
     justify-content: flex-start;
-    .text {
-      font-size: 20px;
+    gap: 10px;
+    .title {
+      font-size: 1.2rem;
       margin-bottom: auto;
       margin-top: auto;
-      margin-right: 10px;
+    }
+
+    .sub {
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-bottom: auto;
+      margin-top: auto;
     }
   }
 }
