@@ -216,6 +216,7 @@ class ComparisonView extends ScreenView {
     private onEditClick = () => {
         clearChildElements(this.runPickerElem)
         this.runPickerElem.classList.add("fullscreen-cover")
+        document.body.classList.add("stop-scroll")
         this.runPickerElem.append(new RunsPickerView({
                 title: 'Select run for comparison',
                 excludedRuns: new Set<string>([this.run.run_uuid]),
@@ -256,9 +257,11 @@ class ComparisonView extends ScreenView {
                         this.renderButtons()
                     }
                     this.runPickerElem.classList.remove("fullscreen-cover")
+                    document.body.classList.remove("stop-scroll")
                     clearChildElements(this.runPickerElem)
                 }, onCancel: () => {
                     this.runPickerElem.classList.remove("fullscreen-cover")
+                    document.body.classList.remove("stop-scroll")
                     clearChildElements(this.runPickerElem)
                 }
             })
