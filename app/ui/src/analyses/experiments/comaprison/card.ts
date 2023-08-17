@@ -67,8 +67,15 @@ export class ComparisonCard extends Card {
         return this.currentAnalysisCache.lastUpdated;
     }
 
-    refresh() {
-        throw new Error("Not implemented")
+    async refresh() {
+        try {
+             await this.loader.load(true)
+             if (this.currentSeries.concat(this.baseSeries).length > 0) {
+                 this.renderLineChart()
+                 this.renderSparkLines()
+             }
+         } catch (e) {
+         }
     }
 
     async render($: WeyaElementFunction) {
