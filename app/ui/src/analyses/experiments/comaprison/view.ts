@@ -230,12 +230,13 @@ class ComparisonView extends ScreenView {
                         this.baseUuid = run.run_uuid
                         this.preferenceData.base_experiment = run.run_uuid
                         this.preferenceData.base_series_preferences = []
+                        this.basePlotIdx = []
                         this.baseRunHeaderCard = new RunHeaderCard({
                             uuid: run.run_uuid,
                             width: this.actualWidth/2
                         })
-                        this.calcPreferences()
                         this.updatePreferences()
+                        this.calcPreferences()
 
                         this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
                         this.baseRun = await CACHE.getRun(this.baseUuid).get(false)
