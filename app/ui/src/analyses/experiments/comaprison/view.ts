@@ -84,20 +84,7 @@ class ComparisonView extends ScreenView {
                     uuid: this.baseUuid,
                     width: this.actualWidth/2
                 })
-                this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
-                this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
-                try {
-                    this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
-                    this.missingBaseExperiment = false
-                } catch (e) {
-                    if (e instanceof NetworkError && e.statusCode === 404) {
-                        this.baseAnalysisCache = undefined
-                        this.baseSeries = undefined
-                        this.missingBaseExperiment = true
-                    } else {
-                        throw e
-                    }
-                }
+                await this.updateBaseRun(force)
             } else {
                 this.baseAnalysisCache = undefined
                 this.baseSeries = undefined
@@ -133,6 +120,23 @@ class ComparisonView extends ScreenView {
 
         this.renderLineChart()
         this.renderButtons()
+    }
+
+    private async updateBaseRun(force: boolean) {
+        this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
+        this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
+        try {
+            this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
+            this.missingBaseExperiment = false
+        } catch (e) {
+            if (e instanceof NetworkError && e.statusCode === 404) {
+                this.baseAnalysisCache = undefined
+                this.baseSeries = undefined
+                this.missingBaseExperiment = true
+            } else {
+                throw e
+            }
+        }
     }
 
     private toggleCurrentChart = (idx: number) => {
@@ -222,7 +226,6 @@ class ComparisonView extends ScreenView {
                 title: 'Select run for comparison',
                 excludedRuns: new Set<string>([this.run.run_uuid]),
                 onPicked: async run => {
-                    // todo maybe add a loader
                     if (this.preferenceData.base_experiment !== run.run_uuid) {
                         this.isUpdateDisabled = true
                         this.shouldPreservePreferences = false
@@ -238,20 +241,7 @@ class ComparisonView extends ScreenView {
                         this.updatePreferences()
                         this.calcPreferences()
 
-                        this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
-                        this.baseRun = await CACHE.getRun(this.baseUuid).get(false)
-                        try {
-                            this.baseSeries = toPointValues((await this.baseAnalysisCache.get(false)).series)
-                            this.missingBaseExperiment = false
-                        } catch (e) {
-                            if (e instanceof NetworkError && e.statusCode === 404) {
-                                this.baseAnalysisCache = undefined
-                                this.baseSeries = undefined
-                                this.missingBaseExperiment = true
-                            } else {
-                                throw e
-                            }
-                        }
+                        await this.updateBaseRun(false)
 
                         this.renderHeaders()
                         this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
@@ -263,6 +253,25 @@ class ComparisonView extends ScreenView {
                     document.body.classList.remove("stop-scroll")
                     clearChildElements(this.runPickerElem)
                 }, onCancel: () => {
+                    this.runPickerElem.classList.remove("fullscreen-cover")
+                    document.body.classList.remove("stop-scroll")
+                    clearChildElements(this.runPickerElem)
+                }, onDelete: () => {
+                    this.preferenceData.base_experiment = ''
+                    this.preferenceData.base_series_preferences = []
+                    this.baseSeries = undefined
+                    this.basePlotIdx = []
+                    this.baseUuid = ''
+                    this.baseRun = undefined
+
+                    this.updatePreferences()
+
+                    this.renderHeaders()
+                    this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
+                    this.renderLineChart()
+                    this.renderToggleButtons()
+                    this.renderButtons()
+
                     this.runPickerElem.classList.remove("fullscreen-cover")
                     document.body.classList.remove("stop-scroll")
                     clearChildElements(this.runPickerElem)

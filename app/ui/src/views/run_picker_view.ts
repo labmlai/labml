@@ -4,7 +4,7 @@ import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
-import {CancelButton} from '../components/buttons'
+import {CancelButton, DeleteButton} from '../components/buttons'
 import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
@@ -13,6 +13,7 @@ import {ScreenView} from '../screen_view'
 interface RunsPickerViewOptions {
     onPicked: (run: RunListItemModel) => void
     onCancel: () => void
+    onDelete: () => void
     title: string
     excludedRuns: Set<string>
 }
@@ -24,9 +25,11 @@ export class RunsPickerView extends ScreenView {
     runsListContainer: HTMLDivElement
     searchQuery: string
     cancelButton: CancelButton
+    deleteButton: DeleteButton
     private loader: DataLoader
     private readonly onPicked: (run: RunListItemModel) => void
     private readonly onCancel: () => void
+    private readonly onDelete: () => void
     private readonly title: string
 
     constructor(opt: RunsPickerViewOptions) {
@@ -34,10 +37,12 @@ export class RunsPickerView extends ScreenView {
 
         this.onPicked = opt.onPicked
         this.onCancel = opt.onCancel
+        this.onDelete = opt.onDelete
         this.title = opt.title
         this.runListCache = CACHE.getRunsList()
 
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
+        this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
 
         this.loader = new DataLoader(async (force) => {
             this.currentRunsList = (await this.runListCache.get(force)).runs
@@ -61,6 +66,7 @@ export class RunsPickerView extends ScreenView {
                         })
                         $('div', '.buttons', $ => {
                             this.cancelButton.render($)
+                            this.deleteButton.render($)
                         })
                     })
                 })
