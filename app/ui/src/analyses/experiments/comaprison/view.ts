@@ -390,7 +390,9 @@ class ComparisonView extends ScreenView {
                 this.loader.render($)
                 this.headerContainer = $('div', '.compare-header')
                 this.toggleButtonContainer = $('div')
-                $('h2', '.header.text-center', 'Comparison')
+                if (this.baseRun != null) {
+                    $('h2', '.header.text-center', 'Comparison')
+                }
                 $('div', '.detail-card', $ => {
                     this.lineChartContainer = $('div', '.fixed-chart')
                     this.sparkLineContainer = $('div')
