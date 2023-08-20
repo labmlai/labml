@@ -11,7 +11,7 @@ import {getChartType, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {clearChildElements, setTitle} from "../../../utils/document"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
-import {BackButton, EditButton, SaveButton, ToggleButton} from "../../../components/buttons"
+import {BackButton, DeleteButton, EditButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {LineChart} from "../../../components/charts/compare_lines/chart"
 import {ErrorMessage} from "../../../components/error_message"
@@ -57,6 +57,7 @@ class ComparisonView extends ScreenView {
     private isUpdateDisabled: boolean
     private refresh: AwesomeRefreshButton
     private baseRun: Run
+    private deleteButton: DeleteButton
 
     constructor(uuid: string) {
         super()
@@ -96,6 +97,7 @@ class ComparisonView extends ScreenView {
         this.backButton = new BackButton({text: 'Run', parent: this.constructor.name})
         this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
+        this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
     }
 
     get requiresAuth(): boolean {
@@ -218,6 +220,23 @@ class ComparisonView extends ScreenView {
         this.renderButtons()
     }
 
+    private onDelete = () => {
+        this.preferenceData.base_experiment = ''
+        this.preferenceData.base_series_preferences = []
+        this.baseSeries = undefined
+        this.basePlotIdx = []
+        this.baseUuid = ''
+        this.baseRun = undefined
+
+        this.updatePreferences()
+
+        this.renderHeaders()
+        this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
+        this.renderLineChart()
+        this.renderToggleButtons()
+        this.renderButtons()
+    }
+
     private onEditClick = () => {
         clearChildElements(this.runPickerElem)
         this.runPickerElem.classList.add("fullscreen-cover")
@@ -256,25 +275,6 @@ class ComparisonView extends ScreenView {
                     this.runPickerElem.classList.remove("fullscreen-cover")
                     document.body.classList.remove("stop-scroll")
                     clearChildElements(this.runPickerElem)
-                }, onDelete: () => {
-                    this.preferenceData.base_experiment = ''
-                    this.preferenceData.base_series_preferences = []
-                    this.baseSeries = undefined
-                    this.basePlotIdx = []
-                    this.baseUuid = ''
-                    this.baseRun = undefined
-
-                    this.updatePreferences()
-
-                    this.renderHeaders()
-                    this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
-                    this.renderLineChart()
-                    this.renderToggleButtons()
-                    this.renderButtons()
-
-                    this.runPickerElem.classList.remove("fullscreen-cover")
-                    document.body.classList.remove("stop-scroll")
-                    clearChildElements(this.runPickerElem)
                 }
             })
                 .render())
@@ -305,8 +305,8 @@ class ComparisonView extends ScreenView {
     private renderHeaders() {
         clearChildElements(this.headerContainer)
         $(this.headerContainer,  $=> {
+            this.runHeaderCard.render($).then()
             $('span', '.compared-with', $ => {
-                $('span', '.title', `${this.run.name} `)
                 $('span', '.sub', 'Compared With ')
                 if (this.baseRun == null) {
                     $('span', '.title', 'No run selected')
@@ -315,10 +315,6 @@ class ComparisonView extends ScreenView {
                                 window.open(`/run/${this.baseRun.run_uuid}`, '_blank')
                             }}})
                 }
-                new EditButton({
-                    onButtonClick: this.onEditClick,
-                    parent: this.constructor.name
-                }).render($)
             })
         })
     }
@@ -341,8 +337,14 @@ class ComparisonView extends ScreenView {
     private renderButtons() {
         clearChildElements(this.buttonContainer)
         this.saveButton.disabled = this.isUpdateDisabled
+        this.deleteButton.disabled = !this.baseUuid
         $(this.buttonContainer, $ => {
+            this.deleteButton.render($)
             this.saveButton.render($)
+            new EditButton({
+                    onButtonClick: this.onEditClick,
+                    parent: this.constructor.name
+                }).render($)
         })
     }
 
