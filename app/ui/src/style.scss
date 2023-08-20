@@ -605,6 +605,10 @@ svg#chart {
   path.smoothed-line {
     stroke-width: 3;
 
+    &.compare {
+        stroke-width: 1.5;
+    }
+
     &.dropshadow {
       filter: url(#dropshadow);
     }

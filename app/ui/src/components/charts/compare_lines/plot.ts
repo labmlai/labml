@@ -53,7 +53,7 @@ export class LinePlot {
 
     render($: WeyaElementFunction) {
         $('g', $ => {
-            $('path.smoothed-line.dropshadow',
+            $(`path.smoothed-line.dropshadow${this.isDotted ? '.compare': ''}`,
                 {
                     fill: 'none',
                     stroke: this.color,
