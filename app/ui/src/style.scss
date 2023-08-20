@@ -1227,6 +1227,11 @@ a.generic-link {
       font-size: 1.2rem;
       margin-bottom: auto;
       margin-top: auto;
+
+      &.clickable {
+        //text-decoration: none;
+        cursor: pointer;
+      }
     }
 
     .sub {

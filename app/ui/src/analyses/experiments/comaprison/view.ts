@@ -311,7 +311,9 @@ class ComparisonView extends ScreenView {
                 if (this.baseRun == null) {
                     $('span', '.title', 'No run selected')
                 } else {
-                    $('span', '.title', `${this.baseRun.name} `)
+                    $('a', '.title.clickable', `${this.baseRun.name} `, {on: {click: () => {
+                                window.open(`/run/${this.baseRun.run_uuid}`, '_blank')
+                            }}})
                 }
                 new EditButton({
                     onButtonClick: this.onEditClick,
