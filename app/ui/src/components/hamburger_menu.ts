@@ -3,13 +3,10 @@ import {MenuButton, NavButton} from './buttons'
 import {Loader} from './loader'
 import CACHE, {UserCache} from "../cache/cache"
 import {User} from '../models/user'
-import NETWORK from '../network'
-import {handleNetworkError} from '../utils/redirect';
-import {Sentry} from '../sentry';
 import {ROUTER} from '../app'
 import {getPath} from '../utils/document'
 
-const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
+const DEFAULT_IMAGE = '/images/user.png'
 
 export interface HamburgerMenuOptions {
     title: string
@@ -88,7 +85,7 @@ export class HamburgerMenuView {
         $(this.navLinksContainer, $ => {
             $('div', '.text-center', $ => {
                 $('img', '.mt-2.image-style.rounded-circle', {
-                    src: this.user?.picture || DEFAULT_IMAGE
+                    src: this.user?.picture || DEFAULT_IMAGE,
                 })
                 $('div', '.mb-5.mt-3.mt-2', $ => {
                     $('h5', this.user?.name || '')
