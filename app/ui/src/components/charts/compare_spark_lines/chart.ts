@@ -139,7 +139,7 @@ export class CompareSparkLines {
                     maxLastValue: this.maxLastValue,
                     color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt,
-                    isDotted: true
+                    isBase: true
                 })
                 this.sparkLines.push(sparkLine)
             })

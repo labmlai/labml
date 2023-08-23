@@ -605,8 +605,13 @@ svg#chart {
   path.smoothed-line {
     stroke-width: 3;
 
-    &.compare {
-        stroke-width: 1.5;
+    &.current {
+        stroke-width: 2;
+        opacity: 1;
+    }
+    &.base {
+      stroke-width: 3;
+      opacity: 0.3;
     }
 
     &.dropshadow {

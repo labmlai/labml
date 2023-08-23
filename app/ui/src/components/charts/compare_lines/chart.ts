@@ -42,8 +42,7 @@ export class LineChart {
     linePlots: LinePlot[] = []
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
-    private baseChartColors: ChartColors
-    private currentChartColors: ChartColors
+    private chartColors: ChartColors
     isDivergent: boolean
     private svgBoundingClientRect: DOMRect
 
@@ -73,8 +72,7 @@ export class LineChart {
         const stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
-        this.currentChartColors = new ChartColors({nColors: this.currentSeries.length, isDivergent: opt.isDivergent})
-        this.baseChartColors = new ChartColors({nColors: this.baseSeries.length, isDivergent: opt.isDivergent})
+        this.chartColors = new ChartColors({nColors: this.currentSeries.length, secondNColors: this.baseSeries.length,  isDivergent: opt.isDivergent})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
@@ -178,7 +176,7 @@ export class LineChart {
                                                     series: s.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
-                                                    color: this.currentChartColors.getColor(i),
+                                                    color: this.chartColors.getSecondColor(i),
                                                     colorIdx: i,
                                                     chartId: this.chartId
                                                 }).render($)
@@ -192,7 +190,7 @@ export class LineChart {
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.currentChartColors.getColor(i)
+                                                color: this.chartColors.getSecondColor(i)
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
@@ -205,7 +203,7 @@ export class LineChart {
                                                     series: s.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
-                                                    color: this.baseChartColors.getColor(i),
+                                                    color: this.chartColors.getColor(i),
                                                     colorIdx: i,
                                                     chartId: this.chartId,
                                                 }).render($)
@@ -219,8 +217,8 @@ export class LineChart {
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.baseChartColors.getColor(i),
-                                                isDotted: true
+                                                color: this.chartColors.getColor(i),
+                                                isBase: true
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
