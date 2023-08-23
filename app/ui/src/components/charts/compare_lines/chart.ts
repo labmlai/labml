@@ -80,7 +80,9 @@ export class LineChart {
     changeScale() {
         let plotSeries = this.currentSeries.flatMap((s, i) => this.currentPlotIndex[i]<0 ? [] : [s.series])
             .concat(this.baseSeries.flatMap((s, i) => this.basePlotIndex[i]<0 ? [] : [s.series]))
-
+        if (plotSeries.length == 0) {
+            return
+        }
         if (this.chartType === 'log') {
             this.yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -this.chartHeight)
         } else {
