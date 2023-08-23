@@ -120,7 +120,7 @@ class ComparisonView extends ScreenView {
 
         this.currentChart ^= 1
 
-        this.renderLineChart()
+        this.renderCharts()
         this.renderButtons()
     }
 
@@ -155,8 +155,7 @@ class ComparisonView extends ScreenView {
             this.currentPlotIdx = new Array<number>(...this.currentPlotIdx)
         }
 
-        this.renderSparkLineChart()
-        this.renderLineChart()
+        this.renderCharts()
         this.renderButtons()
     }
 
@@ -174,8 +173,7 @@ class ComparisonView extends ScreenView {
             this.basePlotIdx = new Array<number>(...this.basePlotIdx)
         }
 
-        this.renderSparkLineChart()
-        this.renderLineChart()
+        this.renderCharts()
         this.renderButtons()
     }
 
@@ -231,8 +229,7 @@ class ComparisonView extends ScreenView {
         this.updatePreferences()
 
         this.renderHeaders()
-        this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
-        this.renderLineChart()
+        this.renderCharts()
         this.renderToggleButtons()
         this.renderButtons()
     }
@@ -263,8 +260,7 @@ class ComparisonView extends ScreenView {
                         await this.updateBaseRun(false)
 
                         this.renderHeaders()
-                        this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
-                        this.renderLineChart()
+                        this.renderCharts()
                         this.renderToggleButtons()
                         this.renderButtons()
                     }
@@ -289,8 +285,7 @@ class ComparisonView extends ScreenView {
             await this.loader.load(true)
 
             this.calcPreferences()
-            this.renderSparkLineChart()
-            this.renderLineChart()
+            this.renderCharts()
         } catch (e) {
 
         } finally {
@@ -348,9 +343,25 @@ class ComparisonView extends ScreenView {
         })
     }
 
-    private renderLineChart() {
-        clearChildElements(this.lineChartContainer)
+    private renderCharts() {
+        clearChildElements(this.sparkLineContainer)
+        $(this.sparkLineContainer, $=> {
+            if (!!this.baseSeries) {
+                this.sparkLines = new CompareSparkLines({
+                    series: this.currentSeries,
+                    baseSeries: this.baseSeries,
+                    currentPlotIdx: this.currentPlotIdx,
+                    basePlotIdx: this.basePlotIdx,
+                    width: this.actualWidth,
+                    isDivergent: true,
+                    onCurrentSelect: this.toggleCurrentChart,
+                    onBaseSelect: this.toggleBaseChart
+                })
+                this.sparkLines.render($)
+            }
+        })
 
+        clearChildElements(this.lineChartContainer)
         if (!!this.baseSeries) {
             $(this.lineChartContainer, $ => {
                 new LineChart({
@@ -368,25 +379,6 @@ class ComparisonView extends ScreenView {
         } else if (this.missingBaseExperiment) {
             (new ErrorMessage('Base Experiment Not Found')).render(this.lineChartContainer)
         }
-    }
-
-    private renderSparkLineChart() {
-        clearChildElements(this.sparkLineContainer)
-        $(this.sparkLineContainer, $=> {
-            if (!!this.baseSeries) {
-                this.sparkLines = new CompareSparkLines({
-                    series: this.currentSeries,
-                    baseSeries: this.baseSeries,
-                    currentPlotIdx: this.currentPlotIdx,
-                    basePlotIdx: this.basePlotIdx,
-                    width: this.actualWidth,
-                    isDivergent: true,
-                    onCurrentSelect: this.toggleCurrentChart,
-                    onBaseSelect: this.toggleBaseChart
-                })
-                this.sparkLines.render($)
-            }
-        })
     }
 
     async _render(): Promise<void> {
@@ -419,8 +411,7 @@ class ComparisonView extends ScreenView {
             this.calcPreferences()
 
             this.renderHeaders()
-            this.renderSparkLineChart() // has to run before render line chart as it uses the spark line component
-            this.renderLineChart()
+            this.renderCharts()
             this.renderToggleButtons()
             this.renderButtons()
         } catch (e) {
