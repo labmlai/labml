@@ -502,6 +502,10 @@ class Experiment:
         return ExperimentWatcher(self)
 
     def finish(self, status: str, details: any = None):
+        if not self.is_started:
+            return
+        
+        self.is_started = False
         if self.is_worker:
             return
 
