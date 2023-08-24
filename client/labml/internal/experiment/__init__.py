@@ -504,6 +504,8 @@ class Experiment:
     def finish(self, status: str, details: any = None):
         if self.is_worker:
             return
+
+        print(f'Finishing experiment: {status}')
         
         if not self.is_evaluate:
             with open(str(self.run.run_log_path), 'a') as f:
