@@ -274,12 +274,14 @@ class Experiment:
         self.comet = None
         self.writers = writers
         self.is_started = False
+        self.is_worker = False
 
         # TODO: option
         if self.run.distributed_rank != self.run.distributed_main_rank:
             monitor().silent()
 
     def worker(self):
+        self.is_worker = True
         if self.web_api is not None:
             self.web_api.worker()
 
@@ -500,6 +502,9 @@ class Experiment:
         return ExperimentWatcher(self)
 
     def finish(self, status: str, details: any = None):
+        if self.is_worker:
+            return
+        
         if not self.is_evaluate:
             with open(str(self.run.run_log_path), 'a') as f:
                 end_time = time.time()
