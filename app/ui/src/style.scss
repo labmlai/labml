@@ -606,12 +606,12 @@ svg#chart {
     stroke-width: 3;
 
     &.current {
-        stroke-width: 2;
-        opacity: 1;
+        stroke-width: 3;
+        //opacity: 1;
     }
     &.base {
       stroke-width: 3;
-      opacity: 0.3;
+      opacity: 0.8;
     }
 
     &.dropshadow {

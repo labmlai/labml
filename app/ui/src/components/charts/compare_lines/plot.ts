@@ -57,7 +57,8 @@ export class LinePlot {
                 {
                     fill: 'none',
                     stroke: this.color,
-                    d: this.smoothedLine(this.series) as string
+                    d: this.smoothedLine(this.series) as string,
+                    "stroke-dasharray": this.isBase ? "3 1": ""
                 })
             if (!this.isBase) {
                 $('path.unsmoothed-line',

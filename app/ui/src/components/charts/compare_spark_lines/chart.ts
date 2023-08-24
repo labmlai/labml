@@ -86,7 +86,7 @@ export class CompareSparkLines {
             }
         }
 
-        this.chartColors = new ChartColors({nColors: this.uniqueItems.size, isDivergent: opt.isDivergent})
+        this.chartColors = new ChartColors({nColors: this.uniqueItems.size, secondNColors: this.uniqueItems.size, isDivergent: opt.isDivergent})
     }
 
     changeCursorValues = (cursorStep?: number | null) => {
@@ -115,7 +115,7 @@ export class CompareSparkLines {
                     onClick: onClick,
                     minLastValue: this.minLastValue,
                     maxLastValue: this.maxLastValue,
-                    color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                    color: this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt
                 })
                 this.sparkLines.push(sparkLine)

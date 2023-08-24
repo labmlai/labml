@@ -6,7 +6,7 @@ import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
-import {DropShadow} from "../chart_gradients"
+import {DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 import {getWindowDimensions} from '../../../utils/window_dimentions'
 
@@ -161,7 +161,7 @@ export class LineChart {
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
                                 new DropShadow().render($)
-                                // todo new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
+                                new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
                                 $('g', {}, $ => {
                                     this.stepElement = $('text', '.selected-step',
                                         {transform: `translate(${(2 * this.margin + this.axisSize + this.chartWidth) / 2},${LABEL_HEIGHT})`})
