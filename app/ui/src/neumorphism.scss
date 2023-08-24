@@ -77,6 +77,10 @@ body.light {
           color: $light-text;
         }
       }
+
+      .sub {
+        color: $light-header;
+      }
     }
   }
 
@@ -359,6 +363,10 @@ body.dark {
         &.clickable {
           color: $dark-text;
         }
+      }
+
+      .sub {
+        color: $dark-header;
       }
     }
   }
