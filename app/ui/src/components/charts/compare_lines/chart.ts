@@ -178,7 +178,9 @@ export class LineChart {
                                                     series: s.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
-                                                    color: this.chartColors.getColor(i),
+                                                    color: document.body.classList.contains("light")
+                                                        ? this.chartColors.getColor(i)
+                                                        : this.chartColors.getSecondColor(i),
                                                     colorIdx: i,
                                                     chartId: this.chartId,
                                                 }).render($)
@@ -192,7 +194,9 @@ export class LineChart {
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.chartColors.getColor(i),
+                                                color: document.body.classList.contains("light")
+                                                        ? this.chartColors.getColor(i)
+                                                        : this.chartColors.getSecondColor(i),
                                                 isBase: true
                                             })
                                             this.linePlots.push(linePlot)
@@ -206,7 +210,9 @@ export class LineChart {
                                                     series: s.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
-                                                    color: this.chartColors.getSecondColor(i),
+                                                    color: document.body.classList.contains("light")
+                                                        ? this.chartColors.getSecondColor(i)
+                                                        : this.chartColors.getColor(i),
                                                     colorIdx: i,
                                                     chartId: this.chartId
                                                 }).render($)
@@ -220,7 +226,9 @@ export class LineChart {
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.chartColors.getSecondColor(i)
+                                                color: document.body.classList.contains("light")
+                                                        ? this.chartColors.getSecondColor(i)
+                                                        : this.chartColors.getColor(i),
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
