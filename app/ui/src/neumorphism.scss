@@ -70,6 +70,24 @@ $dark-success: #28a745;
 body.light {
   background-color: $light-background;
 
+  .compare-header {
+    .compared-with {
+      .title {
+        &.clickable {
+          color: $light-text;
+        }
+      }
+
+      .sub {
+        color: $light-header;
+      }
+    }
+  }
+
+  .fullscreen-cover {
+    background-color: $light-background;
+  }
+
   .detail-card, .loader-container, .toast {
     background-color: $light-background;
   }
@@ -338,6 +356,24 @@ body.light {
 
 body.dark {
   background-color: $dark-background;
+
+  .compare-header {
+    .compared-with {
+      .title {
+        &.clickable {
+          color: $dark-text;
+        }
+      }
+
+      .sub {
+        color: $dark-header;
+      }
+    }
+  }
+
+  .fullscreen-cover {
+    background-color: $dark-background;
+  }
 
   .detail-card, .loader-container, .toast {
     background-color: $dark-background;

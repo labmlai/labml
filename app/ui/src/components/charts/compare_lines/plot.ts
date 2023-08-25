@@ -4,13 +4,13 @@ import {FillOptions, PlotOptions} from '../types'
 import {PointValue} from "../../../models/run"
 import {getSelectedIdx} from "../utils"
 
-export interface CompareLinePlotOptions extends PlotOptions {
+export interface LinePlotOptions extends PlotOptions {
     xScale: d3.ScaleLinear<number, number>
     series: PointValue[]
-    isDotted?: boolean
+    isBase?: boolean
 }
 
-export class CompareLinePlot {
+export class LinePlot {
     series: PointValue[]
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
@@ -19,14 +19,14 @@ export class CompareLinePlot {
     smoothedLine: d3.Line<PointValue>
     unsmoothedLine: d3.Line<PointValue>
     bisect: d3.Bisector<number, number>
-    isDotted: boolean
+    isBase: boolean
 
-    constructor(opt: CompareLinePlotOptions) {
+    constructor(opt: LinePlotOptions) {
         this.series = opt.series
         this.xScale = opt.xScale
         this.yScale = opt.yScale
         this.color = opt.color
-        this.isDotted = opt.isDotted ?? false
+        this.isBase = opt.isBase ?? false
 
         this.bisect = d3.bisector(function (d: PointValue) {
             return d.step
@@ -53,14 +53,14 @@ export class CompareLinePlot {
 
     render($: WeyaElementFunction) {
         $('g', $ => {
-            $('path.smoothed-line.dropshadow',
+            $(`path.smoothed-line.dropshadow${this.isBase ? '.base': '.current'}`,
                 {
                     fill: 'none',
                     stroke: this.color,
                     d: this.smoothedLine(this.series) as string,
-                    "stroke-dasharray": this.isDotted ? 5 : 0
+                    "stroke-dasharray": this.isBase ? "3 1": ""
                 })
-            if (!this.isDotted) {
+            if (!this.isBase) {
                 $('path.unsmoothed-line',
                     {
                         fill: 'none',

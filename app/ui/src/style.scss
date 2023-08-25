@@ -1,5 +1,7 @@
 @import "neumorphism";
 
+$mobile: 400px;
+
 html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   touch-action: manipulation;
@@ -614,6 +616,15 @@ svg#chart {
   path.smoothed-line {
     stroke-width: 3;
 
+    &.current {
+        stroke-width: 3;
+        //opacity: 1;
+    }
+    &.base {
+      stroke-width: 2;
+      opacity: 0.8;
+    }
+
     &.dropshadow {
       filter: url(#dropshadow);
     }
@@ -696,6 +707,12 @@ button.sparkline-list-item {
   .sparkline-content {
     display: inline-block;
     text-align: left;
+
+    &.faded {
+      > * {
+        opacity: 0.3;
+      }
+    }
 
     span {
       vertical-align: middle;
@@ -1217,4 +1234,56 @@ $keyFontSize: 0.8rem;
 
 a.generic-link {
   color: inherit;
+}
+
+.compare-header {
+  display: flex;
+  flex-direction: column;
+  margin: 30px 5px;
+
+  .compared-with {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-left: 10px;
+
+    .title {
+      font-size: 1rem;
+      margin-bottom: auto;
+      margin-top: auto;
+
+      &.clickable {
+        //text-decoration: none;
+        cursor: pointer;
+      }
+    }
+
+    .sub {
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-bottom: auto;
+      margin-top: auto;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.fullscreen-cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  overflow: scroll;
+}
+
+.stop-scroll {
+  overflow: hidden;
+}
+
+.empty-chart-message {
+  font-weight: bold;
+  margin-left: 10px;
+  font-size: 0.8rem;
 }

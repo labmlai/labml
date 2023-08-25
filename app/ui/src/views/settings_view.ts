@@ -10,7 +10,7 @@ import {handleNetworkError} from '../utils/redirect'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
 
-const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
+const DEFAULT_IMAGE = '/images/user.png'
 const LIGHT = 'light'
 const DARK = 'dark'
 
