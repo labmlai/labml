@@ -141,3 +141,15 @@ export function getSelectedIdx(series: any[], bisect: typeof d3.bisect, currentX
 export function getChartType(index: number): 'log' | 'linear' {
     return index === 0 ? 'linear' : 'log'
 }
+
+export function trimSteps(series: SeriesModel[], thresholdSeries: SeriesModel[]) : SeriesModel[] {
+    let minStep = Math.min(...thresholdSeries.map(s => s.series[0].step))
+    let maxStep = Math.max(...thresholdSeries.map(s => s.series[s.series.length - 1].step))
+
+    return series.map(s => {
+        let res = {...s}
+        res.series = s.series.filter(p => p.step >= minStep && p.step <= maxStep)
+
+        return res
+    })
+}

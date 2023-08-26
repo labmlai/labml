@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
+import {defaultSeriesToPlot, getExtent, getLogScale, getScale, trimSteps} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
@@ -28,8 +28,10 @@ export class LineChart {
     private readonly currentSeries: SeriesModel[]
     private readonly currentPlotIndex: number[]
     private readonly baseSeries: SeriesModel[]
+    private filteredBaseSeries: SeriesModel[]
     private readonly basePlotIndex: number[]
     chartType: string
+    private focusCurrent: boolean // extent of only the current series
     chartWidth: number
     chartHeight: number
     margin: number
@@ -55,6 +57,10 @@ export class LineChart {
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
 
+        // todo get from preferences
+        this.focusCurrent = true
+        this.filteredBaseSeries = this.focusCurrent ? trimSteps(this.baseSeries, this.currentSeries) : this.baseSeries
+
         this.axisSize = 30
         let windowWidth = opt.width
         let windowHeight = getWindowDimensions().height
@@ -66,20 +72,20 @@ export class LineChart {
             this.currentPlotIndex = defaultSeriesToPlot(this.currentSeries)
         }
         if (this.basePlotIndex.length == 0) {
-            this.basePlotIndex = defaultSeriesToPlot(this.baseSeries)
+            this.basePlotIndex = defaultSeriesToPlot(this.filteredBaseSeries)
         }
 
-        const stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
+        const stepExtent = getExtent(this.currentSeries.concat(this.filteredBaseSeries).map(s => s.series), d => d.step)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
-        this.chartColors = new ChartColors({nColors: this.currentSeries.length, secondNColors: this.baseSeries.length,  isDivergent: opt.isDivergent})
+        this.chartColors = new ChartColors({nColors: this.currentSeries.length, secondNColors: this.filteredBaseSeries.length,  isDivergent: opt.isDivergent})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     changeScale() {
         let plotSeries = this.currentSeries.flatMap((s, i) => this.currentPlotIndex[i]<0 ? [] : [s.series])
-            .concat(this.baseSeries.flatMap((s, i) => this.basePlotIndex[i]<0 ? [] : [s.series]))
+            .concat(this.filteredBaseSeries.flatMap((s, i) => this.basePlotIndex[i]<0 ? [] : [s.series]))
         if (plotSeries.length == 0) {
             return
         }
@@ -146,7 +152,7 @@ export class LineChart {
 
     render($: WeyaElementFunction) {
         this.changeScale()
-        let filteredBaseSeriesLength = this.baseSeries.filter((_, i) => this.basePlotIndex[i] >= 0).length
+        let filteredBaseSeriesLength = this.filteredBaseSeries.filter((_, i) => this.basePlotIndex[i] >= 0).length
         let filteredCurrentSeriesLength = this.currentSeries.filter((_, i) => this.currentPlotIndex[i] >= 0).length
 
         if (filteredBaseSeriesLength + filteredCurrentSeriesLength === 0) {
@@ -171,7 +177,7 @@ export class LineChart {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
                                     if (filteredBaseSeriesLength < 3) {
-                                            this.baseSeries.map((s, i) => {
+                                            this.filteredBaseSeries.map((s, i) => {
                                                 if (this.basePlotIndex[i] < 0)
                                                     return;
                                                 new LineFill({
@@ -186,7 +192,7 @@ export class LineChart {
                                                 }).render($)
                                             })
                                         }
-                                        this.baseSeries.map((s, i) => {
+                                        this.filteredBaseSeries.map((s, i) => {
                                             if (this.basePlotIndex[i] < 0) {
                                                     return;
                                                 }
