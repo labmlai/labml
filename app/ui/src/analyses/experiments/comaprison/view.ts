@@ -7,7 +7,7 @@ import {DataLoader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {Status} from "../../../models/status"
 import {Run, SeriesModel} from "../../../models/run"
-import {getChartType, toPointValues} from "../../../components/charts/utils"
+import {defaultSeriesToPlot, getChartType, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {clearChildElements, setTitle} from "../../../utils/document"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
@@ -40,7 +40,6 @@ class ComparisonView extends ScreenView {
     private actualWidth: number
     private backButton: BackButton
     private runHeaderCard: RunHeaderCard
-    private baseRunHeaderCard: RunHeaderCard
     private headerContainer: HTMLDivElement
     private lineChartContainer: HTMLDivElement
     private sparkLineContainer: HTMLDivElement
@@ -82,10 +81,6 @@ class ComparisonView extends ScreenView {
                 width: this.actualWidth/2
             })
             if (!!this.baseUuid) {
-                this.baseRunHeaderCard = new RunHeaderCard({
-                    uuid: this.baseUuid,
-                    width: this.actualWidth/2
-                })
                 await this.updateBaseRun(force)
             } else {
                 this.baseAnalysisCache = undefined
@@ -188,22 +183,14 @@ class ComparisonView extends ScreenView {
         if (currentAnalysisPreferences && currentAnalysisPreferences.length > 0) {
             this.currentPlotIdx = [...currentAnalysisPreferences]
         } else if (this.currentSeries) {
-            let res: number[] = []
-            for (let i = 0; i < this.currentSeries.length; i++) {
-                res.push(i)
-            }
-            this.currentPlotIdx = res
+            this.currentPlotIdx = defaultSeriesToPlot(this.currentSeries)
         }
 
         let baseAnalysisPreferences = this.preferenceData.base_series_preferences
         if (baseAnalysisPreferences && baseAnalysisPreferences.length > 0) {
             this.basePlotIdx = [...baseAnalysisPreferences]
         } else if (this.baseSeries) {
-            let res: number[] = []
-            for (let i = 0; i < this.baseSeries.length; i++) {
-                res.push(i)
-            }
-            this.basePlotIdx = res
+            this.basePlotIdx = defaultSeriesToPlot(this.baseSeries)
         }
     }
 
@@ -247,18 +234,17 @@ class ComparisonView extends ScreenView {
                         this.isUpdateDisabled = true
                         this.shouldPreservePreferences = false
 
-                        this.baseUuid = run.run_uuid
                         this.preferenceData.base_experiment = run.run_uuid
                         this.preferenceData.base_series_preferences = []
+                        this.preferenceData.series_preferences = []
+                        this.baseUuid = run.run_uuid
                         this.basePlotIdx = []
-                        this.baseRunHeaderCard = new RunHeaderCard({
-                            uuid: run.run_uuid,
-                            width: this.actualWidth/2
-                        })
-                        this.updatePreferences()
-                        this.calcPreferences()
+                        this.currentPlotIdx = []
 
                         await this.updateBaseRun(false)
+
+                        this.updatePreferences()
+                        this.calcPreferences()
 
                         this.renderHeaders()
                         this.renderCharts()
@@ -294,7 +280,6 @@ class ComparisonView extends ScreenView {
                 this.refresh.stop()
             }
             await this.runHeaderCard.refresh()
-            await this.baseRunHeaderCard.refresh()
         }
     }
 
