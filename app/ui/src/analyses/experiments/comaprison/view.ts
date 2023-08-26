@@ -58,6 +58,7 @@ class ComparisonView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private baseRun: Run
     private deleteButton: DeleteButton
+    private currentFocus: boolean
 
     constructor(uuid: string) {
         super()
@@ -119,6 +120,16 @@ class ComparisonView extends ScreenView {
         this.isUpdateDisabled = false
 
         this.currentChart ^= 1
+
+        this.renderCharts()
+        this.renderButtons()
+    }
+
+    private onChangeFocus() {
+        this.shouldPreservePreferences = true
+        this.isUpdateDisabled = false
+
+        this.currentFocus = !this.currentFocus
 
         this.renderCharts()
         this.renderButtons()
@@ -325,6 +336,13 @@ class ComparisonView extends ScreenView {
                     parent: this.constructor.name
                 })
                     .render($)
+                new ToggleButton({
+                    onButtonClick: this.onChangeFocus.bind(this),
+                    text: 'Focus current',
+                    isToggled: this.currentFocus,
+                    parent: this.constructor.name
+                })
+                    .render($)
             })
         }
     }
@@ -373,7 +391,8 @@ class ComparisonView extends ScreenView {
                     chartType: getChartType(this.currentChart),
                     isDivergent: true,
                     isCursorMoveOpt: true,
-                    onCursorMove: [this.sparkLines.changeCursorValues]
+                    onCursorMove: [this.sparkLines.changeCursorValues],
+                    focusCurrent: this.currentFocus
                 }).render($)
             })
         } else if (this.missingBaseExperiment) {
@@ -394,7 +413,7 @@ class ComparisonView extends ScreenView {
                 })
                 this.loader.render($)
                 this.headerContainer = $('div', '.compare-header')
-                this.toggleButtonContainer = $('div')
+                this.toggleButtonContainer = $('div', '.button-row')
                 if (this.baseRun != null) {
                     $('h2', '.header.text-center', 'Comparison')
                 }

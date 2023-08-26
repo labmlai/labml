@@ -120,7 +120,8 @@ export class ComparisonCard extends Card {
                 basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
                 width: this.width,
                 chartType: 'linear',
-                isDivergent: true
+                isDivergent: true,
+                focusCurrent: true
             }).render($)
         })
     }

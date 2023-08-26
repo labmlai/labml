@@ -22,6 +22,7 @@ interface LineChartOptions extends ChartOptions {
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
     isDivergent?: boolean
+    focusCurrent: boolean
 }
 
 export class LineChart {
@@ -56,9 +57,7 @@ export class LineChart {
         this.chartType = opt.chartType
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
-
-        // todo get from preferences
-        this.focusCurrent = true
+        this.focusCurrent = opt.focusCurrent
         this.filteredBaseSeries = this.focusCurrent ? trimSteps(this.baseSeries, this.currentSeries) : this.baseSeries
 
         this.axisSize = 30

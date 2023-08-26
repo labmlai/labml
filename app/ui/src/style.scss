@@ -1287,3 +1287,8 @@ a.generic-link {
   margin-left: 10px;
   font-size: 0.8rem;
 }
+
+.button-row {
+  display: flex;
+  flex-direction: row;
+}
