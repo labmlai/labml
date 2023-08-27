@@ -58,7 +58,7 @@ class ComparisonView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private baseRun: Run
     private deleteButton: DeleteButton
-    private currentFocus: boolean
+    private focusCurrent: boolean
 
     constructor(uuid: string) {
         super()
@@ -74,6 +74,7 @@ class ComparisonView extends ScreenView {
         this.loader = new DataLoader(async (force) => {
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
             this.baseUuid = this.preferenceData.base_experiment
+            this.focusCurrent = this.preferenceData.focus_current
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get()
             this.currentSeries = toPointValues((await this.currentAnalysisCache.get(force)).series)
@@ -129,7 +130,7 @@ class ComparisonView extends ScreenView {
         this.shouldPreservePreferences = true
         this.isUpdateDisabled = false
 
-        this.currentFocus = !this.currentFocus
+        this.focusCurrent = !this.focusCurrent
 
         this.renderCharts()
         this.renderButtons()
@@ -221,6 +222,7 @@ class ComparisonView extends ScreenView {
         this.preferenceData.series_preferences = this.currentPlotIdx
         this.preferenceData.base_series_preferences = this.basePlotIdx
         this.preferenceData.chart_type = this.currentChart
+        this.preferenceData.focus_current = this.focusCurrent
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.shouldPreservePreferences = false
@@ -339,7 +341,7 @@ class ComparisonView extends ScreenView {
                 new ToggleButton({
                     onButtonClick: this.onChangeFocus.bind(this),
                     text: 'Focus current',
-                    isToggled: this.currentFocus,
+                    isToggled: this.focusCurrent,
                     parent: this.constructor.name
                 })
                     .render($)
@@ -392,7 +394,7 @@ class ComparisonView extends ScreenView {
                     isDivergent: true,
                     isCursorMoveOpt: true,
                     onCursorMove: [this.sparkLines.changeCursorValues],
-                    focusCurrent: this.currentFocus
+                    focusCurrent: this.focusCurrent
                 }).render($)
             })
         } else if (this.missingBaseExperiment) {
