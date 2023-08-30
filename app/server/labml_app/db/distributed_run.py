@@ -5,6 +5,7 @@ from fastapi import Request
 
 from labml_db import Model, Key, Index
 
+from .. import auth
 from . import project
 from . import user
 from .. import utils
@@ -13,6 +14,8 @@ from .. import settings
 
 class DistributedRun(Model['DistributedRun']):
     run_uuid: str
+    name: str
+    comment: str
     owner: str
     world_size: int
     runs: List[str]
@@ -22,12 +25,38 @@ class DistributedRun(Model['DistributedRun']):
     @classmethod
     def defaults(cls):
         return dict(run_uuid='',
+                    name='',
+                    comment='',
                     world_size=0,
                     runs=[],
                     owner='',
                     is_claimed=True,
                     start_time=None,
                     )
+
+    def get_summary(self) -> Dict[str, str]:
+        return {
+            'run_uuid': self.run_uuid,
+            'name': self.name,
+            'comment': self.comment,
+            'start_time': self.start_time,
+        }
+
+    def get_data(self, request: Request) -> Dict[str, Union[str, any]]:
+        u = auth.get_auth_user(request)
+        if u:
+            is_project_run = u.default_project.is_project_run(self.run_uuid)
+        else:
+            is_project_run = False
+
+        return {
+            'run_uuid': self.run_uuid,
+            'world_size': self.world_size,
+            'is_project_run': is_project_run,
+            'name': self.name,
+            'comment': self.comment,
+            'is_claimed': self.is_claimed,
+        }
 
 
 class DistributedRunIndex(Index['DistributedRun']):
