@@ -17,6 +17,7 @@ from . import user
 from . import status
 from . import app_token
 from . import run
+from . import distributed_run
 from . import session
 from . import computer
 from . import job
@@ -30,6 +31,7 @@ Models = [(YamlSerializer(), user.User),
           (JsonSerializer(), status.RunStatus),
           (JsonSerializer(), app_token.AppToken),
           (JsonSerializer(), run.Run),
+          (JsonSerializer(), distributed_run.DistributedRun),
           (JsonSerializer(), session.Session),
           (PickleSerializer(), job.Job),
           (PickleSerializer(), computer.Computer)] + [(s(), m) for s, m, p in analyses.AnalysisManager.get_db_models()]
@@ -45,6 +47,7 @@ Indexes = [project.ProjectIndex,
            password_reset.PasswordResetIndex,
            app_token.AppTokenIndex,
            run.RunIndex,
+           distributed_run.DistributedRunIndex,
            session.SessionIndex,
            job.JobIndex,
            computer.ComputerIndex] + [m for s, m, p in analyses.AnalysisManager.get_db_indexes()]

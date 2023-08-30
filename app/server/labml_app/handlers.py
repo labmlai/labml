@@ -10,6 +10,7 @@ from .logger import logger
 from . import settings
 from . import auth
 from .db import run, password_reset
+from .db import distributed_run
 from .db import computer
 from .db import session
 from .db import user
@@ -158,11 +159,13 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
                                       'Click on the experiment link to monitor the experiment and '
                                       'add it to your experiments list.'})
 
-    # TODO edit here, remove rank
-    # TODO add new db model master run
     # TODO handle backend calls, claim
-    if world_size > 1 and rank > 0:
+    if world_size > 0:
         run_uuid = f'{run_uuid}_{rank}'
+        dist_run = distributed_run.get_or_create(request, run_uuid, world_size, token)
+        if run_uuid not in set(dist_run.runs):
+            dist_run.runs.append(run_uuid)
+            dist_run.save()
 
     r = run.get_or_create(request, run_uuid, rank, world_size, token)
     s = r.status.load()
