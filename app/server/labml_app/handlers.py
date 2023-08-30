@@ -158,6 +158,9 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
                                       'Click on the experiment link to monitor the experiment and '
                                       'add it to your experiments list.'})
 
+    # TODO edit here, remove rank
+    # TODO add new db model master run
+    # TODO handle backend calls, claim
     if world_size > 1 and rank > 0:
         run_uuid = f'{run_uuid}_{rank}'
 
@@ -442,6 +445,7 @@ async def get_runs(request: Request, labml_token: str, token: Optional[str] = No
     res = []
     for r in runs_list:
         s = run.get_status(r.run_uuid)
+        # TODO edit here
         if r.run_uuid and r.rank == 0:
             res.append({**r.get_summary(), **s.get_data()})
 

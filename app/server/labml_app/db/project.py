@@ -3,7 +3,7 @@ from typing import List, Dict, Union, Optional
 from labml_db import Model, Key, Index
 
 from . import blocked_uuids
-from . import run
+from . import run, distributed_run
 from . import session
 from ..logger import logger
 
@@ -13,6 +13,7 @@ class Project(Model['Project']):
     is_sharable: float
     name: str
     runs: Dict[str, Key['run.Run']]
+    distributed_runs: Dict[str, Key['distributed_run.DistributedRun']]
     sessions: Dict[str, Key['session.Session']]
     is_run_added: bool
 
@@ -22,6 +23,7 @@ class Project(Model['Project']):
                     is_sharable=False,
                     labml_token='',
                     runs={},
+                    distributed_runs={},
                     sessions={},
                     is_run_added=False,
                     )
@@ -32,6 +34,7 @@ class Project(Model['Project']):
     def is_project_session(self, session_uuid: str) -> bool:
         return session_uuid in self.sessions
 
+    # TODO add distributed runs here
     def get_runs(self) -> List['run.Run']:
         res = []
         likely_deleted = []

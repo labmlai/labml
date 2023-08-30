@@ -248,6 +248,7 @@ class Run(Model['Run']):
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         formatted_repo = self.format_remote_repo(self.repo_remotes)
 
+        # TODO remove this
         if self.rank == 0 and self.world_size > 1:
             other_rank_run_uuids = {rank: f'{self.run_uuid}_{rank}' for rank in range(1, self.world_size)}
         else:
@@ -332,8 +333,11 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, l
               is_claimed=is_claimed,
               status=s.key,
               )
-    p.runs[run.run_uuid] = run.key
-    p.is_run_added = True
+
+    # don't add distributed runs
+    if world_size == 0:
+        p.runs[run.run_uuid] = run.key
+        p.is_run_added = True
 
     run.save()
     p.save()
