@@ -3,21 +3,21 @@ import {ROUTER} from '../app'
 import runHeaderAnalysis from '../analyses/experiments/run_header'
 import mix_panel from "../mix_panel"
 
-interface buttonOptions {
+export interface ButtonOptions {
     onButtonClick?: () => void
     isDisabled?: boolean
     parent: string
     title?: string
 }
 
-abstract class Button {
+export abstract class Button {
     onButtonClick: () => void
     isDisabled: boolean
     parent: string
     elem?: WeyaElement
     title?: string
 
-    protected constructor(opt: buttonOptions) {
+    protected constructor(opt: ButtonOptions) {
         this.onButtonClick = opt.onButtonClick
         this.isDisabled = opt.isDisabled ? opt.isDisabled : false
         this.parent = opt.parent
@@ -59,7 +59,7 @@ abstract class Button {
     }
 }
 
-interface BackButtonOptions extends buttonOptions {
+interface BackButtonOptions extends ButtonOptions {
     text: string
 }
 
@@ -112,7 +112,7 @@ export class BackButton extends Button {
 
 export class RefreshButton extends Button {
 
-    constructor(opt: buttonOptions) {
+    constructor(opt: ButtonOptions) {
         super(opt)
     }
 
@@ -130,7 +130,7 @@ export class RefreshButton extends Button {
 }
 
 export class SaveButton extends Button {
-    constructor(opt: buttonOptions) {
+    constructor(opt: ButtonOptions) {
         super(opt)
     }
 
@@ -144,7 +144,7 @@ export class SaveButton extends Button {
 }
 
 export class EditButton extends Button {
-    constructor(opt: buttonOptions) {
+    constructor(opt: ButtonOptions) {
         super(opt)
     }
 
@@ -162,7 +162,7 @@ export class EditButton extends Button {
 }
 
 export class DeleteButton extends Button {
-    constructor(opt: buttonOptions) {
+    constructor(opt: ButtonOptions) {
         super(opt)
     }
 
@@ -176,7 +176,7 @@ export class DeleteButton extends Button {
 }
 
 export class CancelButton extends Button {
-    constructor(opt: buttonOptions) {
+    constructor(opt: ButtonOptions) {
         super(opt)
     }
 
@@ -192,7 +192,7 @@ export class CancelButton extends Button {
 export class CleanButton extends Button {
     private refreshIcon: HTMLSpanElement
 
-    constructor(opt: buttonOptions) {
+    constructor(opt: ButtonOptions) {
         super(opt)
     }
 
@@ -215,7 +215,7 @@ export class CleanButton extends Button {
 }
 
 export class MenuButton extends Button {
-    constructor(opt: buttonOptions) {
+    constructor(opt: ButtonOptions) {
         super(opt)
     }
 
@@ -228,7 +228,7 @@ export class MenuButton extends Button {
     }
 }
 
-interface NavButtonOptions extends buttonOptions {
+interface NavButtonOptions extends ButtonOptions {
     text: string
     icon: string
     link?: string
@@ -272,7 +272,7 @@ export class NavButton extends Button {
     }
 }
 
-interface ToggleButtonOptions extends buttonOptions {
+interface ToggleButtonOptions extends ButtonOptions {
     text: string
     isToggled: boolean
 }
@@ -318,7 +318,7 @@ export class ToggleButton extends Button {
     }
 }
 
-interface CustomButtonOptions extends buttonOptions {
+interface CustomButtonOptions extends ButtonOptions {
     text: string
 }
 
@@ -342,7 +342,7 @@ export class CustomButton extends Button {
 export class TensorBoardButton extends Button {
     private refreshIcon: HTMLSpanElement
 
-    constructor(opt: buttonOptions) {
+    constructor(opt: ButtonOptions) {
         super(opt)
     }
 
@@ -364,7 +364,7 @@ export class TensorBoardButton extends Button {
     }
 }
 
-interface ShareButtonOptions extends buttonOptions {
+interface ShareButtonOptions extends ButtonOptions {
     text: string
 }
 
