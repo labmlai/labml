@@ -23,7 +23,7 @@ export class AnalysisPreference {
 export interface ComparisonPreferenceModel extends AnalysisPreferenceModel {
     base_series_preferences: number[]
     base_experiment: string
-    focus_current: boolean
+    focus_type: string
 }
 
 export class ComparisonPreference extends AnalysisPreference {

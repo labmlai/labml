@@ -21,6 +21,13 @@ import {RunsPickerView} from "../../../views/run_picker_view"
 import {AwesomeRefreshButton} from "../../../components/refresh_button"
 import {DEBUG} from "../../../env"
 import {handleNetworkErrorInplace} from "../../../utils/redirect"
+import {DropDownMenu} from "../../../components/dropdown_button"
+
+export enum FocusType {
+    CURRENT = "current",
+    BASE = "base",
+    NONE = "none"
+}
 
 class ComparisonView extends ScreenView {
     private elem: HTMLDivElement
@@ -57,7 +64,7 @@ class ComparisonView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private baseRun: Run
     private deleteButton: DeleteButton
-    private focusCurrent: boolean
+    private focusType: FocusType
 
     constructor(uuid: string) {
         super()
@@ -73,7 +80,7 @@ class ComparisonView extends ScreenView {
         this.loader = new DataLoader(async (force) => {
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
             this.baseUuid = this.preferenceData.base_experiment
-            this.focusCurrent = this.preferenceData.focus_current
+            this.focusType = this.preferenceData.focus_type as FocusType
             this.currentChart = this.preferenceData.chart_type
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get()
@@ -122,11 +129,11 @@ class ComparisonView extends ScreenView {
         this.renderButtons()
     }
 
-    private onChangeFocus() {
+    private onChangeFocus(id: string) {
         this.shouldPreservePreferences = true
         this.isUpdateDisabled = false
 
-        this.focusCurrent = !this.focusCurrent
+        this.focusType = id as FocusType
 
         this.renderCharts()
         this.renderButtons()
@@ -210,7 +217,7 @@ class ComparisonView extends ScreenView {
         this.preferenceData.series_preferences = this.currentPlotIdx
         this.preferenceData.base_series_preferences = this.basePlotIdx
         this.preferenceData.chart_type = this.currentChart
-        this.preferenceData.focus_current = this.focusCurrent
+        this.preferenceData.focus_type = this.focusType.toString()
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.shouldPreservePreferences = false
@@ -253,6 +260,7 @@ class ComparisonView extends ScreenView {
                         this.baseUuid = run.run_uuid
                         this.basePlotIdx = []
                         this.currentPlotIdx = []
+                        this.focusType = FocusType.NONE
 
                         await this.updateBaseRun(false)
 
@@ -324,11 +332,16 @@ class ComparisonView extends ScreenView {
                     parent: this.constructor.name
                 })
                     .render($)
-                new ToggleButton({
-                    onButtonClick: this.onChangeFocus.bind(this),
-                    text: 'Focus current',
-                    isToggled: this.focusCurrent,
-                    parent: this.constructor.name
+                new DropDownMenu({
+                    isDisabled: false,
+                    items: [
+                        {id: FocusType.NONE, title: "None"},
+                        {id: FocusType.CURRENT, title: this.run.name},
+                        {id: FocusType.BASE, title: this.baseRun.name}],
+                    onItemSelect: (id: string) => {
+                        this.onChangeFocus(id)
+                    }, parent: this.constructor.name,
+                    title: "Focus"
                 })
                     .render($)
             })
@@ -380,7 +393,7 @@ class ComparisonView extends ScreenView {
                     isDivergent: true,
                     isCursorMoveOpt: true,
                     onCursorMove: [this.sparkLines.changeCursorValues],
-                    focusCurrent: this.focusCurrent
+                    focusType: this.focusType
                 }).render($)
             })
         } else if (this.missingBaseExperiment) {

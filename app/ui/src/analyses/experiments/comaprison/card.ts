@@ -11,7 +11,8 @@ import {SeriesModel} from "../../../models/run"
 import {LineChart} from "../../../components/charts/compare_lines/chart"
 import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
 import {ROUTER} from "../../../app"
-import {NetworkError} from "../../../network";
+import {NetworkError} from "../../../network"
+import {FocusType} from "./view"
 
 export class ComparisonCard extends Card {
     private readonly  currentUUID: string
@@ -121,7 +122,7 @@ export class ComparisonCard extends Card {
                 width: this.width,
                 chartType: 'linear',
                 isDivergent: true,
-                focusCurrent: true
+                focusType: FocusType.NONE
             }).render($)
         })
     }

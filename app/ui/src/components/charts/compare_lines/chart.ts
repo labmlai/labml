@@ -9,6 +9,7 @@ import {formatStep} from "../../../utils/value"
 import {DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 import {getWindowDimensions} from '../../../utils/window_dimentions'
+import {FocusType} from "../../../analyses/experiments/comaprison/view"
 
 const LABEL_HEIGHT = 10
 
@@ -22,7 +23,7 @@ interface LineChartOptions extends ChartOptions {
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
     isDivergent?: boolean
-    focusCurrent: boolean
+    focusType: FocusType
 }
 
 export class LineChart {
@@ -31,7 +32,6 @@ export class LineChart {
     private readonly baseSeries: SeriesModel[]
     private readonly basePlotIndex: number[]
     chartType: string
-    private readonly focusCurrent: boolean // extent of only the current series
     chartWidth: number
     chartHeight: number
     margin: number
@@ -57,8 +57,16 @@ export class LineChart {
         this.chartType = opt.chartType
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
-        this.focusCurrent = opt.focusCurrent
-        this.baseSeries = this.focusCurrent ? trimSteps(this.baseSeries, this.currentSeries) : this.baseSeries
+        switch (opt.focusType) {
+            case FocusType.CURRENT:
+                this.baseSeries = trimSteps(this.baseSeries, this.currentSeries)
+                break
+            case FocusType.BASE:
+                this.currentSeries = trimSteps(this.currentSeries, this.baseSeries)
+                break
+            case FocusType.NONE:
+                break
+        }
 
         this.uniqueItems = new Map<string, number>()
         this.axisSize = 30

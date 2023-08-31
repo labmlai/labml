@@ -13,13 +13,13 @@ from .. import preferences
 class ComparisonPreferences(preferences.Preferences):
     base_series_preferences: preferences.SeriesPreferences
     base_experiment: str
-    focus_current: bool
+    focus_type: str
 
     @classmethod
     def defaults(cls):
         return dict(base_series_preferences=[],
                     base_experiment=str,
-                    focus_current=True,
+                    focus_type='none',
                     )
 
     def update_preferences(self, data: preferences.PreferencesData) -> None:
@@ -35,8 +35,8 @@ class ComparisonPreferences(preferences.Preferences):
         if 'chart_type' in data:
             self.chart_type = data['chart_type']
 
-        if 'focus_current' in data:
-            self.focus_current = data['focus_current']
+        if 'focus_type' in data:
+            self.focus_type = data['focus_type']
 
         self.save()
 
@@ -49,7 +49,7 @@ class ComparisonPreferences(preferences.Preferences):
             'series_preferences': self.series_preferences,
             'base_experiment': self.base_experiment,
             'chart_type': self.chart_type,
-            'focus_current': self.focus_current,
+            'focus_type': self.focus_type,
         }
 
 
