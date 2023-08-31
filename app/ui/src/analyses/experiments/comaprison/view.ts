@@ -335,9 +335,9 @@ class ComparisonView extends ScreenView {
                 new DropDownMenu({
                     isDisabled: false,
                     items: [
-                        {id: FocusType.NONE, title: "None"},
-                        {id: FocusType.CURRENT, title: this.run.name},
-                        {id: FocusType.BASE, title: this.baseRun.name}],
+                        {id: FocusType.NONE, title: "None", default: this.focusType==FocusType.NONE},
+                        {id: FocusType.CURRENT, title: this.run.name, default: this.focusType==FocusType.CURRENT},
+                        {id: FocusType.BASE, title: this.baseRun.name, default: this.focusType==FocusType.BASE}],
                     onItemSelect: (id: string) => {
                         this.onChangeFocus(id)
                     }, parent: this.constructor.name,

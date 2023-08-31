@@ -5,6 +5,7 @@ import {clearChildElements} from "../utils/document"
 export interface DropdownMenuItem {
     id: string
     title: string
+    default?: boolean
 }
 
 interface DropdownMenuOptions extends ButtonOptions {
@@ -35,6 +36,12 @@ export class DropDownMenu extends Button {
             throw new Error('No items in dropdown')
         }
         this.currentItem = opt.items[0]
+        for (let item of this.items) {
+            if (item.default) {
+                this.currentItem = item
+                break
+            }
+        }
     }
 
     onClick = (e: Event) => {
