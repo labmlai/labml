@@ -64,7 +64,7 @@ class ComparisonView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private baseRun: Run
     private deleteButton: DeleteButton
-    private focusType: FocusType
+    private stepRange: number[]
 
     constructor(uuid: string) {
         super()
@@ -80,7 +80,7 @@ class ComparisonView extends ScreenView {
         this.loader = new DataLoader(async (force) => {
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
             this.baseUuid = this.preferenceData.base_experiment
-            this.focusType = this.preferenceData.focus_type as FocusType
+            this.stepRange = this.preferenceData.step_range
             this.currentChart = this.preferenceData.chart_type
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get()
@@ -124,16 +124,6 @@ class ComparisonView extends ScreenView {
         this.isUpdateDisabled = false
 
         this.currentChart ^= 1
-
-        this.renderCharts()
-        this.renderButtons()
-    }
-
-    private onChangeFocus(id: string) {
-        this.shouldPreservePreferences = true
-        this.isUpdateDisabled = false
-
-        this.focusType = id as FocusType
 
         this.renderCharts()
         this.renderButtons()
@@ -217,7 +207,7 @@ class ComparisonView extends ScreenView {
         this.preferenceData.series_preferences = this.currentPlotIdx
         this.preferenceData.base_series_preferences = this.basePlotIdx
         this.preferenceData.chart_type = this.currentChart
-        this.preferenceData.focus_type = this.focusType.toString()
+        this.preferenceData.step_range = this.stepRange
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.shouldPreservePreferences = false
@@ -260,7 +250,7 @@ class ComparisonView extends ScreenView {
                         this.baseUuid = run.run_uuid
                         this.basePlotIdx = []
                         this.currentPlotIdx = []
-                        this.focusType = FocusType.NONE
+                        this.stepRange = [-1, -1]
 
                         await this.updateBaseRun(false)
 
@@ -332,18 +322,6 @@ class ComparisonView extends ScreenView {
                     parent: this.constructor.name
                 })
                     .render($)
-                new DropDownMenu({
-                    isDisabled: false,
-                    items: [
-                        {id: FocusType.NONE, title: "None", default: this.focusType==FocusType.NONE},
-                        {id: FocusType.CURRENT, title: this.run.name, default: this.focusType==FocusType.CURRENT},
-                        {id: FocusType.BASE, title: this.baseRun.name, default: this.focusType==FocusType.BASE}],
-                    onItemSelect: (id: string) => {
-                        this.onChangeFocus(id)
-                    }, parent: this.constructor.name,
-                    title: "Focus"
-                })
-                    .render($)
             })
         }
     }
@@ -393,7 +371,7 @@ class ComparisonView extends ScreenView {
                     isDivergent: true,
                     isCursorMoveOpt: true,
                     onCursorMove: [this.sparkLines.changeCursorValues],
-                    focusType: this.focusType
+                    focusType: FocusType.NONE
                 }).render($)
             })
         } else if (this.missingBaseExperiment) {
