@@ -194,22 +194,6 @@ export class LineChart {
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
-                                        this.baseSeries.map((s, i) => {
-                                            if (this.basePlotIndex[i] < 0) {
-                                                    return;
-                                                }
-                                            let linePlot = new LinePlot({
-                                                series: s.series,
-                                                xScale: this.xScale,
-                                                yScale: this.yScale,
-                                                color: document.body.classList.contains("light")
-                                                        ? this.chartColors.getColor(this.uniqueItems.get(s.name))
-                                                        : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
-                                                isBase: true
-                                            })
-                                            this.linePlots.push(linePlot)
-                                            linePlot.render($)
-                                        })
                                         this.currentSeries.map((s, i) => {
                                             if (this.currentPlotIndex[i] < 0) {
                                                     return;
@@ -226,6 +210,22 @@ export class LineChart {
                                             linePlot.render($)
                                         })
 
+                                        this.baseSeries.map((s, i) => {
+                                            if (this.basePlotIndex[i] < 0) {
+                                                    return;
+                                                }
+                                            let linePlot = new LinePlot({
+                                                series: s.series,
+                                                xScale: this.xScale,
+                                                yScale: this.yScale,
+                                                color: document.body.classList.contains("light")
+                                                        ? this.chartColors.getColor(this.uniqueItems.get(s.name))
+                                                        : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
+                                                isBase: true
+                                            })
+                                            this.linePlots.push(linePlot)
+                                            linePlot.render($)
+                                        })
                                     })
                                 $('g.bottom-axis',
                                     {
