@@ -21,7 +21,7 @@ import {RunsPickerView} from "../../../views/run_picker_view"
 import {AwesomeRefreshButton} from "../../../components/refresh_button"
 import {DEBUG} from "../../../env"
 import {handleNetworkErrorInplace} from "../../../utils/redirect"
-import {DropDownMenu} from "../../../components/dropdown_button"
+import {NumericRangeField} from "../../../components/input/numeric_range_field"
 
 export enum FocusType {
     CURRENT = "current",
@@ -52,7 +52,7 @@ class ComparisonView extends ScreenView {
     private sparkLineContainer: HTMLDivElement
     private missingBaseExperiment: Boolean
     private sparkLines: CompareSparkLines
-    private toggleButtonContainer: HTMLDivElement
+    private optionContainer: HTMLDivElement
     private currentPlotIdx: number[]
     private basePlotIdx: number[]
     private currentChart: number // log or linear
@@ -65,6 +65,8 @@ class ComparisonView extends ScreenView {
     private baseRun: Run
     private deleteButton: DeleteButton
     private stepRange: number[]
+    private stepRangeField: NumericRangeField
+    private chartTypeButton: ToggleButton
 
     constructor(uuid: string) {
         super()
@@ -103,6 +105,18 @@ class ComparisonView extends ScreenView {
         this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
+        this.stepRangeField = new NumericRangeField({
+            max: 0, min: 0,
+            onClick(min: number, max: number): void {
+            },
+            buttonLabel: "Trim Steps"
+        })
+        this.chartTypeButton = new ToggleButton({
+            onButtonClick: this.onChangeScale.bind(this),
+            text: 'Log',
+            isToggled: this.currentChart > 0,
+            parent: this.constructor.name
+        })
     }
 
     get requiresAuth(): boolean {
@@ -228,7 +242,7 @@ class ComparisonView extends ScreenView {
 
         this.renderHeaders()
         this.renderCharts()
-        this.renderToggleButtons()
+        this.renderOptionRow()
         this.renderButtons()
     }
 
@@ -259,7 +273,7 @@ class ComparisonView extends ScreenView {
 
                         this.renderHeaders()
                         this.renderCharts()
-                        this.renderToggleButtons()
+                        this.renderOptionRow()
                         this.renderButtons()
                     }
                     this.runPickerElem.classList.remove("fullscreen-cover")
@@ -311,17 +325,13 @@ class ComparisonView extends ScreenView {
         })
     }
 
-    private renderToggleButtons() {
-        clearChildElements(this.toggleButtonContainer)
+    private renderOptionRow() {
+        clearChildElements(this.optionContainer)
+        this.chartTypeButton.isToggled = this.currentChart > 0
         if (!!this.baseSeries) {
-            $(this.toggleButtonContainer, $ => {
-                new ToggleButton({
-                    onButtonClick: this.onChangeScale.bind(this),
-                    text: 'Log',
-                    isToggled: this.currentChart > 0,
-                    parent: this.constructor.name
-                })
-                    .render($)
+            $(this.optionContainer, $ => {
+                this.chartTypeButton.render($)
+                this.stepRangeField.render($)
             })
         }
     }
@@ -392,7 +402,7 @@ class ComparisonView extends ScreenView {
                 })
                 this.loader.render($)
                 this.headerContainer = $('div', '.compare-header')
-                this.toggleButtonContainer = $('div', '.button-row')
+                this.optionContainer = $('div', '.button-row')
                 if (this.baseRun != null) {
                     $('h2', '.header.text-center', 'Comparison')
                 }
@@ -410,7 +420,7 @@ class ComparisonView extends ScreenView {
 
             this.renderHeaders()
             this.renderCharts()
-            this.renderToggleButtons()
+            this.renderOptionRow()
             this.renderButtons()
         } catch (e) {
             handleNetworkErrorInplace(e)

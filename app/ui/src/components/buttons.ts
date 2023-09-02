@@ -320,18 +320,21 @@ export class ToggleButton extends Button {
 
 interface CustomButtonOptions extends ButtonOptions {
     text: string
+    noMargin?: boolean
 }
 
 export class CustomButton extends Button {
     text: string
+    noMargin: boolean
 
     constructor(opt: CustomButtonOptions) {
         super(opt)
         this.text = opt.text
+        this.noMargin = opt.noMargin ? opt.noMargin : false
     }
 
     render($: WeyaElementFunction) {
-        this.elem = $('nav', `.nav-link.mb-2.tab${this.isDisabled ? '.disabled' : ''}`,
+        this.elem = $('nav', `.nav-link${this.noMargin?'':'.mb-2'}.tab${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}, title: this.title},
             $ => {
                 $('span', this.text)

@@ -1355,3 +1355,21 @@ a.generic-link {
     }
   }
 }
+
+.range-field {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  margin-left: auto;
+
+  .input-container {
+    flex: unset;
+    width: 6rem;
+    margin: 4px;
+
+    input {
+      width: 6rem;
+    }
+  }
+}
