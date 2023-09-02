@@ -36,7 +36,7 @@ class ComparisonPreferences(preferences.Preferences):
             self.chart_type = data['chart_type']
 
         if 'step_range' in data:
-            self.step_range = tuple(data['focus_type'])
+            self.step_range = tuple(data['step_range'])
 
         self.save()
 

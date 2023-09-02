@@ -122,7 +122,7 @@ export class ComparisonCard extends Card {
                 width: this.width,
                 chartType: 'linear',
                 isDivergent: true,
-                focusType: FocusType.NONE
+                stepRange: [-1, -1],
             }).render($)
         })
     }

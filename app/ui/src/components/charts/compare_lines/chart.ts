@@ -23,7 +23,7 @@ interface LineChartOptions extends ChartOptions {
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
     isDivergent?: boolean
-    focusType: FocusType
+    stepRange: number[]
 }
 
 export class LineChart {
@@ -57,16 +57,8 @@ export class LineChart {
         this.chartType = opt.chartType
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
-        switch (opt.focusType) {
-            case FocusType.CURRENT:
-                this.baseSeries = trimSteps(this.baseSeries, this.currentSeries)
-                break
-            case FocusType.BASE:
-                this.currentSeries = trimSteps(this.currentSeries, this.baseSeries)
-                break
-            case FocusType.NONE:
-                break
-        }
+        this.baseSeries = trimSteps(this.baseSeries, opt.stepRange[0], opt.stepRange[1])
+        this.currentSeries = trimSteps(this.currentSeries, opt.stepRange[0], opt.stepRange[1])
 
         this.uniqueItems = new Map<string, number>()
         this.axisSize = 30

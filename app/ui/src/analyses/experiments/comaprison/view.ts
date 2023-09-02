@@ -107,8 +107,7 @@ class ComparisonView extends ScreenView {
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
         this.stepRangeField = new NumericRangeField({
             max: 0, min: 0,
-            onClick(min: number, max: number): void {
-            },
+            onClick: this.onChangeStepRange.bind(this),
             buttonLabel: "Trim Steps"
         })
         this.chartTypeButton = new ToggleButton({
@@ -131,6 +130,16 @@ class ComparisonView extends ScreenView {
         if (this.elem) {
             this._render().then()
         }
+    }
+
+    private onChangeStepRange(min: number, max: number) {
+        this.shouldPreservePreferences = true
+        this.isUpdateDisabled = false
+
+        this.stepRange = [min, max]
+
+        this.renderCharts()
+        this.renderButtons()
     }
 
     private onChangeScale() {
@@ -201,6 +210,7 @@ class ComparisonView extends ScreenView {
             return
 
         this.currentChart = this.preferenceData.chart_type
+        this.stepRange = this.preferenceData.step_range
 
         let currentAnalysisPreferences = this.preferenceData.series_preferences
         if (currentAnalysisPreferences && currentAnalysisPreferences.length > 0) {
@@ -328,6 +338,7 @@ class ComparisonView extends ScreenView {
     private renderOptionRow() {
         clearChildElements(this.optionContainer)
         this.chartTypeButton.isToggled = this.currentChart > 0
+        this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
         if (!!this.baseSeries) {
             $(this.optionContainer, $ => {
                 this.chartTypeButton.render($)
@@ -381,7 +392,7 @@ class ComparisonView extends ScreenView {
                     isDivergent: true,
                     isCursorMoveOpt: true,
                     onCursorMove: [this.sparkLines.changeCursorValues],
-                    focusType: FocusType.NONE
+                    stepRange: this.stepRange
                 }).render($)
             })
         } else if (this.missingBaseExperiment) {

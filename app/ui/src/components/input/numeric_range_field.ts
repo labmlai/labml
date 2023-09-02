@@ -1,4 +1,4 @@
-import {WeyaElementFunction} from "../../../../lib/weya/weya"
+import {WeyaElement, WeyaElementFunction} from "../../../../lib/weya/weya"
 import EditableField, {EditableFieldOptions} from "./editable_field"
 import {CustomButton} from "../buttons"
 
@@ -39,6 +39,7 @@ export class NumericRangeField {
     private readonly maxField: NumericEditableField
     private readonly onClick: (min: number, max: number) => void
     private readonly doneButton: CustomButton
+    private elem: WeyaElement
 
     constructor(opt: NumericRangeFieldOptions) {
         this.onClick = opt.onClick
@@ -53,16 +54,25 @@ export class NumericRangeField {
     }
 
     public getRange(): [number, number] {
-        return [parseFloat(this.minField.getInput()), parseFloat(this.maxField.getInput())]
+        let min = this.minField.getInput() == '' ? -1 : parseFloat(this.minField.getInput())
+        let max = this.maxField.getInput() == '' ? -1 : parseFloat(this.maxField.getInput())
+        return [min, max]
     }
 
     public setRange(min: number, max: number) {
-        this.minField.updateValue(`${min}`)
-        this.maxField.updateValue(`${max}`)
+        if (this.elem == null) { //element is not yer rendered
+            this.minField.value =  min == -1 ? '' : `${min}`
+            this.maxField.value = max == -1 ? '' : `${max}`
+            return
+        }
+
+        this.minField.updateValue(min == -1 ? '' : `${min}`)
+
+        this.maxField.updateValue(max == -1 ? '' : `${max}`)
     }
 
     render($: WeyaElementFunction) {
-        $('div.range-field', $=> {
+        this.elem = $('div.range-field', $=> {
             this.minField.render($)
             this.maxField.render($)
             this.doneButton.render($)
