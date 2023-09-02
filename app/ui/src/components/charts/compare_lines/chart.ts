@@ -75,7 +75,7 @@ export class LineChart {
             this.basePlotIndex = defaultSeriesToPlot(this.baseSeries)
         }
 
-        const stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
+        const stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step, false, true)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
         let idx: number = 0
