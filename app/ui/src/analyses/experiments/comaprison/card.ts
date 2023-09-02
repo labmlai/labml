@@ -6,7 +6,7 @@ import {DataLoader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {DEBUG} from "../../../env"
 import {clearChildElements} from "../../../utils/document"
-import {toPointValues} from "../../../components/charts/utils"
+import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {SeriesModel} from "../../../models/run"
 import {LineChart} from "../../../components/charts/compare_lines/chart"
 import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
@@ -120,9 +120,9 @@ export class ComparisonCard extends Card {
                 currentPlotIndex: [...(this.preferenceData.series_preferences ?? [])],
                 basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
                 width: this.width,
-                chartType: 'linear',
+                chartType: getChartType(this.preferenceData.chart_type),
                 isDivergent: true,
-                stepRange: [-1, -1],
+                stepRange: this.preferenceData.step_range,
             }).render($)
         })
     }
