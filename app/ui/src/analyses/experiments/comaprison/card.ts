@@ -12,7 +12,6 @@ import {LineChart} from "../../../components/charts/compare_lines/chart"
 import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
 import {ROUTER} from "../../../app"
 import {NetworkError} from "../../../network"
-import {FocusType} from "./view"
 
 export class ComparisonCard extends Card {
     private readonly  currentUUID: string

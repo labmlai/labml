@@ -9,7 +9,6 @@ import {formatStep} from "../../../utils/value"
 import {DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 import {getWindowDimensions} from '../../../utils/window_dimentions'
-import {FocusType} from "../../../analyses/experiments/comaprison/view"
 
 const LABEL_HEIGHT = 10
 

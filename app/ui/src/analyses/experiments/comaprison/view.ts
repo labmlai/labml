@@ -23,11 +23,6 @@ import {DEBUG} from "../../../env"
 import {handleNetworkErrorInplace} from "../../../utils/redirect"
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
 
-export enum FocusType {
-    CURRENT = "current",
-    BASE = "base",
-    NONE = "none"
-}
 
 class ComparisonView extends ScreenView {
     private elem: HTMLDivElement
