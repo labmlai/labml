@@ -40,11 +40,15 @@ export class NumericRangeField {
     private readonly onClick: (min: number, max: number) => void
     private readonly doneButton: CustomButton
     private elem: WeyaElement
+    private min: number
+    private max: number
 
     constructor(opt: NumericRangeFieldOptions) {
         this.onClick = opt.onClick
-        this.minField = new NumericEditableField({name: "", value: `${opt.min}`, placeholder: "From"})
-        this.maxField = new NumericEditableField({name: "", value: `${opt.max}`, placeholder: "To"})
+        this.min = opt.min
+        this.max = opt.max
+        this.minField = new NumericEditableField({name: "", value: `${this.min}`, placeholder: "From"})
+        this.maxField = new NumericEditableField({name: "", value: `${this.max}`, placeholder: "To"})
         this.doneButton = new CustomButton({
             onButtonClick: () => {
                 let range: number[] = this.getRange()
@@ -56,22 +60,29 @@ export class NumericRangeField {
     public getRange(): [number, number] {
         let min = this.minField.getInput() == '' ? -1 : parseFloat(this.minField.getInput())
         let max = this.maxField.getInput() == '' ? -1 : parseFloat(this.maxField.getInput())
+
+        this.min = min
+        this.max = max
+
         return [min, max]
     }
 
     public setRange(min: number, max: number) {
-        if (this.elem == null) { //element is not yer rendered
-            this.minField.value =  min == -1 ? '' : `${min}`
-            this.maxField.value = max == -1 ? '' : `${max}`
+        this.min = min
+        this.max = max
+
+        if (this.elem == null || !this.minField.valueElem) { //element is not yet rendered or destroyed
             return
         }
 
         this.minField.updateValue(min == -1 ? '' : `${min}`)
-
         this.maxField.updateValue(max == -1 ? '' : `${max}`)
     }
 
     render($: WeyaElementFunction) {
+        this.minField.value = this.min == -1 ? '' : `${this.min}`
+        this.maxField.value = this.max == -1 ? '' : `${this.max}`
+
         this.elem = $('div.range-field', $=> {
             this.minField.render($)
             this.maxField.render($)

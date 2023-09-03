@@ -11,6 +11,7 @@ export interface DropdownMenuItem {
 interface DropdownMenuOptions extends ButtonOptions {
     onItemSelect: (id: string) => void
     items: DropdownMenuItem[]
+    showSelectItem?: boolean
 }
 
 export class DropDownMenu extends Button {
@@ -25,10 +26,12 @@ export class DropDownMenu extends Button {
     private readonly onItemSelect: (id: string) => void
     private readonly tooltip: string
     private readonly items: DropdownMenuItem[]
+    private readonly showSelectedItem: boolean
 
     constructor(opt: DropdownMenuOptions) {
         super(opt)
 
+        this.showSelectedItem = opt.showSelectItem ? opt.showSelectItem : false
         this.items = opt.items
         this.onItemSelect = opt.onItemSelect
         this.listHidden = true
@@ -59,7 +62,9 @@ export class DropDownMenu extends Button {
 
     private onItemClick = (id: string) => {
         this.currentItem = this.items.find(item => item.id === id)
-        this.selectedItem.innerText = this.currentItem.title
+        if (this.showSelectedItem) {
+            this.selectedItem.innerText = " : " + this.currentItem.title
+        }
         this.renderList()
 
         this.onItemSelect(id)
@@ -81,7 +86,7 @@ export class DropDownMenu extends Button {
                     }, $ => {
                         $('span', '.dropdown-menu-item', value.title, {
                             style : {
-                                'font-weight': value.id === this.currentItem.id ? 'bold' : 'normal'
+                                'font-weight': value.id === this.currentItem.id && this.showSelectedItem ? 'bold' : 'normal'
                             }
                         })
                     })
@@ -95,8 +100,11 @@ export class DropDownMenu extends Button {
             $('nav', '.nav-link.float-left.tab.toggle-button',  {
                     on: {click: this.onClick}, title: this.tooltip
                 }, $ => {
-                $('span', '', this.title + ": ")
-                this.selectedItem = $('span', '.selected-name', this.currentItem.title)
+                if (this.title) {
+                    $('span', '', this.title)
+                }
+                if (this.showSelectedItem)
+                    this.selectedItem = $('span', '.selected-name', " : " + this.currentItem.title)
                 $('i', '.fas.fa-chevron-down', '')
             })
             this.listContainer = $('div', `.dropdown-items${this.listHidden ? '.hidden' : ''}`, '')
