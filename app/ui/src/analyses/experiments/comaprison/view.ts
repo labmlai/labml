@@ -22,6 +22,7 @@ import {AwesomeRefreshButton} from "../../../components/refresh_button"
 import {DEBUG} from "../../../env"
 import {handleNetworkErrorInplace} from "../../../utils/redirect"
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
+import {DropDownMenu} from "../../../components/dropdown_button"
 
 
 class ComparisonView extends ScreenView {
@@ -62,6 +63,7 @@ class ComparisonView extends ScreenView {
     private stepRange: number[]
     private stepRangeField: NumericRangeField
     private chartTypeButton: ToggleButton
+    private stepDropDown: DropDownMenu
 
     constructor(uuid: string) {
         super()
@@ -103,7 +105,7 @@ class ComparisonView extends ScreenView {
         this.stepRangeField = new NumericRangeField({
             max: 0, min: 0,
             onClick: this.onChangeStepRange.bind(this),
-            buttonLabel: "Trim Steps"
+            buttonLabel: "Filter Steps"
         })
         this.chartTypeButton = new ToggleButton({
             onButtonClick: this.onChangeScale.bind(this),
@@ -135,6 +137,7 @@ class ComparisonView extends ScreenView {
 
         this.renderCharts()
         this.renderButtons()
+        this.renderOptionRow()
     }
 
     private onChangeScale() {
@@ -198,6 +201,22 @@ class ComparisonView extends ScreenView {
 
         this.renderCharts()
         this.renderButtons()
+    }
+
+    private onFilterDropdownClick = (id: string) => {
+        let minStep: number, maxStep: number
+        if (id === 'base') {
+            minStep = Math.min(...this.baseSeries.map(s => s.series[0].step))
+            maxStep = Math.max(...this.baseSeries.map(s => s.series[s.series.length - 1].step))
+        } else if (id === 'current') {
+            minStep = Math.min(...this.currentSeries.map(s => s.series[0].step))
+            maxStep = Math.max(...this.currentSeries.map(s => s.series[s.series.length - 1].step))
+        } else if (id === 'all') {
+            minStep = -1
+            maxStep = -1
+        }
+
+        this.onChangeStepRange(minStep, maxStep)
     }
 
     private calcPreferences() {
@@ -332,14 +351,22 @@ class ComparisonView extends ScreenView {
 
     private renderOptionRow() {
         clearChildElements(this.optionContainer)
+        if (this.baseSeries == null)
+            return
         this.chartTypeButton.isToggled = this.currentChart > 0
         this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
-        if (!!this.baseSeries) {
-            $(this.optionContainer, $ => {
-                this.chartTypeButton.render($)
-                this.stepRangeField.render($)
-            })
-        }
+        this.stepDropDown = new DropDownMenu({
+            items: [{id: 'all', title: 'All'},
+                {id: 'base', title: this.baseRun.name},
+                {id: 'current', title: this.run.name}],
+            onItemSelect: this.onFilterDropdownClick.bind(this),
+            parent: this.constructor.name, title: ""
+        })
+        $(this.optionContainer, $ => {
+            this.chartTypeButton.render($)
+            this.stepRangeField.render($)
+            this.stepDropDown.render($)
+        })
     }
 
     private renderButtons() {
