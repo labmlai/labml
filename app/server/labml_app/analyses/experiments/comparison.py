@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from fastapi import Request
 from labml_db import Model, Index
@@ -13,7 +13,7 @@ from .. import preferences
 class ComparisonPreferences(preferences.Preferences):
     base_series_preferences: preferences.SeriesPreferences
     base_experiment: str
-    step_range: tuple[int, int]
+    step_range: List[int]
 
     @classmethod
     def defaults(cls):
@@ -36,7 +36,7 @@ class ComparisonPreferences(preferences.Preferences):
             self.chart_type = data['chart_type']
 
         if 'step_range' in data:
-            self.step_range = tuple(data['step_range'])
+            self.step_range = data['step_range']
 
         self.save()
 
@@ -49,7 +49,7 @@ class ComparisonPreferences(preferences.Preferences):
             'series_preferences': self.series_preferences,
             'base_experiment': self.base_experiment,
             'chart_type': self.chart_type,
-            'step_range': list(self.step_range),
+            'step_range': self.step_range,
         }
 
 
