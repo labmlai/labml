@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
+import {defaultSeriesToPlot, getExtent, getLogScale, getScale, trimSteps} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
@@ -19,6 +19,7 @@ interface LineChartOptions extends ChartOptions {
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
     isDivergent?: boolean
+    stepRange?: number[]
 }
 
 export class LineChart {
@@ -49,6 +50,10 @@ export class LineChart {
         this.plotIdx = opt.plotIdx
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
+
+        if (opt.stepRange != null) {
+            this.series = trimSteps(this.series, opt.stepRange[0], opt.stepRange[1])
+        }
 
         this.axisSize = 30
         let windowWidth = opt.width

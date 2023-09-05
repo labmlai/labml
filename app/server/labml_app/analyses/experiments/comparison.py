@@ -13,7 +13,6 @@ from .. import preferences
 class ComparisonPreferences(preferences.Preferences):
     base_series_preferences: preferences.SeriesPreferences
     base_experiment: str
-    step_range: List[int]
 
     @classmethod
     def defaults(cls):
