@@ -35,7 +35,7 @@ class MetricsView extends ScreenView {
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: HTMLDivElement
-    toggleButtonContainer: HTMLDivElement
+    toggleButtonContainer: WeyaElement
     saveButton: SaveButton
     isUpdateDisable: boolean
     actualWidth: number
@@ -117,7 +117,7 @@ class MetricsView extends ScreenView {
                             width: this.actualWidth
                         })
                         this.runHeaderCard.render($).then()
-                        this.toggleButtonContainer = $('div')
+                        this.toggleButtonContainer = $('div.button-row')
                         $('h2', '.header.text-center', 'Metrics')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
