@@ -1291,6 +1291,7 @@ a.generic-link {
 .button-row {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .dropdown-button {
@@ -1328,7 +1329,7 @@ a.generic-link {
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1100;
-    left: 0;
+    right: 0;
     top: 45px;
 
     .dropdown-item {
@@ -1365,11 +1366,11 @@ a.generic-link {
 
   .input-container {
     flex: unset;
-    width: 6rem;
+    width: 4rem;
     margin: 4px;
 
     input {
-      width: 6rem;
+      width: 4rem;
     }
   }
 }

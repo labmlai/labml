@@ -364,8 +364,10 @@ class ComparisonView extends ScreenView {
         })
         $(this.optionContainer, $ => {
             this.chartTypeButton.render($)
-            this.stepRangeField.render($)
-            this.stepDropDown.render($)
+            $('div.button-row', $ => {
+                this.stepRangeField.render($)
+                this.stepDropDown.render($)
+            })
         })
     }
 
