@@ -1367,10 +1367,16 @@ a.generic-link {
   .input-container {
     flex: unset;
     width: 4rem;
+    @media (min-width: $mobile) {
+      width: 6rem;
+    }
     margin: 4px;
 
     input {
       width: 4rem;
+      @media (min-width: $mobile) {
+        width: 6rem;
+      }
     }
   }
 }
