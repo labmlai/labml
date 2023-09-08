@@ -68,7 +68,7 @@ export class SparkLine {
 
     changeCursorValue(cursorStep?: number | null) {
         if (this.selected >= 0 || this.isMouseMoveOpt) {
-            this.linePlot.renderCursorCircle(cursorStep)
+            this.linePlot.renderIndicators(cursorStep)
             this.renderValue(cursorStep)
         }
     }

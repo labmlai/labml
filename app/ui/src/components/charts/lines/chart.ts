@@ -133,7 +133,7 @@ export class LineChart {
 
         this.renderStep(cursorStep)
         for (let linePlot of this.linePlots) {
-            linePlot.renderCursorCircle(cursorStep)
+            linePlot.renderIndicators(cursorStep)
         }
         for (let func of this.onCursorMove) {
             func(cursorStep)
@@ -185,7 +185,8 @@ export class LineChart {
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.chartColors.getColor(this.filteredPlotIdx[i])
+                                                color: this.chartColors.getColor(this.filteredPlotIdx[i]),
+                                                renderHorizontalLine: true
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
