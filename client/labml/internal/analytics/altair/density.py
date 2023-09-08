@@ -43,8 +43,8 @@ def _render_density(table: alt.Data, *,
                     levels: int,
                     alpha: float,
                     color_scheme: str = 'tableau10',
-                    series_selection: alt.Selection = None,
-                    selection: alt.Selection = None,
+                    series_selection = None,
+                    selection = None,
                     x_scale: alt.Scale = alt.Undefined,
                     y_scale: alt.Scale = alt.Undefined) -> alt.Chart:
     areas: List[alt.Chart] = []
@@ -123,10 +123,8 @@ def render(table: alt.Data, *,
                               alpha=alpha,
                               color_scheme=color_scheme,
                               series_selection=selection,
-                              x_scale=alt.Scale(domain={'selection': zoom.name,
-                                                        "encoding": "x"}),
-                              y_scale=alt.Scale(domain={'selection': zoom.name,
-                                                        "encoding": "y"}))
+                              x_scale=alt.Scale(domain=zoom.ref()),
+                              y_scale=alt.Scale(domain=zoom.ref()))
 
     minimaps = minimaps.properties(width=width, height=height_minimap)
     details = details.properties(width=width, height=height)

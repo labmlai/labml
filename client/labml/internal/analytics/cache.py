@@ -6,7 +6,6 @@ import numpy as np
 from labml.internal.analytics.indicators import IndicatorClass, Indicator, Run, IndicatorCollection, \
     StepSelect, RunsSet
 from labml.internal.analytics.sqlite import SQLiteAnalytics
-from labml.internal.analytics.tensorboard import TensorBoardAnalytics
 
 _RUNS = {}
 
@@ -34,6 +33,8 @@ def get_name(ind: Indicator) -> List[str]:
 
 
 def get_tensorboard_data(indicator: Indicator):
+    from labml.internal.analytics.tensorboard import TensorBoardAnalytics
+
     run = get_run(indicator.uuid)
 
     if indicator.uuid not in _TENSORBOARD:

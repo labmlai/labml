@@ -41,7 +41,7 @@ def _render_density(table: alt.Data, *,
                     range_color: str,
                     levels: int,
                     alpha: float,
-                    selection: alt.Selection = None,
+                    selection = None,
                     x_scale: alt.Scale = alt.Undefined,
                     y_scale: alt.Scale = alt.Undefined) -> alt.Chart:
     areas: List[alt.Chart] = []

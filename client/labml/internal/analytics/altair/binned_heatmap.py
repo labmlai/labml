@@ -28,10 +28,10 @@ def _heatmap(table: alt.Data, *,
              range_color: str,
              height: int = None,
              width: int = None,
-             selection: alt.Selection = None,
+             selection = None,
              x_scale: alt.Scale = alt.Undefined,
              y_scale: alt.Scale = alt.Undefined,
-             brush: alt.Selection = alt.Undefined) -> alt.Chart:
+             brush = alt.Undefined) -> alt.Chart:
     base = alt.Chart(table)
     if selection is not None:
         base = base.add_selection(selection)

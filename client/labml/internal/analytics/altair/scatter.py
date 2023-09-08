@@ -38,7 +38,7 @@ def _scatter_chart(table: alt.Data, *,
                    range_color: str,
                    height: int = None,
                    width: int = None,
-                   selection: alt.Selection = None,
+                   selection = None,
                    x_scale: alt.Scale = alt.Undefined,
                    y_scale: alt.Scale = alt.Undefined) -> alt.Chart:
     base = alt.Chart(table)
