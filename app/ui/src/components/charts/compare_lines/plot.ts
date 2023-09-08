@@ -8,6 +8,7 @@ export interface LinePlotOptions extends PlotOptions {
     xScale: d3.ScaleLinear<number, number>
     series: PointValue[]
     isBase?: boolean
+    renderHorizontalLine?: boolean
 }
 
 export class LinePlot {
@@ -16,10 +17,12 @@ export class LinePlot {
     yScale: d3.ScaleLinear<number, number>
     color: string
     circleElem: WeyaElement
+    lineElem: WeyaElement
     smoothedLine: d3.Line<PointValue>
     unsmoothedLine: d3.Line<PointValue>
     bisect: d3.Bisector<number, number>
     isBase: boolean
+    renderHorizontalLine: boolean
 
     constructor(opt: LinePlotOptions) {
         this.series = opt.series
@@ -27,6 +30,7 @@ export class LinePlot {
         this.yScale = opt.yScale
         this.color = opt.color
         this.isBase = opt.isBase ?? false
+        this.renderHorizontalLine = opt.renderHorizontalLine ?? false
 
         this.bisect = d3.bisector(function (d: PointValue) {
             return d.step
@@ -74,16 +78,41 @@ export class LinePlot {
                         fill: this.color
                     })
             })
+            $('g', $ => {
+                this.lineElem = $('line',
+                    {
+                        stroke: this.color
+                    })
+            })
         })
     }
 
-    renderCursorCircle(cursorStep: number | null) {
+    renderIndicators(cursorStep: number | null) {
+        this.renderCircle(cursorStep)
+        if (this.renderHorizontalLine) {
+            this.renderLine(cursorStep)
+        }
+    }
+
+    private renderCircle(cursorStep: number | null) {
         if (cursorStep != null) {
             let idx = getSelectedIdx(this.series, this.bisect, cursorStep)
 
             this.circleElem.setAttribute("cx", `${this.xScale(this.series[idx].step)}`)
             this.circleElem.setAttribute("cy", `${this.yScale(this.series[idx].smoothed)}`)
             this.circleElem.setAttribute("r", `5`)
+        }
+    }
+
+    private renderLine(cursorStep: number | null) {
+        if (cursorStep != null) {
+            let idx = getSelectedIdx(this.series, this.bisect, cursorStep)
+            this.lineElem.setAttribute("x1", `${this.xScale.domain()[0]}`)
+            this.lineElem.setAttribute("x2", `${this.xScale.domain()[1]}`)
+            this.lineElem.setAttribute("y1", `${this.yScale(this.series[idx].smoothed).toFixed(2)}`)
+            this.lineElem.setAttribute("y2", `${this.yScale(this.series[idx].smoothed).toFixed(2)}`)
+            this.lineElem.setAttribute("stroke-width", `1`)
+            this.lineElem.setAttribute("opacity", `0.5`)
         }
     }
 }

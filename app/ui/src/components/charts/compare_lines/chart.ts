@@ -144,7 +144,7 @@ export class LineChart {
 
         this.renderStep(cursorStep)
         for (let linePlot of this.linePlots) {
-            linePlot.renderCursorCircle(cursorStep)
+            linePlot.renderIndicators(cursorStep)
         }
         for (let func of this.onCursorMove) {
             func(cursorStep)
@@ -192,7 +192,8 @@ export class LineChart {
                                                 color: document.body.classList.contains("light")
                                                         ? this.chartColors.getColor(this.uniqueItems.get(s.name))
                                                         : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
-                                                isBase: true
+                                                isBase: true,
+                                                renderHorizontalLine: true
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
@@ -208,6 +209,7 @@ export class LineChart {
                                                 color: document.body.classList.contains("light")
                                                         ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
                                                         : this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                                                renderHorizontalLine: true
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
