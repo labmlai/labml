@@ -18,7 +18,7 @@ class ComparisonPreferences(preferences.Preferences):
     def defaults(cls):
         return dict(base_series_preferences=[],
                     base_experiment=str,
-                    step_range=(-1, -1),
+                    step_range=[-1, -1],
                     )
 
     def update_preferences(self, data: preferences.PreferencesData) -> None:
