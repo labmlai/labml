@@ -17,6 +17,7 @@ import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
+import {NumericRangeField} from "../../../components/input/numeric_range_field";
 
 class MetricsView extends ScreenView {
     elem: HTMLDivElement
@@ -34,7 +35,7 @@ class MetricsView extends ScreenView {
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: HTMLDivElement
-    toggleButtonContainer: HTMLDivElement
+    toggleButtonContainer: WeyaElement
     saveButton: SaveButton
     isUpdateDisable: boolean
     actualWidth: number
@@ -42,6 +43,8 @@ class MetricsView extends ScreenView {
     private refresh: AwesomeRefreshButton;
     private runCache: RunCache
     private run: Run
+    private stepRange: number[]
+    private stepRangeField: NumericRangeField
 
     constructor(uuid: string) {
         super()
@@ -65,6 +68,11 @@ class MetricsView extends ScreenView {
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
+        this.stepRangeField = new NumericRangeField({
+            max: 0, min: 0,
+            onClick: this.onChangeStepRange.bind(this),
+            buttonLabel: "Filter Steps"
+        })
     }
 
     get requiresAuth(): boolean {
@@ -79,6 +87,16 @@ class MetricsView extends ScreenView {
         if (this.elem) {
             this._render().then()
         }
+    }
+
+    private onChangeStepRange(min: number, max: number) {
+        this.isUpdateDisable = false
+
+        this.stepRange = [min, max]
+
+        this.renderLineChart()
+        this.renderSaveButton()
+        this.renderToggleButton()
     }
 
     async _render() {
@@ -99,7 +117,7 @@ class MetricsView extends ScreenView {
                             width: this.actualWidth
                         })
                         this.runHeaderCard.render($).then()
-                        this.toggleButtonContainer = $('div')
+                        this.toggleButtonContainer = $('div.button-row')
                         $('h2', '.header.text-center', 'Metrics')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
@@ -180,6 +198,7 @@ class MetricsView extends ScreenView {
                 isToggled: this.currentChart > 0,
                 parent: this.constructor.name
             }).render($)
+            this.stepRangeField.render($)
         })
     }
 
@@ -193,7 +212,8 @@ class MetricsView extends ScreenView {
                 chartType: getChartType(this.currentChart),
                 onCursorMove: [this.sparkLines.changeCursorValues],
                 isCursorMoveOpt: true,
-                isDivergent: true
+                isDivergent: true,
+                stepRange: this.stepRange
             }).render($)
         })
     }
@@ -233,7 +253,8 @@ class MetricsView extends ScreenView {
     private calcPreferences() {
         if(this.isUpdateDisable) {
             this.currentChart = this.preferenceData.chart_type
-
+            this.stepRange = this.preferenceData.step_range
+            this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
             let analysisPreferences = this.preferenceData.series_preferences
             if (analysisPreferences && analysisPreferences.length > 0) {
                 this.plotIdx = [...analysisPreferences]
@@ -263,6 +284,7 @@ class MetricsView extends ScreenView {
     updatePreferences = () => {
         this.preferenceData.series_preferences = this.plotIdx
         this.preferenceData.chart_type = this.currentChart
+        this.preferenceData.step_range = this.stepRange
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true

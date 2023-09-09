@@ -1,6 +1,6 @@
 import {WeyaElementFunction} from '../../../../lib/weya/weya'
 
-interface EditableFieldOptions {
+export interface EditableFieldOptions {
     name: string
     value: any
     placeholder?: string
@@ -20,8 +20,8 @@ export default class EditableField {
     inputElem: HTMLInputElement | HTMLTextAreaElement
     valueElem: HTMLSpanElement
     protected type: string
-    private autocomplete?: string
-    private required: boolean
+    protected readonly autocomplete?: string
+    protected readonly required: boolean
 
     constructor(opt: EditableFieldOptions) {
         this.name = opt.name
@@ -34,7 +34,7 @@ export default class EditableField {
         this.required = opt.required ?? false
     }
 
-    private _disabled: boolean
+    protected _disabled: boolean
 
     set disabled(value: boolean) {
         this._disabled = value
@@ -83,4 +83,3 @@ export default class EditableField {
         })
     }
 }
-

@@ -220,6 +220,10 @@ body.light {
 
   .overlay {
     background-color: $light-overlay;
+
+    &.transparent {
+        background-color: transparent;
+    }
   }
 
   .nav-container {
@@ -352,11 +356,46 @@ body.light {
       background: $light-text;
     }
   }
+
+  .dropdown-button {
+    .dropdown-items {
+      background: $light-background;
+
+      .dropdown-item {
+        color: $light-text;
+
+        &:hover {
+          background: $light-shadow1;
+        }
+
+        &:active {
+          background: $light-shadow2;
+        }
+      }
+    }
+  }
 }
 
 body.dark {
   background-color: $dark-background;
 
+  .dropdown-button {
+    .dropdown-items {
+      background: $dark-background;
+
+      .dropdown-item {
+        color: $dark-text;
+
+        &:hover {
+          background: $dark-shadow1;
+        }
+
+        &:active {
+          background: $dark-shadow2;
+        }
+      }
+    }
+  }
   .compare-header {
     .compared-with {
       .title {
@@ -507,6 +546,10 @@ body.dark {
 
   .overlay {
     background-color: $dark-overlay;
+
+    .overlay-content {
+      background-color: $dark-background;
+    }
   }
 
   .nav-container {
