@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
+import {defaultSeriesToPlot, getExtent, getLogScale, getScale, trimSteps} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
@@ -22,6 +22,7 @@ interface LineChartOptions extends ChartOptions {
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
     isDivergent?: boolean
+    stepRange: number[]
 }
 
 export class LineChart {
@@ -55,6 +56,9 @@ export class LineChart {
         this.chartType = opt.chartType
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
+        this.baseSeries = trimSteps(this.baseSeries, opt.stepRange[0], opt.stepRange[1])
+        this.currentSeries = trimSteps(this.currentSeries, opt.stepRange[0], opt.stepRange[1])
+
         this.uniqueItems = new Map<string, number>()
         this.axisSize = 30
         let windowWidth = opt.width
@@ -70,7 +74,7 @@ export class LineChart {
             this.basePlotIndex = defaultSeriesToPlot(this.baseSeries)
         }
 
-        const stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
+        const stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step, false, true)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
         let idx: number = 0
@@ -181,6 +185,24 @@ export class LineChart {
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
+                                        this.currentSeries.map((s, i) => {
+                                            if (this.currentPlotIndex[i] < 0) {
+                                                    return;
+                                                }
+                                            let linePlot = new LinePlot({
+                                                series: s.series,
+                                                xScale: this.xScale,
+                                                yScale: this.yScale,
+                                                color: document.body.classList.contains("light")
+                                                        ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
+                                                        : this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                                                isBase: true,
+                                                renderHorizontalLine: true
+                                            })
+                                            this.linePlots.push(linePlot)
+                                            linePlot.render($)
+                                        })
+
                                         this.baseSeries.map((s, i) => {
                                             if (this.basePlotIndex[i] < 0) {
                                                     return;
@@ -198,23 +220,6 @@ export class LineChart {
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
                                         })
-                                        this.currentSeries.map((s, i) => {
-                                            if (this.currentPlotIndex[i] < 0) {
-                                                    return;
-                                                }
-                                            let linePlot = new LinePlot({
-                                                series: s.series,
-                                                xScale: this.xScale,
-                                                yScale: this.yScale,
-                                                color: document.body.classList.contains("light")
-                                                        ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
-                                                        : this.chartColors.getColor(this.uniqueItems.get(s.name)),
-                                                renderHorizontalLine: true
-                                            })
-                                            this.linePlots.push(linePlot)
-                                            linePlot.render($)
-                                        })
-
                                     })
                                 $('g.bottom-axis',
                                     {

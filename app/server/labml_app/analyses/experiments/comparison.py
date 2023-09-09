@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from fastapi import Request
 from labml_db import Model, Index
@@ -18,6 +18,7 @@ class ComparisonPreferences(preferences.Preferences):
     def defaults(cls):
         return dict(base_series_preferences=[],
                     base_experiment=str,
+                    step_range=[-1, -1],
                     )
 
     def update_preferences(self, data: preferences.PreferencesData) -> None:
@@ -33,6 +34,9 @@ class ComparisonPreferences(preferences.Preferences):
         if 'chart_type' in data:
             self.chart_type = data['chart_type']
 
+        if 'step_range' in data:
+            self.step_range = data['step_range']
+
         self.save()
 
     def update_base_series_preferences(self, data: preferences.SeriesPreferences) -> None:
@@ -44,6 +48,7 @@ class ComparisonPreferences(preferences.Preferences):
             'series_preferences': self.series_preferences,
             'base_experiment': self.base_experiment,
             'chart_type': self.chart_type,
+            'step_range': self.step_range,
         }
 
 

@@ -93,6 +93,9 @@ export class LinePlot {
         if (cursorStep != null) {
             let idx = getSelectedIdx(this.series, this.bisect, cursorStep)
 
+            if (idx == -1)
+                return
+
             this.circleElem.setAttribute("cx", `${this.xScale(this.series[idx].step)}`)
             this.circleElem.setAttribute("cy", `${this.yScale(this.series[idx].smoothed)}`)
             this.circleElem.setAttribute("r", `5`)

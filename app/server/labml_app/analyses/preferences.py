@@ -8,12 +8,14 @@ class Preferences:
     series_preferences: SeriesPreferences
     chart_type: int
     errors: List[Dict[str, str]]
+    step_range: List[int]
 
     @classmethod
     def defaults(cls):
         return dict(series_preferences=[],
                     chart_type=0,
-                    errors=[]
+                    errors=[],
+                    step_range=[-1, -1],
                     )
 
     def update_preferences(self, data: PreferencesData) -> None:
@@ -22,6 +24,9 @@ class Preferences:
 
         if 'chart_type' in data:
             self.chart_type = data['chart_type']
+
+        if 'step_range' in data:
+            self.step_range = data['step_range']
 
         self.save()
 
@@ -32,4 +37,5 @@ class Preferences:
         return {
             'series_preferences': self.series_preferences,
             'chart_type': self.chart_type,
+            'step_range': self.step_range,
         }

@@ -1287,3 +1287,96 @@ a.generic-link {
   margin-left: 10px;
   font-size: 0.8rem;
 }
+
+.button-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.dropdown-button {
+  display: inline-block;
+  position: relative;
+
+  nav {
+    display: flex;
+    flex-direction: row;
+
+    &.nav-link {
+      padding-right: 10px;
+    }
+
+    .selected-name {
+        margin-left: 5px;
+        font-weight: bold;
+    }
+  }
+
+  i {
+    font-size: 0.8rem;
+    padding: 3px 5px 3px 5px;
+    color: #605f5f;
+    opacity: 0.8;
+
+    .fas {
+      font-weight: 600;
+    }
+  }
+
+  .dropdown-items {
+    display: block;
+    position: absolute;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1100;
+    right: 0;
+    top: 45px;
+
+    .dropdown-item {
+      color: black;
+      padding: 12px 16px;
+      display: block;
+      cursor: pointer;
+      z-index: 1100;
+
+      .dropdown-menu-item {
+        font-size: 1rem;
+        opacity: 0.7;
+      }
+
+      .icon {
+        display: inline-block;
+        min-width: 1em;
+        margin-right: 0.5em;
+      }
+    }
+
+    &.hidden {
+      display: none;
+    }
+  }
+}
+
+.range-field {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  margin-left: auto;
+
+  .input-container {
+    flex: unset;
+    width: 4rem;
+    @media (min-width: $mobile) {
+      width: 6rem;
+    }
+    margin: 4px;
+
+    input {
+      width: 4rem;
+      @media (min-width: $mobile) {
+        width: 6rem;
+      }
+    }
+  }
+}
