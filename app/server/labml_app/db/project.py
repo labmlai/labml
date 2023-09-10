@@ -34,10 +34,8 @@ class Project(Model['Project']):
     def is_project_session(self, session_uuid: str) -> bool:
         return session_uuid in self.sessions
 
-    # TODO add distributed runs here
     def get_runs(self) -> List['run.Run']:
-        res = []
-        likely_deleted = []
+        res, likely_deleted = [], []
         for run_uuid, run_key in self.runs.items():
             try:
                 r = run.get(run_uuid)
@@ -56,6 +54,16 @@ class Project(Model['Project']):
 
         if not self.is_run_added or likely_deleted:
             self.save()
+
+        return res
+
+    def get_distributed_runs(self) -> List['distributed_run.DistributedRun']:
+        res = []
+        for run_uuid, run_key in self.distributed_runs.items():
+            dr = run_key.load()
+            if dr is None:
+                continue
+            res.append(dr)
 
         return res
 

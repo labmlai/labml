@@ -10,6 +10,7 @@ from . import project
 from . import user
 from .. import utils
 from .. import settings
+from . import status
 
 
 class DistributedRun(Model['DistributedRun']):
@@ -21,6 +22,7 @@ class DistributedRun(Model['DistributedRun']):
     runs: List[str]
     is_claimed: bool
     start_time: float
+    status: Key['status.Status']
 
     @classmethod
     def defaults(cls):
@@ -32,6 +34,7 @@ class DistributedRun(Model['DistributedRun']):
                     owner='',
                     is_claimed=True,
                     start_time=None,
+                    status=None
                     )
 
     def get_summary(self) -> Dict[str, str]:
@@ -59,6 +62,8 @@ class DistributedRun(Model['DistributedRun']):
         }
 
 
+# TODO handle backend calls, claim
+
 class DistributedRunIndex(Index['DistributedRun']):
     pass
 
@@ -80,11 +85,14 @@ def get_or_create(request: Request, run_uuid: str, world_size: int, labml_token:
         utils.analytics.AnalyticsEvent.run_claimed_set(identifier)
 
     time_now = time.time()
+
+    s = status.create_status()
     dist_run = DistributedRun(run_uuid=run_uuid,
                               world_size=world_size,
                               owner=identifier,
                               is_claimed=is_claimed,
                               start_time=time_now,
+                              status=s.key,
                               )
 
     p.distributed_runs[dist_run.run_uuid] = dist_run.key
@@ -94,6 +102,15 @@ def get_or_create(request: Request, run_uuid: str, world_size: int, labml_token:
     p.save()
 
     DistributedRunIndex.set(dist_run.run_uuid, dist_run.key)
+
+
+def get_runs(labml_token: str) -> List['DistributedRun']:
+    res = []
+    p = project.get_project(labml_token)
+    for run_uuid, run_key in p.distributed_runs.items():
+        res.append(run_key.load())
+
+    return res
 
 
 def get(run_uuid: str) -> Optional['DistributedRun']:

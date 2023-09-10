@@ -159,13 +159,15 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
                                       'Click on the experiment link to monitor the experiment and '
                                       'add it to your experiments list.'})
 
-    # TODO handle backend calls, claim
     if world_size > 0:
         run_uuid = f'{run_uuid}_{rank}'
         dist_run = distributed_run.get_or_create(request, run_uuid, world_size, token)
         if run_uuid not in set(dist_run.runs):
             dist_run.runs.append(run_uuid)
             dist_run.save()
+        dist_run_status = dist_run.status.load()
+    else:
+        dist_run_status = None
 
     r = run.get_or_create(request, run_uuid, rank, world_size, token)
     s = r.status.load()
@@ -179,6 +181,8 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     for d in data:
         r.update_run(d)
         s.update_time_status(d)
+        if dist_run_status is not None:
+            dist_run_status.update_time_status(d)
         if 'track' in d:
             analyses.AnalysisManager.track(run_uuid, d['track'])
 
@@ -440,17 +444,25 @@ async def get_runs(request: Request, labml_token: str, token: Optional[str] = No
 
     if labml_token:
         runs_list = run.get_runs(labml_token)
+        dit_runs_list = distributed_run.get_runs(labml_token)
     else:
         default_project = u.default_project
         labml_token = default_project.labml_token
         runs_list = default_project.get_runs()
+        dit_runs_list = default_project.get_distributed_runs()
 
     res = []
     for r in runs_list:
         s = run.get_status(r.run_uuid)
-        # TODO edit here
-        if r.run_uuid and r.rank == 0:
+        if r.rank > 0:
+            continue
+        if r.run_uuid:
             res.append({**r.get_summary(), **s.get_data()})
+
+    for dr in dit_runs_list:
+        s = run.get_status(dr.run_uuid)
+        if dr.run_uuid:
+            res.append({**dr.get_summary(), **s.get_data()})
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
 
