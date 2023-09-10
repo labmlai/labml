@@ -110,7 +110,7 @@ class RunView extends ScreenView {
             setTitle({section: 'Run', item: this.run.name})
             this.renderButtons()
             this.renderClaimMessage()
-            this.renderRanks()
+//             this.renderRanks()
             this.share.text = `${this.run.name} run`
             this.renderCards()
         } catch (e) {
@@ -222,16 +222,16 @@ class RunView extends ScreenView {
         })
     }
 
-    private renderRanks() {
-        this.rankElems.innerHTML = ''
-        $(this.rankElems, $ => {
-            for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
-                $('a', '.rank-link', {href: `/run/${run_uuid}`, target: "_blank"}, $ => {
-                    $('span', `Rank ${+rank + 1}`)
-                })
-            }
-        })
-    }
+//     private renderRanks() {
+//         this.rankElems.innerHTML = ''
+//         $(this.rankElems, $ => {
+//             for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
+//                 $('a', '.rank-link', {href: `/run/${run_uuid}`, target: "_blank"}, $ => {
+//                     $('span', `Rank ${+rank + 1}`)
+//                 })
+//             }
+//         })
+//     }
 }
 
 export class RunHandler {
