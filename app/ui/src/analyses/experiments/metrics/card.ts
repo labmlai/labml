@@ -83,7 +83,7 @@ export class MetricsCard extends Card {
                 chartType: this.preferenceData && this.preferenceData.chart_type ?
                     getChartType(this.preferenceData.chart_type) : 'linear',
                 isDivergent: true,
-                stepRange: [-1, -1]
+                stepRange: this.preferenceData.step_range
             }).render($)
         })
     }

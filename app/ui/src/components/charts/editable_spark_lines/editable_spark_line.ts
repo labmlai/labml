@@ -89,7 +89,7 @@ export class EditableSparkLine {
 
     changeCursorValue(cursorStep?: number | null) {
         if (this.selected >= 0) {
-            this.linePlot.renderCursorCircle(cursorStep)
+            this.linePlot.renderIndicators(cursorStep)
             this.renderTextValue(cursorStep)
         }
     }
