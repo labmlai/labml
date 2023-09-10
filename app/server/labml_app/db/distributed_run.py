@@ -103,6 +103,8 @@ def get_or_create(request: Request, run_uuid: str, world_size: int, labml_token:
 
     DistributedRunIndex.set(dist_run.run_uuid, dist_run.key)
 
+    return dist_run
+
 
 def get_runs(labml_token: str) -> List['DistributedRun']:
     res = []

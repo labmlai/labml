@@ -1,10 +1,10 @@
 import uuid
 import time
-import concurrent.futures
+import threading
 
 from labml import experiment, monit, tracker
 
-WORLD_SIZE = 8
+WORLD_SIZE = 2
 UUID = uuid.uuid4().hex
 
 print(UUID)
@@ -17,22 +17,25 @@ def worker(rank: int):
                       distributed_world_size=WORLD_SIZE,
                       writers={'screen', 'labml'}
                       )
+    print(f'created experiment for rank:{rank}')
     with experiment.start():
-        for i in monit.loop(50):
+        for i in monit.loop(250):
             for j in range(10):
                 tracker.add('loss', i * 10 + j)
-                time.sleep(0.1)
+                time.sleep(0.25)
+            print(f'sending data rank {rank}')
             tracker.save()
 
 
 def main():
-    pool = concurrent.futures.ThreadPoolExecutor(max_workers=WORLD_SIZE)
-
+    threads = list()
     for i in range(WORLD_SIZE):
-        pool.submit(worker, i)
+        x = threading.Thread(target=worker, args=(i,))
+        threads.append(x)
+        x.start()
 
-    # wait for all tasks to complete
-    pool.shutdown(wait=True)
+    for index, thread in enumerate(threads):
+        thread.join()
 
     print("Completed")
 
