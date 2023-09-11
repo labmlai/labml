@@ -2,9 +2,6 @@ import {Analysis} from "./types"
 
 import metricAnalysis from "./experiments/metrics"
 import hyperPramsAnalysis from "./experiments/hyper_params"
-import gradientAnalysis from "./experiments/grads"
-import parameterAnalysis from "./experiments/params"
-import moduleAnalysis from "./experiments/activations"
 import stdOutAnalysis from "./experiments/stdout"
 import stderrAnalysis from "./experiments/stderror"
 import loggerAnalysis from "./experiments/logger"
@@ -25,9 +22,6 @@ let experimentAnalyses: Analysis[] = [
     comparisonAnalysis,
     runConfigsAnalysis,
     hyperPramsAnalysis,
-    gradientAnalysis,
-    parameterAnalysis,
-    moduleAnalysis,
     stdOutAnalysis,
     stderrAnalysis,
     loggerAnalysis
