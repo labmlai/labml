@@ -196,7 +196,6 @@ export class LineChart {
                                                 color: document.body.classList.contains("light")
                                                         ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
                                                         : this.chartColors.getColor(this.uniqueItems.get(s.name)),
-                                                isBase: true,
                                                 renderHorizontalLine: true
                                             })
                                             this.linePlots.push(linePlot)
