@@ -9,6 +9,7 @@ class Preferences:
     chart_type: int
     errors: List[Dict[str, str]]
     step_range: List[int]
+    focus_smoothed: bool
 
     @classmethod
     def defaults(cls):
@@ -16,6 +17,7 @@ class Preferences:
                     chart_type=0,
                     errors=[],
                     step_range=[-1, -1],
+                    focus_smoothed=False
                     )
 
     def update_preferences(self, data: PreferencesData) -> None:
@@ -28,6 +30,9 @@ class Preferences:
         if 'step_range' in data:
             self.step_range = data['step_range']
 
+        if 'focus_smoothed' in data:
+            self.focus_smoothed = data['focus_smoothed']
+
         self.save()
 
     def update_series_preferences(self, data: SeriesPreferences) -> None:
@@ -38,4 +43,5 @@ class Preferences:
             'series_preferences': self.series_preferences,
             'chart_type': self.chart_type,
             'step_range': self.step_range,
+            'focus_smoothed': self.focus_smoothed
         }

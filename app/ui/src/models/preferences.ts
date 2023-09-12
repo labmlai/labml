@@ -3,6 +3,7 @@ export interface AnalysisPreferenceModel {
     sub_series_preferences: Object
     chart_type: number
     step_range: number[]
+    focus_smoothed: boolean
 }
 
 export class AnalysisPreference {
@@ -10,6 +11,7 @@ export class AnalysisPreference {
     sub_series_preferences: object
     chart_type: number
     step_range: number[]
+    focus_smoothed: boolean
 
     constructor(preference: AnalysisPreferenceModel) {
         if (preference.series_preferences) {
@@ -20,6 +22,7 @@ export class AnalysisPreference {
         this.step_range = preference.step_range
         this.chart_type = preference.chart_type
         this.sub_series_preferences = preference.sub_series_preferences
+        this.focus_smoothed = preference.focus_smoothed
     }
 }
 
