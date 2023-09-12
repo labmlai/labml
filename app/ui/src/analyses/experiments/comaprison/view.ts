@@ -64,6 +64,7 @@ class ComparisonView extends ScreenView {
     private stepRangeField: NumericRangeField
     private chartTypeButton: ToggleButton
     private stepDropDown: DropDownMenu
+    private focusSmoothed: boolean
 
     constructor(uuid: string) {
         super()
@@ -81,6 +82,7 @@ class ComparisonView extends ScreenView {
             this.baseUuid = this.preferenceData.base_experiment
             this.stepRange = this.preferenceData.step_range
             this.currentChart = this.preferenceData.chart_type
+            this.focusSmoothed = this.preferenceData.focus_smoothed
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get()
             this.currentSeries = toPointValues((await this.currentAnalysisCache.get(force)).series)
@@ -138,6 +140,16 @@ class ComparisonView extends ScreenView {
         this.renderCharts()
         this.renderButtons()
         this.renderOptionRow()
+    }
+
+    private onChangeSmoothFocus() {
+        this.shouldPreservePreferences = true
+        this.isUpdateDisabled = false
+
+        this.focusSmoothed = !this.focusSmoothed
+
+        this.renderCharts()
+        this.renderButtons()
     }
 
     private onChangeScale() {
@@ -225,6 +237,7 @@ class ComparisonView extends ScreenView {
 
         this.currentChart = this.preferenceData.chart_type
         this.stepRange = this.preferenceData.step_range
+        this.focusSmoothed = this.preferenceData.focus_smoothed
 
         let currentAnalysisPreferences = this.preferenceData.series_preferences
         if (currentAnalysisPreferences && currentAnalysisPreferences.length > 0) {
@@ -246,6 +259,7 @@ class ComparisonView extends ScreenView {
         this.preferenceData.base_series_preferences = this.basePlotIdx
         this.preferenceData.chart_type = this.currentChart
         this.preferenceData.step_range = this.stepRange
+        this.preferenceData.focus_smoothed = this.focusSmoothed
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.shouldPreservePreferences = false
@@ -364,6 +378,13 @@ class ComparisonView extends ScreenView {
         })
         $(this.optionContainer, $ => {
             this.chartTypeButton.render($)
+            new ToggleButton({
+                onButtonClick: this.onChangeSmoothFocus.bind(this),
+                text: 'Focus Smoothed',
+                isToggled: this.focusSmoothed,
+                parent: this.constructor.name
+            })
+                .render($)
             $('div.button-row', $ => {
                 this.stepRangeField.render($)
                 this.stepDropDown.render($)
@@ -416,7 +437,8 @@ class ComparisonView extends ScreenView {
                     isDivergent: true,
                     isCursorMoveOpt: true,
                     onCursorMove: [this.sparkLines.changeCursorValues],
-                    stepRange: this.stepRange
+                    stepRange: this.stepRange,
+                    focusSmoothed: this.focusSmoothed
                 }).render($)
             })
         } else if (this.missingBaseExperiment) {
