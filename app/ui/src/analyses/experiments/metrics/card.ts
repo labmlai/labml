@@ -83,7 +83,8 @@ export class MetricsCard extends Card {
                 chartType: this.preferenceData && this.preferenceData.chart_type ?
                     getChartType(this.preferenceData.chart_type) : 'linear',
                 isDivergent: true,
-                stepRange: this.preferenceData.step_range
+                stepRange: this.preferenceData.step_range,
+                focusSmoothed: this.preferenceData.focus_smoothed
             }).render($)
         })
     }

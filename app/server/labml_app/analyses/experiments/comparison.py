@@ -37,6 +37,9 @@ class ComparisonPreferences(preferences.Preferences):
         if 'step_range' in data:
             self.step_range = data['step_range']
 
+        if 'focus_smoothed' in data:
+            self.focus_smoothed = data['focus_smoothed']
+
         self.save()
 
     def update_base_series_preferences(self, data: preferences.SeriesPreferences) -> None:
@@ -49,6 +52,7 @@ class ComparisonPreferences(preferences.Preferences):
             'base_experiment': self.base_experiment,
             'chart_type': self.chart_type,
             'step_range': self.step_range,
+            'focus_smoothed': self.focus_smoothed
         }
 
 

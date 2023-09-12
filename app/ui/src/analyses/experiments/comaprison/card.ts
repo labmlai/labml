@@ -122,6 +122,7 @@ export class ComparisonCard extends Card {
                 chartType: getChartType(this.preferenceData.chart_type),
                 isDivergent: true,
                 stepRange: this.preferenceData.step_range,
+                focusSmoothed: this.preferenceData.focus_smoothed
             }).render($)
         })
     }

@@ -20,6 +20,7 @@ interface LineChartOptions extends ChartOptions {
     isCursorMoveOpt?: boolean
     isDivergent?: boolean
     stepRange?: number[]
+    focusSmoothed: boolean
 }
 
 export class LineChart {
@@ -43,6 +44,7 @@ export class LineChart {
     chartColors: ChartColors
     isDivergent: boolean
     private svgBoundingClientRect: DOMRect
+    private readonly focusSmoothed: boolean
 
     constructor(opt: LineChartOptions) {
         this.series = opt.series
@@ -50,6 +52,7 @@ export class LineChart {
         this.plotIdx = opt.plotIdx
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
+        this.focusSmoothed = opt.focusSmoothed
 
         if (opt.stepRange != null) {
             this.series = trimSteps(this.series, opt.stepRange[0], opt.stepRange[1])
@@ -89,9 +92,9 @@ export class LineChart {
         let plotSeries = this.plot.map(s => s.series)
 
         if (this.chartType === 'log') {
-            this.yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -this.chartHeight)
+            this.yScale = getLogScale(getExtent(plotSeries, d => this.focusSmoothed ? d.smoothed : d.value, false, true), -this.chartHeight)
         } else {
-            this.yScale = getScale(getExtent(plotSeries, d => d.value, false), -this.chartHeight)
+            this.yScale = getScale(getExtent(plotSeries, d => this.focusSmoothed ? d.smoothed : d.value, false), -this.chartHeight)
         }
     }
 

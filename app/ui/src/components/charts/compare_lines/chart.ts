@@ -23,6 +23,7 @@ interface LineChartOptions extends ChartOptions {
     isCursorMoveOpt?: boolean
     isDivergent?: boolean
     stepRange: number[]
+    focusSmoothed: boolean
 }
 
 export class LineChart {
@@ -47,6 +48,7 @@ export class LineChart {
     isDivergent: boolean
     private svgBoundingClientRect: DOMRect
     private uniqueItems: Map<string, number>
+    private readonly focusSmoothed: boolean
 
     constructor(opt: LineChartOptions) {
         this.currentSeries = opt.series
@@ -58,6 +60,7 @@ export class LineChart {
         this.isCursorMoveOpt = opt.isCursorMoveOpt
         this.baseSeries = trimSteps(this.baseSeries, opt.stepRange[0], opt.stepRange[1])
         this.currentSeries = trimSteps(this.currentSeries, opt.stepRange[0], opt.stepRange[1])
+        this.focusSmoothed = opt.focusSmoothed
 
         this.uniqueItems = new Map<string, number>()
         this.axisSize = 30
@@ -99,9 +102,9 @@ export class LineChart {
             return
         }
         if (this.chartType === 'log') {
-            this.yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -this.chartHeight)
+            this.yScale = getLogScale(getExtent(plotSeries, d => this.focusSmoothed ? d.smoothed : d.value, false, true), -this.chartHeight)
         } else {
-            this.yScale = getScale(getExtent(plotSeries, d => d.value, false), -this.chartHeight)
+            this.yScale = getScale(getExtent(plotSeries, d => this.focusSmoothed ? d.smoothed : d.value, false), -this.chartHeight)
         }
     }
 
@@ -196,7 +199,6 @@ export class LineChart {
                                                 color: document.body.classList.contains("light")
                                                         ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
                                                         : this.chartColors.getColor(this.uniqueItems.get(s.name)),
-                                                isBase: true,
                                                 renderHorizontalLine: true
                                             })
                                             this.linePlots.push(linePlot)

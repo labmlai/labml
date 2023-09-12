@@ -45,6 +45,7 @@ class MetricsView extends ScreenView {
     private run: Run
     private stepRange: number[]
     private stepRangeField: NumericRangeField
+    private focusSmoothed: boolean
 
     constructor(uuid: string) {
         super()
@@ -198,6 +199,13 @@ class MetricsView extends ScreenView {
                 isToggled: this.currentChart > 0,
                 parent: this.constructor.name
             }).render($)
+            new ToggleButton({
+                onButtonClick: this.onChangeSmoothFocus,
+                text: 'Focus Smoothed',
+                isToggled: this.focusSmoothed,
+                parent: this.constructor.name
+            })
+                .render($)
             this.stepRangeField.render($)
         })
     }
@@ -213,7 +221,8 @@ class MetricsView extends ScreenView {
                 onCursorMove: [this.sparkLines.changeCursorValues],
                 isCursorMoveOpt: true,
                 isDivergent: true,
-                stepRange: this.stepRange
+                stepRange: this.stepRange,
+                focusSmoothed: this.focusSmoothed
             }).render($)
         })
     }
@@ -254,6 +263,7 @@ class MetricsView extends ScreenView {
         if(this.isUpdateDisable) {
             this.currentChart = this.preferenceData.chart_type
             this.stepRange = this.preferenceData.step_range
+            this.focusSmoothed = this.preferenceData.focus_smoothed
             this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
             let analysisPreferences = this.preferenceData.series_preferences
             if (analysisPreferences && analysisPreferences.length > 0) {
@@ -266,6 +276,15 @@ class MetricsView extends ScreenView {
                 this.plotIdx = res
             }
         }
+    }
+
+    onChangeSmoothFocus = () => {
+        this.isUpdateDisable = false
+
+        this.focusSmoothed = !this.focusSmoothed;
+
+        this.renderLineChart()
+        this.renderSaveButton()
     }
 
     onChangeScale = () => {
@@ -285,6 +304,7 @@ class MetricsView extends ScreenView {
         this.preferenceData.series_preferences = this.plotIdx
         this.preferenceData.chart_type = this.currentChart
         this.preferenceData.step_range = this.stepRange
+        this.preferenceData.focus_smoothed = this.focusSmoothed
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true
