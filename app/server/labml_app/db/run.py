@@ -287,6 +287,7 @@ class Run(Model['Run']):
             'name': self.name,
             'comment': self.comment,
             'start_time': self.start_time,
+            'world_size': self.world_size,
         }
 
     def edit_run(self, data: Dict[str, any]) -> None:
