@@ -8,6 +8,7 @@ export interface RunListItemModel {
     name: string
     comment: string
     start_time: number
+    world_size: number
 }
 
 export interface RunsListModel {
@@ -23,6 +24,7 @@ export class RunListItem {
     name: string
     comment: string
     start_time: number
+    world_size: number
 
     constructor(run_list_item: RunListItemModel) {
         this.run_uuid = run_list_item.run_uuid
@@ -32,6 +34,7 @@ export class RunListItem {
         this.start_time = run_list_item.start_time
         this.last_updated_time = run_list_item.last_updated_time
         this.run_status = new RunStatus(run_list_item.run_status)
+        this.world_size = run_list_item.world_size
     }
 }
 
