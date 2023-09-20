@@ -38,9 +38,9 @@ class RunView extends ScreenView {
     private userMessages: UserMessages
     private share: ShareButton
 
-    constructor(uuid: string) {
+    constructor(uuid: string, rank?: string) {
         super()
-        this.uuid = uuid
+        this.uuid = uuid + (rank ? '_' + rank : '')
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.userCache = CACHE.getUser()
@@ -226,7 +226,7 @@ class RunView extends ScreenView {
         this.rankElems.innerHTML = ''
         $(this.rankElems, $ => {
             for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
-                $('a', '.rank-link', {href: `/run/${run_uuid}`, target: "_blank"}, $ => {
+                $('a', '.rank-link', {href: `/run/${this.uuid}/${rank}`, target: "_blank"}, $ => {
                     $('span', `Rank ${+rank + 1}`)
                 })
             }
@@ -237,6 +237,11 @@ class RunView extends ScreenView {
 export class RunHandler {
     constructor() {
         ROUTER.route('run/:uuid', [this.handleRun])
+        ROUTER.route('run/:uuid/:rank', [this.handleDistributedRun])
+    }
+
+    handleDistributedRun = (uuid: string, rank: string) => {
+        SCREEN.setView(new RunView(uuid, rank))
     }
 
     handleRun = (uuid: string) => {
