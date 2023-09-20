@@ -186,6 +186,8 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     hp_values = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', run_uuid)
     if hp_values is not None:
         hp_values.get_hyper_params()
+    else:
+        hp_values = {}
 
     return {'errors': errors, 'url': f'{request.url.hostname}:{request.url.port}/{r.url}', 'dynamic': hp_values}
 
