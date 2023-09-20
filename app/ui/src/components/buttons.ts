@@ -143,6 +143,40 @@ export class SaveButton extends Button {
     }
 }
 
+export class ExpandButton extends Button {
+    private isExpanded: Boolean
+    private iconContainer: WeyaElement
+
+    constructor(opt: ButtonOptions) {
+        super(opt)
+        this.isExpanded = false
+    }
+
+    private onExpand = (e: Event) => {
+        this.isExpanded = !this.isExpanded
+        this.renderIcon()
+        this.onClick(e)
+    }
+
+    private renderIcon() {
+        if (this.isExpanded) {
+            this.iconContainer.classList.remove("fa-chevron-left")
+            this.iconContainer.classList.add("fa-chevron-down")
+        } else {
+            this.iconContainer.classList.remove("fa-chevron-add")
+            this.iconContainer.classList.add("fa-chevron-left")
+        }
+    }
+
+    render($: WeyaElementFunction) {
+        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
+            {on: {click: this.onExpand}},
+            $ => {
+                this.iconContainer = $('span', this.isExpanded ? '.fas.fa-chevron-down' : '.fas.fa-chevron-left', '')
+            })
+    }
+}
+
 export class EditButton extends Button {
     constructor(opt: ButtonOptions) {
         super(opt)

@@ -4,7 +4,7 @@ import {User} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import {BackButton, CustomButton, ShareButton} from "../components/buttons"
+import {BackButton, CustomButton, ExpandButton, ShareButton} from "../components/buttons"
 import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
@@ -18,6 +18,7 @@ import {ScreenView} from '../screen_view'
 
 class RunView extends ScreenView {
     uuid: string
+    rank?: string
     run: Run
     runCache: RunCache
     status: Status
@@ -32,20 +33,23 @@ class RunView extends ScreenView {
     lastUpdated: number
     buttonsContainer: HTMLSpanElement
     private cardContainer: HTMLDivElement
-    private rankElems: HTMLDivElement
+    private rankContainer: WeyaElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
     private userMessages: UserMessages
     private share: ShareButton
+    private isRankExpanded: boolean
+    private rankElems: WeyaElement
 
     constructor(uuid: string, rank?: string) {
         super()
         this.uuid = uuid + (rank ? '_' + rank : '')
+        this.rank = rank
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.userCache = CACHE.getUser()
         this.runListCache = CACHE.getRunsList()
-
+        this.isRankExpanded = false
         this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
@@ -98,7 +102,7 @@ class RunView extends ScreenView {
                         })
                         this.loader.render($)
                         this.runHeaderCard.render($)
-                        this.rankElems = $('div')
+                        this.rankContainer = $('div.list.runs-list.list-group')
                         this.cardContainer = $('div')
                     })
                 })
@@ -223,13 +227,33 @@ class RunView extends ScreenView {
     }
 
     private renderRanks() {
-        this.rankElems.innerHTML = ''
-        $(this.rankElems, $ => {
-            for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
-                $('a', '.rank-link', {href: `/run/${this.uuid}/${rank}`, target: "_blank"}, $ => {
-                    $('span', `Rank ${+rank + 1}`)
+        this.rankContainer.innerHTML = ''
+        if (this.run.world_size == 0 || this.rank) { // no ranks or not the master
+            return
+        }
+        $(this.rankContainer, $ => {
+            $('div', '.toggle-list-title', $ => {
+                $('h5', `Ranks`)
+                $('hr')
+                new ExpandButton({
+                    onButtonClick: () => {
+                        this.isRankExpanded = !this.isRankExpanded
+                        this.rankElems.classList.toggle('hidden')
+                    }, parent: this.constructor.name
                 })
-            }
+                    .render($)
+            })
+            this.rankElems = $('div', '.hidden.list.runs-list.list-group', $ => {
+                for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
+                    $('a', '.list-item.list-group-item.list-group-item-action',
+                        {href: `/run/${this.uuid}/${rank}`, target: "_blank"},
+                        $ => {
+                            $('div', $ => {
+                                $('h6', `Rank ${+rank + 1}`)
+                            })
+                    })
+                }
+            })
         })
     }
 }

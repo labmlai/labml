@@ -1389,3 +1389,25 @@ a.generic-link {
   flex-direction: row;
   justify-content: space-between;
 }
+
+.hidden {
+  display: none;
+}
+
+.toggle-list-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+  gap: 10px;
+
+  h5 {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  hr {
+    flex: 1;
+    margin: auto;
+  }
+}
