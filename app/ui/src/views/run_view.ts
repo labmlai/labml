@@ -66,6 +66,10 @@ class RunView extends ScreenView {
         mix_panel.track('Run View', {uuid: this.uuid})
     }
 
+    private get isRank(): boolean {
+        return this.run.world_size != 0 && !!this.rank
+    }
+
     get requiresAuth(): boolean {
         return false
     }
@@ -130,14 +134,14 @@ class RunView extends ScreenView {
     renderButtons() {
         this.buttonsContainer.innerHTML = ''
         $(this.buttonsContainer, $ => {
-            if (!this.run.is_claimed) {
+            if (!this.run.is_claimed && !this.isRank) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, true),
                     text: 'Claim',
                     title: 'own this run',
                     parent: this.constructor.name
                 }).render($)
-            } else if (!this.run.is_project_run || !this.user.is_complete) {
+            } else if ((!this.run.is_project_run || !this.user.is_complete) && !this.isRank) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, false),
                     text: 'Add',
@@ -149,7 +153,7 @@ class RunView extends ScreenView {
     }
 
     renderClaimMessage() {
-        if (!this.run.is_claimed) {
+        if (!this.run.is_claimed && !this.isRank) {
             this.userMessages.warning('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
         }
     }
@@ -228,7 +232,7 @@ class RunView extends ScreenView {
 
     private renderRanks() {
         this.rankContainer.innerHTML = ''
-        if (this.run.world_size == 0 || this.rank) { // no ranks or not the master
+        if (this.isRank) { // no ranks or not the master
             return
         }
         $(this.rankContainer, $ => {
