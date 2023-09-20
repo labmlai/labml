@@ -44,6 +44,7 @@ class AnalysisManager:
 
     @staticmethod
     def get_experiment_analysis(name: str, run_uuid: str) -> any:
-        assert name in EXPERIMENT_ANALYSES
+        if name not in EXPERIMENT_ANALYSES:
+            return None
 
         return EXPERIMENT_ANALYSES[name].get_or_create(run_uuid)
