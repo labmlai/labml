@@ -233,7 +233,7 @@ class RunView extends ScreenView {
 
     private renderRanks() {
         this.rankContainer.innerHTML = ''
-        if (this.isRank) { // no ranks or not the master
+        if (this.isRank || this.run.world_size == 0) { // no ranks or not the master
             return
         }
         $(this.rankContainer, $ => {
