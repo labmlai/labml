@@ -27,6 +27,15 @@ let experimentAnalyses: Analysis[] = [
     loggerAnalysis
 ]
 
+let distributedAnalyses: Analysis[] = [
+    metricAnalysis,
+    runConfigsAnalysis,
+    hyperPramsAnalysis,
+    stdOutAnalysis,
+    stderrAnalysis,
+    loggerAnalysis
+]
+
 let sessionAnalyses: Analysis[] = [
     cpuAnalysis,
     processAnalysis,
@@ -43,5 +52,6 @@ let sessionAnalyses: Analysis[] = [
 
 export {
     experimentAnalyses,
-    sessionAnalyses
+    sessionAnalyses,
+    distributedAnalyses
 }

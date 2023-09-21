@@ -7,7 +7,7 @@ import {DataLoader} from "../components/loader"
 import {BackButton, CustomButton, ExpandButton, ShareButton} from "../components/buttons"
 import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
-import {experimentAnalyses} from "../analyses/analyses"
+import {distributedAnalyses, experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
 import CACHE, {RunCache, RunsListCache, RunStatusCache, UserCache} from "../cache/cache"
 import mix_panel from "../mix_panel"
@@ -67,7 +67,7 @@ class RunView extends ScreenView {
     }
 
     private get isRank(): boolean {
-        return this.run.world_size != 0 && !!this.rank
+        return !!this.rank
     }
 
     get requiresAuth(): boolean {
@@ -102,7 +102,7 @@ class RunView extends ScreenView {
                             uuid: this.uuid,
                             width: this.actualWidth,
                             lastUpdated: this.lastUpdated,
-                            clickable: !this.rank
+                            clickable: !this.isRank
                         })
                         this.loader.render($)
                         this.runHeaderCard.render($)
@@ -222,7 +222,8 @@ class RunView extends ScreenView {
 
     private renderCards() {
         $(this.cardContainer, $ => {
-            experimentAnalyses.map((analysis, i) => {
+            let analyses = this.isRank ? distributedAnalyses : experimentAnalyses
+            analyses.map((analysis, i) => {
                 let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
                 this.cards.push(card)
                 card.render($)
