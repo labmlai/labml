@@ -1401,9 +1401,10 @@ a.generic-link {
   padding: 10px;
   gap: 10px;
 
-  h5 {
+  h3 {
     margin-top: auto;
     margin-bottom: auto;
+    border-bottom: unset !important;
   }
 
   hr {

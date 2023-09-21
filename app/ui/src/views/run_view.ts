@@ -238,7 +238,7 @@ class RunView extends ScreenView {
         }
         $(this.rankContainer, $ => {
             $('div', '.toggle-list-title', $ => {
-                $('h5', `Ranks`)
+                $('h3.header', `Ranks`)
                 $('hr')
                 new ExpandButton({
                     onButtonClick: () => {
