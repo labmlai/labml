@@ -340,8 +340,10 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, l
               is_claimed=is_claimed,
               status=s.key,
               )
-    p.runs[run.run_uuid] = run.key
-    p.is_run_added = True
+
+    if run.rank == 0:
+        p.runs[run.run_uuid] = run.key
+        p.is_run_added = True
 
     run.save()
     p.save()
