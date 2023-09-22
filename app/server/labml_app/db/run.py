@@ -293,17 +293,19 @@ class Run(Model['Run']):
     def edit_run(self, data: Dict[str, any]) -> None:
         if 'name' in data:
             self.name = data.get('name', self.name)
-            if self.world_size > 0:
-                run_uuids = [f'{self.run_uuid}_{rank}' for rank in range(1, self.world_size)]
-                runs = mget(run_uuids)
-                for r in runs:
-                    r.name = self.name
-                Run.msave(runs)
-
         if 'comment' in data:
             self.comment = data.get('comment', self.comment)
         if 'note' in data:
             self.note = data.get('note', self.note)
+
+        if self.world_size > 0:
+            run_uuids = [f'{self.run_uuid}_{rank}' for rank in range(1, self.world_size)]
+            runs = mget(run_uuids)
+            for r in runs:
+                r.name = self.name
+                r.note = self.note
+                r.comment = self.comment
+            Run.msave(runs)
 
         self.save()
 
