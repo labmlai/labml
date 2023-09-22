@@ -341,7 +341,7 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, l
               status=s.key,
               )
 
-    if run.rank == 0:
+    if run.rank == 0:  # TODO
         p.runs[run.run_uuid] = run.key
         p.is_run_added = True
 
