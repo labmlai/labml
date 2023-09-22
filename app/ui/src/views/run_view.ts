@@ -233,12 +233,12 @@ class RunView extends ScreenView {
 
     private renderRanks() {
         this.rankContainer.innerHTML = ''
-        if (this.isRank) { // no ranks or not the master
+        if (this.isRank || this.run.world_size == 0) { // no ranks or not the master
             return
         }
         $(this.rankContainer, $ => {
             $('div', '.toggle-list-title', $ => {
-                $('h5', `Ranks`)
+                $('h3.header', `Ranks`)
                 $('hr')
                 new ExpandButton({
                     onButtonClick: () => {
@@ -249,6 +249,13 @@ class RunView extends ScreenView {
                     .render($)
             })
             this.rankElems = $('div', '.hidden.list.runs-list.list-group', $ => {
+                $('a', '.list-item.list-group-item.list-group-item-action',
+                    {href: this.isRank ? `/run/${this.uuid}` : '#', target: this.isRank ? "_blank": ""},
+                    $ => {
+                        $('div', $ => {
+                            $('h6', `Rank 1`)
+                        })
+                })
                 for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
                     $('a', '.list-item.list-group-item.list-group-item-action',
                         {href: `/run/${this.uuid}/${rank}`, target: "_blank"},
