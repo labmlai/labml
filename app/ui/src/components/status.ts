@@ -39,10 +39,13 @@ export class StatusView {
             this.statusClass = 'text-danger'
             this.statusText = 'crashed'
         } else if (this.status.status === 'unknown') {
-            this.statusClass = 'text-info'
+            this.statusClass = 'text-secondary'
             this.statusText = 'unknown status'
+        } else if (this.status.status === 'interrupted'){
+            this.statusClass = 'text-secondary'
+            this.statusText = 'interrupted'
         } else {
-            this.statusClass = 'text-info'
+            this.statusClass = 'text-secondary'
             this.statusText = 'unknown status'
         }
     }
