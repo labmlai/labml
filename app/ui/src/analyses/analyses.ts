@@ -20,10 +20,19 @@ import comparisonAnalysis from './experiments/comaprison'
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
     comparisonAnalysis,
-    runConfigsAnalysis,
-    hyperPramsAnalysis,
     stdOutAnalysis,
     stderrAnalysis,
+    runConfigsAnalysis,
+    hyperPramsAnalysis,
+    loggerAnalysis
+]
+
+let distributedAnalyses: Analysis[] = [
+    metricAnalysis,
+    stdOutAnalysis,
+    stderrAnalysis,
+    runConfigsAnalysis,
+    hyperPramsAnalysis,
     loggerAnalysis
 ]
 
@@ -43,5 +52,6 @@ let sessionAnalyses: Analysis[] = [
 
 export {
     experimentAnalyses,
-    sessionAnalyses
+    sessionAnalyses,
+    distributedAnalyses
 }

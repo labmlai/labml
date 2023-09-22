@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union, NamedTuple
 
 from fastapi import Request
 
-from labml_db import Model, Key, Index
+from labml_db import Model, Key, Index, load_keys
 
 from .. import auth
 from . import user
@@ -299,6 +299,15 @@ class Run(Model['Run']):
         if 'note' in data:
             self.note = data.get('note', self.note)
 
+        if self.world_size > 0:
+            run_uuids = [f'{self.run_uuid}_{rank}' for rank in range(1, self.world_size)]
+            runs = mget(run_uuids)
+            for r in runs:
+                r.name = self.name
+                r.note = self.note
+                r.comment = self.comment
+            Run.msave(runs)
+
         self.save()
 
 
@@ -334,8 +343,10 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, l
               is_claimed=is_claimed,
               status=s.key,
               )
-    p.runs[run.run_uuid] = run.key
-    p.is_run_added = True
+
+    if run.rank == 0:  # TODO
+        p.runs[run.run_uuid] = run.key
+        p.is_run_added = True
 
     run.save()
     p.save()
@@ -366,8 +377,7 @@ def delete(run_uuid: str) -> None:
 def get_runs(labml_token: str) -> List['Run']:
     res = []
     p = project.get_project(labml_token)
-    for run_uuid, run_key in p.runs.items():
-        res.append(run_key.load())
+    load_keys(list(p.runs.values()))
 
     return res
 
@@ -379,6 +389,11 @@ def get(run_uuid: str) -> Optional['Run']:
         return run_key.load()
 
     return None
+
+
+def mget(run_uuids: List[str]) -> List[Optional['Run']]:
+    run_keys = RunIndex.mget(run_uuids)
+    return load_keys(run_keys)
 
 
 def get_status(run_uuid: str) -> Union[None, 'status.Status']:

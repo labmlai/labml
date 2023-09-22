@@ -26,7 +26,7 @@ export class RunsListItemView {
             {href: `/run/${this.item.run_uuid}`, on: {click: this.onClick}},
             $ => {
                 $('div', $ => {
-                    new StatusView({status: this.item.run_status}).render($)
+                    new StatusView({status: this.item.run_status, isDistributed: this.item.world_size>0}).render($)
                     $('p', `Started on ${formatTime(this.item.start_time)}`)
                     $('h5', this.item.name)
                     $('h6', this.item.comment)

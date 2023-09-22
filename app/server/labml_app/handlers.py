@@ -729,7 +729,6 @@ def add_handlers(app: FastAPI):
 
         _add_ui(app, method, func, url)
 
-# TODO single claim button,
-# TODO name edit only once, keep only master
+
 # TODO dont add other ranks to the project
 # TODO merge metrics

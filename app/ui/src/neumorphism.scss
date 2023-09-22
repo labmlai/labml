@@ -70,6 +70,10 @@ $dark-success: #28a745;
 body.light {
   background-color: $light-background;
 
+  .toggle-list-title {
+    color: $light-header;
+  }
+
   .compare-header {
     .compared-with {
       .title {
@@ -695,5 +699,9 @@ body.dark {
     &::-moz-range-thumb {
       background: $dark-text;
     }
+  }
+
+  .toggle-list-title {
+    color: $dark-header;
   }
 }

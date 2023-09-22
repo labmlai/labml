@@ -4,10 +4,10 @@ import {User} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import {BackButton, CustomButton, ShareButton} from "../components/buttons"
+import {BackButton, CustomButton, ExpandButton, ShareButton} from "../components/buttons"
 import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
-import {experimentAnalyses} from "../analyses/analyses"
+import {distributedAnalyses, experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
 import CACHE, {RunCache, RunsListCache, RunStatusCache, UserCache} from "../cache/cache"
 import mix_panel from "../mix_panel"
@@ -18,6 +18,7 @@ import {ScreenView} from '../screen_view'
 
 class RunView extends ScreenView {
     uuid: string
+    rank?: string
     run: Run
     runCache: RunCache
     status: Status
@@ -32,20 +33,23 @@ class RunView extends ScreenView {
     lastUpdated: number
     buttonsContainer: HTMLSpanElement
     private cardContainer: HTMLDivElement
-    private rankElems: HTMLDivElement
+    private rankContainer: WeyaElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
     private userMessages: UserMessages
     private share: ShareButton
+    private isRankExpanded: boolean
+    private rankElems: WeyaElement
 
-    constructor(uuid: string) {
+    constructor(uuid: string, rank?: string) {
         super()
-        this.uuid = uuid
+        this.uuid = uuid + (rank ? '_' + rank : '')
+        this.rank = rank
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.userCache = CACHE.getUser()
         this.runListCache = CACHE.getRunsList()
-
+        this.isRankExpanded = false
         this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
@@ -60,6 +64,10 @@ class RunView extends ScreenView {
         })
 
         mix_panel.track('Run View', {uuid: this.uuid})
+    }
+
+    private get isRank(): boolean {
+        return !!this.rank
     }
 
     get requiresAuth(): boolean {
@@ -94,11 +102,11 @@ class RunView extends ScreenView {
                             uuid: this.uuid,
                             width: this.actualWidth,
                             lastUpdated: this.lastUpdated,
-                            clickable: true
+                            clickable: !this.isRank
                         })
                         this.loader.render($)
                         this.runHeaderCard.render($)
-                        this.rankElems = $('div')
+                        this.rankContainer = $('div.list.runs-list.list-group')
                         this.cardContainer = $('div')
                     })
                 })
@@ -126,14 +134,14 @@ class RunView extends ScreenView {
     renderButtons() {
         this.buttonsContainer.innerHTML = ''
         $(this.buttonsContainer, $ => {
-            if (!this.run.is_claimed) {
+            if (!this.run.is_claimed && !this.isRank) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, true),
                     text: 'Claim',
                     title: 'own this run',
                     parent: this.constructor.name
                 }).render($)
-            } else if (!this.run.is_project_run || !this.user.is_complete) {
+            } else if ((!this.run.is_project_run || !this.user.is_complete) && !this.isRank) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, false),
                     text: 'Add',
@@ -145,7 +153,7 @@ class RunView extends ScreenView {
     }
 
     renderClaimMessage() {
-        if (!this.run.is_claimed) {
+        if (!this.run.is_claimed && !this.isRank) {
             this.userMessages.warning('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
         }
     }
@@ -214,7 +222,8 @@ class RunView extends ScreenView {
 
     private renderCards() {
         $(this.cardContainer, $ => {
-            experimentAnalyses.map((analysis, i) => {
+            let analyses = this.isRank ? distributedAnalyses : experimentAnalyses
+            analyses.map((analysis, i) => {
                 let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
                 this.cards.push(card)
                 card.render($)
@@ -223,13 +232,40 @@ class RunView extends ScreenView {
     }
 
     private renderRanks() {
-        this.rankElems.innerHTML = ''
-        $(this.rankElems, $ => {
-            for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
-                $('a', '.rank-link', {href: `/run/${run_uuid}`, target: "_blank"}, $ => {
-                    $('span', `Rank ${+rank + 1}`)
+        this.rankContainer.innerHTML = ''
+        if (this.isRank || this.run.world_size == 0) { // no ranks or not the master
+            return
+        }
+        $(this.rankContainer, $ => {
+            $('div', '.toggle-list-title', $ => {
+                $('h3.header', `Ranks`)
+                $('hr')
+                new ExpandButton({
+                    onButtonClick: () => {
+                        this.isRankExpanded = !this.isRankExpanded
+                        this.rankElems.classList.toggle('hidden')
+                    }, parent: this.constructor.name
                 })
-            }
+                    .render($)
+            })
+            this.rankElems = $('div', '.hidden.list.runs-list.list-group', $ => {
+                $('a', '.list-item.list-group-item.list-group-item-action',
+                    {href: this.isRank ? `/run/${this.uuid}` : '#', target: this.isRank ? "_blank": ""},
+                    $ => {
+                        $('div', $ => {
+                            $('h6', `Rank 1`)
+                        })
+                })
+                for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
+                    $('a', '.list-item.list-group-item.list-group-item-action',
+                        {href: `/run/${this.uuid}/${rank}`, target: "_blank"},
+                        $ => {
+                            $('div', $ => {
+                                $('h6', `Rank ${+rank + 1}`)
+                            })
+                    })
+                }
+            })
         })
     }
 }
@@ -237,6 +273,11 @@ class RunView extends ScreenView {
 export class RunHandler {
     constructor() {
         ROUTER.route('run/:uuid', [this.handleRun])
+        ROUTER.route('run/:uuid/:rank', [this.handleDistributedRun])
+    }
+
+    handleDistributedRun = (uuid: string, rank: string) => {
+        SCREEN.setView(new RunView(uuid, rank))
     }
 
     handleRun = (uuid: string) => {
