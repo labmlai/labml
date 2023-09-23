@@ -2,7 +2,7 @@ import {Weya as $, WeyaElement, WeyaElementFunction,} from '../../../../../lib/w
 import {InsightModel, SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
-import {AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
+import CACHE from "../../../cache/cache"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import metricsCache from "../metrics/cache"
@@ -11,19 +11,17 @@ import InsightsList from "../../../components/insights_list"
 import {ROUTER} from '../../../app'
 import {DataLoader} from '../../../components/loader'
 
-export class MetricsCard extends Card {
-    uuid: string
-    width: number
-    series: SeriesModel[]
-    insights: InsightModel[]
-    preferenceData: AnalysisPreferenceModel
-    analysisCache: AnalysisDataCache
-    elem: HTMLDivElement
-    lineChartContainer: WeyaElement
-    sparkLinesContainer: WeyaElement
-    insightsContainer: WeyaElement
-    preferenceCache: AnalysisPreferenceCache
-    plotIdx: number[] = []
+
+export class DistributedMetricsCard extends Card {
+    private readonly uuid: string
+    private readonly width: number
+    private series: SeriesModel[]
+    private insights: InsightModel[]
+    private preferenceData: AnalysisPreferenceModel
+    private elem: HTMLDivElement
+    private lineChartContainer: WeyaElement
+    private sparkLinesContainer: WeyaElement
+    private insightsContainer: WeyaElement
     private loader: DataLoader
     private chartWrapper: MetricChartWrapper
 
@@ -32,23 +30,39 @@ export class MetricsCard extends Card {
 
         this.uuid = opt.uuid
         this.width = opt.width
-        this.analysisCache = metricsCache.getAnalysis(this.uuid)
-        this.preferenceCache = metricsCache.getPreferences(this.uuid)
+
         this.loader = new DataLoader(async (force) => {
-            let analysisData = await this.analysisCache.get(force)
-            this.series = toPointValues(analysisData.series)
-            this.insights = analysisData.insights
-            this.preferenceData = await this.preferenceCache.get(force)
+            let run = await CACHE.getRun(this.uuid).get(false)
+            let worldSize = run.world_size
+
+            if (worldSize == 0)
+                return
+
+            this.series = []
+            this.insights = []
+            this.preferenceData = await metricsCache.getPreferences(this.uuid).get(force)
+            for (let i=0; i<worldSize; i++) {
+                let uuid = this.uuid + (i==0?"":`_${i}`)
+
+                let analysisData = await metricsCache.getAnalysis(uuid).get(force)
+
+                let series = toPointValues(analysisData.series).filter((value: SeriesModel) => {
+                    return value.name.includes('loss')
+                })
+                this.series = this.series.concat(series)
+                this.insights.concat(analysisData.insights)
+            }
         })
     }
 
     getLastUpdated(): number {
-        return this.analysisCache.lastUpdated
+        // todo implement this
+        return 0
     }
 
     async render($: WeyaElementFunction) {
         this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3','.header', 'Metrics')
+            $('h3','.header', 'Distributed Metrics')
             this.loader.render($)
             this.lineChartContainer = $('div', '')
             this.sparkLinesContainer = $('div', '')
@@ -143,7 +157,6 @@ class MetricChartWrapper {
     }
 
     public render() {
-        console.log(this.lineChartContainer)
         if (this.series.length > 0) {
             this.elem.classList.remove('hide')
             this.renderLineChart()

@@ -16,6 +16,7 @@ import processAnalysis from './sessions/process'
 import batteryAnalysis from './sessions/battery'
 import sessionConfigsAnalysis from "./sessions/configs"
 import comparisonAnalysis from './experiments/comaprison'
+import distributedMetricsAnalysis from "./experiments/distributed_metrics"
 
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
@@ -28,6 +29,17 @@ let experimentAnalyses: Analysis[] = [
 ]
 
 let distributedAnalyses: Analysis[] = [
+    distributedMetricsAnalysis,
+    metricAnalysis,
+    comparisonAnalysis,
+    stdOutAnalysis,
+    stderrAnalysis,
+    runConfigsAnalysis,
+    hyperPramsAnalysis,
+    loggerAnalysis
+]
+
+let rankAnalysis: Analysis[] = [
     metricAnalysis,
     stdOutAnalysis,
     stderrAnalysis,
@@ -53,5 +65,6 @@ let sessionAnalyses: Analysis[] = [
 export {
     experimentAnalyses,
     sessionAnalyses,
-    distributedAnalyses
+    distributedAnalyses,
+    rankAnalysis
 }
