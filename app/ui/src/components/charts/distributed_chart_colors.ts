@@ -35,7 +35,6 @@ export default class DistributedChartColors implements ChartColorsBase {
     }
 
     getColor(nShade: number, nColor: number): string {
-        console.log(nColor, nShade)
         let colorScale = d3.piecewise(d3.interpolateHcl, [this.lowerBounds[nColor], this.upperBounds[nColor]])
         return colorScale(nShade / (Math.max(1, this.nShades - 1)))
     }
