@@ -80,7 +80,8 @@ export class DistributedMetricsCard extends Card {
                 insightsContainer: this.insightsContainer,
                 lineChartContainer: this.lineChartContainer,
                 sparkLinesContainer: this.sparkLinesContainer,
-                width: this.width
+                width: this.width,
+                isDistributed: true
             })
 
             this.chartWrapper.render()
@@ -106,6 +107,7 @@ interface MetricChartWrapperOptions {
     width: number
     series: SeriesModel[]
     insights: InsightModel[]
+    isDistributed: boolean
 
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
@@ -119,6 +121,7 @@ class MetricChartWrapper {
     private width: number
     private series: SeriesModel[]
     private insights: InsightModel[]
+    private isDistributed: boolean
 
     private readonly lineChartContainer: WeyaElement
     private readonly sparkLinesContainer: WeyaElement
@@ -133,6 +136,7 @@ class MetricChartWrapper {
     constructor(opt: MetricChartWrapperOptions) {
         this.elem = opt.elem
         this.width = opt.width
+        this.isDistributed = opt.isDistributed
         this.lineChartContainer = opt.lineChartContainer
         this.sparkLinesContainer = opt.sparkLinesContainer
         this.insightsContainer = opt.insightsContainer
@@ -177,7 +181,8 @@ class MetricChartWrapper {
                 chartType: this.chartType != null ? getChartType(this.chartType) : 'linear',
                 isDivergent: true,
                 stepRange: this.stepRange,
-                focusSmoothed: this.focusSmoothed
+                focusSmoothed: this.focusSmoothed,
+                isDistributed: this.isDistributed
             }).render($)
         })
     }
@@ -189,7 +194,8 @@ class MetricChartWrapper {
                 series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.width,
-                isDivergent: true
+                isDivergent: true,
+                isDistributed: this.isDistributed
             }).render($)
         })
     }

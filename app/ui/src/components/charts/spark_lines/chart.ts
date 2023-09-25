@@ -3,8 +3,9 @@ import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent} from "../utils"
 import {SparkLine} from "./spark_line"
-import ChartColors from "../chart_colors"
+import ChartColors, {ChartColorsBase} from "../chart_colors"
 import {DefaultLineGradient} from "../chart_gradients"
+import DistributedChartColors from "../distributed_chart_colors";
 
 
 interface SparkLinesOptions extends ChartOptions {
@@ -12,6 +13,7 @@ interface SparkLinesOptions extends ChartOptions {
     onSelect?: (i: number) => void
     isMouseMoveOpt?: boolean
     isDivergent?: boolean
+    isDistributed?: boolean
 }
 
 export class SparkLines {
@@ -26,22 +28,30 @@ export class SparkLines {
     colorIndices: number[] = []
     onSelect?: (i: number) => void
     sparkLines: SparkLine[] = []
-    chartColors: ChartColors
+    chartColors: ChartColorsBase
     isDivergent?: boolean
+    isDistributed?: boolean
+    uniqueItems: Map<string, number>
 
     constructor(opt: SparkLinesOptions) {
         this.series = opt.series
         this.plotIdx = opt.plotIdx
         this.onSelect = opt.onSelect
         this.isMouseMoveOpt = opt.isMouseMoveOpt
+        this.isDistributed = opt.isDistributed
 
         const margin = Math.floor(opt.width / 64)
         this.rowWidth = Math.min(450, opt.width - 3 * margin)
 
         let lastValues: number[] = []
+        let uniqueItemIdx = 0
+        this.uniqueItems = new Map<string, number>()
         for (let s of this.series) {
             let series = s.series
             lastValues.push(series[series.length - 1].value)
+            if (!this.uniqueItems.has(s.name)) {
+                this.uniqueItems.set(s.name, uniqueItemIdx++)
+            }
         }
 
         this.maxLastValue = Math.max(...lastValues)
@@ -61,7 +71,11 @@ export class SparkLines {
             }
         }
 
-        this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
+        if (this.isDistributed) {
+            this.chartColors = new DistributedChartColors({nColors: this.uniqueItems.size, nShades: this.series.length})
+        } else {
+            this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
+        }
     }
 
     changeCursorValues = (cursorStep?: number | null) => {
@@ -89,7 +103,7 @@ export class SparkLines {
                     onClick: onClick,
                     minLastValue: this.minLastValue,
                     maxLastValue: this.maxLastValue,
-                    color: this.chartColors.getColor(this.colorIndices[i]),
+                    color: this.chartColors.getColor(this.colorIndices[i], this.uniqueItems.get(s.name) ?? 0),
                     isMouseMoveOpt: this.isMouseMoveOpt
                 })
                 this.sparkLines.push(sparkLine)
