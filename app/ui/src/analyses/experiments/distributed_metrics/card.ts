@@ -46,10 +46,7 @@ export class DistributedMetricsCard extends Card {
 
                 let analysisData = await metricsCache.getAnalysis(uuid).get(force)
 
-                let series = toPointValues(analysisData.series).filter((value: SeriesModel) => {
-                    return value.name.includes('loss')
-                })
-                this.series = this.series.concat(series)
+                this.series = this.series.concat(toPointValues(analysisData.series))
                 this.insights.concat(analysisData.insights)
             }
         })
@@ -71,6 +68,8 @@ export class DistributedMetricsCard extends Card {
 
         try {
             await this.loader.load()
+
+            this.preferenceData.series_preferences = Array.from({ length: this.series.length }, (_, index) => index + 1)
 
             this.chartWrapper = new MetricChartWrapper({
                 elem: this.elem,
