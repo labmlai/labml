@@ -99,7 +99,7 @@ export class DistributedMetricsCard extends Card {
     }
 
     onClick = () => {
-        ROUTER.navigate(`/run/${this.uuid}/metrics`)
+        ROUTER.navigate(`/run/${this.uuid}/distributed`)
     }
 }
 

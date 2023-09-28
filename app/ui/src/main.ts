@@ -20,6 +20,7 @@ import {NetworkErrorHandler} from './views/errors/network_error_view'
 import {SignOutHandler} from './views/auth/signout_view'
 import {SignUpHandler} from './views/auth/signup_view'
 import {PasswordResetHandler} from './views/auth/password_reset_view'
+import {DistributedMetricsHandler} from "./analyses/experiments/distributed_metrics/view"
 
 ROUTER.route(/^(.*)$/g, [() => {
     ROUTER.navigate('/404')
@@ -40,6 +41,7 @@ new SessionHandler()
 new RunsListHandler()
 new SessionsListHandler()
 new SettingsHandler()
+new DistributedMetricsHandler()
 
 new RunHeaderHandler()
 new SessionHeaderHandler()

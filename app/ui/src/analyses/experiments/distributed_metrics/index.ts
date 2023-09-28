@@ -1,12 +1,12 @@
 import {Analysis} from "../../types"
 import {DistributedMetricsCard} from "./card"
-import {MetricsHandler} from "../metrics/view"
+import {DistributedMetricsHandler} from "./view"
 
 
 let distributedMetricsAnalysis: Analysis = {
     card: DistributedMetricsCard,
-    viewHandler: MetricsHandler,
-    route: '#'
+    viewHandler: DistributedMetricsHandler,
+    route: 'distributed'
 }
 
 export default distributedMetricsAnalysis
