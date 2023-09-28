@@ -136,7 +136,8 @@ class DistributedMetricsView extends ScreenView {
                         })
                         this.runHeaderCard = new RunHeaderCard({
                             uuid: this.uuid,
-                            width: this.actualWidth
+                            width: this.actualWidth,
+                            showRank: false,
                         })
                         this.runHeaderCard.render($).then()
                         this.toggleButtonContainer = $('div.button-row')

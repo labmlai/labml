@@ -11,6 +11,7 @@ import {DataLoader} from "../../../components/loader"
 interface RunHeaderOptions extends CardOptions {
     lastUpdated?: number
     clickable?: boolean
+    showRank?: boolean
 }
 
 export class RunHeaderCard {
@@ -25,12 +26,14 @@ export class RunHeaderCard {
     statusCache: RunStatusCache
     private clickable: boolean
     private loader: DataLoader
+    private showRank: boolean
 
     constructor(opt: RunHeaderOptions) {
         this.uuid = opt.uuid
         this.clickable = opt.clickable ?? false
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
+        this.showRank = opt.showRank ?? true
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
@@ -65,7 +68,7 @@ export class RunHeaderCard {
                         $('h5', `${this.run.comment}`)
                     })
 
-                    if (this.run.world_size > 0) {
+                    if (this.showRank && this.run.world_size > 0) {
                         $('div', '.rank.mt-2', $ => {
                             $('span', `Rank ${this.run.rank + 1} of ${this.run.world_size}`)
                         })
