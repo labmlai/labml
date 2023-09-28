@@ -20,7 +20,6 @@ export class DistributedMetricsCard extends Card {
     private preferenceData: AnalysisPreferenceModel
     private elem: HTMLDivElement
     private lineChartContainer: WeyaElement
-    private sparkLinesContainer: WeyaElement
     private insightsContainer: WeyaElement
     private loader: DataLoader
     private chartWrapper: MetricChartWrapper
@@ -62,7 +61,6 @@ export class DistributedMetricsCard extends Card {
             $('h3','.header', 'Distributed Metrics')
             this.loader.render($)
             this.lineChartContainer = $('div', '')
-            this.sparkLinesContainer = $('div', '')
             this.insightsContainer = $('div', '')
         })
 
@@ -79,7 +77,7 @@ export class DistributedMetricsCard extends Card {
                 series: this.series,
                 insightsContainer: this.insightsContainer,
                 lineChartContainer: this.lineChartContainer,
-                sparkLinesContainer: this.sparkLinesContainer,
+                sparkLinesContainer: undefined,
                 width: this.width,
                 isDistributed: true
             })
@@ -110,7 +108,7 @@ interface MetricChartWrapperOptions {
     isDistributed: boolean
 
     lineChartContainer: WeyaElement
-    sparkLinesContainer: WeyaElement
+    sparkLinesContainer?: WeyaElement
     insightsContainer: WeyaElement
     elem: WeyaElement
 
@@ -124,7 +122,7 @@ class MetricChartWrapper {
     private isDistributed: boolean
 
     private readonly lineChartContainer: WeyaElement
-    private readonly sparkLinesContainer: WeyaElement
+    private readonly sparkLinesContainer?: WeyaElement
     private readonly insightsContainer: WeyaElement
     private readonly elem: WeyaElement
 
@@ -188,6 +186,9 @@ class MetricChartWrapper {
     }
 
     private renderSparkLines() {
+        if (this.sparkLinesContainer == null) {
+            return
+        }
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
             new SparkLines({
