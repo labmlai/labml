@@ -244,7 +244,8 @@ class DistributedMetricsView extends ScreenView {
                 isCursorMoveOpt: true,
                 isDivergent: true,
                 stepRange: this.stepRange,
-                focusSmoothed: this.focusSmoothed
+                focusSmoothed: this.focusSmoothed,
+                isDistributed: true
             }).render($)
         })
     }
@@ -257,7 +258,8 @@ class DistributedMetricsView extends ScreenView {
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 onSelect: this.toggleChart,
-                isDivergent: true
+                isDivergent: true,
+                isDistributed: true
             })
             this.sparkLines.render($)
         })
