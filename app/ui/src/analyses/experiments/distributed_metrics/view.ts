@@ -49,7 +49,6 @@ class DistributedMetricsView extends ScreenView {
 
     constructor(uuid: string) {
         super()
-        console.log(uuid)
         this.uuid = uuid
         this.currentChart = 0
         this.runCache = CACHE.getRun(this.uuid)
@@ -135,7 +134,6 @@ class DistributedMetricsView extends ScreenView {
                             this.saveButtonContainer = $('div')
                             this.refresh.render($)
                         })
-                        console.log(this.uuid)
                         this.runHeaderCard = new RunHeaderCard({
                             uuid: this.uuid,
                             width: this.actualWidth
@@ -343,7 +341,6 @@ export class DistributedMetricsHandler extends ViewHandler {
     }
 
     handleMetrics = (uuid: string) => {
-        console.log(uuid)
         SCREEN.setView(new DistributedMetricsView(uuid))
     }
 }
