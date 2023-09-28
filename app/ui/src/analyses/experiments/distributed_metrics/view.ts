@@ -34,7 +34,7 @@ class DistributedMetricsView extends ScreenView {
     sparkLines: SparkLines
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
-    saveButtonContainer: HTMLDivElement
+    saveButtonContainer: WeyaElement
     toggleButtonContainer: WeyaElement
     saveButton: SaveButton
     isUpdateDisable: boolean
@@ -131,7 +131,7 @@ class DistributedMetricsView extends ScreenView {
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                            this.saveButtonContainer = $('div')
+                            this.saveButtonContainer = $('div.hide')
                             this.refresh.render($)
                         })
                         this.runHeaderCard = new RunHeaderCard({
