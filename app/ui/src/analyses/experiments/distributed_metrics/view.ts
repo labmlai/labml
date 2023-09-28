@@ -70,8 +70,8 @@ class DistributedMetricsView extends ScreenView {
                 focus_smoothed: false
             }
 
-            let run = await CACHE.getRun(this.uuid).get(false)
-            let worldSize = run.world_size
+            this.run = await CACHE.getRun(this.uuid).get(false)
+            let worldSize = this.run.world_size
 
             if (worldSize == 0)
                 return
@@ -153,7 +153,7 @@ class DistributedMetricsView extends ScreenView {
         try {
             await this.loader.load()
 
-            setTitle({section: 'Metrics', item: this.run.name})
+            // setTitle({section: 'Metrics', item: this.run.name})
             this.calcPreferences()
 
             this.renderSparkLines()
