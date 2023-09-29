@@ -97,6 +97,15 @@ class MetricsAnalysis(Analysis):
         return MetricsAnalysis(metrics_key.load())
 
     @staticmethod
+    def get(run_uuid: str):
+        metrics_key = MetricsIndex.get(run_uuid)
+
+        if not metrics_key:
+            return None
+
+        return MetricsAnalysis(metrics_key.load())
+
+    @staticmethod
     def delete(run_uuid: str):
         metrics_key = MetricsIndex.get(run_uuid)
         preferences_key = MetricsPreferencesIndex.get(run_uuid)

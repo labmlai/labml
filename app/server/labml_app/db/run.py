@@ -12,6 +12,7 @@ from . import project
 from . import computer
 from . import status
 from .. import settings
+from ..analyses.experiments.metrics import MetricsAnalysis
 from ..logger import logger
 from .. import analyses
 from ..enums import RunEnums
@@ -282,6 +283,18 @@ class Run(Model['Run']):
         }
 
     def get_summary(self) -> Dict[str, str]:
+
+        preview_series = {}
+        metrics = MetricsAnalysis.get(self.run_uuid)
+        if metrics:
+            track_data = metrics.get_tracking()
+            for series in track_data:
+                if 'loss' in series['name']:
+                    preview_series = series
+                    break
+            if not preview_series and len(track_data) > 0:
+                preview_series = track_data[0]
+
         return {
             'run_uuid': self.run_uuid,
             'computer_uuid': self.computer_uuid,
@@ -289,6 +302,7 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
             'world_size': self.world_size,
+            'preview_series': preview_series,
         }
 
     def edit_run(self, data: Dict[str, any]) -> None:
