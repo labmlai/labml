@@ -6,11 +6,14 @@ import {getExtent, getScale, getSelectedIdx} from "../utils"
 import {LineFill, LinePlot} from "../lines/plot"
 import {formatFixed} from "../../../utils/value"
 
-export interface SparkLineOptions {
+export interface StandaloneSparkLineOptions {
     name: string
     series: PointValue[]
     width: number
     stepExtent: [number, number]
+}
+
+export interface SparkLineOptions extends StandaloneSparkLineOptions {
     selected: number
     minLastValue: number
     maxLastValue: number
@@ -120,5 +123,49 @@ export class SparkLine {
             })
         })
         this.renderValue()
+    }
+}
+
+
+export class StandaloneSparkLine {
+    series: PointValue[]
+    name: string
+    chartWidth: number
+    xScale: d3.ScaleLinear<number, number>
+    yScale: d3.ScaleLinear<number, number>
+    bisect: d3.Bisector<number, number>
+
+    constructor(opt: StandaloneSparkLineOptions) {
+        this.series = opt.series
+        this.name = opt.name
+
+        this.chartWidth = Math.min(300, opt.width)
+        this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
+        this.xScale = getScale(opt.stepExtent, this.chartWidth)
+
+        this.bisect = d3.bisector(function (d: PointValue) {
+            return d.step
+        }).left
+    }
+
+    render($: WeyaElementFunction) {
+        console.log($)
+        $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 36}, $ => {
+                    $('g',{transform: `translate(0, 30)`}, $ => {
+                        new LineFill({
+                            series: this.series,
+                            xScale: this.xScale,
+                            yScale: this.yScale,
+                            color: '#7f8c8d',
+                            colorIdx: 9
+                        }).render($)
+                        new LinePlot({
+                            series: this.series,
+                            xScale: this.xScale,
+                            yScale: this.yScale,
+                            color: '#7f8c8d'
+                        }).render($)
+                    })
+                })
     }
 }

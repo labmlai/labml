@@ -1,4 +1,5 @@
 import {RunStatus} from "./status"
+import {SeriesModel} from "./run"
 
 export interface RunListItemModel {
     run_uuid: string
@@ -9,6 +10,7 @@ export interface RunListItemModel {
     comment: string
     start_time: number
     world_size: number
+    preview_series?: SeriesModel
 }
 
 export interface RunsListModel {
@@ -25,6 +27,7 @@ export class RunListItem {
     comment: string
     start_time: number
     world_size: number
+    preview_series?: SeriesModel
 
     constructor(run_list_item: RunListItemModel) {
         this.run_uuid = run_list_item.run_uuid
@@ -35,6 +38,7 @@ export class RunListItem {
         this.last_updated_time = run_list_item.last_updated_time
         this.run_status = new RunStatus(run_list_item.run_status)
         this.world_size = run_list_item.world_size
+        this.preview_series = run_list_item.preview_series
     }
 }
 
