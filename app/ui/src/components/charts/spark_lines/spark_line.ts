@@ -149,23 +149,25 @@ export class StandaloneSparkLine {
     }
 
     render($: WeyaElementFunction) {
-        console.log($)
-        $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 36}, $ => {
-                    $('g',{transform: `translate(0, 30)`}, $ => {
-                        new LineFill({
-                            series: this.series,
-                            xScale: this.xScale,
-                            yScale: this.yScale,
-                            color: '#7f8c8d',
-                            colorIdx: 9
-                        }).render($)
-                        new LinePlot({
-                            series: this.series,
-                            xScale: this.xScale,
-                            yScale: this.yScale,
-                            color: '#7f8c8d'
-                        }).render($)
-                    })
+        $('span', $ => {
+            $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 36}, $ => {
+                $('g',{transform: `translate(-10, 30)`}, $ => {
+                    new LineFill({
+                        series: this.series,
+                        xScale: this.xScale,
+                        yScale: this.yScale,
+                        color: '#7f8c8d',
+                        colorIdx: 9
+                    }).render($)
+                    new LinePlot({
+                        series: this.series,
+                        xScale: this.xScale,
+                        yScale: this.yScale,
+                        color: '#7f8c8d'
+                    }).render($)
                 })
+            })
+            $('span', '.title', `${this.series[this.series.length - 1].value.toExponential(4)}`, {style: {color: getBaseColor()}})
+        })
     }
 }

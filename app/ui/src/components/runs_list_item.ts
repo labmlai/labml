@@ -31,7 +31,7 @@ export class RunsListItemView {
             new StandaloneSparkLine({
                 name: "",
                 series: toPointValue(this.item.preview_series),
-                width: 300,
+                width: 280,
                 stepExtent: getExtent([toPointValue(this.item.preview_series)], d => d.step)
             }).render($)
         })
