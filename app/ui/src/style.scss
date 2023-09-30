@@ -642,6 +642,10 @@ svg#chart {
 
   path.unsmoothed-line {
     stroke-width: 0.5;
+    &.smooth-focused {
+      stroke-width: 0.2;
+      opacity: 0.5;
+    }
   }
 }
 

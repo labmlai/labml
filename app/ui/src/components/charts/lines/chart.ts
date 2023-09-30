@@ -194,7 +194,8 @@ export class LineChart {
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
                                                 color: this.chartColors.getColor(this.filteredPlotIdx[i]),
-                                                renderHorizontalLine: true
+                                                renderHorizontalLine: true,
+                                                smoothFocused: this.focusSmoothed,
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
