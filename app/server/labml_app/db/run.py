@@ -12,7 +12,7 @@ from . import project
 from . import computer
 from . import status
 from .. import settings
-from ..analyses.experiments.metrics import MetricsAnalysis
+from ..analyses.experiments.metrics import MetricsAnalysis, MetricsPreferencesIndex, MetricsPreferencesModel
 from ..logger import logger
 from .. import analyses
 from ..enums import RunEnums
@@ -283,13 +283,18 @@ class Run(Model['Run']):
         }
 
     def get_summary(self) -> Dict[str, str]:
-
         preview_series = {}
+
         metrics = MetricsAnalysis.get(self.run_uuid)
+        preferences = []
+        preferences_key = MetricsPreferencesIndex.get(self.run_uuid)
+        if preferences_key:
+            mp: MetricsPreferencesModel = preferences_key.load()
+            preferences = mp.series_preferences
         if metrics:
             track_data = metrics.get_tracking()
-            for series in track_data:
-                if 'loss' in series['name']:
+            for (idx, series) in enumerate(track_data):
+                if len(preferences) > idx and preferences[idx] != -1:
                     preview_series = series
                     break
             if not preview_series and len(track_data) > 0:
