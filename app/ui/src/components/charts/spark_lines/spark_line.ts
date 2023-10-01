@@ -131,6 +131,7 @@ export class StandaloneSparkLine {
     series: PointValue[]
     name: string
     chartWidth: number
+    lastStep: number
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     bisect: d3.Bisector<number, number>
@@ -138,7 +139,7 @@ export class StandaloneSparkLine {
     constructor(opt: StandaloneSparkLineOptions) {
         this.series = opt.series
         this.name = opt.name
-
+        this.lastStep = this.series[this.series.length - 1].step
         this.chartWidth = Math.min(300, opt.width)
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
@@ -149,8 +150,8 @@ export class StandaloneSparkLine {
     }
 
     render($: WeyaElementFunction) {
-        $('span', $ => {
-            $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 36}, $ => {
+        $('span.standalone-sparkline', $ => {
+            $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 42}, $ => {
                 $('g',{transform: `translate(-10, 30)`}, $ => {
                     new LineFill({
                         series: this.series,
@@ -167,7 +168,13 @@ export class StandaloneSparkLine {
                     }).render($)
                 })
             })
-            $('span', '.title', `${this.series[this.series.length - 1].value.toExponential(4)}`, {style: {color: getBaseColor()}})
+            $('span.data', $ => {
+                $('span', '.name.text-muted', `${this.name}`)
+                $('br')
+                $('span', '.value', `${this.series[this.series.length - 1].value.toExponential(4)}`)
+                $('br')
+                $('span', '.step.text-secondary', `${this.lastStep}`, {style: {color: getBaseColor()}})
+            })
         })
     }
 }

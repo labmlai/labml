@@ -550,6 +550,7 @@ span.fas {
   display: flex;
   flex-direction: column;
   justify-content: unset;
+  flex-wrap: wrap;
   @media (min-width: $mobile) {
     flex-direction: row;
     justify-content: space-between;
@@ -1424,5 +1425,21 @@ a.generic-link {
   hr {
     flex: 1;
     margin: auto;
+  }
+}
+
+.break {
+  flex-basis: 100%;
+}
+
+.standalone-sparkline {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  .data {
+    line-height: normal;
+    span {
+      font-size: 0.6rem;
+    }
   }
 }

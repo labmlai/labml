@@ -29,7 +29,7 @@ export class RunsListItemView {
         }
         $('div', $ => {
             new StandaloneSparkLine({
-                name: "",
+                name: this.item.preview_series.name,
                 series: toPointValue(this.item.preview_series),
                 width: 280,
                 stepExtent: getExtent([toPointValue(this.item.preview_series)], d => d.step)
