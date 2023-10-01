@@ -151,7 +151,7 @@ export class StandaloneSparkLine {
 
     render($: WeyaElementFunction) {
         $('span.standalone-sparkline', $ => {
-            $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 42}, $ => {
+            $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 50}, $ => {
                 $('g',{transform: `translate(-10, 30)`}, $ => {
                     new LineFill({
                         series: this.series,

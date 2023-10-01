@@ -14,6 +14,7 @@ export class RunsListItemView {
     public elem: HTMLElement
     public item: RunListItemModel
     private readonly onClick: (evt: Event) => void
+    static readonly METRIC_LIMIT = 3
 
     constructor(opt: RunsListItemOptions) {
         this.item = opt.item
@@ -50,6 +51,15 @@ export class RunsListItemView {
                 $('div', '.preview-series', $ => {
                     this.renderSparkLine($)
                 })
+                $('div.break')
+                if (this.item.metric_values != null) {
+                    this.item.metric_values.slice(0, RunsListItemView.METRIC_LIMIT).map((m, idx) => {
+                        $('span.break.text-secondary', `${m.name}: ${m.value.toExponential(4)}`)
+                    })
+                    if (this.item.metric_values.length > RunsListItemView.METRIC_LIMIT) {
+                        $('span.break.text-secondary', `+${this.item.metric_values.length - RunsListItemView.METRIC_LIMIT} more`)
+                    }
+                }
             })
     }
 }

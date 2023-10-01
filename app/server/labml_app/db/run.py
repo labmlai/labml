@@ -284,6 +284,7 @@ class Run(Model['Run']):
 
     def get_summary(self) -> Dict[str, str]:
         preview_series = {}
+        metric_values = []
 
         metrics = MetricsAnalysis.get(self.run_uuid)
         preferences = []
@@ -300,6 +301,14 @@ class Run(Model['Run']):
             if not preview_series and len(track_data) > 0:
                 preview_series = track_data[0]
 
+            for (idx, series) in enumerate(track_data):
+                if preview_series['name'] == series['name'] or len(preferences) <= idx or preferences[idx] == -1:
+                    continue
+                metric_values.append({
+                    'name': series['name'],
+                    'value': series['value'][-1]
+                })
+
         return {
             'run_uuid': self.run_uuid,
             'computer_uuid': self.computer_uuid,
@@ -308,6 +317,7 @@ class Run(Model['Run']):
             'start_time': self.start_time,
             'world_size': self.world_size,
             'preview_series': preview_series,
+            'metric_values': metric_values
         }
 
     def edit_run(self, data: Dict[str, any]) -> None:
