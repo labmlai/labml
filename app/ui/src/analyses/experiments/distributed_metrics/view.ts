@@ -1,5 +1,5 @@
-import {Run, SeriesModel} from "../../../models/run"
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunCache, RunStatusCache} from "../../../cache/cache"
+import {SeriesModel} from "../../../models/run"
+import CACHE from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
@@ -17,50 +17,41 @@ import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
-import {NumericRangeField} from "../../../components/input/numeric_range_field";
+import {NumericRangeField} from "../../../components/input/numeric_range_field"
 
 class DistributedMetricsView extends ScreenView {
-    elem: HTMLDivElement
     uuid: string
-    status: Status
-    plotIdx: number[] = []
-    currentChart: number
-    statusCache: RunStatusCache
+
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
-    analysisCache: AnalysisDataCache
-    preferenceCache: AnalysisPreferenceCache
-    runHeaderCard: RunHeaderCard
-    sparkLines: SparkLines
-    lineChartContainer: HTMLDivElement
-    sparkLinesContainer: HTMLDivElement
-    saveButtonContainer: WeyaElement
-    toggleButtonContainer: WeyaElement
-    saveButton: SaveButton
-    isUpdateDisable: boolean
-    actualWidth: number
-    private loader: DataLoader;
-    private refresh: AwesomeRefreshButton;
-    private runCache: RunCache
-    private run: Run
-    private stepRange: number[]
-    private stepRangeField: NumericRangeField
+    status: Status
+    private plotIdx: number[] = []
+    private currentChart: number
     private focusSmoothed: boolean
+    private stepRange: number[]
+
+    private elem: HTMLDivElement
+    private runHeaderCard: RunHeaderCard
+    private lineChartContainer: HTMLDivElement
+    private sparkLinesContainer: HTMLDivElement
+    private saveButtonContainer: WeyaElement
+    private toggleButtonContainer: WeyaElement
+    private isUpdateDisable: boolean
+    private actualWidth: number
+    private refresh: AwesomeRefreshButton
+
+    private loader: DataLoader
+    private content: DistributedViewContent
 
     constructor(uuid: string) {
         super()
         this.uuid = uuid
         this.currentChart = 0
-        this.runCache = CACHE.getRun(this.uuid)
-        this.statusCache = CACHE.getRunStatus(this.uuid)
-        this.analysisCache = metricsCache.getAnalysis(this.uuid)
-        this.preferenceCache = metricsCache.getPreferences(this.uuid)
 
         this.isUpdateDisable = true
-        this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
 
         this.loader = new DataLoader(async (force) => {
-            this.status = await this.statusCache.get(force)
+            this.status = await CACHE.getRunStatus(this.uuid).get(force)
 
             this.preferenceData = {
                 series_preferences: [],
@@ -70,8 +61,8 @@ class DistributedMetricsView extends ScreenView {
                 focus_smoothed: false
             }
 
-            this.run = await CACHE.getRun(this.uuid).get(false)
-            let worldSize = this.run.world_size
+            let run = await CACHE.getRun(this.uuid).get(false)
+            let worldSize = run.world_size
 
             if (worldSize == 0)
                 return
@@ -90,11 +81,6 @@ class DistributedMetricsView extends ScreenView {
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
-        this.stepRangeField = new NumericRangeField({
-            max: 0, min: 0,
-            onClick: this.onChangeStepRange.bind(this),
-            buttonLabel: "Filter Steps"
-        })
     }
 
     get requiresAuth(): boolean {
@@ -109,16 +95,6 @@ class DistributedMetricsView extends ScreenView {
         if (this.elem) {
             this._render().then()
         }
-    }
-
-    private onChangeStepRange(min: number, max: number) {
-        this.isUpdateDisable = false
-
-        this.stepRange = [min, max]
-
-        this.renderLineChart()
-        this.renderSaveButton()
-        this.renderToggleButton()
     }
 
     async _render() {
@@ -155,12 +131,20 @@ class DistributedMetricsView extends ScreenView {
             await this.loader.load()
 
             // setTitle({section: 'Metrics', item: this.run.name})
+
+            this.content = new DistributedViewContent({
+                updatePreferences: this.updatePreferences,
+                lineChartContainer: this.lineChartContainer,
+                sparkLinesContainer: this.sparkLinesContainer,
+                saveButtonContainer: this.saveButtonContainer,
+                toggleButtonContainer: this.toggleButtonContainer,
+                actualWidth: this.actualWidth,
+                isUpdateDisable: this.isUpdateDisable
+            })
+
             this.calcPreferences()
 
-            this.renderSparkLines()
-            this.renderLineChart()
-            this.renderSaveButton()
-            this.renderToggleButton()
+            this.content.render()
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -188,8 +172,7 @@ class DistributedMetricsView extends ScreenView {
             await this.loader.load(true)
 
             this.calcPreferences()
-            this.renderSparkLines()
-            this.renderLineChart()
+            this.content.render()
         } catch (e) {
 
         } finally {
@@ -204,7 +187,121 @@ class DistributedMetricsView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
-    renderSaveButton() {
+    private calcPreferences() {
+        if(this.isUpdateDisable) {
+            this.currentChart = this.preferenceData.chart_type
+            this.stepRange = this.preferenceData.step_range
+            this.focusSmoothed = this.preferenceData.focus_smoothed
+            let analysisPreferences = this.preferenceData.series_preferences
+            if (analysisPreferences && analysisPreferences.length > 0) {
+                this.plotIdx = [...analysisPreferences]
+            } else if (this.series) {
+                let res: number[] = []
+                for (let i = 0; i < this.series.length; i++) {
+                    res.push(i)
+                }
+                this.plotIdx = res
+            }
+
+            this.content.updateData({
+                series: this.series,
+                plotIdx: this.plotIdx,
+                currentChart: this.currentChart,
+                focusSmoothed: this.focusSmoothed,
+                stepRange: this.stepRange
+            })
+        }
+    }
+
+    updatePreferences = () => {
+        // todo: update preferences
+        // this.preferenceData.series_preferences = this.plotIdx
+        // this.preferenceData.chart_type = this.currentChart
+        // this.preferenceData.step_range = this.stepRange
+        // this.preferenceData.focus_smoothed = this.focusSmoothed
+        // this.preferenceCache.setPreference(this.preferenceData).then()
+
+        // this.isUpdateDisable = true
+        // this.renderSaveButton()
+    }
+}
+
+interface ViewContentOpt {
+    updatePreferences: () => void
+    lineChartContainer: HTMLDivElement
+    sparkLinesContainer: HTMLDivElement
+    saveButtonContainer: WeyaElement
+    toggleButtonContainer: WeyaElement
+    actualWidth: number
+
+    isUpdateDisable: boolean
+}
+
+interface ViewContentData {
+    series?: SeriesModel[]
+    plotIdx?: number[]
+    currentChart?: number
+    focusSmoothed?: boolean
+    stepRange?: number[]
+}
+
+class DistributedViewContent {
+    private sparkLines: SparkLines
+    private readonly lineChartContainer: HTMLDivElement
+    private readonly sparkLinesContainer: HTMLDivElement
+    private readonly saveButtonContainer: WeyaElement
+    private readonly toggleButtonContainer: WeyaElement
+    private isUpdateDisable: boolean
+    private actualWidth: number
+
+    private readonly stepRangeField: NumericRangeField
+    private readonly saveButton: SaveButton
+
+    private series: SeriesModel[]
+
+    private plotIdx: number[] = []
+    private currentChart: number
+    private focusSmoothed: boolean
+    private stepRange: number[]
+
+    constructor(opt: ViewContentOpt) {
+        this.lineChartContainer = opt.lineChartContainer
+        this.sparkLinesContainer = opt.sparkLinesContainer
+        this.saveButtonContainer = opt.saveButtonContainer
+        this.toggleButtonContainer = opt.toggleButtonContainer
+        this.actualWidth = opt.actualWidth
+
+        this.stepRangeField = new NumericRangeField({
+            max: 0, min: 0,
+            onClick: this.onChangeStepRange.bind(this),
+            buttonLabel: "Filter Steps"
+        })
+
+        this.saveButton = new SaveButton({onButtonClick: opt.updatePreferences, parent: this.constructor.name})
+    }
+
+    public updateData(data: ViewContentData) {
+        this.series = data.series != null ? data.series : this.series
+        this.plotIdx = data.plotIdx != null ? data.plotIdx : this.plotIdx
+        this.currentChart = data.currentChart != null ? data.currentChart : this.currentChart
+        this.focusSmoothed = data.focusSmoothed != null ? data.focusSmoothed : this.focusSmoothed
+        this.stepRange = data.stepRange != null ? data.stepRange : this.stepRange
+
+        this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
+    }
+
+    public renderCharts() {
+        this.renderSparkLines()
+        this.renderLineChart()
+    }
+
+    public render() {
+        this.renderCharts()
+        this.renderSaveButton()
+        this.renderToggleButton()
+    }
+
+    private renderSaveButton() {
         this.saveButton.disabled = this.isUpdateDisable
         this.saveButtonContainer.innerHTML = ''
         $(this.saveButtonContainer, $ => {
@@ -212,7 +309,17 @@ class DistributedMetricsView extends ScreenView {
         })
     }
 
-    renderToggleButton() {
+    private onChangeStepRange(min: number, max: number) {
+        this.isUpdateDisable = false
+
+        this.stepRange = [min, max]
+
+        this.renderLineChart()
+        this.renderSaveButton()
+        this.renderToggleButton()
+    }
+
+    private renderToggleButton() {
         this.toggleButtonContainer.innerHTML = ''
         $(this.toggleButtonContainer, $ => {
             new ToggleButton({
@@ -232,7 +339,7 @@ class DistributedMetricsView extends ScreenView {
         })
     }
 
-    renderLineChart() {
+    private renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
             new LineChart({
@@ -250,7 +357,7 @@ class DistributedMetricsView extends ScreenView {
         })
     }
 
-    renderSparkLines() {
+    private renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
             this.sparkLines = new SparkLines({
@@ -265,7 +372,7 @@ class DistributedMetricsView extends ScreenView {
         })
     }
 
-    toggleChart = (idx: number) => {
+    private toggleChart = (idx: number) => {
         this.isUpdateDisable = false
 
         if (this.plotIdx[idx] >= 0) {
@@ -283,26 +390,7 @@ class DistributedMetricsView extends ScreenView {
         this.renderSaveButton()
     }
 
-    private calcPreferences() {
-        if(this.isUpdateDisable) {
-            this.currentChart = this.preferenceData.chart_type
-            this.stepRange = this.preferenceData.step_range
-            this.focusSmoothed = this.preferenceData.focus_smoothed
-            this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
-            let analysisPreferences = this.preferenceData.series_preferences
-            if (analysisPreferences && analysisPreferences.length > 0) {
-                this.plotIdx = [...analysisPreferences]
-            } else if (this.series) {
-                let res: number[] = []
-                for (let i = 0; i < this.series.length; i++) {
-                    res.push(i)
-                }
-                this.plotIdx = res
-            }
-        }
-    }
-
-    onChangeSmoothFocus = () => {
+    private onChangeSmoothFocus = () => {
         this.isUpdateDisable = false
 
         this.focusSmoothed = !this.focusSmoothed;
@@ -311,7 +399,7 @@ class DistributedMetricsView extends ScreenView {
         this.renderSaveButton()
     }
 
-    onChangeScale = () => {
+    private onChangeScale = () => {
         this.isUpdateDisable = false
 
         if (this.currentChart === 1) {
@@ -321,18 +409,6 @@ class DistributedMetricsView extends ScreenView {
         }
 
         this.renderLineChart()
-        this.renderSaveButton()
-    }
-
-    updatePreferences = () => {
-        // todo: update preferences
-        // this.preferenceData.series_preferences = this.plotIdx
-        // this.preferenceData.chart_type = this.currentChart
-        // this.preferenceData.step_range = this.stepRange
-        // this.preferenceData.focus_smoothed = this.focusSmoothed
-        // this.preferenceCache.setPreference(this.preferenceData).then()
-
-        this.isUpdateDisable = true
         this.renderSaveButton()
     }
 }
