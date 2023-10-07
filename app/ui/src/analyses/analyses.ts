@@ -1,7 +1,6 @@
 import {Analysis} from "./types"
 
 import metricAnalysis from "./experiments/metrics"
-import hyperPramsAnalysis from "./experiments/hyper_params"
 import stdOutAnalysis from "./experiments/stdout"
 import stderrAnalysis from "./experiments/stderror"
 import loggerAnalysis from "./experiments/logger"
@@ -24,7 +23,6 @@ let experimentAnalyses: Analysis[] = [
     stdOutAnalysis,
     stderrAnalysis,
     runConfigsAnalysis,
-    hyperPramsAnalysis,
     loggerAnalysis
 ]
 
@@ -35,7 +33,6 @@ let distributedAnalyses: Analysis[] = [
     stdOutAnalysis,
     stderrAnalysis,
     runConfigsAnalysis,
-    hyperPramsAnalysis,
     loggerAnalysis
 ]
 
@@ -44,7 +41,6 @@ let rankAnalysis: Analysis[] = [
     stdOutAnalysis,
     stderrAnalysis,
     runConfigsAnalysis,
-    hyperPramsAnalysis,
     loggerAnalysis
 ]
 

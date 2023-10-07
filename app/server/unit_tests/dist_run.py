@@ -16,7 +16,7 @@ def worker(rank: int):
                       )
     print(f'created experiment for rank:{rank}')
     with experiment.start():
-        for i in monit.loop(250):
+        for i in monit.loop(500):
             for j in range(10):
                 tracker.add('loss', i * 10 + j)
             print(f'sending data rank {rank}')

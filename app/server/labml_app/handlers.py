@@ -729,6 +729,5 @@ def add_handlers(app: FastAPI):
 
         _add_ui(app, method, func, url)
 
-
 # TODO dont add other ranks to the project
 # TODO merge metrics
