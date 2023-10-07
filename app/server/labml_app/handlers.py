@@ -723,6 +723,13 @@ def add_handlers(app: FastAPI):
     _add_ui(app, 'POST', start_tensor_board, 'start_tensorboard/{computer_uuid}')
     _add_ui(app, 'POST', clear_checkpoints, 'clear_checkpoints/{computer_uuid}')
 
+    # TODO distributed here
+    _add_ui(app, 'GET', get_run, 'distributed/run/{run_uuid}')
+    _add_ui(app, 'POST', edit_run, 'distributed/run/{run_uuid}')
+    _add_ui(app, 'PUT', add_run, 'distributed/run/{run_uuid}/add')
+    _add_ui(app, 'PUT', claim_run, 'distributed/run/{run_uuid}/claim')
+    _add_ui(app, 'GET', get_run_status, 'distributed/run/status/{run_uuid}')
+
     for method, func, url, login_required in analyses.AnalysisManager.get_handlers():
         if login_required:
             func = auth.login_required(func)
