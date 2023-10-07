@@ -1,8 +1,8 @@
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from labml_db import Model, Index
+from labml_db import Model, Index, load_keys
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
@@ -33,6 +33,11 @@ class MetricsPreferencesIndex(Index['MetricsPreferences']):
 @Analysis.db_index(YamlSerializer, 'metrics_index.yaml')
 class MetricsIndex(Index['Metrics']):
     pass
+
+
+def mget(run_uuids: List[str]) -> List[Optional['MetricsAnalysis']]:
+    run_keys = MetricsIndex.mget(run_uuids)
+    return load_keys(run_keys)
 
 
 class MetricsAnalysis(Analysis):
