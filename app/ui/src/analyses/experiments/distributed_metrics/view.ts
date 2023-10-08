@@ -7,7 +7,7 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
-import metricsCache from "../metrics/cache"
+import metricsCache from "./cache"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
@@ -68,12 +68,9 @@ class DistributedMetricsView extends ScreenView {
                 return
 
             this.series = []
-            for (let i=0; i<worldSize; i++) {
-                let uuid = this.uuid + (i==0?"":`_${i}`)
-
-                let analysisData = await metricsCache.getAnalysis(uuid).get(force)
-
-                this.series = this.series.concat(toPointValues(analysisData.series))
+            let analysisData = await metricsCache.getAnalysis(this.uuid).get(force)
+            for (let series of analysisData.series) {
+                this.series = this.series.concat(toPointValues(series))
             }
 
            this.preferenceData.series_preferences = Array.from({ length: this.series.length }, (_, index) => index + 1)
