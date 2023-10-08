@@ -34,3 +34,19 @@ async def get_dit_metrics_tracking(request: Request, run_uuid: str) -> Any:
     response.status_code = status_code
 
     return response
+
+
+@Analysis.route('GET', 'distributed/metrics/merged/{run_uuid}')
+async def get_dit_metrics_tracking(request: Request, run_uuid: str) -> Any:
+    track_data = []
+    status_code = 404
+
+    ans = metrics.MetricsAnalysis.get_or_create(run_uuid)
+    if ans:
+        track_data = ans.get_tracking()
+        status_code = 200
+
+    response = JSONResponse({'series': track_data, 'insights': []})
+    response.status_code = status_code
+
+    return response
