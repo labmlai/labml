@@ -5,7 +5,7 @@ import {Card, CardOptions} from "../../types"
 import CACHE from "../../../cache/cache"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
-import metricsCache from "../metrics/cache"
+import metricsCache from "./cache"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import InsightsList from "../../../components/insights_list"
 import {ROUTER} from '../../../app'
@@ -40,14 +40,12 @@ export class DistributedMetricsCard extends Card {
             this.series = []
             this.insights = []
             this.preferenceData = await metricsCache.getPreferences(this.uuid).get(force)
-            for (let i=0; i<worldSize; i++) {
-                let uuid = this.uuid + (i==0?"":`_${i}`)
 
-                let analysisData = await metricsCache.getAnalysis(uuid).get(force)
-
-                this.series = this.series.concat(toPointValues(analysisData.series))
-                this.insights.concat(analysisData.insights)
+            let analysisData = await metricsCache.getAnalysis(this.uuid).get(force)
+            for (let series of analysisData.series) {
+                this.series = this.series.concat(toPointValues(series))
             }
+            this.insights = analysisData.insights
         })
     }
 
