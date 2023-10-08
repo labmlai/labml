@@ -9,8 +9,8 @@ from ...db import run
 
 
 @Analysis.route('GET', 'distributed/metrics/{run_uuid}')
-async def get_dit_metrics_tracking(request: Request, run_uuid: str) -> Any:
-    track_data = {}
+async def get_dist_metrics_tracking(request: Request, run_uuid: str) -> Any:
+    track_data = []
     status_code = 404
 
     r = run.get(run_uuid)
@@ -25,10 +25,10 @@ async def get_dit_metrics_tracking(request: Request, run_uuid: str) -> Any:
     metric_analyses = metrics.mget(run_uuids)
     for i, ma in enumerate(metric_analyses):
         if ma:
-            track_data[i] = metrics.MetricsAnalysis(ma).get_tracking()
+            track_data.append(metrics.MetricsAnalysis(ma).get_tracking())
             status_code = 200
         else:
-            track_data[i] = []
+            track_data.append([])
 
     response = JSONResponse({'series': track_data, 'insights': []})
     response.status_code = status_code
