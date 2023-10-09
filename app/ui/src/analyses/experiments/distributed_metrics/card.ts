@@ -1,15 +1,15 @@
 import {Weya as $, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {InsightModel, SeriesModel} from "../../../models/run"
-import {AnalysisPreferenceModel} from "../../../models/preferences"
+import {DistAnalysisPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
 import CACHE from "../../../cache/cache"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
-import metricsCache from "./cache"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import InsightsList from "../../../components/insights_list"
 import {ROUTER} from '../../../app'
 import {DataLoader} from '../../../components/loader'
+import {DistMetricsAnalysisCache, DistMetricsPreferenceCache} from "./cache";
 
 
 export class DistributedMetricsCard extends Card {
@@ -17,7 +17,7 @@ export class DistributedMetricsCard extends Card {
     private readonly width: number
     private series: SeriesModel[]
     private insights: InsightModel[]
-    private preferenceData: AnalysisPreferenceModel
+    private preferenceData: DistAnalysisPreferenceModel
     private elem: HTMLDivElement
     private lineChartContainer: WeyaElement
     private insightsContainer: WeyaElement
@@ -39,9 +39,11 @@ export class DistributedMetricsCard extends Card {
 
             this.series = []
             this.insights = []
-            this.preferenceData = await metricsCache.getPreferences(this.uuid).get(force)
+            let metricCache = new DistMetricsAnalysisCache(this.uuid, CACHE.getRunStatus(this.uuid))
+            let preferenceCache = new DistMetricsPreferenceCache(this.uuid)
+            this.preferenceData = await preferenceCache.get(force)
 
-            let analysisData = await metricsCache.getAnalysis(this.uuid).get(force)
+            let analysisData = await metricCache.get(force)
             for (let series of analysisData.series) {
                 this.series = this.series.concat(toPointValues(series))
             }
@@ -110,7 +112,7 @@ interface MetricChartWrapperOptions {
     insightsContainer: WeyaElement
     elem: WeyaElement
 
-    preferenceData: AnalysisPreferenceModel
+    preferenceData: DistAnalysisPreferenceModel
 }
 
 class MetricChartWrapper {
@@ -140,13 +142,13 @@ class MetricChartWrapper {
         this.updateData(opt.series, opt.insights, opt.preferenceData)
     }
 
-    public updateData(series: SeriesModel[], insights: InsightModel[],preferenceData: AnalysisPreferenceModel) {
+    public updateData(series: SeriesModel[], insights: InsightModel[],preferenceData: DistAnalysisPreferenceModel) {
         this.series = series
         this.insights = insights
 
         let analysisPreferences = preferenceData.series_preferences
         if (analysisPreferences.length > 0) {
-            this.plotIdx = [...analysisPreferences]
+            this.plotIdx = [].concat(...analysisPreferences)
         } else {
             this.plotIdx = []
         }

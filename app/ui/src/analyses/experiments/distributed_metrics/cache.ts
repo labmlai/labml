@@ -1,18 +1,17 @@
-import {RunStatusCache, AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
-import {AnalysisCache} from "../../helpers"
+import {
+    RunStatusCache,
+    AnalysisDataCache,
+    DistAnalysisPreferenceCache,
+} from "../../../cache/cache"
 
-class MetricsAnalysisCache extends AnalysisDataCache {
+export class DistMetricsAnalysisCache extends AnalysisDataCache {
     constructor(uuid: string, statusCache: RunStatusCache) {
         super(uuid, 'distributed/metrics', statusCache)
     }
 }
 
-class MetricsPreferenceCache extends AnalysisPreferenceCache {
+export class DistMetricsPreferenceCache extends DistAnalysisPreferenceCache {
     constructor(uuid: string) {
-        super(uuid, 'metrics')
+        super(uuid, 'distributed/metrics')
     }
 }
-
-let metricsCache = new AnalysisCache('run', MetricsAnalysisCache, MetricsPreferenceCache)
-
-export default metricsCache

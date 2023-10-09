@@ -6,8 +6,7 @@ import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
-import {AnalysisPreferenceModel} from "../../../models/preferences"
-import metricsCache from "./cache"
+import {DistAnalysisPreferenceModel} from "../../../models/preferences"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
@@ -18,12 +17,13 @@ import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
+import {DistMetricsAnalysisCache, DistMetricsPreferenceCache} from "./cache"
 
 class DistributedMetricsView extends ScreenView {
     uuid: string
 
     series: SeriesModel[]
-    preferenceData: AnalysisPreferenceModel
+    preferenceData: DistAnalysisPreferenceModel
     status: Status
     private plotIdx: number[] = []
     private currentChart: number
@@ -68,12 +68,16 @@ class DistributedMetricsView extends ScreenView {
                 return
 
             this.series = []
-            let analysisData = await metricsCache.getAnalysis(this.uuid).get(force)
+            let metricCache = new DistMetricsAnalysisCache(this.uuid, CACHE.getRunStatus(this.uuid))
+            let preferenceCache = new DistMetricsPreferenceCache(this.uuid)
+            this.preferenceData = await preferenceCache.get(force)
+
+            let analysisData = await metricCache.get(force)
             for (let series of analysisData.series) {
                 this.series = this.series.concat(toPointValues(series))
             }
 
-           this.preferenceData.series_preferences = Array.from({ length: this.series.length }, (_, index) => index + 1)
+           // this.preferenceData.series_preferences = Array.from({ length: this.series.length }, (_, index) => index + 1)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -191,7 +195,7 @@ class DistributedMetricsView extends ScreenView {
             this.focusSmoothed = this.preferenceData.focus_smoothed
             let analysisPreferences = this.preferenceData.series_preferences
             if (analysisPreferences && analysisPreferences.length > 0) {
-                this.plotIdx = [...analysisPreferences]
+                this.plotIdx = [].concat(...analysisPreferences)
             } else if (this.series) {
                 let res: number[] = []
                 for (let i = 0; i < this.series.length; i++) {
