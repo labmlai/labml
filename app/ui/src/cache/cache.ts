@@ -452,7 +452,7 @@ export class DistAnalysisPreferenceCache extends CacheObject<DistAnalysisPrefere
         })
     }
 
-    async setPreference(preference: AnalysisPreferenceModel): Promise<void> {
+    async setPreference(preference: DistAnalysisPreferenceModel): Promise<void> {
         await NETWORK.updatePreferences(this.url, this.uuid, preference)
     }
 }

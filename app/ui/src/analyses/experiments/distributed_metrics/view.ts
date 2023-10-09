@@ -42,6 +42,9 @@ class DistributedMetricsView extends ScreenView {
 
     private loader: DataLoader
     private content: DistributedViewContent
+    private preferenceCache: DistMetricsPreferenceCache
+
+    private singleSeriesLength: number
 
     constructor(uuid: string) {
         super()
@@ -73,10 +76,11 @@ class DistributedMetricsView extends ScreenView {
             let analysisData = await metricCache.get(force)
             for (let series of analysisData.series) {
                 this.series = this.series.concat(toPointValues(series))
+                this.singleSeriesLength = series.length
             }
 
-            let preferenceCache = new DistMetricsPreferenceCache(this.uuid, worldSize, analysisData.series[0].length)
-            this.preferenceData = await preferenceCache.get(force)
+            this.preferenceCache = new DistMetricsPreferenceCache(this.uuid, worldSize, analysisData.series[0].length)
+            this.preferenceData = await this.preferenceCache.get(force)
             console.log(this.preferenceData)
            // this.preferenceData.series_preferences = Array.from({ length: this.series.length }, (_, index) => index + 1)
         })
@@ -109,7 +113,7 @@ class DistributedMetricsView extends ScreenView {
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                            this.saveButtonContainer = $('div.hide')
+                            this.saveButtonContainer = $('div')
                             this.refresh.render($)
                         })
                         this.runHeaderCard = new RunHeaderCard({
@@ -215,21 +219,32 @@ class DistributedMetricsView extends ScreenView {
         }
     }
 
-    updatePreferences = () => {
-        // todo: update preferences
-        // this.preferenceData.series_preferences = this.plotIdx
-        // this.preferenceData.chart_type = this.currentChart
-        // this.preferenceData.step_range = this.stepRange
-        // this.preferenceData.focus_smoothed = this.focusSmoothed
-        // this.preferenceCache.setPreference(this.preferenceData).then()
+    updatePreferences = (data: ViewContentData) => {
+        this.plotIdx = data.plotIdx
+        this.currentChart = data.currentChart
+        this.focusSmoothed = data.focusSmoothed
+        this.stepRange = data.stepRange
 
-        // this.isUpdateDisable = true
-        // this.renderSaveButton()
+
+        let seriesPreferences: number[][] = []
+        let _plotIdx = this.plotIdx.slice(0)
+        while (_plotIdx.length > 0) {
+            seriesPreferences.push(_plotIdx.splice(0, this.singleSeriesLength))
+        }
+        this.preferenceData.series_preferences = seriesPreferences
+        this.preferenceData.chart_type = this.currentChart
+        this.preferenceData.step_range = this.stepRange
+        this.preferenceData.focus_smoothed = this.focusSmoothed
+        this.preferenceCache.setPreference(this.preferenceData).then()
+        console.log(this.preferenceData)
+
+        this.isUpdateDisable = true
+        this.content.renderSaveButton()
     }
 }
 
 interface ViewContentOpt {
-    updatePreferences: () => void
+    updatePreferences: (data: ViewContentData) => void
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: WeyaElement
@@ -279,7 +294,15 @@ class DistributedViewContent {
             buttonLabel: "Filter Steps"
         })
 
-        this.saveButton = new SaveButton({onButtonClick: opt.updatePreferences, parent: this.constructor.name})
+        this.saveButton = new SaveButton({onButtonClick: () => {
+            opt.updatePreferences({
+                series: this.series,
+                plotIdx: this.plotIdx,
+                currentChart: this.currentChart,
+                focusSmoothed: this.focusSmoothed,
+                stepRange: this.stepRange
+            })
+            }, parent: this.constructor.name})
     }
 
     public updateData(data: ViewContentData) {
@@ -303,7 +326,7 @@ class DistributedViewContent {
         this.renderToggleButton()
     }
 
-    private renderSaveButton() {
+    public renderSaveButton() {
         this.saveButton.disabled = this.isUpdateDisable
         this.saveButtonContainer.innerHTML = ''
         $(this.saveButtonContainer, $ => {
