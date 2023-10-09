@@ -25,8 +25,6 @@ class DistMetricsPreferencesIndex(Index['DistMetricsPreferences']):
 
 @Analysis.route('GET', 'distributed/metrics/preferences/{run_uuid}')
 async def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
-    preferences_data = {}
-
     preferences_key = DistMetricsPreferencesIndex.get(run_uuid)
     if not preferences_key:
         mp = DistMetricsPreferencesModel()

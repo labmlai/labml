@@ -39,15 +39,17 @@ export class DistributedMetricsCard extends Card {
 
             this.series = []
             this.insights = []
-            let metricCache = new DistMetricsAnalysisCache(this.uuid, CACHE.getRunStatus(this.uuid))
-            let preferenceCache = new DistMetricsPreferenceCache(this.uuid)
-            this.preferenceData = await preferenceCache.get(force)
+            let metricCache: DistMetricsAnalysisCache = new DistMetricsAnalysisCache(this.uuid, CACHE.getRunStatus(this.uuid))
 
             let analysisData = await metricCache.get(force)
             for (let series of analysisData.series) {
                 this.series = this.series.concat(toPointValues(series))
             }
             this.insights = analysisData.insights
+
+            let preferenceCache = new DistMetricsPreferenceCache(this.uuid, worldSize, analysisData.series[0].length)
+            this.preferenceData = await preferenceCache.get(force)
+            console.log(this.preferenceData)
         })
     }
 

@@ -69,14 +69,15 @@ class DistributedMetricsView extends ScreenView {
 
             this.series = []
             let metricCache = new DistMetricsAnalysisCache(this.uuid, CACHE.getRunStatus(this.uuid))
-            let preferenceCache = new DistMetricsPreferenceCache(this.uuid)
-            this.preferenceData = await preferenceCache.get(force)
 
             let analysisData = await metricCache.get(force)
             for (let series of analysisData.series) {
                 this.series = this.series.concat(toPointValues(series))
             }
 
+            let preferenceCache = new DistMetricsPreferenceCache(this.uuid, worldSize, analysisData.series[0].length)
+            this.preferenceData = await preferenceCache.get(force)
+            console.log(this.preferenceData)
            // this.preferenceData.series_preferences = Array.from({ length: this.series.length }, (_, index) => index + 1)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
