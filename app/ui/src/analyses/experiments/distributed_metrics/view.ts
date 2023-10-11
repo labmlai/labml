@@ -254,7 +254,7 @@ interface ViewContentOpt {
     isUpdateDisable: boolean
 }
 
-interface ViewContentData {
+export interface ViewContentData {
     series?: SeriesModel[]
     plotIdx?: number[]
     currentChart?: number
@@ -262,7 +262,7 @@ interface ViewContentData {
     stepRange?: number[]
 }
 
-class DistributedViewContent {
+export class DistributedViewContent {
     private sparkLines: SparkLines
     private readonly lineChartContainer: HTMLDivElement
     private readonly sparkLinesContainer: HTMLDivElement

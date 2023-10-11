@@ -1,6 +1,9 @@
 import {Weya as $, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {InsightModel, SeriesModel} from "../../../models/run"
-import {DistAnalysisPreferenceModel} from "../../../models/preferences"
+import {
+    AnalysisPreferenceBaseModel,
+    DistAnalysisPreferenceModel
+} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
 import CACHE from "../../../cache/cache"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
@@ -9,7 +12,7 @@ import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import InsightsList from "../../../components/insights_list"
 import {ROUTER} from '../../../app'
 import {DataLoader} from '../../../components/loader'
-import {DistMetricsAnalysisCache, DistMetricsPreferenceCache} from "./cache";
+import {DistMetricsAnalysisCache, DistMetricsPreferenceCache} from "./cache"
 
 
 export class DistributedMetricsCard extends Card {
@@ -119,7 +122,7 @@ interface MetricChartWrapperOptions {
     preferenceData: DistAnalysisPreferenceModel
 }
 
-class MetricChartWrapper {
+export class MetricChartWrapper {
     private width: number
     private series: SeriesModel[]
     private insights: InsightModel[]
@@ -146,7 +149,7 @@ class MetricChartWrapper {
         this.updateData(opt.series, opt.insights, opt.preferenceData)
     }
 
-    public updateData(series: SeriesModel[], insights: InsightModel[],preferenceData: DistAnalysisPreferenceModel) {
+    public updateData(series: SeriesModel[], insights: InsightModel[],preferenceData: AnalysisPreferenceBaseModel) {
         this.series = series
         this.insights = insights
 

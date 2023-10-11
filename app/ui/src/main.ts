@@ -21,6 +21,7 @@ import {SignOutHandler} from './views/auth/signout_view'
 import {SignUpHandler} from './views/auth/signup_view'
 import {PasswordResetHandler} from './views/auth/password_reset_view'
 import {DistributedMetricsHandler} from "./analyses/experiments/distributed_metrics/view"
+import {MergedDistributedMetricsHandler} from "./analyses/experiments/merged_metrics/view"
 
 ROUTER.route(/^(.*)$/g, [() => {
     ROUTER.navigate('/404')
@@ -42,6 +43,7 @@ new RunsListHandler()
 new SessionsListHandler()
 new SettingsHandler()
 new DistributedMetricsHandler()
+new MergedDistributedMetricsHandler()
 
 new RunHeaderHandler()
 new SessionHeaderHandler()

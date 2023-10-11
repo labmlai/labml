@@ -1,5 +1,5 @@
 
-interface AnalysisPreferenceBaseModel {
+export interface AnalysisPreferenceBaseModel {
     series_preferences: number[] | number[][]
     sub_series_preferences: Object
     chart_type: number
