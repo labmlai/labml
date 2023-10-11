@@ -23,6 +23,7 @@ export class DistributedMetricsCard extends Card {
     private insightsContainer: WeyaElement
     private loader: DataLoader
     private chartWrapper: MetricChartWrapper
+    private sparkLineContainer: WeyaElement
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -63,6 +64,7 @@ export class DistributedMetricsCard extends Card {
             $('h3','.header', 'Distributed Metrics')
             this.loader.render($)
             this.lineChartContainer = $('div', '')
+            this.sparkLineContainer = $('div', '')
             this.insightsContainer = $('div', '')
         })
 
@@ -79,7 +81,7 @@ export class DistributedMetricsCard extends Card {
                 series: this.series,
                 insightsContainer: this.insightsContainer,
                 lineChartContainer: this.lineChartContainer,
-                sparkLinesContainer: undefined,
+                sparkLinesContainer: this.sparkLineContainer,
                 width: this.width,
                 isDistributed: true
             })
