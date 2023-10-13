@@ -74,12 +74,9 @@ export class DistributedMetricsCard extends Card {
         try {
             await this.loader.load()
 
-            let preferenceData = structuredClone(this.preferenceData)
-            preferenceData.series_preferences = Array.from({ length: this.series.length }, (_, index) => index + 1)
-
             this.chartWrapper = new MetricChartWrapper({
                 elem: this.elem,
-                preferenceData: preferenceData,
+                preferenceData: this.preferenceData,
                 insights: this.insights,
                 series: this.series,
                 insightsContainer: this.insightsContainer,
@@ -119,7 +116,7 @@ interface MetricChartWrapperOptions {
     insightsContainer: WeyaElement
     elem: WeyaElement
 
-    preferenceData: DistAnalysisPreferenceModel
+    preferenceData: AnalysisPreferenceBaseModel
 }
 
 export class MetricChartWrapper {
