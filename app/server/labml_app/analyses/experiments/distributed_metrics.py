@@ -85,7 +85,7 @@ async def get_dist_metrics_tracking(request: Request, run_uuid: str) -> Any:
 
 
 @Analysis.route('GET', 'distributed/metrics/merged/{run_uuid}')
-async def get_dit_metrics_tracking(request: Request, run_uuid: str) -> Any:
+async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     status_code = 404
 
