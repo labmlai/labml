@@ -203,7 +203,8 @@ export class MetricChartWrapper {
                 plotIdx: this.plotIdx,
                 width: this.width,
                 isDivergent: true,
-                isDistributed: this.isDistributed
+                isDistributed: this.isDistributed,
+                onlySelected: true
             }).render($)
         })
     }
