@@ -1412,3 +1412,15 @@ a.generic-link {
     margin: auto;
   }
 }
+
+.fit-content {
+  width: fit-content;
+}
+
+.metric-summary-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 10px;
+}

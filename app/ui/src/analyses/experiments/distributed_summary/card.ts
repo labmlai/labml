@@ -93,12 +93,27 @@ export class MetricsSummaryCard extends Card {
                     insightsContainer: this.insightsContainer,
                     lineChartContainer: this.lineChartItems[i],
                     sparkLinesContainer: this.sparkLineContainer,
-                    width: this.width/2-50,
+                    width: this.width/2-10,
                     isDistributed: false
                 })
                 this.chartWrapper.push(chart)
                 chart.render()
             }
+            if (this.series.length <= 0)
+                return
+            let chart = new MetricChartWrapper({
+                elem: this.elem,
+                preferenceData: this.preferenceData,
+                insights: this.insights,
+                series: this.series[0],
+                insightsContainer: this.insightsContainer,
+                lineChartContainer: undefined,
+                sparkLinesContainer: this.sparkLineContainer,
+                width: this.width,
+                isDistributed: false
+            })
+            this.chartWrapper.push(chart)
+            chart.render()
         } catch (e) {
         }
     }

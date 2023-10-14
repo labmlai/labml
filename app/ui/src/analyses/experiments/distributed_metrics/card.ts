@@ -174,6 +174,9 @@ export class MetricChartWrapper {
     }
 
     private renderLineChart() {
+        if (this.lineChartContainer == null) {
+            return
+        }
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
             new LineChart({
