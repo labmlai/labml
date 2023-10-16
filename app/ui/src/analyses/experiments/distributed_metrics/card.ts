@@ -46,9 +46,13 @@ export class DistributedMetricsCard extends Card {
             let metricCache: DistMetricsAnalysisCache = new DistMetricsAnalysisCache(this.uuid, CACHE.getRunStatus(this.uuid))
 
             let analysisData = await metricCache.get(force)
-            for (let series of analysisData.series) {
-                this.series = this.series.concat(toPointValues(series))
-            }
+            analysisData.series.forEach((series, index) => {
+                let s: SeriesModel[] = toPointValues(series)
+                for (let item of s) {
+                    item.name = `rank${index+1} ${item.name}`
+                }
+                this.series = this.series.concat(s)
+            })
             this.insights = analysisData.insights
 
             let preferenceCache = new DistMetricsPreferenceCache(this.uuid, worldSize, analysisData.series[0].length)
