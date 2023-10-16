@@ -111,7 +111,8 @@ export class MetricsSummaryCard extends Card {
                 lineChartContainer: undefined,
                 sparkLinesContainer: this.sparkLineContainer,
                 width: this.width,
-                isDistributed: false
+                isDistributed: false,
+                showValues: false,
             })
             this.chartWrapper.push(chart)
             chart.render()

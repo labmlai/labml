@@ -119,6 +119,7 @@ interface MetricChartWrapperOptions {
     preferenceData: AnalysisPreferenceBaseModel
 
     title?: string
+    showValues?: boolean
 }
 
 export class MetricChartWrapper {
@@ -137,7 +138,8 @@ export class MetricChartWrapper {
     private stepRange: number[]
     private focusSmoothed: boolean
 
-    private title?: string
+    private readonly title?: string
+    private readonly showValues?: boolean
 
     constructor(opt: MetricChartWrapperOptions) {
         this.elem = opt.elem
@@ -147,6 +149,7 @@ export class MetricChartWrapper {
         this.sparkLinesContainer = opt.sparkLinesContainer
         this.insightsContainer = opt.insightsContainer
         this.title = opt.title
+        this.showValues = opt.showValues ?? true
 
         this.updateData(opt.series, opt.insights, opt.preferenceData)
     }
@@ -212,7 +215,8 @@ export class MetricChartWrapper {
                 width: this.width,
                 isDivergent: true,
                 isDistributed: this.isDistributed,
-                onlySelected: true
+                onlySelected: true,
+                showValue: this.showValues
             }).render($)
         })
     }
