@@ -117,6 +117,8 @@ interface MetricChartWrapperOptions {
     elem: WeyaElement
 
     preferenceData: AnalysisPreferenceBaseModel
+
+    title?: string
 }
 
 export class MetricChartWrapper {
@@ -135,6 +137,8 @@ export class MetricChartWrapper {
     private stepRange: number[]
     private focusSmoothed: boolean
 
+    private title?: string
+
     constructor(opt: MetricChartWrapperOptions) {
         this.elem = opt.elem
         this.width = opt.width
@@ -142,6 +146,7 @@ export class MetricChartWrapper {
         this.lineChartContainer = opt.lineChartContainer
         this.sparkLinesContainer = opt.sparkLinesContainer
         this.insightsContainer = opt.insightsContainer
+        this.title = opt.title
 
         this.updateData(opt.series, opt.insights, opt.preferenceData)
     }
@@ -179,6 +184,9 @@ export class MetricChartWrapper {
         }
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
+            if (this.title != null) {
+                $('span', '.title.text-secondary', this.title)
+            }
             new LineChart({
                 series: this.series,
                 width: this.width,

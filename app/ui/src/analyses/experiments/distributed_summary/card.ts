@@ -93,8 +93,9 @@ export class MetricsSummaryCard extends Card {
                     insightsContainer: this.insightsContainer,
                     lineChartContainer: this.lineChartItems[i],
                     sparkLinesContainer: this.sparkLineContainer,
-                    width: this.width/2-10,
-                    isDistributed: false
+                    width: this.width/2-20,
+                    isDistributed: false,
+                    title: `Rank ${i+1}`
                 })
                 this.chartWrapper.push(chart)
                 chart.render()
