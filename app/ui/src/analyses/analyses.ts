@@ -32,7 +32,7 @@ let distributedAnalyses: Analysis[] = [
     distributedSummaryAnalysis,
     distributedMetricsAnalysis,
     mergedMetricsAnalysis,
-    metricAnalysis,
+    // metricAnalysis,
     comparisonAnalysis,
     stdOutAnalysis,
     stderrAnalysis,
