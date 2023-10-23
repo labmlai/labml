@@ -29,8 +29,6 @@ let experimentAnalyses: Analysis[] = [
 ]
 
 let distributedAnalyses: Analysis[] = [
-    distributedSummaryAnalysis,
-    distributedMetricsAnalysis,
     mergedMetricsAnalysis,
     // metricAnalysis,
     comparisonAnalysis,
