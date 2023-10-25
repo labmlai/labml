@@ -7,6 +7,7 @@ from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
 from labml_app.logger import logger
+from labml_app import utils
 from labml_app.enums import INDICATORS
 from ..analysis import Analysis
 from ..series import SeriesModel, Series
@@ -123,6 +124,9 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     status_code = 404
 
+    # TODO temporary change to used run_uuid as rank 0
+    run_uuid = utils.get_true_run_uuid(run_uuid)
+
     ans = MetricsAnalysis.get_or_create(run_uuid)
     if ans:
         track_data = ans.get_tracking()
@@ -138,6 +142,9 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
 async def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
     preferences_data = {}
 
+    # TODO temporary change to used run_uuid as rank 0
+    run_uuid = utils.get_true_run_uuid(run_uuid)
+
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
     if not preferences_key:
         return preferences_data
@@ -149,6 +156,9 @@ async def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
 
 @Analysis.route('POST', 'metrics/preferences/{run_uuid}')
 async def set_metrics_preferences(request: Request, run_uuid: str) -> Any:
+    # TODO temporary change to used run_uuid as rank 0
+    run_uuid = utils.get_true_run_uuid(run_uuid)
+
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
