@@ -6,8 +6,7 @@ import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
-import {AnalysisPreferenceModel} from "../../../models/preferences"
-import metricsCache from "./cache"
+import {DistAnalysisPreferenceModel} from "../../../models/preferences"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
@@ -18,12 +17,13 @@ import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
+import {DistMetricsAnalysisCache, DistMetricsPreferenceCache} from "./cache"
 
 class DistributedMetricsView extends ScreenView {
     uuid: string
 
     series: SeriesModel[]
-    preferenceData: AnalysisPreferenceModel
+    preferenceData: DistAnalysisPreferenceModel
     status: Status
     private plotIdx: number[] = []
     private currentChart: number
@@ -42,6 +42,9 @@ class DistributedMetricsView extends ScreenView {
 
     private loader: DataLoader
     private content: DistributedViewContent
+    private preferenceCache: DistMetricsPreferenceCache
+
+    private singleSeriesLength: number
 
     constructor(uuid: string) {
         super()
@@ -68,12 +71,22 @@ class DistributedMetricsView extends ScreenView {
                 return
 
             this.series = []
-            let analysisData = await metricsCache.getAnalysis(this.uuid).get(force)
-            for (let series of analysisData.series) {
-                this.series = this.series.concat(toPointValues(series))
-            }
+            let metricCache = new DistMetricsAnalysisCache(this.uuid, CACHE.getRunStatus(this.uuid))
 
-           this.preferenceData.series_preferences = Array.from({ length: this.series.length }, (_, index) => index + 1)
+            let analysisData = await metricCache.get(force)
+            analysisData.series.forEach((series, index) => {
+                let s: SeriesModel[] = toPointValues(series)
+                for (let item of s) {
+                    item.name = `rank${index+1} ${item.name}`
+                }
+                this.series = this.series.concat(s)
+                this.singleSeriesLength = series.length
+            })
+
+            this.preferenceCache = new DistMetricsPreferenceCache(this.uuid, worldSize, analysisData.series[0].length)
+            this.preferenceData = await this.preferenceCache.get(force)
+            console.log(this.preferenceData)
+           // this.preferenceData.series_preferences = Array.from({ length: this.series.length }, (_, index) => index + 1)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -104,7 +117,7 @@ class DistributedMetricsView extends ScreenView {
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                            this.saveButtonContainer = $('div.hide')
+                            this.saveButtonContainer = $('div')
                             this.refresh.render($)
                         })
                         this.runHeaderCard = new RunHeaderCard({
@@ -191,7 +204,7 @@ class DistributedMetricsView extends ScreenView {
             this.focusSmoothed = this.preferenceData.focus_smoothed
             let analysisPreferences = this.preferenceData.series_preferences
             if (analysisPreferences && analysisPreferences.length > 0) {
-                this.plotIdx = [...analysisPreferences]
+                this.plotIdx = [].concat(...analysisPreferences)
             } else if (this.series) {
                 let res: number[] = []
                 for (let i = 0; i < this.series.length; i++) {
@@ -210,21 +223,32 @@ class DistributedMetricsView extends ScreenView {
         }
     }
 
-    updatePreferences = () => {
-        // todo: update preferences
-        // this.preferenceData.series_preferences = this.plotIdx
-        // this.preferenceData.chart_type = this.currentChart
-        // this.preferenceData.step_range = this.stepRange
-        // this.preferenceData.focus_smoothed = this.focusSmoothed
-        // this.preferenceCache.setPreference(this.preferenceData).then()
+    updatePreferences = (data: ViewContentData) => {
+        this.plotIdx = data.plotIdx
+        this.currentChart = data.currentChart
+        this.focusSmoothed = data.focusSmoothed
+        this.stepRange = data.stepRange
 
-        // this.isUpdateDisable = true
-        // this.renderSaveButton()
+
+        let seriesPreferences: number[][] = []
+        let _plotIdx = this.plotIdx.slice(0)
+        while (_plotIdx.length > 0) {
+            seriesPreferences.push(_plotIdx.splice(0, this.singleSeriesLength))
+        }
+        this.preferenceData.series_preferences = seriesPreferences
+        this.preferenceData.chart_type = this.currentChart
+        this.preferenceData.step_range = this.stepRange
+        this.preferenceData.focus_smoothed = this.focusSmoothed
+        this.preferenceCache.setPreference(this.preferenceData).then()
+        console.log(this.preferenceData)
+
+        this.isUpdateDisable = true
+        this.content.renderSaveButton()
     }
 }
 
 interface ViewContentOpt {
-    updatePreferences: () => void
+    updatePreferences: (data: ViewContentData) => void
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: WeyaElement
@@ -234,7 +258,7 @@ interface ViewContentOpt {
     isUpdateDisable: boolean
 }
 
-interface ViewContentData {
+export interface ViewContentData {
     series?: SeriesModel[]
     plotIdx?: number[]
     currentChart?: number
@@ -242,7 +266,7 @@ interface ViewContentData {
     stepRange?: number[]
 }
 
-class DistributedViewContent {
+export class DistributedViewContent {
     private sparkLines: SparkLines
     private readonly lineChartContainer: HTMLDivElement
     private readonly sparkLinesContainer: HTMLDivElement
@@ -274,7 +298,15 @@ class DistributedViewContent {
             buttonLabel: "Filter Steps"
         })
 
-        this.saveButton = new SaveButton({onButtonClick: opt.updatePreferences, parent: this.constructor.name})
+        this.saveButton = new SaveButton({onButtonClick: () => {
+            opt.updatePreferences({
+                series: this.series,
+                plotIdx: this.plotIdx,
+                currentChart: this.currentChart,
+                focusSmoothed: this.focusSmoothed,
+                stepRange: this.stepRange
+            })
+            }, parent: this.constructor.name})
     }
 
     public updateData(data: ViewContentData) {
@@ -298,7 +330,7 @@ class DistributedViewContent {
         this.renderToggleButton()
     }
 
-    private renderSaveButton() {
+    public renderSaveButton() {
         this.saveButton.disabled = this.isUpdateDisable
         this.saveButtonContainer.innerHTML = ''
         $(this.saveButtonContainer, $ => {

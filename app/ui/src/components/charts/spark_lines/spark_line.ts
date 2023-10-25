@@ -17,6 +17,7 @@ export interface SparkLineOptions {
     onClick?: () => void
     isMouseMoveOpt?: boolean
     color: string
+    showValue?: boolean
 }
 
 export class SparkLine {
@@ -37,6 +38,7 @@ export class SparkLine {
     yScale: d3.ScaleLinear<number, number>
     bisect: d3.Bisector<number, number>
     linePlot: LinePlot
+    showValue: Boolean
 
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
@@ -49,6 +51,7 @@ export class SparkLine {
         this.titleWidth = (opt.width - this.chartWidth) / 2
         this.minLastValue = opt.minLastValue
         this.maxLastValue = opt.maxLastValue
+        this.showValue = opt.showValue ?? true
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
@@ -74,6 +77,10 @@ export class SparkLine {
     }
 
     renderValue(cursorStep?: number | null) {
+        if (this.showValue === false) {
+            return
+        }
+
         const last = this.series[this.selected >= 0 || this.isMouseMoveOpt ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
 

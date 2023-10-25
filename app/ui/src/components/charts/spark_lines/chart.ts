@@ -14,6 +14,8 @@ interface SparkLinesOptions extends ChartOptions {
     isMouseMoveOpt?: boolean
     isDivergent?: boolean
     isDistributed?: boolean
+    onlySelected?: boolean
+    showValue?: boolean
 }
 
 export class SparkLines {
@@ -32,6 +34,8 @@ export class SparkLines {
     isDivergent?: boolean
     isDistributed?: boolean
     uniqueItems: Map<string, number>
+    onlySelected: boolean
+    showValue: boolean
 
     constructor(opt: SparkLinesOptions) {
         this.series = opt.series
@@ -39,6 +43,8 @@ export class SparkLines {
         this.onSelect = opt.onSelect
         this.isMouseMoveOpt = opt.isMouseMoveOpt
         this.isDistributed = opt.isDistributed
+        this.onlySelected = opt.onlySelected ?? false
+        this.showValue = opt.showValue ?? true
 
         const margin = Math.floor(opt.width / 64)
         this.rowWidth = Math.min(450, opt.width - 3 * margin)
@@ -87,6 +93,8 @@ export class SparkLines {
     render($: WeyaElementFunction) {
         $('div.sparkline-list.list-group', $ => {
             this.series.map((s, i) => {
+                if (this.onlySelected && this.plotIdx[i]==-1)
+                    return
                 $('svg', {style: {height: `${1}px`}}, $ => {
                     new DefaultLineGradient().render($)
                 })
@@ -104,7 +112,8 @@ export class SparkLines {
                     minLastValue: this.minLastValue,
                     maxLastValue: this.maxLastValue,
                     color: this.chartColors.getColor(this.colorIndices[i], this.uniqueItems.get(s.name) ?? 0),
-                    isMouseMoveOpt: this.isMouseMoveOpt
+                    isMouseMoveOpt: this.isMouseMoveOpt,
+                    showValue: this.showValue
                 })
                 this.sparkLines.push(sparkLine)
                 sparkLine.render($)

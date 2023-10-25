@@ -176,8 +176,8 @@ export class LineChart {
         if (this.series.length === 0) {
             $('div', '')
         } else {
-            $('div', $ => {
-                $('div', $ => {
+            $('div.fit-content', $ => {
+                $('div.fit-content', $ => {
                         // this.stepElement = $('h6', '.text-center.selected-step', '')
                         this.svgElem = $('svg', '#chart',
                             {

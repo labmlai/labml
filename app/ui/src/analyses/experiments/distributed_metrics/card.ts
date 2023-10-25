@@ -1,15 +1,18 @@
 import {Weya as $, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {InsightModel, SeriesModel} from "../../../models/run"
-import {AnalysisPreferenceModel} from "../../../models/preferences"
+import {
+    AnalysisPreferenceBaseModel,
+    DistAnalysisPreferenceModel
+} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
 import CACHE from "../../../cache/cache"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
-import metricsCache from "./cache"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import InsightsList from "../../../components/insights_list"
 import {ROUTER} from '../../../app'
 import {DataLoader} from '../../../components/loader'
+import {DistMetricsAnalysisCache, DistMetricsPreferenceCache} from "./cache"
 
 
 export class DistributedMetricsCard extends Card {
@@ -17,12 +20,13 @@ export class DistributedMetricsCard extends Card {
     private readonly width: number
     private series: SeriesModel[]
     private insights: InsightModel[]
-    private preferenceData: AnalysisPreferenceModel
+    private preferenceData: DistAnalysisPreferenceModel
     private elem: HTMLDivElement
     private lineChartContainer: WeyaElement
     private insightsContainer: WeyaElement
     private loader: DataLoader
     private chartWrapper: MetricChartWrapper
+    private sparkLineContainer: WeyaElement
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -39,13 +43,21 @@ export class DistributedMetricsCard extends Card {
 
             this.series = []
             this.insights = []
-            this.preferenceData = await metricsCache.getPreferences(this.uuid).get(force)
+            let metricCache: DistMetricsAnalysisCache = new DistMetricsAnalysisCache(this.uuid, CACHE.getRunStatus(this.uuid))
 
-            let analysisData = await metricsCache.getAnalysis(this.uuid).get(force)
-            for (let series of analysisData.series) {
-                this.series = this.series.concat(toPointValues(series))
-            }
+            let analysisData = await metricCache.get(force)
+            analysisData.series.forEach((series, index) => {
+                let s: SeriesModel[] = toPointValues(series)
+                for (let item of s) {
+                    item.name = `rank${index+1} ${item.name}`
+                }
+                this.series = this.series.concat(s)
+            })
             this.insights = analysisData.insights
+
+            let preferenceCache = new DistMetricsPreferenceCache(this.uuid, worldSize, analysisData.series[0].length)
+            this.preferenceData = await preferenceCache.get(force)
+            console.log(this.preferenceData)
         })
     }
 
@@ -59,23 +71,21 @@ export class DistributedMetricsCard extends Card {
             $('h3','.header', 'Distributed Metrics')
             this.loader.render($)
             this.lineChartContainer = $('div', '')
+            this.sparkLineContainer = $('div', '')
             this.insightsContainer = $('div', '')
         })
 
         try {
             await this.loader.load()
 
-            let preferenceData = structuredClone(this.preferenceData)
-            preferenceData.series_preferences = Array.from({ length: this.series.length }, (_, index) => index + 1)
-
             this.chartWrapper = new MetricChartWrapper({
                 elem: this.elem,
-                preferenceData: preferenceData,
+                preferenceData: this.preferenceData,
                 insights: this.insights,
                 series: this.series,
                 insightsContainer: this.insightsContainer,
                 lineChartContainer: this.lineChartContainer,
-                sparkLinesContainer: undefined,
+                sparkLinesContainer: this.sparkLineContainer,
                 width: this.width,
                 isDistributed: true
             })
@@ -110,10 +120,13 @@ interface MetricChartWrapperOptions {
     insightsContainer: WeyaElement
     elem: WeyaElement
 
-    preferenceData: AnalysisPreferenceModel
+    preferenceData: AnalysisPreferenceBaseModel
+
+    title?: string
+    showValues?: boolean
 }
 
-class MetricChartWrapper {
+export class MetricChartWrapper {
     private width: number
     private series: SeriesModel[]
     private insights: InsightModel[]
@@ -129,6 +142,9 @@ class MetricChartWrapper {
     private stepRange: number[]
     private focusSmoothed: boolean
 
+    private readonly title?: string
+    private readonly showValues?: boolean
+
     constructor(opt: MetricChartWrapperOptions) {
         this.elem = opt.elem
         this.width = opt.width
@@ -136,17 +152,19 @@ class MetricChartWrapper {
         this.lineChartContainer = opt.lineChartContainer
         this.sparkLinesContainer = opt.sparkLinesContainer
         this.insightsContainer = opt.insightsContainer
+        this.title = opt.title
+        this.showValues = opt.showValues ?? true
 
         this.updateData(opt.series, opt.insights, opt.preferenceData)
     }
 
-    public updateData(series: SeriesModel[], insights: InsightModel[],preferenceData: AnalysisPreferenceModel) {
+    public updateData(series: SeriesModel[], insights: InsightModel[],preferenceData: AnalysisPreferenceBaseModel) {
         this.series = series
         this.insights = insights
 
         let analysisPreferences = preferenceData.series_preferences
         if (analysisPreferences.length > 0) {
-            this.plotIdx = [...analysisPreferences]
+            this.plotIdx = [].concat(...analysisPreferences)
         } else {
             this.plotIdx = []
         }
@@ -168,8 +186,14 @@ class MetricChartWrapper {
     }
 
     private renderLineChart() {
+        if (this.lineChartContainer == null) {
+            return
+        }
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
+            if (this.title != null) {
+                $('span', '.title.text-secondary', this.title)
+            }
             new LineChart({
                 series: this.series,
                 width: this.width,
@@ -194,7 +218,9 @@ class MetricChartWrapper {
                 plotIdx: this.plotIdx,
                 width: this.width,
                 isDivergent: true,
-                isDistributed: this.isDistributed
+                isDistributed: this.isDistributed,
+                onlySelected: true,
+                showValue: this.showValues
             }).render($)
         })
     }

@@ -1,11 +1,11 @@
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Union
 
 PreferencesData = Dict[str, Any]
 SeriesPreferences = List[int]
 
 
 class Preferences:
-    series_preferences: SeriesPreferences
+    series_preferences: Union[SeriesPreferences, List['SeriesPreferences']]
     chart_type: int
     errors: List[Dict[str, str]]
     step_range: List[int]

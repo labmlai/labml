@@ -16,6 +16,8 @@ import batteryAnalysis from './sessions/battery'
 import sessionConfigsAnalysis from "./sessions/configs"
 import comparisonAnalysis from './experiments/comaprison'
 import distributedMetricsAnalysis from "./experiments/distributed_metrics"
+import mergedMetricsAnalysis from "./experiments/merged_metrics"
+import distributedSummaryAnalysis from "./experiments/distributed_summary"
 
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
@@ -27,8 +29,8 @@ let experimentAnalyses: Analysis[] = [
 ]
 
 let distributedAnalyses: Analysis[] = [
-    distributedMetricsAnalysis,
-    metricAnalysis,
+    mergedMetricsAnalysis,
+    // metricAnalysis,
     comparisonAnalysis,
     stdOutAnalysis,
     stderrAnalysis,
