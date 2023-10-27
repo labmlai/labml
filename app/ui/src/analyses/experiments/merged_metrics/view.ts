@@ -14,7 +14,7 @@ import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
-import metricsCache from "../metrics/cache"
+import metricsCache from "./cache"
 import {DistributedViewContent, ViewContentData} from "../distributed_metrics/view"
 
 class DistributedMetricsView extends ScreenView {

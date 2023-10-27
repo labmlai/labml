@@ -8,6 +8,7 @@ from labml_db.serializer.yaml import YamlSerializer
 from labml_app.logger import logger
 from ..analysis import Analysis
 from .. import preferences
+from ...db import run
 
 
 class ComparisonPreferences(preferences.Preferences):
@@ -42,8 +43,11 @@ class ComparisonPreferences(preferences.Preferences):
         if 'focus_smoothed' in data:
             self.focus_smoothed = data['focus_smoothed']
 
-        if 'is_base_distributed' in data:
-            self.is_base_distributed = data['is_base_distributed']
+        r = run.get(self.base_experiment)
+        if r is not None and r.world_size > 0:  # distributed run
+            self.is_base_distributed = True
+        else:
+            self.is_base_distributed = False
 
         self.save()
 

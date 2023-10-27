@@ -299,6 +299,7 @@ class ComparisonView extends ScreenView {
                         this.preferenceData.base_experiment = run.run_uuid
                         this.preferenceData.base_series_preferences = []
                         this.preferenceData.series_preferences = []
+                        this.preferenceData.is_base_distributed = run.world_size != 0
                         this.baseUuid = run.run_uuid
                         this.basePlotIdx = []
                         this.currentPlotIdx = []

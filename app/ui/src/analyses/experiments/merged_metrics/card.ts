@@ -6,7 +6,7 @@ import {toPointValues} from "../../../components/charts/utils"
 import {ROUTER} from '../../../app'
 import {DataLoader} from '../../../components/loader'
 import {MetricChartWrapper} from "../distributed_metrics/card"
-import metricsCache from "../metrics/cache"
+import metricsCache from "./cache"
 
 
 export class DistributedMetricsCard extends Card {

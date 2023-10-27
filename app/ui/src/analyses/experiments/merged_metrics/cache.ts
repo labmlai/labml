@@ -9,7 +9,7 @@ class MetricsAnalysisCache extends AnalysisDataCache {
 
 class MetricsPreferenceCache extends AnalysisPreferenceCache {
     constructor(uuid: string) {
-        super(uuid, 'metrics')
+        super(uuid, 'distributed/metrics/merged')
     }
 }
 

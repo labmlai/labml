@@ -18,4 +18,5 @@ export interface DistAnalysisPreferenceModel extends AnalysisPreferenceBaseModel
 export interface ComparisonPreferenceModel extends AnalysisPreferenceModel {
     base_series_preferences: number[]
     base_experiment: string
+    is_base_distributed: boolean
 }

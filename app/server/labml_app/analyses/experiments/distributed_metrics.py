@@ -12,18 +12,18 @@ from ..preferences import Preferences
 from ...logger import logger
 
 
-@Analysis.db_model(PickleSerializer, 'dist_metrics_preferences')
+@Analysis.db_model(PickleSerializer, 'merged_metrics_preferences')
 class DistMetricsPreferencesModel(Model['DistMetricsPreferencesModel'], Preferences):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'dist_metrics_preferences_index.yaml')
+@Analysis.db_index(YamlSerializer, 'merged_metrics_preferences_index.yaml')
 class DistMetricsPreferencesIndex(Index['DistMetricsPreferences']):
     pass
 
 
-@Analysis.route('GET', 'distributed/metrics/preferences/{run_uuid}')
-async def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
+@Analysis.route('GET', 'distributed/metrics/merged/preferences/{run_uuid}')
+async def get_merged_metrics_preferences(request: Request, run_uuid: str) -> Any:
     preferences_key = DistMetricsPreferencesIndex.get(run_uuid)
     if not preferences_key:
         mp = DistMetricsPreferencesModel()
@@ -35,8 +35,8 @@ async def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
     return mp.get_data()
 
 
-@Analysis.route('POST', 'distributed/metrics/preferences/{run_uuid}')
-async def set_metrics_preferences(request: Request, run_uuid: str) -> Any:
+@Analysis.route('POST', 'distributed/metrics/merged/preferences/{run_uuid}')
+async def set_merged_metrics_preferences(request: Request, run_uuid: str) -> Any:
     preferences_key = DistMetricsPreferencesIndex.get(run_uuid)
 
     mp = None
