@@ -11,6 +11,8 @@ from labml_db.serializer.yaml import YamlSerializer
 from labml_db.serializer.pickle import PickleSerializer
 from labml.internal.computer.configs import computer_singleton
 
+from .__mongo__init__ import init_mongo_db
+
 from .. import settings
 from . import project, password_reset
 from . import user
