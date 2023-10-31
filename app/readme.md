@@ -14,9 +14,6 @@
 
 This is an open-source library to push updates of your ML/DL model training to mobile. [Here's a sample experiment](https://app.labml.ai/run/39b03a1e454011ebbaff2b26e3148b3d)
 
-You can host this on your own.
-We also have a small [AWS instance running](https://app.labml.ai). and you are welcome to use it. Please consider using your own installation if you are running lots of experiments.
-
 ### Notable Features
 
 * **Mobile first design:** web version, that gives you a great mobile experience on a mobile browser.
