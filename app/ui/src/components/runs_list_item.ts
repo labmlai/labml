@@ -39,27 +39,20 @@ export class RunsListItemView {
     }
 
     render($: WeyaElementFunction) {
-        this.elem = $('a', '.list-item.list-group-item.list-group-item-action.spaced-row',
+        this.elem = $('a', '.list-item.list-group-item.list-group-item-action',
             {href: `/run/${this.item.run_uuid}`, on: {click: this.onClick}},
             $ => {
-                $('div', $ => {
-                    new StatusView({status: this.item.run_status, isDistributed: this.item.world_size>0}).render($)
-                    $('p', `Started on ${formatTime(this.item.start_time)}`)
-                    $('h5', this.item.name)
-                    $('h6', this.item.comment)
-                })
-                $('div', '.preview-series', $ => {
-                    this.renderSparkLine($)
-                })
-                $('div.break')
-                if (this.item.metric_values != null) {
-                    this.item.metric_values.slice(0, RunsListItemView.METRIC_LIMIT).map((m, idx) => {
-                        $('span.break.text-secondary', `${m.name}: ${m.value.toExponential(4)}`)
+                new StatusView({status: this.item.run_status, isDistributed: this.item.world_size>0}).render($)
+                $('div', '.spaced-row', $ => {
+                    $('div', $ => {
+                        $('p', `Started on ${formatTime(this.item.start_time)}`)
+                        $('h5', this.item.name)
+                        $('h6', this.item.comment)
                     })
-                    if (this.item.metric_values.length > RunsListItemView.METRIC_LIMIT) {
-                        $('span.break.text-secondary', `+${this.item.metric_values.length - RunsListItemView.METRIC_LIMIT} more`)
-                    }
-                }
+                    $('div', '.preview-series.label', $ => {
+                        this.renderSparkLine($)
+                    })
+                })
             })
     }
 }
