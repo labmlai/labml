@@ -7,8 +7,9 @@ import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
 import {DropShadow, LineGradients} from "../chart_gradients"
-import ChartColors from "../chart_colors"
+import ChartColors, {ChartColorsBase} from "../chart_colors"
 import {getWindowDimensions} from '../../../utils/window_dimentions'
+import DistributedChartColors from "../distributed_chart_colors"
 
 const LABEL_HEIGHT = 10
 
@@ -21,6 +22,7 @@ interface LineChartOptions extends ChartOptions {
     isDivergent?: boolean
     stepRange?: number[]
     focusSmoothed: boolean
+    isDistributed?: boolean
 }
 
 export class LineChart {
@@ -41,10 +43,12 @@ export class LineChart {
     linePlots: LinePlot[] = []
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
-    chartColors: ChartColors
+    chartColors: ChartColorsBase
     isDivergent: boolean
+    isDistributed: boolean
     private svgBoundingClientRect: DOMRect
     private readonly focusSmoothed: boolean
+    uniqueItems: Map<string, number>
 
     constructor(opt: LineChartOptions) {
         this.series = opt.series
@@ -53,6 +57,7 @@ export class LineChart {
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
         this.focusSmoothed = opt.focusSmoothed
+        this.isDistributed = opt.isDistributed ? opt.isDistributed : false
 
         if (opt.stepRange != null) {
             this.series = trimSteps(this.series, opt.stepRange[0], opt.stepRange[1])
@@ -83,7 +88,20 @@ export class LineChart {
         const stepExtent = getExtent(this.series.map(s => s.series), d => d.step)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
-        this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
+        let uniqueItemIdx = 0
+        this.uniqueItems = new Map<string, number>()
+        for (let s of this.series) {
+            let series = s.series
+            if (!this.uniqueItems.has(s.name)) {
+                this.uniqueItems.set(s.name, uniqueItemIdx++)
+            }
+        }
+
+        if (this.isDistributed) {
+            this.chartColors = new DistributedChartColors({nColors: this.uniqueItems.size, nShades: this.series.length})
+        } else {
+            this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
+        }
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
@@ -158,8 +176,8 @@ export class LineChart {
         if (this.series.length === 0) {
             $('div', '')
         } else {
-            $('div', $ => {
-                $('div', $ => {
+            $('div.fit-content', $ => {
+                $('div.fit-content', $ => {
                         // this.stepElement = $('h6', '.text-center.selected-step', '')
                         this.svgElem = $('svg', '#chart',
                             {
@@ -182,7 +200,7 @@ export class LineChart {
                                                     series: s.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
-                                                    color: this.chartColors.getColor(this.filteredPlotIdx[i]),
+                                                    color: this.chartColors.getColor(this.filteredPlotIdx[i], this.uniqueItems.get(s.name) ?? 0),
                                                     colorIdx: this.filteredPlotIdx[i],
                                                     chartId: this.chartId
                                                 }).render($)
@@ -193,7 +211,7 @@ export class LineChart {
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.chartColors.getColor(this.filteredPlotIdx[i]),
+                                                color: this.chartColors.getColor(this.filteredPlotIdx[i], this.uniqueItems.get(s.name) ?? 0),
                                                 renderHorizontalLine: true
                                             })
                                             this.linePlots.push(linePlot)

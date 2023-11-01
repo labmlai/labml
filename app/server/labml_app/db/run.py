@@ -250,7 +250,7 @@ class Run(Model['Run']):
         formatted_repo = self.format_remote_repo(self.repo_remotes)
 
         if self.rank == 0 and self.world_size > 1:
-            other_rank_run_uuids = {rank: f'{self.run_uuid}_{rank}' for rank in range(1, self.world_size)}
+            other_rank_run_uuids = {rank: f'{self.run_uuid}_{rank}' for rank in range(self.world_size)}
         else:
             other_rank_run_uuids = {}
 

@@ -1,16 +1,16 @@
 import {WeyaElementFunction} from "../../../../lib/weya/weya"
-import ChartColors from "./chart_colors"
+import ChartColors, {ChartColorsBase} from "./chart_colors"
 
 interface LineGradientsOptions {
-    chartColors: ChartColors
+    chartColors: ChartColorsBase
     chartId: string
 }
 
 export class LineGradients {
-    chartColors: ChartColors
+    chartColors: ChartColorsBase
     chartId: string
 
-    constructor(opt: LineGradientsOptions) {
+     constructor(opt: LineGradientsOptions) {
         this.chartColors = opt.chartColors
         this.chartId = opt.chartId
     }

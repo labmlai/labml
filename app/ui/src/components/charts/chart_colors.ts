@@ -12,7 +12,13 @@ interface ChartColorsOptions {
     isDivergent?: boolean
 }
 
-export default class ChartColors {
+export interface ChartColorsBase {
+    getColors(shade?: number): string[]
+
+    getColor(n: number, m?: number): string
+}
+
+export default class ChartColors implements ChartColorsBase {
     nColors: number
     secondNColors: number
     isDivergent: boolean
@@ -47,7 +53,7 @@ export default class ChartColors {
         }
     }
 
-    getColor(i: number) {
+    getColor(i: number, shade: number = 0): string {
         return this.colors[i]
     }
 
@@ -55,7 +61,7 @@ export default class ChartColors {
         return this.secondColors[i]
     }
 
-    getColors() {
+    getColors(shade: number = 0) {
         return this.colors
     }
 

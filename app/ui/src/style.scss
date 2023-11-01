@@ -1412,3 +1412,24 @@ a.generic-link {
     margin: auto;
   }
 }
+
+.fit-content {
+  width: fit-content;
+}
+
+.metric-summary-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 10px;
+  gap: 10px;
+
+  .title {
+    font-size: 0.8rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    display: table;
+  }
+}

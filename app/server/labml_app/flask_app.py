@@ -42,7 +42,7 @@ def create_app():
 
     _app = FastAPI()
 
-    db.init_db()
+    db.init_mongo_db()
 
     def run_on_start():
         logger.info('initializing labml_app')

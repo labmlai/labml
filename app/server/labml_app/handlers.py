@@ -344,6 +344,9 @@ async def get_run(request: Request, run_uuid: str) -> JSONResponse:
     run_data = {}
     status_code = 404
 
+    # TODO temporary change to used run_uuid as rank 0
+    run_uuid = utils.get_true_run_uuid(run_uuid)
+
     r = run.get(run_uuid)
     if r:
         run_data = r.get_data(request)
@@ -402,6 +405,9 @@ async def edit_session(request: Request, session_uuid: str) -> EndPointRes:
 async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_data = {}
     status_code = 404
+
+    # TODO temporary change to used run_uuid as rank 0
+    run_uuid = utils.get_true_run_uuid(run_uuid)
 
     s = run.get_status(run_uuid)
     if s:
@@ -728,7 +734,3 @@ def add_handlers(app: FastAPI):
             func = auth.login_required(func)
 
         _add_ui(app, method, func, url)
-
-
-# TODO dont add other ranks to the project
-# TODO merge metrics

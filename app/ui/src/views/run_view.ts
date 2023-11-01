@@ -7,7 +7,7 @@ import {DataLoader} from "../components/loader"
 import {BackButton, CustomButton, ExpandButton, ShareButton} from "../components/buttons"
 import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
-import {distributedAnalyses, experimentAnalyses} from "../analyses/analyses"
+import {distributedAnalyses, experimentAnalyses, rankAnalysis} from "../analyses/analyses"
 import {Card} from "../analyses/types"
 import CACHE, {RunCache, RunsListCache, RunStatusCache, UserCache} from "../cache/cache"
 import mix_panel from "../mix_panel"
@@ -222,7 +222,9 @@ class RunView extends ScreenView {
 
     private renderCards() {
         $(this.cardContainer, $ => {
-            let analyses = this.isRank ? distributedAnalyses : experimentAnalyses
+            let analyses = this.isRank ?
+                rankAnalysis :
+                this.run?.world_size == 0 ? experimentAnalyses : distributedAnalyses
             analyses.map((analysis, i) => {
                 let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
                 this.cards.push(card)
@@ -249,13 +251,6 @@ class RunView extends ScreenView {
                     .render($)
             })
             this.rankElems = $('div', '.hidden.list.runs-list.list-group', $ => {
-                $('a', '.list-item.list-group-item.list-group-item-action',
-                    {href: this.isRank ? `/run/${this.uuid}` : '#', target: this.isRank ? "_blank": ""},
-                    $ => {
-                        $('div', $ => {
-                            $('h6', `Rank 1`)
-                        })
-                })
                 for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
                     $('a', '.list-item.list-group-item.list-group-item-action',
                         {href: `/run/${this.uuid}/${rank}`, target: "_blank"},

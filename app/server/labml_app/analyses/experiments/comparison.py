@@ -8,17 +8,20 @@ from labml_db.serializer.yaml import YamlSerializer
 from labml_app.logger import logger
 from ..analysis import Analysis
 from .. import preferences
+from ...db import run
 
 
 class ComparisonPreferences(preferences.Preferences):
     base_series_preferences: preferences.SeriesPreferences
     base_experiment: str
+    is_base_distributed: bool
 
     @classmethod
     def defaults(cls):
         return dict(base_series_preferences=[],
                     base_experiment=str,
                     step_range=[-1, -1],
+                    is_base_distributed=False
                     )
 
     def update_preferences(self, data: preferences.PreferencesData) -> None:
@@ -40,6 +43,12 @@ class ComparisonPreferences(preferences.Preferences):
         if 'focus_smoothed' in data:
             self.focus_smoothed = data['focus_smoothed']
 
+        r = run.get(self.base_experiment)
+        if r is not None and r.world_size > 0:  # distributed run
+            self.is_base_distributed = True
+        else:
+            self.is_base_distributed = False
+
         self.save()
 
     def update_base_series_preferences(self, data: preferences.SeriesPreferences) -> None:
@@ -52,7 +61,8 @@ class ComparisonPreferences(preferences.Preferences):
             'base_experiment': self.base_experiment,
             'chart_type': self.chart_type,
             'step_range': self.step_range,
-            'focus_smoothed': self.focus_smoothed
+            'focus_smoothed': self.focus_smoothed,
+            'is_base_distributed': self.is_base_distributed
         }
 
 

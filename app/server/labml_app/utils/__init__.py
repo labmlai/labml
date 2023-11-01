@@ -33,3 +33,12 @@ def time_this(function) -> Callable:
         return r
 
     return time_wrapper
+
+
+def get_true_run_uuid(run_uuid: str) -> str:
+    split = run_uuid.split('_')
+
+    if len(split) > 1 and int(split[-1]) == 0:
+        run_uuid = split[0]
+
+    return run_uuid

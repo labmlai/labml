@@ -22,6 +22,7 @@ aiofiles = "*"
 argon2-cffi = "*"
 libgravatar = "*"
 boto3 = "*"
+pymongo = "*"
 
 [requires]
 python_version = "3.9"

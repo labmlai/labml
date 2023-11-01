@@ -3,7 +3,7 @@ import {Status} from "../models/status"
 import NETWORK, {NetworkError} from "../network"
 import {PasswordResetModel, SignInModel, SignUpModel, User} from "../models/user"
 import {RunsList} from '../models/run_list'
-import {AnalysisPreference} from "../models/preferences"
+import {AnalysisPreferenceModel, DistAnalysisPreferenceModel} from "../models/preferences"
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
 import {Job} from '../models/job'
@@ -415,7 +415,7 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
     }
 }
 
-export class AnalysisPreferenceCache extends CacheObject<AnalysisPreference> {
+export class AnalysisPreferenceCache extends CacheObject<AnalysisPreferenceModel> {
     private readonly uuid: string
     private readonly url: string
 
@@ -425,13 +425,34 @@ export class AnalysisPreferenceCache extends CacheObject<AnalysisPreference> {
         this.url = url
     }
 
-    async load(): Promise<AnalysisPreference> {
+    async load(): Promise<AnalysisPreferenceModel> {
         return this.broadcastPromise.create(async () => {
             return await NETWORK.getPreferences(this.url, this.uuid)
         })
     }
 
-    async setPreference(preference: AnalysisPreference): Promise<void> {
+    async setPreference(preference: AnalysisPreferenceModel): Promise<void> {
+        await NETWORK.updatePreferences(this.url, this.uuid, preference)
+    }
+}
+
+export class DistAnalysisPreferenceCache extends CacheObject<DistAnalysisPreferenceModel> {
+    private readonly uuid: string
+    private readonly url: string
+
+    constructor(uuid: string, url: string) {
+        super()
+        this.uuid = uuid
+        this.url = url
+    }
+
+    async load(): Promise<DistAnalysisPreferenceModel> {
+        return this.broadcastPromise.create(async () => {
+            return await NETWORK.getPreferences(this.url, this.uuid)
+        })
+    }
+
+    async setPreference(preference: DistAnalysisPreferenceModel): Promise<void> {
         await NETWORK.updatePreferences(this.url, this.uuid, preference)
     }
 }
