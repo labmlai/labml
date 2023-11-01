@@ -59,8 +59,11 @@ export class RunHeaderCard {
 
             Weya(this.elem, $ => {
                 $('div', $ => {
-                    $('div', $ => {
+                    $('div.status', $ => {
                         this.lastRecordedContainer = $('div', '.last-updated.mb-2')
+                        if (this.run.world_size != 0) {
+                            $(`div.text-uppercase.label-info.label.text-light.run-info`, "distributed")
+                        }
                     })
                     $('div', '.run-info', $ => {
                         this.statusViewContainer = $('div')
