@@ -6,8 +6,6 @@ import {RunsList} from '../models/run_list'
 import {AnalysisPreferenceModel, DistAnalysisPreferenceModel} from "../models/preferences"
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
-import {Job} from '../models/job'
-import {showError} from '../utils/document'
 
 const RELOAD_TIMEOUT = 60 * 1000
 const FORCE_RELOAD_TIMEOUT = 5 * 1000
@@ -154,18 +152,6 @@ export class RunsListCache extends CacheObject<RunsList> {
         await NETWORK.claimRun(run.run_uuid)
         this.invalidate_cache()
     }
-
-    async startTensorBoard(computerUUID, runUUIDs: Array<string>): Promise<Job> {
-        let res = await NETWORK.startTensorBoard(computerUUID, runUUIDs)
-
-        return new Job(res)
-    }
-
-    async clearCheckPoints(computerUUID, runUUIDs: Array<string>): Promise<Job> {
-        let res = await NETWORK.clearCheckPoints(computerUUID, runUUIDs)
-
-        return new Job(res)
-    }
 }
 
 export class SessionsListCache extends CacheObject<SessionsList> {
@@ -305,75 +291,6 @@ export class UserCache extends CacheObject<User> {
 
     async setUser(user: User) {
         await NETWORK.setUser(user)
-    }
-
-    async signIn(data: SignInModel) {
-        try {
-            let res = await NETWORK.signIn(data)
-            if (!res.is_successful) {
-                showError(res.error)
-                return false
-            }
-
-            this.data = null
-            CACHE.invalidateCache()
-            await this.get()
-            return true
-        } catch (ex) {
-            showError(ex instanceof NetworkError ? ex.errorDescription : null)
-            return false
-        }
-    }
-
-    async signUp(data: SignUpModel) {
-        try {
-            let res = await NETWORK.signUp(data)
-            if (!res.is_successful) {
-                showError(res.error)
-                return false
-            }
-
-            this.data = null
-            await this.get()
-            CACHE.invalidateCache()
-            return true
-        } catch (ex) {
-            showError(ex instanceof NetworkError ? ex.errorDescription : null)
-            return false
-        }
-    }
-
-    async resetPassword(data: PasswordResetModel) {
-        try {
-            let res = await NETWORK.passwordReset(data)
-            if (!res.is_successful) {
-                showError(res.error)
-                return false
-            }
-
-            this.data = null
-            CACHE.invalidateCache()
-            return true
-        } catch (ex) {
-            showError(ex instanceof NetworkError ? ex.errorDescription : null)
-            return false
-        }
-    }
-
-    async signOut() {
-        try {
-            let res = await NETWORK.signOut()
-            if (!res.is_successful) {
-                showError(res.error)
-                return false
-            }
-
-            this.invalidate_cache()
-            CACHE.invalidateCache()
-            return true
-        } catch (ex) {
-            return false
-        }
     }
 }
 
