@@ -546,6 +546,17 @@ span.fas {
   }
 }
 
+.spaced-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: unset;
+  flex-wrap: wrap;
+  @media (min-width: $mobile) {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
 .runs-list {
   .search-container {
     .search-content {
@@ -632,6 +643,10 @@ svg#chart {
 
   path.unsmoothed-line {
     stroke-width: 0.5;
+    &.smooth-focused {
+      stroke-width: 0.2;
+      opacity: 0.5;
+    }
   }
 }
 
@@ -730,50 +745,6 @@ button.sparkline-list-item {
       margin-bottom: auto;
     }
 
-    svg.sparkline {
-      isolation: isolate;
-
-      path.smoothed-line {
-        stroke-width: 1.5;
-      }
-
-      path.unsmoothed-line {
-        stroke-width: 0;
-      }
-
-      path.line-fill {
-        opacity: 0.3;
-      }
-
-      & .value-primary {
-        font-weight: bold;
-        font-size: 12px;
-        text-anchor: end;
-        fill: #34495e;
-      }
-
-      & .value-secondary {
-        font-weight: normal;
-        font-size: 12px;
-        text-anchor: end;
-        fill: #7f8c8d;
-      }
-
-      & line.wide-stroke {
-        stroke-width: 15;
-      }
-
-      & .line-text {
-        font-weight: bold;
-        mix-blend-mode: difference;
-
-        &.line-end {
-          font-weight: bolder;
-          text-anchor: end;
-        }
-      }
-    }
-
     span.value {
       text-align: right;
       height: 36px;
@@ -787,6 +758,50 @@ button.sparkline-list-item {
       span {
         display: block;
       }
+    }
+  }
+}
+
+svg.sparkline {
+  isolation: isolate;
+
+  path.smoothed-line {
+    stroke-width: 1.5;
+  }
+
+  path.unsmoothed-line {
+    stroke-width: 0;
+  }
+
+  path.line-fill {
+    opacity: 0.3;
+  }
+
+  & .value-primary {
+    font-weight: bold;
+    font-size: 12px;
+    text-anchor: end;
+    fill: #34495e;
+  }
+
+  & .value-secondary {
+    font-weight: normal;
+    font-size: 12px;
+    text-anchor: end;
+    fill: #7f8c8d;
+  }
+
+  & line.wide-stroke {
+    stroke-width: 15;
+  }
+
+  & .line-text {
+    font-weight: bold;
+    mix-blend-mode: difference;
+
+    &.line-end {
+      font-weight: bolder;
+      text-anchor: end;
     }
   }
 }
@@ -1431,5 +1446,22 @@ a.generic-link {
     margin-right: auto;
     margin-bottom: 10px;
     display: table;
+  }
+}
+
+.break {
+  flex-basis: 100%;
+}
+
+.standalone-sparkline {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  .data {
+    line-height: normal;
+    span {
+      font-size: 0.6rem;
+    }
   }
 }

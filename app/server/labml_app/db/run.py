@@ -12,6 +12,7 @@ from . import project
 from . import computer
 from . import status
 from .. import settings
+from ..analyses.experiments.metrics import MetricsAnalysis, MetricsPreferencesIndex, MetricsPreferencesModel
 from ..logger import logger
 from .. import analyses
 from ..enums import RunEnums
@@ -282,6 +283,32 @@ class Run(Model['Run']):
         }
 
     def get_summary(self) -> Dict[str, str]:
+        preview_series = {}
+        metric_values = []
+
+        metrics = MetricsAnalysis.get(self.run_uuid)
+        preferences = []
+        preferences_key = MetricsPreferencesIndex.get(self.run_uuid)
+        if preferences_key:
+            mp: MetricsPreferencesModel = preferences_key.load()
+            preferences = mp.series_preferences
+        if metrics:
+            track_data = metrics.get_tracking()
+            for (idx, series) in enumerate(track_data):
+                if len(preferences) > idx and preferences[idx] != -1:
+                    preview_series = series
+                    break
+            if not preview_series and len(track_data) > 0:
+                preview_series = track_data[0]
+
+            for (idx, series) in enumerate(track_data):
+                if preview_series['name'] == series['name'] or len(preferences) <= idx or preferences[idx] == -1:
+                    continue
+                metric_values.append({
+                    'name': series['name'],
+                    'value': series['value'][-1]
+                })
+
         return {
             'run_uuid': self.run_uuid,
             'computer_uuid': self.computer_uuid,
@@ -289,6 +316,8 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
             'world_size': self.world_size,
+            'preview_series': preview_series,
+            'metric_values': metric_values
         }
 
     def edit_run(self, data: Dict[str, any]) -> None:

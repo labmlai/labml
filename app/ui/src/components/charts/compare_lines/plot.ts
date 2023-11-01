@@ -9,6 +9,7 @@ export interface LinePlotOptions extends PlotOptions {
     series: PointValue[]
     isBase?: boolean
     renderHorizontalLine?: boolean
+    smoothFocused?: boolean
 }
 
 export class LinePlot {
@@ -23,6 +24,7 @@ export class LinePlot {
     bisect: d3.Bisector<number, number>
     isBase: boolean
     renderHorizontalLine: boolean
+    smoothFocused: boolean
 
     constructor(opt: LinePlotOptions) {
         this.series = opt.series
@@ -31,6 +33,7 @@ export class LinePlot {
         this.color = opt.color
         this.isBase = opt.isBase ?? false
         this.renderHorizontalLine = opt.renderHorizontalLine ?? false
+        this.smoothFocused = opt.smoothFocused ?? false
 
         this.bisect = d3.bisector(function (d: PointValue) {
             return d.step
@@ -65,7 +68,7 @@ export class LinePlot {
                     "stroke-dasharray": this.isBase ? "3 1": ""
                 })
             if (!this.isBase) {
-                $('path.unsmoothed-line',
+                $('path.unsmoothed-line'+(this.smoothFocused ? '.smooth-focused': ''),
                     {
                         fill: 'none',
                         stroke: this.color,

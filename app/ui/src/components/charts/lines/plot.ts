@@ -9,6 +9,7 @@ export interface LinePlotOptions extends PlotOptions {
     xScale: d3.ScaleLinear<number, number>
     series: PointValue[]
     renderHorizontalLine?: boolean
+    smoothFocused?: boolean
 }
 
 export class LinePlot {
@@ -22,6 +23,7 @@ export class LinePlot {
     unsmoothedLine: d3.Line<PointValue>
     bisect: d3.Bisector<number, number>
     renderHorizontalLine: boolean
+    smoothFocused: boolean
 
     constructor(opt: LinePlotOptions) {
         this.series = opt.series
@@ -29,6 +31,7 @@ export class LinePlot {
         this.yScale = opt.yScale
         this.color = opt.color
         this.renderHorizontalLine = opt.renderHorizontalLine ?? false
+        this.smoothFocused = opt.smoothFocused ?? false
 
         this.bisect = d3.bisector(function (d: PointValue) {
             return d.step
@@ -61,7 +64,7 @@ export class LinePlot {
                     stroke: this.color,
                     d: this.smoothedLine(this.series) as string
                 })
-            $('path.unsmoothed-line',
+            $('path.unsmoothed-line' + (this.smoothFocused ? '.smooth-focused' : ''),
                 {
                     fill: 'none',
                     stroke: this.color,
