@@ -70,11 +70,7 @@ export class RunHeaderCard {
 
                     if (this.showRank && this.run.world_size > 0) {
                         $('div', '.rank.mt-2', $ => {
-                            if (this.run.rank == 0) {
-                                $('span', 'Distributed')
-                            } else {
-                                $('span', `Rank ${this.run.rank + 1} of ${this.run.world_size}`)
-                            }
+                            $('span', `Rank ${this.run.rank + 1} of ${this.run.world_size}`)
                         })
                     }
                 })

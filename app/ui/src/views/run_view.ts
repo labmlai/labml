@@ -102,7 +102,8 @@ class RunView extends ScreenView {
                             uuid: this.uuid,
                             width: this.actualWidth,
                             lastUpdated: this.lastUpdated,
-                            clickable: !this.isRank
+                            clickable: !this.isRank,
+                            showRank: !!this.isRank
                         })
                         this.loader.render($)
                         this.runHeaderCard.render($)
