@@ -14,7 +14,6 @@ from .db import computer
 from .db import session
 from .db import user
 from .db import project
-from .db import blocked_uuids
 from .db import job
 from . import utils
 from . import analyses
@@ -44,12 +43,6 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     errors = []
 
     token = labml_token
-
-    if blocked_uuids.is_run_blocked(run_uuid):
-        error = {'error': 'blocked_run_uuid',
-                 'message': f'Blocked or deleted run, uuid:{run_uuid}'}
-        errors.append(error)
-        return {'errors': errors}
 
     if len(run_uuid) < 10:
         error = {'error': 'invalid_run_uuid',
@@ -136,12 +129,6 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
     errors = []
 
     token = labml_token
-
-    if blocked_uuids.is_session_blocked(session_uuid):
-        error = {'error': 'blocked_session_uuid',
-                 'message': f'Blocked or deleted session, uuid:{session_uuid}'}
-        errors.append(error)
-        return {'errors': errors}
 
     if len(computer_uuid) < 10:
         error = {'error': 'invalid_computer_uuid',

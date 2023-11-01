@@ -1,20 +1,15 @@
 import os
-from pathlib import Path
+from typing import List, Type, Optional
+import pickle as pkl
 
+from labml_db.model import ModelDict
 from labml_db import Model, Index
-from labml_db.driver.redis import RedisDbDriver
-from labml_db.driver.file import FileDbDriver
-from labml_db.index_driver.redis import RedisIndexDbDriver
-from labml_db.index_driver.file import FileIndexDbDriver
-from labml_db.serializer.json import JsonSerializer
-from labml_db.serializer.yaml import YamlSerializer
-from labml_db.serializer.pickle import PickleSerializer
-from labml.internal.computer.configs import computer_singleton
-
-from .__mongo__init__ import init_mongo_db
+from labml_db.driver.mongo import MongoDbDriver
+from labml_db.index_driver.mongo import MongoIndexDbDriver
+from pymongo import MongoClient
 
 from .. import settings
-from . import project, password_reset
+from . import project
 from . import user
 from . import status
 from . import app_token
@@ -22,29 +17,60 @@ from . import run
 from . import session
 from . import computer
 from . import job
-from . import blocked_uuids
 from .. import analyses
 
-Models = [(YamlSerializer(), user.User),
-          (YamlSerializer(), password_reset.PasswordReset),
-          (YamlSerializer(), project.Project),
-          (JsonSerializer(), status.Status),
-          (JsonSerializer(), status.RunStatus),
-          (JsonSerializer(), app_token.AppToken),
-          (JsonSerializer(), run.Run),
-          (JsonSerializer(), session.Session),
-          (PickleSerializer(), job.Job),
-          (PickleSerializer(), computer.Computer)] + [(s(), m) for s, m, p in analyses.AnalysisManager.get_db_models()]
 
-Indexes = [project.ProjectIndex,
+class MongoPickleDbDriver(MongoDbDriver):
+    def __init__(self, model_cls: Type['Model'], db: 'pymongo.mongo_client.database.Database'):
+        super().__init__(model_cls, db)
+
+    @staticmethod
+    def _from_dump(data: pkl.BINBYTES) -> 'ModelDict':
+        if data is not None:
+            data = pkl.loads(data['data'])
+
+        return data
+
+    @staticmethod
+    def _to_dump(data: 'ModelDict'):
+        return {'data': pkl.dumps(data)}
+
+    def save_dict(self, key: str, data: 'ModelDict'):
+        data = self._to_dump(data)
+        return super().save_dict(key, data)
+
+    def load_dict(self, key: str) -> Optional[ModelDict]:
+        data = super().load_dict(key)
+
+        return self._from_dump(data)
+
+    def mload_dict(self, keys: List[str]) -> List[Optional[ModelDict]]:
+        data = super().mload_dict(keys)
+
+        return [self._from_dump(d) for d in data]
+
+    def msave_dict(self, keys: List[str], data: List[ModelDict]):
+        data = [self._to_dump(d) for d in data]
+
+        return super().msave_dict(keys, data)
+
+
+models = [user.User,
+          project.Project,
+          status.Status,
+          status.RunStatus,
+          app_token.AppToken,
+          run.Run,
+          session.Session,
+          job.Job,
+          computer.Computer] + [m for s, m, p in analyses.AnalysisManager.get_db_models()]
+
+indexes = [project.ProjectIndex,
            user.UserIndex,
-           blocked_uuids.BlockedRunIndex,
-           blocked_uuids.BlockedSessionIndex,
            user.UserEmailIndex,
            user.UserTokenIndex,
            user.UserSessionTokenIndex,
            user.TokenOwnerIndex,
-           password_reset.PasswordResetIndex,
            app_token.AppTokenIndex,
            run.RunIndex,
            session.SessionIndex,
@@ -52,33 +78,20 @@ Indexes = [project.ProjectIndex,
            computer.ComputerIndex] + [m for s, m, p in analyses.AnalysisManager.get_db_indexes()]
 
 
-def get_data_path():
-    package_path = Path(os.path.dirname(os.path.abspath(__file__))).parent
+def init_mongo_db(mongo_address: str = ''):
+    if not mongo_address:
+        if 'MONGO_HOST' in os.environ:
+            mongo_address = os.getenv('MONGO_HOST')
+        else:
+            mongo_address = 'localhost'
 
-    data_path = package_path / 'data'
-    if not data_path.exists():
-        raise RuntimeError(f'Data folder not found. Package path: {str(package_path)}')
+    mongo_client = MongoClient(host=mongo_address, port=27017, connect=False)
+    db = mongo_client['labml']
 
-    return data_path
-
-
-def init_db():
-    data_path = computer_singleton().app_folder / 'data'
-
-    if not data_path.exists():
-        data_path.mkdir()
-
-    if settings.IS_LOCAL_SETUP:
-        Model.set_db_drivers(
-            [FileDbDriver(PickleSerializer(), m, Path(f'{data_path}/{m.__name__}')) for s, m in Models])
-        Index.set_db_drivers(
-            [FileIndexDbDriver(YamlSerializer(), m, Path(f'{data_path}/{m.__name__}.yaml')) for m in Indexes])
-    else:
-        import redis
-        db = redis.Redis(host='localhost', port=6379, db=0)
-
-        Model.set_db_drivers([RedisDbDriver(s, m, db) for s, m in Models])
-        Index.set_db_drivers([RedisIndexDbDriver(m, db) for m in Indexes])
+    Model.set_db_drivers([MongoPickleDbDriver(m, db) for m in models])
+    Index.set_db_drivers([MongoIndexDbDriver(m, db) for m in indexes])
 
     project.create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
     project.create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
+
+    return mongo_client
