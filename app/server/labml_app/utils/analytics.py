@@ -7,11 +7,10 @@ import threading
 import time
 from time import sleep
 from functools import wraps
-from typing import NamedTuple, Dict, Union, Callable, List, Any
+from typing import Dict, Callable, List, Any
 
 from fastapi import Request
 
-from . import slack
 from labml_app.logger import logger
 from labml_app import settings
 
@@ -26,8 +25,7 @@ EXCLUDED_METHODS = {'polling'}
 class Event:
     @staticmethod
     def _track(identifier: str, event: str, data: Dict) -> None:
-        if settings.ANALYTICS_TO_SERVER:
-            QUEUE.put({'identifier': identifier, 'event': event, 'data': data})
+        QUEUE.put({'identifier': identifier, 'event': event, 'data': data})
 
     def people_set(self, identifier: str, first_name: str, last_name: str, email: str) -> None:
         self._track(identifier, 'people', {'first_name': first_name, 'last_name': last_name, 'email': email})
@@ -97,9 +95,6 @@ class Event:
                 total_time = end - start
                 if time_limit and total_time < time_limit:
                     return r
-
-                if time_limit and total_time > time_limit + 1.5 and func.__name__ not in EXCLUDED_METHODS:
-                    slack.client.send(f'PERF time: {total_time * 1000:.2f}ms method:{func.__name__}, url:{request.url}')
 
                 self.track(request, func.__name__, {'time_elapsed': str(total_time)})
 
