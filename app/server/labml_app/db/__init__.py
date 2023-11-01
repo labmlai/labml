@@ -16,7 +16,6 @@ from . import app_token
 from . import run
 from . import session
 from . import computer
-from . import job
 from .. import analyses
 
 
@@ -62,7 +61,6 @@ models = [user.User,
           app_token.AppToken,
           run.Run,
           session.Session,
-          job.Job,
           computer.Computer] + [m for s, m, p in analyses.AnalysisManager.get_db_models()]
 
 indexes = [project.ProjectIndex,
@@ -74,7 +72,6 @@ indexes = [project.ProjectIndex,
            app_token.AppTokenIndex,
            run.RunIndex,
            session.SessionIndex,
-           job.JobIndex,
            computer.ComputerIndex] + [m for s, m, p in analyses.AnalysisManager.get_db_indexes()]
 
 
