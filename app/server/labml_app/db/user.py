@@ -4,7 +4,7 @@ from typing import List, Dict, Optional, Set, Any
 
 from . import project
 from .. import utils
-from ..utils import password_utils, gravatar_utils, gen_token
+from ..utils import gen_token
 
 SALT_LENGTH = 16
 PROTECTED_KEYS = ['password',
@@ -81,75 +81,11 @@ class User(Model['User']):
             self.theme = data['theme']
             self.save()
 
-    def verify_password(self, password: str) -> bool:
-        if self.password is None:
-            return False
-
-        valid, should_rehash = password_utils.verify_password(password, self.password)
-
-        if valid and should_rehash:
-            self.password = password_utils.create_hash(password)
-            self.save()
-
     def update_and_save(self, data: Dict[str, Any]):
         res = {k: v for k, v in data.items() if v and k not in PROTECTED_KEYS}
 
         self.update(res)
         self.save()
-
-    def upgrade_user(self, name: str, email: str, password: str) -> int:
-        """
-        Upgrade a guest user to a complete user
-
-        :param name: Name of the user
-        :param email: Email address for login in (should be unique)
-        :param password: Password for login in
-        :return: An int describing the result
-                - -1: If the user has been already upgraded
-                - -2: If the email is already in use
-                - 0: If the upgrade completed successfully
-        """
-        if self.email is not None and self.email:
-            return -1
-        if self.password is not None:
-            return -1
-        if get_by_email(email) is not None:
-            return -2
-
-        self.name = name
-        self.email = email
-        self.password = password_utils.create_hash(password)
-        self.picture = gravatar_utils.get_image_url(self.email)
-
-        self.save()
-
-        UserEmailIndex.set(self.email, self.key)
-
-        return 0
-
-    def update_password(self, previous_password: str, new_password: str):
-        valid, _ = password_utils.verify_password(previous_password, self.password)
-        if valid:
-            self.password = password_utils.create_hash(new_password)
-            self.save()
-
-    def reset_password(self, new_password: str) -> None:
-        self.password = password_utils.create_hash(new_password)
-        self.save()
-
-    def generate_auth_token(self):
-        if not self.picture:
-            self.picture = gravatar_utils.get_image_url(self.email)
-
-        while True:
-            auth_token = gen_token()
-            result = get_by_token(auth_token)
-            if result is None:
-                self.tokens[auth_token] = time.time() + TOKEN_VALIDITY
-                self.session_token_owners[auth_token] = set()
-                UserTokenIndex.set(auth_token, self.key)
-                self.save()
-                return auth_token
 
     def generate_session_token(self, auth_token: str):
         while True:
@@ -287,19 +223,6 @@ def get_user_secure(token: str) -> Optional[User]:
     u = get_by_token(token)
 
     return u
-
-
-def authenticate(email: str, password: str) -> Optional[str]:
-    user = get_by_email(email)
-    if user:
-        valid, should_rehash = password_utils.verify_password(password, user.password)
-        if valid and should_rehash:
-            user.update_password(password, password)
-
-        if valid:
-            return user.generate_auth_token()
-
-    return None
 
 
 def invalidate_token(token: str) -> bool:
