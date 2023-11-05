@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional, Set
 
-from labml import logger, monit
+from labml import logger
 from labml.internal import util
 from labml.internal.api.configs import WebAPIConfigs
 from labml.internal.computer import CONFIGS_FOLDER
