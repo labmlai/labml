@@ -10,7 +10,7 @@ def clear():
     _internal().clear()
 
 
-def func(name, *,
+def func(name = None, *,
          is_silent: bool = False,
          is_timed: bool = True,
          is_partial: bool = False,
@@ -28,7 +28,7 @@ def func(name, *,
     Keyword Arguments:
         is_silent (bool, optional): Whether not to print time taken. Defaults to ``False``.
         is_timed (bool, optional): Whether to measure time. Default to ``True``.
-        is_partial (bool, optional): Whether it's a partial excution where it gets called
+        is_partial (bool, optional): Whether it's a partial execution where it gets called
             repeatedly. Defaults to ``False``.
         is_new_line (bool, optional): Whether to print a new line. Defaults to ``True``.
         is_children_silent (bool, optional): Whether to make child sections silent.
@@ -40,6 +40,9 @@ def func(name, *,
         total_steps (float, optional): Total number of steps. This is used to measure progress when
             :func:`progress` gets called. Defaults to ``1``.
     """
+
+    if name is None:
+        name = 'Function'
 
     def decorator_func(f: Callable):
         @functools.wraps(f)
@@ -60,7 +63,7 @@ def func(name, *,
     return decorator_func
 
 
-def iterate(name, iterable: Union[Iterable, Sized, int],
+def iterate(name, iterable: Union[Iterable, Sized, int] = None,
             total_steps: Optional[int] = None, *,
             is_silent: bool = False,
             is_children_silent: bool = False,
@@ -72,7 +75,7 @@ def iterate(name, iterable: Union[Iterable, Sized, int],
     This creates a monitored iterator.
 
     Arguments:
-        name (str): Name of the iterator
+        name (str, optional): Name of the iterator
         iterable (Union[Iterable, Sized, int]): The iterable
         total_steps (int, optional): Total number of steps. If not provided this is
             calculated from ``iterable``.
@@ -88,6 +91,10 @@ def iterate(name, iterable: Union[Iterable, Sized, int],
             Defaults to ``False``.
         context (optional): Reference to another section that will be used for monitoring the iteration.
     """
+    if iterable is None:
+        iterable = name
+        name = 'Iterate'
+
     return _internal().iterate(name, iterable, total_steps,
                                is_silent=is_silent,
                                is_children_silent=is_children_silent,
@@ -97,7 +104,7 @@ def iterate(name, iterable: Union[Iterable, Sized, int],
                                section=context)
 
 
-def enum(name, iterable: Sized, *,
+def enum(name, iterable: Sized = None, *,
          is_silent: bool = False,
          is_children_silent: bool = False,
          is_timed: bool = True,
@@ -108,8 +115,8 @@ def enum(name, iterable: Sized, *,
     This creates a monitored enumerator.
 
     Arguments:
-        name (str): Name of the iterator
-        iterable (Sized]): The iterable
+        name (str, optional): Name of the iterator
+        iterable (Sized): The iterable
 
     Keyword Arguments:
         is_silent (bool, optional): Whether not to print time taken. Defaults to ``False``.
@@ -122,6 +129,10 @@ def enum(name, iterable: Sized, *,
             Defaults to ``False``.
         context (optional): Reference to another section that will be used for monitoring the iteration.
     """
+    if iterable is None:
+        iterable = name
+        name = 'Enumerate'
+
     return _internal().enum(name, iterable,
                             is_silent=is_silent,
                             is_children_silent=is_children_silent,
@@ -131,7 +142,7 @@ def enum(name, iterable: Sized, *,
                             section=context)
 
 
-def section(name, *,
+def section(name = None, *,
             is_silent: bool = False,
             is_timed: bool = True,
             is_partial: bool = False,
@@ -144,7 +155,7 @@ def section(name, *,
     This creates a monitored ``with`` block.
 
     Arguments:
-        name (str): Name of the section
+        name (str, Optional): Name of the section
 
     Keyword Arguments:
         is_silent (bool, optional): Whether not to print time taken. Defaults to ``False``.
@@ -161,6 +172,10 @@ def section(name, *,
         total_steps (float, optional): Total number of steps. This is used to measure progress when
             :func:`progress` gets called. Defaults to ``1``.
     """
+
+    if name is None:
+        name = 'Process'
+
     return _internal().section(name, is_silent=is_silent,
                                is_timed=is_timed,
                                is_partial=is_partial,
