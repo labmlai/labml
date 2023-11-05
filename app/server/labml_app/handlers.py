@@ -328,6 +328,8 @@ async def get_session_status(request: Request, session_uuid: str) -> JSONRespons
     return response
 
 
+@auth.login_required
+@auth.check_labml_token_permission
 async def get_runs(request: Request, labml_token: str, token: Optional[str] = None) -> EndPointRes:
     u = user.get_by_session_token(token)
 
