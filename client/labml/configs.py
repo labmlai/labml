@@ -2,14 +2,12 @@ from typing import List, Callable, overload, Union, Tuple
 
 from labml.internal.configs.base import Configs as _Configs
 from labml.internal.configs.config_item import ConfigItem
-from labml.internal.configs.dynamic_hyperparam import DynamicHyperParam, \
-    FloatDynamicHyperParam, IntDynamicHyperParam
 from labml.utils.errors import ConfigsError
 
 
 class BaseConfigs(_Configs):
     r"""
-    You should sub-class this class to create your own configurations
+    You should subclass this class to create your own configurations
     """
     pass
 
@@ -222,6 +220,4 @@ def aggregate(name: any, option_name: str, *args: Tuple[any, any]):
 
 __all__ = ['option', 'calculate', 'hyperparams', 'meta_config', 'aggregate',
            'BaseConfigs',
-           'DynamicHyperParam',
-           'IntDynamicHyperParam', 'FloatDynamicHyperParam',
            ]
