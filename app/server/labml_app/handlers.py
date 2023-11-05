@@ -190,6 +190,7 @@ async def update_session(request: Request) -> EndPointRes:
     return res
 
 
+@auth.login_required
 async def claim_run(request: Request, run_uuid: str, token: Optional[str] = None) -> EndPointRes:
     r = run.get(run_uuid)
     u = user.get_by_session_token(token)
@@ -213,6 +214,7 @@ async def claim_run(request: Request, run_uuid: str, token: Optional[str] = None
     return {'is_successful': True}
 
 
+@auth.login_required
 async def claim_session(request: Request, session_uuid: str, token: Optional[str] = None) -> EndPointRes:
     c = session.get(session_uuid)
     u = user.get_by_session_token(token)
@@ -268,6 +270,7 @@ async def get_session(request: Request, session_uuid: str) -> JSONResponse:
     return response
 
 
+@auth.login_required
 async def edit_run(request: Request, run_uuid: str, token: Optional[str] = None) -> EndPointRes:
     r = run.get(run_uuid)
     errors = []
@@ -294,7 +297,6 @@ async def edit_session(request: Request, session_uuid: str) -> EndPointRes:
     return {'errors': errors}
 
 
-@utils.analytics.AnalyticsEvent.time_this(None)
 async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_data = {}
     status_code = 404
@@ -351,6 +353,8 @@ async def get_runs(request: Request, labml_token: str, token: Optional[str] = No
     return {'runs': res, 'labml_token': labml_token}
 
 
+@auth.login_required
+@auth.check_labml_token_permission
 async def get_sessions(request: Request, labml_token: str, token: Optional[str] = None) -> EndPointRes:
     u = user.get_by_session_token(token)
 
@@ -372,6 +376,7 @@ async def get_sessions(request: Request, labml_token: str, token: Optional[str] 
     return {'sessions': res, 'labml_token': labml_token}
 
 
+@auth.login_required
 async def delete_runs(request: Request, token: Optional[str] = None) -> EndPointRes:
     json = await request.json()
     run_uuids = json['run_uuids']
@@ -382,6 +387,7 @@ async def delete_runs(request: Request, token: Optional[str] = None) -> EndPoint
     return {'is_successful': True}
 
 
+@auth.login_required
 async def delete_sessions(request: Request, token: Optional[str] = None) -> EndPointRes:
     json = await request.json()
     session_uuids = json['session_uuids']
@@ -392,6 +398,7 @@ async def delete_sessions(request: Request, token: Optional[str] = None) -> EndP
     return {'is_successful': True}
 
 
+@auth.login_required
 async def add_run(request: Request, run_uuid: str, token: Optional[str] = None) -> EndPointRes:
     u = user.get_by_session_token(token)
 
@@ -400,6 +407,7 @@ async def add_run(request: Request, run_uuid: str, token: Optional[str] = None) 
     return {'is_successful': True}
 
 
+@auth.login_required
 async def add_session(request: Request, session_uuid: str, token: Optional[str] = None) -> EndPointRes:
     u = user.get_by_session_token(token)
 
@@ -408,13 +416,14 @@ async def add_session(request: Request, session_uuid: str, token: Optional[str] 
     return {'is_successful': True}
 
 
-@utils.analytics.AnalyticsEvent.time_this(None)
+@auth.login_required
 async def get_computer(request: Request, computer_uuid: str) -> EndPointRes:
     c = computer.get_or_create(computer_uuid)
 
     return c.get_data()
 
 
+@auth.login_required
 async def set_user(request: Request, token: Optional[str] = None) -> EndPointRes:
     u = auth.get_auth_user(request)
     json = await request.json()
@@ -425,7 +434,6 @@ async def set_user(request: Request, token: Optional[str] = None) -> EndPointRes
     return {'is_successful': True}
 
 
-@utils.analytics.AnalyticsEvent.time_this(None)
 async def get_user(request: Request):
     token, u = auth.get_app_token(request)
     json = await request.json()
