@@ -24,7 +24,7 @@ def get_app_url_for_handle(handle: str):
 
         return f'{base_url}/{handle}?'
 
-    # return 'https://api.labml.ai/api/v1/track?'
+    # return 'https://domain/api/v1/token/track?'
     return None
 
 
@@ -114,7 +114,7 @@ class Lab:
         if self.configs['app_track_url']:
             app_track_url = self.configs['app_track_url']
             if app_track_url[0:4] != 'http':
-                # base_url = get_api_url('track')
+                # base_url = get_app_url_from_handle('track')
                 raise RuntimeError(f'app_track_url: {app_track_url} is not a valid URL')
 
             self.app_configs = AppTrackConfigs(url=app_track_url,

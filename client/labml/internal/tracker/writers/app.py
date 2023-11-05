@@ -14,12 +14,12 @@ WARMUP_COMMITS = 5
 
 
 class Writer(WriteBase, AppTrackDataSource):
-    def __init__(self, api_caller: AppTracker, *,
+    def __init__(self, app_tracker: AppTracker, *,
                  frequency: float):
         super().__init__()
 
         self.frequency = frequency
-        self.api_caller = api_caller
+        self.app_tracker = app_tracker
         self.last_committed = time.time()
         self.commits_count = 0
         self.indicators = {}
@@ -36,7 +36,7 @@ class Writer(WriteBase, AppTrackDataSource):
         with self.lock:
             self.data['wildcard_indicators'] = wildcards
             self.data['indicators'] = inds
-        self.api_caller.has_data(self)
+        self.app_tracker.has_data(self)
 
     def _write_indicator(self, global_step: int, indicator: Indicator):
         if indicator.is_empty():
@@ -79,7 +79,7 @@ class Writer(WriteBase, AppTrackDataSource):
             if not self.indicators:
                 return
 
-        self.api_caller.has_data(self)
+        self.app_tracker.has_data(self)
 
     def _mean(self, values: np.ndarray, n_elems: int):
         blocks = (len(values) + n_elems - 1) // n_elems

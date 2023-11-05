@@ -9,7 +9,7 @@ from labml.logger import Text
 from labml.utils.notice import labml_notice
 
 
-class DirectApiCaller:
+class DirectAppCaller:
     def __init__(self, url: str, params: Dict[str, str], *, timeout_seconds: int):
         self.timeout_seconds = timeout_seconds
 

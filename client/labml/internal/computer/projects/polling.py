@@ -7,10 +7,10 @@ from labml.logger import Text, inspect
 
 class Polling:
     def __init__(self):
-        from labml.internal.computer.projects.api import DirectApiCaller
+        from labml.internal.computer.projects.app import DirectAppCaller
         from labml.internal.computer.configs import computer_singleton
 
-        self.caller = DirectApiCaller(computer_singleton().app_polling_url,
+        self.caller = DirectAppCaller(computer_singleton().app_polling_url,
                                       {'computer_uuid': computer_singleton().uuid},
                                       timeout_seconds=60)
         self.results = []

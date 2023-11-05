@@ -7,12 +7,12 @@ from ...app import AppTracker
 
 class MonitorComputer:
     def __init__(self, session_uuid: str, open_browser):
-        api_caller = AppTracker(computer_singleton().app_configs.url,
+        app_tracker = AppTracker(computer_singleton().app_configs.url,
                                 {'computer_uuid': computer_singleton().uuid, 'session_uuid': session_uuid},
                                 timeout_seconds=120,
                                 daemon=True)
-        self.writer = Writer(api_caller, frequency=computer_singleton().app_configs.frequency)
-        self.header = Header(api_caller, open_browser=open_browser)
+        self.writer = Writer(app_tracker, frequency=computer_singleton().app_configs.frequency)
+        self.header = Header(app_tracker, open_browser=open_browser)
         self.scanner = Scanner()
 
     def start(self):

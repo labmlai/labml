@@ -394,17 +394,17 @@ class Experiment:
                 from labml.internal.tracker.writers import app as app_writer
                 from labml.internal.app import AppTracker
                 from labml.internal.app.experiment import AppExperiment
-                api_tracker = AppTracker(app_conf.url,
+                app_tracker = AppTracker(app_conf.url,
                                         {
                                             'run_uuid': self.run.uuid,
                                             'rank': self.run.distributed_rank,
                                             'world_size': self.run.distributed_world_size,
                                         },
                                         timeout_seconds=120)
-                self.app_experiment = AppExperiment(api_tracker,
+                self.app_experiment = AppExperiment(app_tracker,
                                                     frequency=app_conf.frequency,
                                                     open_browser=app_conf.open_browser)
-                tracker().add_writer(app_writer.Writer(api_tracker,
+                tracker().add_writer(app_writer.Writer(app_tracker,
                                                        frequency=app_conf.frequency))
             else:
                 logger.log('No labml server url specified. '
