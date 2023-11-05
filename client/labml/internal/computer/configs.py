@@ -2,11 +2,11 @@ from pathlib import Path
 from typing import Optional, Set
 
 from labml import logger
-from labml.internal import util
-from labml.internal.api.configs import WebAPIConfigs
-from labml.internal.computer import CONFIGS_FOLDER
-from labml.internal.lab import get_api_url
 from labml.logger import Text
+from . import CONFIGS_FOLDER
+from .. import util
+from ..app.configs import WebAPIConfigs
+from ..lab import get_api_url
 
 
 class Computer:

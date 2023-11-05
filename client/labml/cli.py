@@ -8,9 +8,9 @@ from typing import List
 
 from labml import logger, experiment
 from labml.experiment import generate_uuid
-from labml.internal.api import ApiCaller, SimpleApiDataSource
-from labml.internal.api.logs import ApiLogs
-from labml.internal.api.url import ApiUrlHandler
+from labml.internal.app import ApiCaller, SimpleApiDataSource
+from labml.internal.app.logs import ApiLogs
+from labml.internal.app.url import ApiUrlHandler
 from labml.internal.lab import get_api_url
 from labml.logger import Text
 from labml.utils.validators import ip_validator

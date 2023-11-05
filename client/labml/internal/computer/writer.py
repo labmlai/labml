@@ -4,9 +4,9 @@ from typing import Dict
 from typing import Union
 
 import numpy as np
-from labml.internal.api.url import ApiUrlHandler
 
-from labml.internal.api import ApiCaller, Packet, ApiDataSource
+from ..app import ApiCaller, Packet, ApiDataSource
+from ..app.url import ApiUrlHandler
 
 MAX_BUFFER_SIZE = 1024
 

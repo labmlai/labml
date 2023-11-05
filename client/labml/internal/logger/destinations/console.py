@@ -1,8 +1,8 @@
 from typing import List, Union, Tuple, Optional
 
-from labml.internal.api.logs import API_LOGS
-from labml.internal.logger.destinations import Destination
-from labml.internal.util.colors import StyleCode, ANSI_RESET
+from ...app.logs import API_LOGS
+from ..destinations import Destination
+from ...util.colors import StyleCode, ANSI_RESET
 
 
 class ConsoleDestination(Destination):

@@ -1,8 +1,8 @@
-from labml.internal.api import ApiCaller
-from labml.internal.computer.configs import computer_singleton
-from labml.internal.computer.monitor.process import ProcessMonitor
-from labml.internal.computer.monitor.scanner import Scanner
-from labml.internal.computer.writer import Writer, Header
+from .process import ProcessMonitor
+from .scanner import Scanner
+from ..configs import computer_singleton
+from ..writer import Writer, Header
+from ...app import ApiCaller
 
 
 class MonitorComputer:

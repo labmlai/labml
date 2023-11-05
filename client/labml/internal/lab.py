@@ -2,12 +2,12 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Optional, Dict
 
-from labml.internal import util
-from labml.internal.api.configs import WebAPIConfigs
-from labml.internal.util import is_colab, is_kaggle
 from labml.logger import Text
 from labml.utils import get_caller_file
 from labml.utils.notice import labml_notice
+from . import util
+from .app.configs import WebAPIConfigs
+from .util import is_colab, is_kaggle
 
 _CONFIG_FILE_NAME = '.labml.yaml'
 
@@ -43,6 +43,7 @@ class Lab:
     check_repo_dirty: Optional[bool]
     path: Optional[Path]
     web_api: Optional[WebAPIConfigs]
+    configs: Dict
 
     def __init__(self, path: Optional[Path] = None):
         self.indicators = {}

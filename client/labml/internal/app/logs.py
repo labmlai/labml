@@ -4,7 +4,7 @@ import time
 from io import StringIO
 from typing import Optional
 
-from labml.internal.api import ApiCaller, ApiDataSource, Packet
+from labml.internal.app import ApiCaller, ApiDataSource, Packet
 
 WARMUP_COMMITS = 5
 

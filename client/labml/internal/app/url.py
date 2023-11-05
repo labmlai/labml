@@ -1,7 +1,7 @@
 import webbrowser
 
 from labml import logger
-from labml.internal.api import ApiResponseHandler
+from labml.internal.app import ApiResponseHandler
 from labml.logger import Text
 
 

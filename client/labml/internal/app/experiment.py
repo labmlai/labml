@@ -2,10 +2,9 @@ import threading
 import time
 from typing import Dict, Optional, TYPE_CHECKING
 
-from labml.internal.api import ApiCaller, Packet, ApiDataSource, ApiResponseHandler
-from labml.internal.api.dynamic import DynamicUpdateHandler
-from labml.internal.api.url import ApiUrlHandler
-
+from . import ApiCaller, Packet, ApiDataSource, ApiResponseHandler
+from .dynamic import DynamicUpdateHandler
+from .url import ApiUrlHandler
 from ..configs.processor import ConfigsSaver
 
 if TYPE_CHECKING:
@@ -92,11 +91,11 @@ class ApiExperiment(ApiDataSource):
 
         self.api_caller.has_data(self)
 
-        from labml.internal.api.logs import API_LOGS
+        from labml.internal.app.logs import API_LOGS
         API_LOGS.set_api(self.api_caller, frequency=LOGS_FREQUENCY)
 
     def worker(self):
-        from labml.internal.api.logs import API_LOGS
+        from labml.internal.app.logs import API_LOGS
         API_LOGS.set_api(None, frequency=LOGS_FREQUENCY)
 
     def set_dynamic_handler(self, handler: DynamicUpdateHandler):

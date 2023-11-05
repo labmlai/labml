@@ -4,10 +4,10 @@ from typing import Dict
 
 import numpy as np
 
-from labml.internal.api import ApiCaller, Packet, ApiDataSource
 from . import Writer as WriteBase
 from ..indicators import Indicator
 from ..indicators.numeric import NumericIndicator
+from ...app import ApiCaller, Packet, ApiDataSource
 
 MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5

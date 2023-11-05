@@ -6,22 +6,22 @@ from typing import Optional, List, Set, Dict, Union, TYPE_CHECKING
 
 import git
 from labml import logger, monit
-from labml.internal.api.dynamic import DynamicUpdateHandler
-from labml.internal.configs.base import Configs
-from labml.internal.configs.dynamic_hyperparam import DynamicHyperParam
-from labml.internal.configs.processor import ConfigProcessor, FileConfigsSaver
-from labml.internal.experiment.experiment_run import Run
-from labml.internal.experiment.watcher import ExperimentWatcher
-from labml.internal.lab import lab_singleton
-from labml.internal.monitor import monitor_singleton as monitor
-from labml.internal.tracker import tracker_singleton as tracker
-from labml.internal.util import is_ipynb, is_colab, is_kaggle
+from ..app.dynamic import DynamicUpdateHandler
+from ..configs.base import Configs
+from ..configs.dynamic_hyperparam import DynamicHyperParam
+from ..configs.processor import ConfigProcessor, FileConfigsSaver
+from ..experiment.experiment_run import Run
+from ..experiment.watcher import ExperimentWatcher
+from ..lab import lab_singleton
+from ..monitor import monitor_singleton as monitor
+from ..tracker import tracker_singleton as tracker
+from ..util import is_ipynb, is_colab, is_kaggle
 from labml.logger import Text
 from labml.utils import get_caller_file
 from labml.utils.notice import labml_notice
 
 if TYPE_CHECKING:
-    from labml.internal.api.experiment import ApiExperiment
+    from ..app.experiment import ApiExperiment
 
 
 class ModelSaver:
@@ -391,8 +391,8 @@ class Experiment:
             web_api_conf = lab_singleton().web_api
             if web_api_conf is not None:
                 from labml.internal.tracker.writers import web_api
-                from labml.internal.api import ApiCaller
-                from labml.internal.api.experiment import ApiExperiment
+                from labml.internal.app import ApiCaller
+                from labml.internal.app.experiment import ApiExperiment
                 api_caller = ApiCaller(web_api_conf.url,
                                        {'run_uuid': self.run.uuid,
                                         'rank': self.run.distributed_rank,
