@@ -67,7 +67,7 @@ class AppExperiment(AppTrackDataSource):
             return packet
 
     def start(self, run: 'Run'):
-        if run.distributed_rank == 0:
+        if run.distributed_rank == run.distributed_main_rank:
             self.app_tracker.add_handler(AppUrlResponseHandler(self.open_browser, 'Monitor experiment at '))
 
         with self.lock:
