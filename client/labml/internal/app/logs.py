@@ -4,13 +4,13 @@ import time
 from io import StringIO
 from typing import Optional
 
-from labml.internal.app import ApiCaller, ApiDataSource, Packet
+from labml.internal.app import AppTracker, AppTrackDataSource, Packet
 
 WARMUP_COMMITS = 5
 
 
-class ApiLogs(ApiDataSource):
-    api_caller: Optional[ApiCaller]
+class ApiLogs(AppTrackDataSource):
+    api_caller: Optional[AppTracker]
     frequency: float
 
     def __init__(self):
@@ -23,7 +23,7 @@ class ApiLogs(ApiDataSource):
         self.data = {}
         self.lock = threading.Lock()
 
-    def set_api(self, api_caller: ApiCaller, *, frequency: float):
+    def set_api(self, api_caller: AppTracker, *, frequency: float):
         self.api_caller = api_caller
         self.frequency = frequency
         self.check_and_flush()

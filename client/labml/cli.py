@@ -8,7 +8,7 @@ from typing import List
 
 from labml import logger, experiment
 from labml.experiment import generate_uuid
-from labml.internal.app import ApiCaller, SimpleApiDataSource
+from labml.internal.app import AppTracker, SimpleAppTrackDataSource
 from labml.internal.app.logs import ApiLogs
 from labml.internal.app.url import ApiUrlHandler
 from labml.internal.lab import get_app_url_for_handle
@@ -97,8 +97,8 @@ def _capture(args: List[str]):
         raise RuntimeError(f'Please specify labml_server environment variable. '
                            f'How to setup a labml server https://github.com/labmlai/labml/tree/master/app')
 
-    api_caller = ApiCaller(base_url, {'run_uuid': generate_uuid()},
-                           timeout_seconds=120)
+    api_caller = AppTracker(base_url, {'run_uuid': generate_uuid()},
+                            timeout_seconds=120)
     api_logs = ApiLogs()
     data = {
         'name': 'Capture',
@@ -107,7 +107,7 @@ def _capture(args: List[str]):
     }
 
     api_caller.add_handler(ApiUrlHandler(True, 'Monitor output at '))
-    api_caller.has_data(SimpleApiDataSource(data))
+    api_caller.has_data(SimpleAppTrackDataSource(data))
     api_logs.set_api(api_caller, frequency=0)
 
     logger.log('Start capturing...', Text.meta)
@@ -137,7 +137,7 @@ def _capture(args: List[str]):
         'time': time.time()
     }
 
-    api_caller.has_data(SimpleApiDataSource({
+    api_caller.has_data(SimpleAppTrackDataSource({
         'status': data,
         'time': time.time()
     }))

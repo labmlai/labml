@@ -2,7 +2,7 @@ import threading
 import time
 from typing import Dict, Optional, TYPE_CHECKING
 
-from . import ApiCaller, Packet, ApiDataSource, ApiResponseHandler
+from . import AppTracker, Packet, AppTrackDataSource, AppTrackResponseHandler
 from .dynamic import DynamicUpdateHandler
 from .url import ApiUrlHandler
 from ..configs.processor import ConfigsSaver
@@ -21,7 +21,7 @@ class AppConfigsSaver(ConfigsSaver):
         self.api_experiment.save_configs(configs)
 
 
-class DynamicHyperParamHandler(ApiResponseHandler):
+class DynamicHyperParamHandler(AppTrackResponseHandler):
     def __init__(self, handler: DynamicUpdateHandler):
         self.handler = handler
 
@@ -33,10 +33,10 @@ class DynamicHyperParamHandler(ApiResponseHandler):
         return False
 
 
-class ApiExperiment(ApiDataSource):
+class ApiExperiment(AppTrackDataSource):
     configs_saver: Optional[AppConfigsSaver]
 
-    def __init__(self, api_caller: ApiCaller, *,
+    def __init__(self, api_caller: AppTracker, *,
                  frequency: float,
                  open_browser: bool):
         super().__init__()

@@ -1,11 +1,11 @@
 import webbrowser
 
 from labml import logger
-from labml.internal.app import ApiResponseHandler
+from labml.internal.app import AppTrackResponseHandler
 from labml.logger import Text
 
 
-class ApiUrlHandler(ApiResponseHandler):
+class ApiUrlHandler(AppTrackResponseHandler):
     def __init__(self, open_browser: bool, label: str):
         self.label = label
         self.open_browser = open_browser

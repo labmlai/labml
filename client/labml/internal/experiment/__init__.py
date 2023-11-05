@@ -392,13 +392,13 @@ class Experiment:
             app_conf = lab_singleton().app_configs
             if app_conf is not None:
                 from labml.internal.tracker.writers import app as app_writer
-                from labml.internal.app import ApiCaller
+                from labml.internal.app import AppTracker
                 from labml.internal.app.experiment import ApiExperiment
-                api_caller = ApiCaller(app_conf.url,
-                                       {'run_uuid': self.run.uuid,
+                api_caller = AppTracker(app_conf.url,
+                                        {'run_uuid': self.run.uuid,
                                         'rank': self.run.distributed_rank,
                                         'world_size': self.run.distributed_world_size},
-                                       timeout_seconds=120)
+                                        timeout_seconds=120)
                 self.app_experiment = ApiExperiment(api_caller,
                                                     frequency=app_conf.frequency,
                                                     open_browser=app_conf.open_browser)

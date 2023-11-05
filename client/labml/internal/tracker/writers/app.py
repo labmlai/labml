@@ -7,14 +7,14 @@ import numpy as np
 from . import Writer as WriteBase
 from ..indicators import Indicator
 from ..indicators.numeric import NumericIndicator
-from ...app import ApiCaller, Packet, ApiDataSource
+from ...app import AppTracker, Packet, AppTrackDataSource
 
 MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5
 
 
-class Writer(WriteBase, ApiDataSource):
-    def __init__(self, api_caller: ApiCaller, *,
+class Writer(WriteBase, AppTrackDataSource):
+    def __init__(self, api_caller: AppTracker, *,
                  frequency: float):
         super().__init__()
 

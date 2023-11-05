@@ -5,7 +5,7 @@ from typing import Union
 
 import numpy as np
 
-from ..app import ApiCaller, Packet, ApiDataSource
+from ..app import AppTracker, Packet, AppTrackDataSource
 from ..app.url import ApiUrlHandler
 
 MAX_BUFFER_SIZE = 1024
@@ -13,8 +13,8 @@ MAX_BUFFER_SIZE = 1024
 LOGS_FREQUENCY = 0
 
 
-class Header(ApiDataSource):
-    def __init__(self, api_caller: ApiCaller, *, open_browser: bool):
+class Header(AppTrackDataSource):
+    def __init__(self, api_caller: AppTracker, *, open_browser: bool):
         super().__init__()
 
         self.open_browser = open_browser
@@ -53,8 +53,8 @@ class Header(ApiDataSource):
         self.api_caller.stop()
 
 
-class Writer(ApiDataSource):
-    def __init__(self, api_caller: ApiCaller, *,                 frequency: float):
+class Writer(AppTrackDataSource):
+    def __init__(self, api_caller: AppTracker, *, frequency: float):
         super().__init__()
 
         self.frequency = frequency

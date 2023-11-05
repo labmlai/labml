@@ -22,12 +22,12 @@ class Packet:
     idx: int = -1
 
 
-class ApiDataSource:
+class AppTrackDataSource:
     def get_data_packet(self) -> Packet:
         raise NotImplementedError
 
 
-class SimpleApiDataSource(ApiDataSource):
+class SimpleAppTrackDataSource(AppTrackDataSource):
     def __init__(self, data: Dict[str, any]):
         self.data = data
 
@@ -35,7 +35,7 @@ class SimpleApiDataSource(ApiDataSource):
         return Packet(data=self.data)
 
 
-class ApiResponseHandler:
+class AppTrackResponseHandler:
     """All handlers gets called when there's a message from the App"""
     def handle(self, data) -> bool:
         raise NotImplementedError
@@ -47,12 +47,12 @@ class _AppTrackThread(threading.Thread):
         self.please_wait_count = 0
         self.timeout_seconds = timeout_seconds
         self.url = url
-        self.queue: Queue[ApiDataSource] = Queue()
+        self.queue: Queue[AppTrackDataSource] = Queue()
         self.is_stopped = False
         self.errored = False
-        self.handlers: List[ApiResponseHandler] = []
+        self.handlers: List[AppTrackResponseHandler] = []
 
-    def push_data_source(self, data_source: ApiDataSource):
+    def push_data_source(self, data_source: AppTrackDataSource):
         self.queue.put(data_source)
 
     def stop(self):
@@ -60,7 +60,7 @@ class _AppTrackThread(threading.Thread):
         logger.log('Still updating labml server, please wait for it to complete...', Text.highlight)
         self.please_wait_count = 1
 
-    def add_handler(self, handler: ApiResponseHandler):
+    def add_handler(self, handler: AppTrackResponseHandler):
         self.handlers.append(handler)
 
     @staticmethod
@@ -198,7 +198,7 @@ class _AppTrackThread(threading.Thread):
         return result
 
 
-class ApiCaller:
+class AppTracker:
     app_track_url: str
     params: Dict[str, str]
     thread: Optional[_AppTrackThread]
@@ -233,7 +233,7 @@ class ApiCaller:
 
         return True
 
-    def has_data(self, source: ApiDataSource):
+    def has_data(self, source: AppTrackDataSource):
         if not self._check():
             return False
 
@@ -241,7 +241,7 @@ class ApiCaller:
         if not self.thread.is_alive():
             self.thread.start()
 
-    def add_handler(self, handler: ApiResponseHandler):
+    def add_handler(self, handler: AppTrackResponseHandler):
         if not self._check():
             return False
 
