@@ -70,9 +70,9 @@ class Computer:
 
         app_url = get_app_url_for_handle('', base_url=config['app_url'])
 
-        if not app_url:
-            raise ValueError('Please provide `app_url` in `~/labml/configs.yaml` or set '
-                             'environment variable `labml_app_url`.')
+        # if not app_url:
+        #     raise ValueError('Please provide `app_url` in `~/labml/configs.yaml` or set '
+        #                      'environment variable `labml_app_url`.')
 
         self.app_configs = AppTrackConfigs(url=get_app_url_for_handle('computer', base_url=app_url),
                                            frequency=config['app_track_frequency'],

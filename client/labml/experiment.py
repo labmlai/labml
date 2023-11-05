@@ -430,7 +430,7 @@ def record(*,
     if app_url is not None:
         if lab_conf is None:
             lab_conf = {}
-        lab_conf['app_track_url'] = app_url
+        lab_conf['app_url'] = app_url
 
     if lab_conf is not None:
         from labml.internal.lab import lab_singleton as _internal
