@@ -22,7 +22,7 @@ from ..tracker import tracker_singleton as tracker
 from ..util import is_ipynb, is_colab, is_kaggle
 
 if TYPE_CHECKING:
-    from ..app.experiment import ApiExperiment
+    from ..app.experiment import AppExperiment
 
 
 class ModelSaver:
@@ -178,7 +178,7 @@ class Experiment:
             automatically determining ``python_file``
         tags (Set[str], optional): Set of tags for experiment
     """
-    app_experiment: Optional['ApiExperiment']
+    app_experiment: Optional['AppExperiment']
 
     is_started: bool
     run: Run
@@ -393,17 +393,19 @@ class Experiment:
             if app_conf is not None:
                 from labml.internal.tracker.writers import app as app_writer
                 from labml.internal.app import AppTracker
-                from labml.internal.app.experiment import ApiExperiment
-                api_caller = AppTracker(app_conf.url,
-                                        {'run_uuid': self.run.uuid,
-                                        'rank': self.run.distributed_rank,
-                                        'world_size': self.run.distributed_world_size},
+                from labml.internal.app.experiment import AppExperiment
+                api_tracker = AppTracker(app_conf.url,
+                                        {
+                                            'run_uuid': self.run.uuid,
+                                            'rank': self.run.distributed_rank,
+                                            'world_size': self.run.distributed_world_size,
+                                        },
                                         timeout_seconds=120)
-                self.app_experiment = ApiExperiment(api_caller,
+                self.app_experiment = AppExperiment(api_tracker,
                                                     frequency=app_conf.frequency,
                                                     open_browser=app_conf.open_browser)
-                tracker().add_writer(app_writer.Writer(api_caller,
-                                                    frequency=app_conf.frequency))
+                tracker().add_writer(app_writer.Writer(api_tracker,
+                                                       frequency=app_conf.frequency))
             else:
                 logger.log('No labml server url specified. '
                            'Please start a labml server and specify the URL. '

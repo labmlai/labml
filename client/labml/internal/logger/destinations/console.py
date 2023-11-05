@@ -1,6 +1,6 @@
 from typing import List, Union, Tuple, Optional
 
-from ...app.logs import API_LOGS
+from ...app.logs import APP_CONSOLE_LOGS
 from ..destinations import Destination
 from ...util.colors import StyleCode, ANSI_RESET
 
@@ -51,4 +51,4 @@ class ConsoleDestination(Destination):
         if self.is_screen:
             print(text, end=end_char, flush=True)
         else:
-            API_LOGS.outputs(logger_=text + end_char)
+            APP_CONSOLE_LOGS.outputs(logger_=text + end_char)

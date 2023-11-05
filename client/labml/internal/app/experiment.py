@@ -4,7 +4,7 @@ from typing import Dict, Optional, TYPE_CHECKING
 
 from . import AppTracker, Packet, AppTrackDataSource, AppTrackResponseHandler
 from .dynamic import DynamicUpdateHandler
-from .url import ApiUrlHandler
+from .url import AppUrlResponseHandler
 from ..configs.processor import ConfigsSaver
 
 if TYPE_CHECKING:
@@ -14,11 +14,11 @@ LOGS_FREQUENCY = 0
 
 
 class AppConfigsSaver(ConfigsSaver):
-    def __init__(self, api_experiment: 'ApiExperiment'):
-        self.api_experiment = api_experiment
+    def __init__(self, app_experiment: 'AppExperiment'):
+        self._app_experiment = app_experiment
 
     def save(self, configs: Dict):
-        self.api_experiment.save_configs(configs)
+        self._app_experiment.save_configs(configs)
 
 
 class DynamicHyperParamHandler(AppTrackResponseHandler):
@@ -33,17 +33,17 @@ class DynamicHyperParamHandler(AppTrackResponseHandler):
         return False
 
 
-class ApiExperiment(AppTrackDataSource):
+class AppExperiment(AppTrackDataSource):
     configs_saver: Optional[AppConfigsSaver]
 
-    def __init__(self, api_caller: AppTracker, *,
+    def __init__(self, app_tracker: AppTracker, *,
                  frequency: float,
                  open_browser: bool):
         super().__init__()
 
         self.frequency = frequency
         self.open_browser = open_browser
-        self.api_caller = api_caller
+        self.app_tracker = app_tracker
         self.configs_saver = None
         self.data = {}
         self.lock = threading.Lock()
@@ -57,7 +57,7 @@ class ApiExperiment(AppTrackDataSource):
         with self.lock:
             self.data['configs'] = configs
 
-        self.api_caller.has_data(self)
+        self.app_tracker.has_data(self)
 
     def get_data_packet(self) -> Packet:
         with self.lock:
@@ -67,7 +67,7 @@ class ApiExperiment(AppTrackDataSource):
             return packet
 
     def start(self, run: 'Run'):
-        self.api_caller.add_handler(ApiUrlHandler(self.open_browser, 'Monitor experiment at '))
+        self.app_tracker.add_handler(AppUrlResponseHandler(self.open_browser, 'Monitor experiment at '))
 
         with self.lock:
             from labml.internal.computer.configs import computer_singleton
@@ -89,17 +89,17 @@ class ApiExperiment(AppTrackDataSource):
                 notes=run.notes,
             ))
 
-        self.api_caller.has_data(self)
+        self.app_tracker.has_data(self)
 
-        from labml.internal.app.logs import API_LOGS
-        API_LOGS.set_api(self.api_caller, frequency=LOGS_FREQUENCY)
+        from labml.internal.app.logs import APP_CONSOLE_LOGS
+        APP_CONSOLE_LOGS.set_app_tracker(self.app_tracker, frequency=LOGS_FREQUENCY)
 
     def worker(self):
-        from labml.internal.app.logs import API_LOGS
-        API_LOGS.set_api(None, frequency=LOGS_FREQUENCY)
+        from labml.internal.app.logs import APP_CONSOLE_LOGS
+        APP_CONSOLE_LOGS.set_app_tracker(None, frequency=LOGS_FREQUENCY)
 
     def set_dynamic_handler(self, handler: DynamicUpdateHandler):
-        self.api_caller.add_handler(DynamicHyperParamHandler(handler))
+        self.app_tracker.add_handler(DynamicHyperParamHandler(handler))
 
     def status(self, rank: int, status: str, details: str, time_: float):
         with self.lock:
@@ -110,8 +110,8 @@ class ApiExperiment(AppTrackDataSource):
                 'time': time_
             }
 
-        self.api_caller.has_data(self)
+        self.app_tracker.has_data(self)
 
         # TODO: Will have to fix this when there are other statuses that dont stop the experiment
         # This will stop the thread after sending all the data
-        self.api_caller.stop()
+        self.app_tracker.stop()

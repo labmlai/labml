@@ -9,8 +9,8 @@ from typing import List
 from labml import logger, experiment
 from labml.experiment import generate_uuid
 from labml.internal.app import AppTracker, SimpleAppTrackDataSource
-from labml.internal.app.logs import ApiLogs
-from labml.internal.app.url import ApiUrlHandler
+from labml.internal.app.logs import AppConsoleLogs
+from labml.internal.app.url import AppUrlResponseHandler
 from labml.internal.lab import get_app_url_for_handle
 from labml.logger import Text
 from labml.utils.validators import ip_validator
@@ -38,7 +38,7 @@ def _start_app_server(ip: str, port: int):
 class ExecutorThread(threading.Thread):
     process: subprocess.Popen
 
-    def __init__(self, command: str, api_logs: ApiLogs):
+    def __init__(self, command: str, api_logs: AppConsoleLogs):
         super().__init__(daemon=False)
         self.api_logs = api_logs
         self.command = command
@@ -99,16 +99,16 @@ def _capture(args: List[str]):
 
     api_caller = AppTracker(base_url, {'run_uuid': generate_uuid()},
                             timeout_seconds=120)
-    api_logs = ApiLogs()
+    api_logs = AppConsoleLogs()
     data = {
         'name': 'Capture',
         'comment': ' '.join(args),
         'time': time.time()
     }
 
-    api_caller.add_handler(ApiUrlHandler(True, 'Monitor output at '))
+    api_caller.add_handler(AppUrlResponseHandler(True, 'Monitor output at '))
     api_caller.has_data(SimpleAppTrackDataSource(data))
-    api_logs.set_api(api_caller, frequency=0)
+    api_logs.set_app_tracker(api_caller, frequency=0)
 
     logger.log('Start capturing...', Text.meta)
     if args:

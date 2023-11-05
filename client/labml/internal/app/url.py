@@ -5,7 +5,7 @@ from labml.internal.app import AppTrackResponseHandler
 from labml.logger import Text
 
 
-class ApiUrlHandler(AppTrackResponseHandler):
+class AppUrlResponseHandler(AppTrackResponseHandler):
     def __init__(self, open_browser: bool, label: str):
         self.label = label
         self.open_browser = open_browser

@@ -6,7 +6,7 @@ from typing import Union
 import numpy as np
 
 from ..app import AppTracker, Packet, AppTrackDataSource
-from ..app.url import ApiUrlHandler
+from ..app.url import AppUrlResponseHandler
 
 MAX_BUFFER_SIZE = 1024
 
@@ -32,7 +32,7 @@ class Header(AppTrackDataSource):
             return packet
 
     def start(self, configs: Dict[str, any]):
-        self.api_caller.add_handler(ApiUrlHandler(self.open_browser, 'Monitor computer at '))
+        self.api_caller.add_handler(AppUrlResponseHandler(self.open_browser, 'Monitor computer at '))
         with self.lock:
             self.data['configs'] = configs
             self.data['name'] = 'My computer'
