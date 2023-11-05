@@ -118,8 +118,8 @@ class Lab:
                 raise RuntimeError(f'app_track_url: {app_track_url} is not a valid URL')
 
             self.app_configs = WebAPIConfigs(url=app_track_url,
-                                             frequency=self.configs['web_api_frequency'],
-                                             open_browser=self.configs['web_api_open_browser'],
+                                             frequency=self.configs['app_track_frequency'],
+                                             open_browser=self.configs['app_open_browser'],
                                              is_default=False)
         else:
             self.app_configs = None
@@ -147,8 +147,8 @@ class Lab:
             analytics_path='analytics',
             analytics_templates={},
             app_track_url=get_app_url_for_handle('track'),
-            web_api_frequency=0,
-            web_api_open_browser=True,
+            app_track_frequency=0,
+            app_open_browser=True,
             indicators=[
                 {
                     'class_name': 'Scalar',

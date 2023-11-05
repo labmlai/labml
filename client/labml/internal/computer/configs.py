@@ -73,8 +73,8 @@ class Computer:
         self.uuid = config['uuid']
 
         self.app_configs = WebAPIConfigs(url=config['app_computer_url'],
-                                         frequency=config['web_api_frequency'],
-                                         open_browser=config['web_api_open_browser'],
+                                         frequency=config['app_track_frequency'],
+                                         open_browser=config['app_open_browser'],
                                          is_default=False)
         self.app_sync_url = config['app_sync_url']
         self.app_polling_url = config['app_polling_url']
@@ -89,8 +89,8 @@ class Computer:
     def __default_config():
         return dict(
             app_computer_url=get_app_url_for_handle('computer'),
-            web_api_frequency=0,
-            web_api_open_browser=True,
+            app_track_frequency=0,
+            app_open_browser=True,
             app_sync_url=get_app_url_for_handle('sync'),
             app_polling_url=get_app_url_for_handle('polling'),
         )

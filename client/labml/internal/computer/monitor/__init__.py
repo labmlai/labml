@@ -12,9 +12,7 @@ class MonitorComputer:
                                timeout_seconds=120,
                                daemon=True)
         self.writer = Writer(api_caller, frequency=computer_singleton().app_configs.frequency)
-        self.header = Header(api_caller,
-                             frequency=computer_singleton().app_configs.frequency,
-                             open_browser=open_browser)
+        self.header = Header(api_caller, open_browser=open_browser)
         self.scanner = Scanner()
 
     def start(self):

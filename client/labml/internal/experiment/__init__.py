@@ -391,7 +391,7 @@ class Experiment:
         if 'app' in self.writers:
             app_conf = lab_singleton().app_configs
             if app_conf is not None:
-                from labml.internal.tracker.writers import web_api
+                from labml.internal.tracker.writers import app as app_writer
                 from labml.internal.app import ApiCaller
                 from labml.internal.app.experiment import ApiExperiment
                 api_caller = ApiCaller(app_conf.url,
@@ -402,7 +402,7 @@ class Experiment:
                 self.app_experiment = ApiExperiment(api_caller,
                                                     frequency=app_conf.frequency,
                                                     open_browser=app_conf.open_browser)
-                tracker().add_writer(web_api.Writer(api_caller,
+                tracker().add_writer(app_writer.Writer(api_caller,
                                                     frequency=app_conf.frequency))
             else:
                 logger.log('No labml server url specified. '

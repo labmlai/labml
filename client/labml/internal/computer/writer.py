@@ -14,12 +14,9 @@ LOGS_FREQUENCY = 0
 
 
 class Header(ApiDataSource):
-    def __init__(self, api_caller: ApiCaller, *,
-                 frequency: float,
-                 open_browser: bool):
+    def __init__(self, api_caller: ApiCaller, *, open_browser: bool):
         super().__init__()
 
-        self.frequency = frequency
         self.open_browser = open_browser
         self.api_caller = api_caller
         self.name = None
@@ -57,8 +54,7 @@ class Header(ApiDataSource):
 
 
 class Writer(ApiDataSource):
-    def __init__(self, api_caller: ApiCaller, *,
-                 frequency: float):
+    def __init__(self, api_caller: ApiCaller, *,                 frequency: float):
         super().__init__()
 
         self.frequency = frequency
