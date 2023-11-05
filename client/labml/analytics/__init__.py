@@ -135,18 +135,6 @@ def get_run(uuid: str):
     return _cache.get_run(uuid)
 
 
-def set_preferred_db(db: str):
-    """
-    Set the preference to load data from.
-
-    Arguments:
-        db (str): Either ``tensorboard`` or ``sqlite``
-    """
-    if db not in ['tensorboard', 'sqlite']:
-        raise ValueError('db should be one of tensorboard or sqlite')
-    _cache.set_preferred_db(db)
-
-
 @overload
 def distribution(indicators: IndicatorCollection, *,
                  names: Optional[List[str]] = None,

@@ -22,7 +22,11 @@ class Event(NamedTuple):
 
 class Analytics:
     def summarize(self, events):
-        raise NotImplementedError()
+        step = np.mean([e[0] for e in events])
+        values = np.sort([e[1] for e in events])
+        basis_points = np.percentile(values, BASIS_POINTS)
+
+        return np.concatenate(([step], basis_points))
 
     def summarize_scalars(self, events: List[any], points: Optional[int] = 100):
         # Shrink to 100 histograms

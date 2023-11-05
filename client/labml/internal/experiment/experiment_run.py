@@ -84,7 +84,6 @@ class RunInfo:
 
         self.diff_path = self.run_path / "source.diff"
 
-        self.sqlite_path = self.run_path / "sqlite.db"
         self.artifacts_folder = self.run_path / "artifacts"
         self.log_file = self.run_path / 'log.jsonl'
 
