@@ -3,10 +3,11 @@ from typing import Optional, Set
 
 from labml import logger
 from labml.logger import Text
-from . import CONFIGS_FOLDER
 from .. import util
 from ..app.configs import AppTrackConfigs
 from ..lab import get_app_url_for_handle
+
+CONFIGS_FOLDER = '.labml'
 
 
 class Computer:
@@ -49,7 +50,7 @@ class Computer:
                     config = {}
         else:
             logger.log([
-                ('~/.labml/configs.yaml', Text.value),
+                (f'~/{CONFIGS_FOLDER}/configs.yaml', Text.value),
                 ' does not exist. Creating ',
                 (str(self.configs_file), Text.meta)])
             config = {}
