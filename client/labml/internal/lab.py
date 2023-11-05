@@ -26,15 +26,18 @@ def get_app_url_for_handle(handle: str, *, base_url=None):
         return None
 
     if not base_url.startswith('http'):
-        raise RuntimeError(f'labml_server environment variable should be a valid URL: {base_url}')
+        raise RuntimeError(f'app_url should be a valid URL: {base_url}')
     if '?' in base_url:
-        raise RuntimeError(f'labml_server environment variable should be a valid URL '
+        raise RuntimeError(f'app_url should be a valid URL '
                            f'that does contain any url parameters or \'?\': {base_url}')
 
     if not base_url.endswith('/'):
         base_url += '/'
 
-    return f'{base_url}{handle}?'
+    if not handle:
+        return f'{base_url}'
+    else:
+        return f'{base_url}{handle}?'
 
     # return 'https://domain/api/v1/token/track?'
 
