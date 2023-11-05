@@ -30,7 +30,7 @@ class Artifact(Indicator, ABC):
         return None
 
     def collect_value(self, value):
-        if type(value) == tuple and len(value) == 2:
+        if isinstance(value, tuple) and len(value) == 2:
             key = value[0]
             value = value[1]
         else:
