@@ -71,17 +71,9 @@ class Computer:
                 config[k] = v
 
         self.uuid = config['uuid']
-        web_api_url = config['web_api']
-        if web_api_url is not None and web_api_url[0:4] != 'http':
-            base_url = get_api_url('computer')
-            if base_url is not None:
-                raise RuntimeError(f'web_api ({web_api_url}) is not a valid URL')
-            else:
-                web_api_url = f"{base_url}labml_token={web_api_url}&"
 
-        self.web_api = WebAPIConfigs(url=web_api_url,
+        self.web_api = WebAPIConfigs(url=config['web_api'],
                                      frequency=config['web_api_frequency'],
-                                     verify_connection=config['web_api_verify_connection'],
                                      open_browser=config['web_api_open_browser'],
                                      is_default=False)
         self.web_api_sync = config['web_api_sync']
@@ -109,7 +101,6 @@ class Computer:
         return dict(
             web_api=get_api_url('computer'),
             web_api_frequency=0,
-            web_api_verify_connection=True,
             web_api_open_browser=True,
             web_api_sync=get_api_url('sync'),
             web_api_polling=get_api_url('polling'),

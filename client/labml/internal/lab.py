@@ -129,7 +129,6 @@ class Lab:
             #         web_api_url = computer_singleton().web_api.url
             self.web_api = WebAPIConfigs(url=web_api_url,
                                          frequency=self.configs['web_api_frequency'],
-                                         verify_connection=self.configs['web_api_verify_connection'],
                                          open_browser=self.configs['web_api_open_browser'],
                                          is_default=False)
         else:
@@ -159,7 +158,6 @@ class Lab:
             analytics_templates={},
             web_api=get_api_url('track'),
             web_api_frequency=0,
-            web_api_verify_connection=True,
             web_api_open_browser=True,
             indicators=[
                 {
