@@ -1,7 +1,6 @@
 import typing
 from typing import Optional, List, Union, Tuple
 
-from labml.internal.util.colors import StyleCode
 from .iterator import Iterator
 from .loop import Loop
 from .mix import Mix
@@ -10,6 +9,7 @@ from .time_recorder import TimeRecorder, Summary as TimeSummary
 from ..logger import logger_singleton as logger
 from ..logger.types import LogPart
 from ..tracker import tracker_singleton as tracker
+from ..util.colors import StyleCode
 from ...logger import Text
 from ...utils.notice import labml_notice
 

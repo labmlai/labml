@@ -2,7 +2,7 @@ import math
 import time
 from typing import TYPE_CHECKING, List
 
-from labml.logger import Text
+from labml import logger
 from ..tracker import tracker_singleton as tracker
 
 if TYPE_CHECKING:
@@ -169,20 +169,20 @@ class OuterSection(Section):
             if self._progress == 0.:
                 parts.append("...")
             else:
-                parts.append((f" {math.floor(self._progress * 100) :4.0f}%", Text.meta2))
+                parts.append((f" {math.floor(self._progress * 100) :4.0f}%", logger.Text.meta2))
         else:
             if self.is_successful:
-                parts.append(("...[DONE]", Text.success))
+                parts.append(("...[DONE]", logger.Text.success))
             else:
-                parts.append(("...[FAIL]", Text.danger))
+                parts.append(("...[FAIL]", logger.Text.danger))
 
         if self._is_timed and self._progress > 0.:
             duration_ms = 1000 * self.get_estimated_time()
             parts.append((f"\t{duration_ms :,.2f}ms",
-                          Text.meta))
+                          logger.Text.meta))
 
         if self.message is not None:
-            parts.append((f"\t{self.message}", Text.value))
+            parts.append((f"\t{self.message}", logger.Text.value))
 
         if self._state != 'entered' and self._is_new_line:
             parts.append(("\n", None))
@@ -275,13 +275,13 @@ class LoopingSection(Section):
         color = None
 
         if not self.is_successful:
-            color = Text.danger
+            color = logger.Text.danger
 
         if self._progress == 0.:
-            parts.append(("  ...", Text.subtle))
+            parts.append(("  ...", logger.Text.subtle))
         else:
             parts.append((f"{math.floor(self._progress * 100) :4.0f}%",
-                          color or Text.subtle))
+                          color or logger.Text.subtle))
 
         if self._is_timed:
             duration_ms = 1000 * self._calc_estimated_time()
@@ -292,6 +292,6 @@ class LoopingSection(Section):
             else:
                 s = (" " * (self._time_length - tl)) + s
 
-            parts.append((s, color or Text.meta))
+            parts.append((s, color or logger.Text.meta))
 
         return parts

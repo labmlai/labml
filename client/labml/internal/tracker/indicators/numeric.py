@@ -4,7 +4,7 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from labml.internal.util.values import to_numpy
+from ...util.values import to_numpy
 from . import Indicator
 
 
