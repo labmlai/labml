@@ -79,17 +79,6 @@ class Computer:
         self.web_api_sync = config['web_api_sync']
         self.web_api_polling = config['web_api_polling']
 
-    def set_token(self, token: str):
-        with monit.section('Update ~/labml/configs.yaml'):
-            with open(str(self.configs_file)) as f:
-                config = util.yaml_load(f.read())
-                assert config is not None
-
-            config['web_api'] = token
-
-            with open(str(self.configs_file), 'w') as f:
-                f.write(util.yaml_dump(config))
-
     def __str__(self):
         return f"<Computer uuid={self.uuid}>"
 

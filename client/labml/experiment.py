@@ -403,7 +403,7 @@ def record(*,
            tags: Optional[Set[str]] = None,
            exp_conf: Dict[str, any] = None,
            lab_conf: Dict[str, any] = None,
-           token: str = None,
+           app_url: str = None,
            distributed_rank: int = 0,
            distributed_world_size: int = 0,
            disable_screen: bool = False):
@@ -420,17 +420,17 @@ def record(*,
         lab_conf (Dict[str, any], optional): a dictionary of configurations for LabML.
          Use this if you want to change default configurations such as ``web_api``, and
          ``data_path``.
-        token (str, optional): a shortcut to provide LabML mobile app token (or url - ``web_api``)
+        app_url (str, optional): a shortcut to provide LabML app url
          instead of including it in ``lab_conf``. You can set this with :func:`labml.lab.configure`,
          `or with a configuration file for the entire project <../guide/installation_setup.html>`_.
         distributed_rank (int, optional): rank if this is a distributed training session
         distributed_world_size (int, optional): world_size if this is a distributed training session
     """
 
-    if token is not None:
+    if app_url is not None:
         if lab_conf is None:
             lab_conf = {}
-        lab_conf['web_api'] = token
+        lab_conf['web_api'] = app_url
 
     if lab_conf is not None:
         from labml.internal.lab import lab_singleton as _internal

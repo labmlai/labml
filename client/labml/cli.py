@@ -184,7 +184,6 @@ def _monitor():
 def _service():
     from labml.internal.computer.service import service_singleton
 
-    service_singleton().set_token()
     service_singleton().create()
 
 

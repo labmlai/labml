@@ -22,11 +22,7 @@ def get_api_url(handle: str):
             raise RuntimeError(f'labml_server environment variable should be a valid URL '
                                f'that does not end with `/` or `?`: {base_url}')
 
-        if 'labml_token' in os.environ:
-            token = os.environ['labml_token']
-            return f'{base_url}/{handle}?labml_token={token}&'
-        else:
-            return f'{base_url}/{handle}?'
+        return f'{base_url}/{handle}?'
 
     # return 'https://api.labml.ai/api/v1/track?'
     return None
@@ -117,16 +113,9 @@ class Lab:
         if self.configs['web_api']:
             web_api_url = self.configs['web_api']
             if web_api_url[0:4] != 'http':
-                base_url = get_api_url('track')
-                if base_url is not None:
-                    raise RuntimeError(f'web_api ({web_api_url}) is not a valid URL')
-                else:
-                    web_api_url = f"{base_url}labml_token={web_api_url}&"
-            # is_default = web_api_url == self.__default_config()['web_api']
-            # if is_default:
-                from labml.internal.computer.configs import computer_singleton
-            #     if not computer_singleton().web_api.is_default:
-            #         web_api_url = computer_singleton().web_api.url
+                # base_url = get_api_url('track')
+                raise RuntimeError(f'web_api ({web_api_url}) is not a valid URL')
+
             self.web_api = WebAPIConfigs(url=web_api_url,
                                          frequency=self.configs['web_api_frequency'],
                                          open_browser=self.configs['web_api_open_browser'],

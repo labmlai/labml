@@ -70,22 +70,6 @@ class Service:
             if ret != 0:
                 monit.fail()
 
-    def set_token(self):
-        from labml.internal.computer.configs import computer_singleton
-
-        if not computer_singleton().web_api.is_default:
-            return True
-
-        while True:
-            token = input('Enter app.labml.ai token (Go to Settings after logging into app.labml.ai):')
-
-            if len(token) != 32:
-                logger.log("Invalid token", Text.danger)
-
-            break
-
-        computer_singleton().set_token(token)
-
 
 _internal: Optional[Service] = None
 
@@ -102,7 +86,6 @@ def _test():
     s = Service()
     print(s)
     # s.create()
-    s.set_token()
 
 
 if __name__ == '__main__':
