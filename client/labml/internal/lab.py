@@ -12,20 +12,31 @@ from .util import is_colab, is_kaggle
 _CONFIG_FILE_NAME = '.labml.yaml'
 
 
-def get_app_url_for_handle(handle: str):
-    import os
-    if 'labml_server' in os.environ:
-        base_url = os.environ['labml_server']
-        if not base_url.startswith('http'):
-            raise RuntimeError(f'labml_server environment variable should be a valid URL: {base_url}')
-        if base_url.endswith('/') or base_url.endswith('?'):
-            raise RuntimeError(f'labml_server environment variable should be a valid URL '
-                               f'that does not end with `/` or `?`: {base_url}')
+def get_app_url_for_handle(handle: str, *, base_url=None):
+    if base_url is None:
+        import os
+        if 'labml_app_url' in os.environ:
+            base_url = os.environ['labml_app_url']
 
-        return f'{base_url}/{handle}?'
+    if base_url is None:
+        return None
+
+    base_url = base_url.strip()
+    if not base_url:
+        return None
+
+    if not base_url.startswith('http'):
+        raise RuntimeError(f'labml_server environment variable should be a valid URL: {base_url}')
+    if '?' in base_url:
+        raise RuntimeError(f'labml_server environment variable should be a valid URL '
+                           f'that does contain any url parameters or \'?\': {base_url}')
+
+    if not base_url.endswith('/'):
+        base_url += '/'
+
+    return f'{base_url}{handle}?'
 
     # return 'https://domain/api/v1/token/track?'
-    return None
 
 
 class LabYamlNotfoundError(RuntimeError):
@@ -111,12 +122,9 @@ class Lab:
 
         self.check_repo_dirty = self.configs['check_repo_dirty']
         self.indicators = self.configs['indicators']
-        if self.configs['app_track_url']:
-            app_track_url = self.configs['app_track_url']
-            if app_track_url[0:4] != 'http':
-                # base_url = get_app_url_from_handle('track')
-                raise RuntimeError(f'app_track_url: {app_track_url} is not a valid URL')
+        app_track_url = get_app_url_for_handle('track', base_url=self.configs['app_url'])
 
+        if app_track_url:
             self.app_configs = AppTrackConfigs(url=app_track_url,
                                                frequency=self.configs['app_track_frequency'],
                                                open_browser=self.configs['app_open_browser'],
@@ -146,7 +154,7 @@ class Lab:
             experiments_path='logs',
             analytics_path='analytics',
             analytics_templates={},
-            app_track_url=get_app_url_for_handle('track'),
+            app_url=None,
             app_track_frequency=0,
             app_open_browser=True,
             indicators=[

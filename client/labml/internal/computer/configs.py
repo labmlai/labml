@@ -72,12 +72,18 @@ class Computer:
 
         self.uuid = config['uuid']
 
-        self.app_configs = AppTrackConfigs(url=config['app_computer_url'],
+        app_url = get_app_url_for_handle('', base_url=config['app_url'])
+
+        if not app_url:
+            raise ValueError('Please provide `app_url` in `~/labml/configs.yaml` or set '
+                             'environment variable `labml_app_url`.')
+
+        self.app_configs = AppTrackConfigs(url=get_app_url_for_handle('computer', base_url=app_url),
                                            frequency=config['app_track_frequency'],
                                            open_browser=config['app_open_browser'],
                                            is_default=False)
-        self.app_sync_url = config['app_sync_url']
-        self.app_polling_url = config['app_polling_url']
+        self.app_sync_url = get_app_url_for_handle('sync', base_url=app_url)
+        self.app_polling_url = get_app_url_for_handle('polling', base_url=app_url)
 
     def __str__(self):
         return f"<Computer uuid={self.uuid}>"
@@ -88,11 +94,9 @@ class Computer:
     @staticmethod
     def __default_config():
         return dict(
-            app_computer_url=get_app_url_for_handle('computer'),
+            app_url=None,
             app_track_frequency=0,
             app_open_browser=True,
-            app_sync_url=get_app_url_for_handle('sync'),
-            app_polling_url=get_app_url_for_handle('polling'),
         )
 
     def get_projects(self) -> Set[str]:

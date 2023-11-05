@@ -94,11 +94,11 @@ class ExecutorThread(threading.Thread):
 def _capture(args: List[str]):
     base_url = get_app_url_for_handle('track')
     if base_url is None:
-        raise RuntimeError(f'Please specify labml_server environment variable. '
+        raise RuntimeError(f'Please specify `labml_app_url` environment variable. '
                            f'How to setup a labml server https://github.com/labmlai/labml/tree/master/app')
 
     app_tracker = AppTracker(base_url, {'run_uuid': generate_uuid()},
-                            timeout_seconds=120)
+                             timeout_seconds=120)
     app_console_logs = AppConsoleLogs()
     data = {
         'name': 'Capture',
