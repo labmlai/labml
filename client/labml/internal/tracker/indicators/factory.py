@@ -31,33 +31,20 @@ def create_default_indicator(name: str, value: any, is_print: bool):
 
     try:
         import torch
-    except ImportError:
-        torch = None
 
-    if torch is not None:
-        from torch.optim.optimizer import Optimizer
         if isinstance(value, torch.nn.parameter.Parameter):
             return Scalar(name, is_print)
         elif isinstance(value, torch.Tensor):
             return Scalar(name, is_print)
-        elif isinstance(value, torch.nn.Module):
-            from labml.internal.tracker.indicators.aggregate import PyTorchModule
-            return PyTorchModule(name, is_print)
-        elif isinstance(value, Optimizer):
-            from labml.internal.tracker.indicators.aggregate import PyTorchOptimizer
-            return PyTorchOptimizer(name, is_print)
-        elif isinstance(value, tuple) and isinstance(value[0], Optimizer):
-            from labml.internal.tracker.indicators.aggregate import PyTorchOptimizer
-            return PyTorchOptimizer(name, is_print)
+    except ImportError:
+        pass
 
     try:
         import jaxlib
-    except ImportError:
-        jaxlib = None
-
-    if jaxlib is not None:
         from jaxlib.xla_extension import DeviceArray
         if isinstance(value, DeviceArray):
             return Scalar(name, is_print)
+    except ImportError:
+        pass
 
     raise ValueError(f"Unknown type {type(value)}")

@@ -4,24 +4,21 @@ from typing import Dict
 from typing import Union
 
 import numpy as np
-from labml.internal.api.url import ApiUrlHandler
 
-from labml.internal.api import ApiCaller, Packet, ApiDataSource
+from ..app import AppTracker, Packet, AppTrackDataSource
+from ..app.url import AppUrlResponseHandler
 
 MAX_BUFFER_SIZE = 1024
 
 LOGS_FREQUENCY = 0
 
 
-class Header(ApiDataSource):
-    def __init__(self, api_caller: ApiCaller, *,
-                 frequency: float,
-                 open_browser: bool):
+class Header(AppTrackDataSource):
+    def __init__(self, app_tracker: AppTracker, *, open_browser: bool):
         super().__init__()
 
-        self.frequency = frequency
         self.open_browser = open_browser
-        self.api_caller = api_caller
+        self.app_tracker = app_tracker
         self.name = None
         self.comment = None
         self.data = {}
@@ -35,12 +32,12 @@ class Header(ApiDataSource):
             return packet
 
     def start(self, configs: Dict[str, any]):
-        self.api_caller.add_handler(ApiUrlHandler(self.open_browser, 'Monitor computer at '))
+        self.app_tracker.add_handler(AppUrlResponseHandler(self.open_browser, 'Monitor computer at '))
         with self.lock:
             self.data['configs'] = configs
             self.data['name'] = 'My computer'
 
-        self.api_caller.has_data(self)
+        self.app_tracker.has_data(self)
 
     def status(self, rank: int, status: str, details: str, time_: float):
         with self.lock:
@@ -51,18 +48,17 @@ class Header(ApiDataSource):
                 'time': time_
             }
 
-        self.api_caller.has_data(self)
+        self.app_tracker.has_data(self)
 
-        self.api_caller.stop()
+        self.app_tracker.stop()
 
 
-class Writer(ApiDataSource):
-    def __init__(self, api_caller: ApiCaller, *,
-                 frequency: float):
+class Writer(AppTrackDataSource):
+    def __init__(self, app_tracker: AppTracker, *, frequency: float):
         super().__init__()
 
         self.frequency = frequency
-        self.api_caller = api_caller
+        self.app_tracker = app_tracker
         self.last_committed = time.time()
         self.data = {}
         self.lock = threading.Lock()
@@ -97,7 +93,7 @@ class Writer(ApiDataSource):
             if not self.data:
                 return
 
-        self.api_caller.has_data(self)
+        self.app_tracker.has_data(self)
 
     def get_and_clear_indicators(self):
         data = {}

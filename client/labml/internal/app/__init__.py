@@ -22,12 +22,12 @@ class Packet:
     idx: int = -1
 
 
-class ApiDataSource:
+class AppTrackDataSource:
     def get_data_packet(self) -> Packet:
         raise NotImplementedError
 
 
-class SimpleApiDataSource(ApiDataSource):
+class SimpleAppTrackDataSource(AppTrackDataSource):
     def __init__(self, data: Dict[str, any]):
         self.data = data
 
@@ -35,24 +35,24 @@ class SimpleApiDataSource(ApiDataSource):
         return Packet(data=self.data)
 
 
-class ApiResponseHandler:
+class AppTrackResponseHandler:
     """All handlers gets called when there's a message from the App"""
     def handle(self, data) -> bool:
         raise NotImplementedError
 
 
-class _WebApiThread(threading.Thread):
+class _AppTrackThread(threading.Thread):
     def __init__(self, url: str, *, timeout_seconds: int, daemon: bool):
         super().__init__(daemon=daemon)
         self.please_wait_count = 0
         self.timeout_seconds = timeout_seconds
         self.url = url
-        self.queue: Queue[ApiDataSource] = Queue()
+        self.queue: Queue[AppTrackDataSource] = Queue()
         self.is_stopped = False
         self.errored = False
-        self.handlers: List[ApiResponseHandler] = []
+        self.handlers: List[AppTrackResponseHandler] = []
 
-    def push_data_source(self, data_source: ApiDataSource):
+    def push_data_source(self, data_source: AppTrackDataSource):
         self.queue.put(data_source)
 
     def stop(self):
@@ -60,7 +60,7 @@ class _WebApiThread(threading.Thread):
         logger.log('Still updating labml server, please wait for it to complete...', Text.highlight)
         self.please_wait_count = 1
 
-    def add_handler(self, handler: ApiResponseHandler):
+    def add_handler(self, handler: AppTrackResponseHandler):
         self.handlers.append(handler)
 
     @staticmethod
@@ -198,13 +198,13 @@ class _WebApiThread(threading.Thread):
         return result
 
 
-class ApiCaller:
-    web_api_url: str
+class AppTracker:
+    app_track_url: str
     params: Dict[str, str]
-    thread: Optional[_WebApiThread]
+    thread: Optional[_AppTrackThread]
     state_attributes: Set[str]
 
-    def __init__(self, web_api_url: str, params: Dict[str, str], *,
+    def __init__(self, app_track_url: str, params: Dict[str, str], *,
                  timeout_seconds: int = 15,
                  daemon: bool = False):
         super().__init__()
@@ -214,7 +214,7 @@ class ApiCaller:
         params['labml_version'] = labml.__version__
         params = '&'.join([f'{k}={v}' for k, v in params.items()])
 
-        self.web_api_url = f'{web_api_url}{params}'
+        self.app_track_url = f'{app_track_url}{params}'
         self.timeout_seconds = timeout_seconds
         self.thread = None
         self.stopped = False
@@ -224,16 +224,16 @@ class ApiCaller:
             return False
 
         if self.thread is None:
-            self.thread = _WebApiThread(self.web_api_url,
-                                        timeout_seconds=self.timeout_seconds,
-                                        daemon=self.daemon)
+            self.thread = _AppTrackThread(self.app_track_url,
+                                          timeout_seconds=self.timeout_seconds,
+                                          daemon=self.daemon)
 
         if self.thread.errored:
             raise RuntimeError('LabML App error: See above for error details')
 
         return True
 
-    def has_data(self, source: ApiDataSource):
+    def has_data(self, source: AppTrackDataSource):
         if not self._check():
             return False
 
@@ -241,7 +241,7 @@ class ApiCaller:
         if not self.thread.is_alive():
             self.thread.start()
 
-    def add_handler(self, handler: ApiResponseHandler):
+    def add_handler(self, handler: AppTrackResponseHandler):
         if not self._check():
             return False
 

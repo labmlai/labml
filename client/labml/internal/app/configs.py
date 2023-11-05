@@ -1,4 +1,4 @@
-class WebAPIConfigs:
+class AppTrackConfigs:
     url: str
     frequency: float
     open_browser: bool

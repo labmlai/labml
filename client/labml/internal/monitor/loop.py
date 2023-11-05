@@ -2,8 +2,8 @@ import math
 import time
 from typing import Optional, Dict, TYPE_CHECKING, List, Collection
 
-from labml.internal.monitor.sections import LoopingSection
-from labml.logger import Text
+from labml import logger
+from ..monitor.sections import LoopingSection
 from ..tracker import tracker_singleton as tracker
 
 if TYPE_CHECKING:
@@ -99,8 +99,8 @@ class Loop:
 
         to_print = [("  ", None)]
         if self._is_print_iteration_time:
-            to_print.append((f"{estimate:,.0f}ms", Text.meta))
-        to_print.append((f"{spent_h:3d}:{spent_m:02d}m/{remain_h:3d}:{remain_m:02d}m  ", Text.meta2))
+            to_print.append((f"{estimate:,.0f}ms", logger.Text.meta))
+        to_print.append((f"{spent_h:3d}:{spent_m:02d}m/{remain_h:3d}:{remain_m:02d}m  ", logger.Text.meta2))
 
         return to_print
 

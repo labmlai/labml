@@ -10,10 +10,10 @@ class SyncRuns:
     projects: Optional[Projects]
 
     def __init__(self):
-        from labml.internal.computer.projects.api import DirectApiCaller
+        from labml.internal.computer.projects.app import DirectAppCaller
         from labml.internal.computer.configs import computer_singleton
 
-        self.sync_caller = DirectApiCaller(computer_singleton().web_api_sync,
+        self.sync_caller = DirectAppCaller(computer_singleton().app_sync_url,
                                            {'computer_uuid': computer_singleton().uuid},
                                            timeout_seconds=15)
 

@@ -1,20 +1,18 @@
-from labml.internal.api import ApiCaller
-from labml.internal.computer.configs import computer_singleton
-from labml.internal.computer.monitor.process import ProcessMonitor
-from labml.internal.computer.monitor.scanner import Scanner
-from labml.internal.computer.writer import Writer, Header
+from .process import ProcessMonitor
+from .scanner import Scanner
+from ..configs import computer_singleton
+from ..writer import Writer, Header
+from ...app import AppTracker
 
 
 class MonitorComputer:
     def __init__(self, session_uuid: str, open_browser):
-        api_caller = ApiCaller(computer_singleton().web_api.url,
-                               {'computer_uuid': computer_singleton().uuid, 'session_uuid': session_uuid},
-                               timeout_seconds=120,
-                               daemon=True)
-        self.writer = Writer(api_caller, frequency=computer_singleton().web_api.frequency)
-        self.header = Header(api_caller,
-                             frequency=computer_singleton().web_api.frequency,
-                             open_browser=open_browser)
+        app_tracker = AppTracker(computer_singleton().app_configs.url,
+                                {'computer_uuid': computer_singleton().uuid, 'session_uuid': session_uuid},
+                                timeout_seconds=120,
+                                daemon=True)
+        self.writer = Writer(app_tracker, frequency=computer_singleton().app_configs.frequency)
+        self.header = Header(app_tracker, open_browser=open_browser)
         self.scanner = Scanner()
 
     def start(self):

@@ -8,10 +8,10 @@ from typing import List
 
 from labml import logger, experiment
 from labml.experiment import generate_uuid
-from labml.internal.api import ApiCaller, SimpleApiDataSource
-from labml.internal.api.logs import ApiLogs
-from labml.internal.api.url import ApiUrlHandler
-from labml.internal.lab import get_api_url
+from labml.internal.app import AppTracker, SimpleAppTrackDataSource
+from labml.internal.app.logs import AppConsoleLogs
+from labml.internal.app.url import AppUrlResponseHandler
+from labml.internal.lab import get_app_url_for_handle
 from labml.logger import Text
 from labml.utils.validators import ip_validator
 
@@ -38,9 +38,9 @@ def _start_app_server(ip: str, port: int):
 class ExecutorThread(threading.Thread):
     process: subprocess.Popen
 
-    def __init__(self, command: str, api_logs: ApiLogs):
+    def __init__(self, command: str, app_console_logs: AppConsoleLogs):
         super().__init__(daemon=False)
-        self.api_logs = api_logs
+        self.app_console_logs = app_console_logs
         self.command = command
         self.exit_code = 0
 
@@ -53,10 +53,10 @@ class ExecutorThread(threading.Thread):
             buffer += data
             print(data, end='')
             if '\n' in buffer or len(buffer) > 100:
-                self.api_logs.outputs(**{name: buffer})
+                self.app_console_logs.outputs(**{name: buffer})
                 buffer = ''
         if len(buffer) > 0:
-            self.api_logs.outputs(**{name: buffer})
+            self.app_console_logs.outputs(**{name: buffer})
 
     def _read_stdout(self):
         self._read(self.process.stdout, 'stdout_')
@@ -92,27 +92,27 @@ class ExecutorThread(threading.Thread):
 
 
 def _capture(args: List[str]):
-    base_url = get_api_url('track')
+    base_url = get_app_url_for_handle('track')
     if base_url is None:
-        raise RuntimeError(f'Please specify labml_server environment variable. '
+        raise RuntimeError(f'Please specify `labml_app_url` environment variable. '
                            f'How to setup a labml server https://github.com/labmlai/labml/tree/master/app')
 
-    api_caller = ApiCaller(base_url, {'run_uuid': generate_uuid()},
-                           timeout_seconds=120)
-    api_logs = ApiLogs()
+    app_tracker = AppTracker(base_url, {'run_uuid': generate_uuid()},
+                             timeout_seconds=120)
+    app_console_logs = AppConsoleLogs()
     data = {
         'name': 'Capture',
         'comment': ' '.join(args),
         'time': time.time()
     }
 
-    api_caller.add_handler(ApiUrlHandler(True, 'Monitor output at '))
-    api_caller.has_data(SimpleApiDataSource(data))
-    api_logs.set_api(api_caller, frequency=0)
+    app_tracker.add_handler(AppUrlResponseHandler(True, 'Monitor output at '))
+    app_tracker.has_data(SimpleAppTrackDataSource(data))
+    app_console_logs.set_app_tracker(app_tracker, frequency=0)
 
     logger.log('Start capturing...', Text.meta)
     if args:
-        thread = ExecutorThread(' '.join(args), api_logs)
+        thread = ExecutorThread(' '.join(args), app_console_logs)
         thread.start()
         thread.join()
     else:
@@ -125,10 +125,10 @@ def _capture(args: List[str]):
             print(data, end='')
             buffer += data
             if '\n' in buffer or len(buffer) > 100:
-                api_logs.outputs(stdout_=buffer)
+                app_console_logs.outputs(stdout_=buffer)
                 buffer = ''
         if len(buffer) > 0:
-            api_logs.outputs(stdout_=buffer)
+            app_console_logs.outputs(stdout_=buffer)
 
     data = {
         'rank': 0,
@@ -137,12 +137,12 @@ def _capture(args: List[str]):
         'time': time.time()
     }
 
-    api_caller.has_data(SimpleApiDataSource({
+    app_tracker.has_data(SimpleAppTrackDataSource({
         'status': data,
         'time': time.time()
     }))
 
-    api_caller.stop()
+    app_tracker.stop()
 
 
 def _launch(args: List[str]):
@@ -178,7 +178,7 @@ def _monitor():
     from labml.internal.computer import process
     from labml.internal.computer.configs import computer_singleton
 
-    process.run(True, computer_singleton().web_api.open_browser)
+    process.run(True, computer_singleton().app_configs.open_browser)
 
 
 def _service():

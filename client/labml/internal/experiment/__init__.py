@@ -5,23 +5,24 @@ import time
 from typing import Optional, List, Set, Dict, Union, TYPE_CHECKING
 
 import git
+
 from labml import logger, monit
-from labml.internal.api.dynamic import DynamicUpdateHandler
-from labml.internal.configs.base import Configs
-from labml.internal.configs.dynamic_hyperparam import DynamicHyperParam
-from labml.internal.configs.processor import ConfigProcessor, FileConfigsSaver
-from labml.internal.experiment.experiment_run import Run
-from labml.internal.experiment.watcher import ExperimentWatcher
-from labml.internal.lab import lab_singleton
-from labml.internal.monitor import monitor_singleton as monitor
-from labml.internal.tracker import tracker_singleton as tracker
-from labml.internal.util import is_ipynb, is_colab, is_kaggle
 from labml.logger import Text
 from labml.utils import get_caller_file
 from labml.utils.notice import labml_notice
+from ..app.dynamic import DynamicUpdateHandler
+from ..configs.base import Configs
+from ..configs.dynamic_hyperparam import DynamicHyperParam
+from ..configs.processor import ConfigProcessor, FileConfigsSaver
+from ..experiment.experiment_run import Run
+from ..experiment.watcher import ExperimentWatcher
+from ..lab import lab_singleton
+from ..monitor import monitor_singleton as monitor
+from ..tracker import tracker_singleton as tracker
+from ..util import is_ipynb, is_colab, is_kaggle
 
 if TYPE_CHECKING:
-    from labml.internal.api.experiment import ApiExperiment
+    from ..app.experiment import AppExperiment
 
 
 class ModelSaver:
@@ -177,7 +178,7 @@ class Experiment:
             automatically determining ``python_file``
         tags (Set[str], optional): Set of tags for experiment
     """
-    web_api: Optional['ApiExperiment']
+    app_experiment: Optional['AppExperiment']
 
     is_started: bool
     run: Run
@@ -265,7 +266,7 @@ class Experiment:
 
         self.checkpoint_saver = CheckpointSaver(self.run.checkpoint_path)
         self.is_evaluate = is_evaluate
-        self.web_api = None
+        self.app_experiment = None
         self.writers = writers
         self.is_started = False
         self.is_worker = False
@@ -276,8 +277,8 @@ class Experiment:
 
     def worker(self):
         self.is_worker = True
-        if self.web_api is not None:
-            self.web_api.worker()
+        if self.app_experiment is not None:
+            self.app_experiment.worker()
 
     def __print_info(self):
         """
@@ -364,13 +365,9 @@ class Experiment:
             self.checkpoint_saver.load(checkpoint_path, models)
 
     def _save_pid(self):
-        if not self.run.pids_path.exists():
-            self.run.pids_path.mkdir(parents=True)
+        assert not self.run.pid_path.exists(), str(self.run.pid_path)
 
-        pid_path = self.run.pids_path / f'{self.run.distributed_rank}.pid'
-        assert not pid_path.exists(), str(pid_path)
-
-        with open(str(pid_path), 'w') as f:
+        with open(str(self.run.pid_path), 'w') as f:
             f.write(f'{os.getpid()}')
 
     def _start_tracker(self):
@@ -388,27 +385,29 @@ class Experiment:
             tracker().add_writer(file.Writer(self.run.log_file))
 
         if 'app' in self.writers:
-            web_api_conf = lab_singleton().web_api
-            if web_api_conf is not None:
-                from labml.internal.tracker.writers import web_api
-                from labml.internal.api import ApiCaller
-                from labml.internal.api.experiment import ApiExperiment
-                api_caller = ApiCaller(web_api_conf.url,
-                                       {'run_uuid': self.run.uuid,
-                                        'rank': self.run.distributed_rank,
-                                        'world_size': self.run.distributed_world_size},
-                                       timeout_seconds=120)
-                self.web_api = ApiExperiment(api_caller,
-                                             frequency=web_api_conf.frequency,
-                                             open_browser=web_api_conf.open_browser)
-                tracker().add_writer(web_api.Writer(api_caller,
-                                                    frequency=web_api_conf.frequency))
+            app_conf = lab_singleton().app_configs
+            if app_conf is not None:
+                from labml.internal.tracker.writers import app as app_writer
+                from labml.internal.app import AppTracker
+                from labml.internal.app.experiment import AppExperiment
+                app_tracker = AppTracker(app_conf.url,
+                                         {
+                                             'run_uuid': self.run.uuid,
+                                             'rank': self.run.distributed_rank,
+                                             'world_size': self.run.distributed_world_size,
+                                         },
+                                         timeout_seconds=120)
+                self.app_experiment = AppExperiment(
+                    app_tracker,
+                    frequency=app_conf.frequency,
+                    open_browser=app_conf.open_browser)
+                tracker().add_writer(app_writer.Writer(app_tracker, frequency=app_conf.frequency))
             else:
                 logger.log('No labml server url specified. '
                            'Please start a labml server and specify the URL. '
                            'Docs: https://github.com/labmlai/labml/tree/master/app', Text.highlight)
         else:
-            self.web_api = None
+            self.app_experiment = None
 
     def start(self, *,
               run_uuid: Optional[str] = None,
@@ -444,11 +443,11 @@ class Experiment:
                 if self.configs_processor is not None:
                     self.configs_processor.add_saver(FileConfigsSaver(self.run.configs_path))
 
-            if self.web_api is not None:
-                self.web_api.start(self.run)
+            if self.app_experiment is not None:
+                self.app_experiment.start(self.run)
                 if self.configs_processor is not None:
-                    self.configs_processor.add_saver(self.web_api.get_configs_saver())
-                    self.web_api.set_dynamic_handler(ExperimentDynamicUpdateHandler(self.configs_processor))
+                    self.configs_processor.add_saver(self.app_experiment.get_configs_saver())
+                    self.app_experiment.set_dynamic_handler(ExperimentDynamicUpdateHandler(self.configs_processor))
 
             if self.run.distributed_rank == self.run.distributed_main_rank:
                 tracker().save_indicators(self.run.indicators_path)
@@ -475,8 +474,8 @@ class Experiment:
 
         tracker().finish_loop()
 
-        if self.web_api is not None:
-            self.web_api.status(self.run.distributed_rank, status, details, end_time)
+        if self.app_experiment is not None:
+            self.app_experiment.status(self.run.distributed_rank, status, details, end_time)
 
 
 class GlobalParams:

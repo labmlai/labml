@@ -2,30 +2,41 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Optional, Dict
 
-from labml.internal import util
-from labml.internal.api.configs import WebAPIConfigs
-from labml.internal.util import is_colab, is_kaggle
 from labml.logger import Text
 from labml.utils import get_caller_file
 from labml.utils.notice import labml_notice
+from . import util
+from .app.configs import AppTrackConfigs
+from .util import is_colab, is_kaggle
 
 _CONFIG_FILE_NAME = '.labml.yaml'
 
 
-def get_api_url(handle: str):
-    import os
-    if 'labml_server' in os.environ:
-        base_url = os.environ['labml_server']
-        if not base_url.startswith('http'):
-            raise RuntimeError(f'labml_server environment variable should be a valid URL: {base_url}')
-        if base_url.endswith('/') or base_url.endswith('?'):
-            raise RuntimeError(f'labml_server environment variable should be a valid URL '
-                               f'that does not end with `/` or `?`: {base_url}')
+def get_app_url_for_handle(handle: str, *, base_url=None):
+    if base_url is None:
+        import os
+        if 'labml_app_url' in os.environ:
+            base_url = os.environ['labml_app_url']
 
-        return f'{base_url}/{handle}?'
+    if base_url is None:
+        return None
 
-    # return 'https://api.labml.ai/api/v1/track?'
-    return None
+    base_url = base_url.strip()
+    if not base_url:
+        return None
+
+    if not base_url.startswith('http'):
+        raise RuntimeError(f'labml_server environment variable should be a valid URL: {base_url}')
+    if '?' in base_url:
+        raise RuntimeError(f'labml_server environment variable should be a valid URL '
+                           f'that does contain any url parameters or \'?\': {base_url}')
+
+    if not base_url.endswith('/'):
+        base_url += '/'
+
+    return f'{base_url}{handle}?'
+
+    # return 'https://domain/api/v1/token/track?'
 
 
 class LabYamlNotfoundError(RuntimeError):
@@ -42,7 +53,8 @@ class Lab:
     data_path: Optional[Path]
     check_repo_dirty: Optional[bool]
     path: Optional[Path]
-    web_api: Optional[WebAPIConfigs]
+    app_configs: Optional[AppTrackConfigs]
+    configs: Dict
 
     def __init__(self, path: Optional[Path] = None):
         self.indicators = {}
@@ -50,7 +62,7 @@ class Lab:
         self.check_repo_dirty = None
         self.data_path = None
         self.experiments = None
-        self.web_api = None
+        self.app_configs = None
         self.configs = self.__default_config()
         self.custom_configs = []
         self.__update_configs()
@@ -110,18 +122,15 @@ class Lab:
 
         self.check_repo_dirty = self.configs['check_repo_dirty']
         self.indicators = self.configs['indicators']
-        if self.configs['web_api']:
-            web_api_url = self.configs['web_api']
-            if web_api_url[0:4] != 'http':
-                # base_url = get_api_url('track')
-                raise RuntimeError(f'web_api ({web_api_url}) is not a valid URL')
+        app_track_url = get_app_url_for_handle('track', base_url=self.configs['app_url'])
 
-            self.web_api = WebAPIConfigs(url=web_api_url,
-                                         frequency=self.configs['web_api_frequency'],
-                                         open_browser=self.configs['web_api_open_browser'],
-                                         is_default=False)
+        if app_track_url:
+            self.app_configs = AppTrackConfigs(url=app_track_url,
+                                               frequency=self.configs['app_track_frequency'],
+                                               open_browser=self.configs['app_open_browser'],
+                                               is_default=False)
         else:
-            self.web_api = None
+            self.app_configs = None
 
     def set_configurations(self, configs: Dict[str, any]):
         self.custom_configs.append(configs)
@@ -145,9 +154,9 @@ class Lab:
             experiments_path='logs',
             analytics_path='analytics',
             analytics_templates={},
-            web_api=get_api_url('track'),
-            web_api_frequency=0,
-            web_api_open_browser=True,
+            app_url=None,
+            app_track_frequency=0,
+            app_open_browser=True,
             indicators=[
                 {
                     'class_name': 'Scalar',

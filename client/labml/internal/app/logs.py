@@ -4,32 +4,32 @@ import time
 from io import StringIO
 from typing import Optional
 
-from labml.internal.api import ApiCaller, ApiDataSource, Packet
+from labml.internal.app import AppTracker, AppTrackDataSource, Packet
 
 WARMUP_COMMITS = 5
 
 
-class ApiLogs(ApiDataSource):
-    api_caller: Optional[ApiCaller]
+class AppConsoleLogs(AppTrackDataSource):
+    app_tracker: Optional[AppTracker]
     frequency: float
 
     def __init__(self):
         super().__init__()
 
-        self.api_caller = None
+        self.app_tracker = None
         self.frequency = 1
         self.last_committed = time.time()
         self.commits_count = 0
         self.data = {}
         self.lock = threading.Lock()
 
-    def set_api(self, api_caller: ApiCaller, *, frequency: float):
-        self.api_caller = api_caller
+    def set_app_tracker(self, app_tracker: AppTracker, *, frequency: float):
+        self.app_tracker = app_tracker
         self.frequency = frequency
         self.check_and_flush()
 
     def check_and_flush(self):
-        if self.api_caller is None:
+        if self.app_tracker is None:
             return
         with self.lock:
             if not self.data:
@@ -40,7 +40,7 @@ class ApiLogs(ApiDataSource):
             freq /= 2 ** (WARMUP_COMMITS - self.commits_count)
         if self.data.get('stderr', '') != '' or self.commits_count == 0 or t - self.last_committed > freq:
             self.commits_count += 1
-            self.api_caller.has_data(self)
+            self.app_tracker.has_data(self)
 
     def _clean(self, data: str):
         last_newline = None
@@ -92,7 +92,7 @@ class ApiLogs(ApiDataSource):
         self.check_and_flush()
 
 
-API_LOGS = ApiLogs()
+APP_CONSOLE_LOGS = AppConsoleLogs()
 
 
 class OutputStream(StringIO):
@@ -100,7 +100,7 @@ class OutputStream(StringIO):
         super().write(*args, **kwargs)
         save = StringIO()
         save.write(*args, **kwargs)
-        API_LOGS.outputs(**{self.type_: save.getvalue()})
+        APP_CONSOLE_LOGS.outputs(**{self.type_: save.getvalue()})
         self.original.write(*args, **kwargs)
 
     def __init__(self, original, type_):  # real signature unknown
@@ -117,14 +117,14 @@ def _write_stdout(*args, **kwargs):
     _original_stdout_write(*args, **kwargs)
     save = StringIO()
     save.write(*args, **kwargs)
-    API_LOGS.outputs(stdout_=save.getvalue())
+    APP_CONSOLE_LOGS.outputs(stdout_=save.getvalue())
 
 
 def _write_stderr(*args, **kwargs):
     _original_stderr_write(*args, **kwargs)
     save = StringIO()
     save.write(*args, **kwargs)
-    API_LOGS.outputs(stderr_=save.getvalue())
+    APP_CONSOLE_LOGS.outputs(stderr_=save.getvalue())
 
 
 def capture():

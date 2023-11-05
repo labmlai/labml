@@ -4,22 +4,22 @@ from typing import Dict
 
 import numpy as np
 
-from labml.internal.api import ApiCaller, Packet, ApiDataSource
 from . import Writer as WriteBase
 from ..indicators import Indicator
 from ..indicators.numeric import NumericIndicator
+from ...app import AppTracker, Packet, AppTrackDataSource
 
 MAX_BUFFER_SIZE = 1024
 WARMUP_COMMITS = 5
 
 
-class Writer(WriteBase, ApiDataSource):
-    def __init__(self, api_caller: ApiCaller, *,
+class Writer(WriteBase, AppTrackDataSource):
+    def __init__(self, app_tracker: AppTracker, *,
                  frequency: float):
         super().__init__()
 
         self.frequency = frequency
-        self.api_caller = api_caller
+        self.app_tracker = app_tracker
         self.last_committed = time.time()
         self.commits_count = 0
         self.indicators = {}
@@ -36,7 +36,7 @@ class Writer(WriteBase, ApiDataSource):
         with self.lock:
             self.data['wildcard_indicators'] = wildcards
             self.data['indicators'] = inds
-        self.api_caller.has_data(self)
+        self.app_tracker.has_data(self)
 
     def _write_indicator(self, global_step: int, indicator: Indicator):
         if indicator.is_empty():
@@ -79,7 +79,7 @@ class Writer(WriteBase, ApiDataSource):
             if not self.indicators:
                 return
 
-        self.api_caller.has_data(self)
+        self.app_tracker.has_data(self)
 
     def _mean(self, values: np.ndarray, n_elems: int):
         blocks = (len(values) + n_elems - 1) // n_elems

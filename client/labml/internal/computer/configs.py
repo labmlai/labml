@@ -2,22 +2,17 @@ from pathlib import Path
 from typing import Optional, Set
 
 from labml import logger
-from labml.internal import util
-from labml.internal.api.configs import WebAPIConfigs
-from labml.internal.computer import CONFIGS_FOLDER
-from labml.internal.lab import get_api_url
 from labml.logger import Text
+from . import CONFIGS_FOLDER
+from .. import util
+from ..app.configs import AppTrackConfigs
+from ..lab import get_app_url_for_handle
 
 
 class Computer:
-    """
-    ### Computer
-
-    Lab contains the labml specific properties.
-    """
-    web_api_sync: str
-    web_api_polling: str
-    web_api: WebAPIConfigs
+    app_sync_url: str
+    app_polling_url: str
+    app_configs: AppTrackConfigs
     uuid: str
     config_folder: Path
 
@@ -72,12 +67,18 @@ class Computer:
 
         self.uuid = config['uuid']
 
-        self.web_api = WebAPIConfigs(url=config['web_api'],
-                                     frequency=config['web_api_frequency'],
-                                     open_browser=config['web_api_open_browser'],
-                                     is_default=False)
-        self.web_api_sync = config['web_api_sync']
-        self.web_api_polling = config['web_api_polling']
+        app_url = get_app_url_for_handle('', base_url=config['app_url'])
+
+        if not app_url:
+            raise ValueError('Please provide `app_url` in `~/labml/configs.yaml` or set '
+                             'environment variable `labml_app_url`.')
+
+        self.app_configs = AppTrackConfigs(url=get_app_url_for_handle('computer', base_url=app_url),
+                                           frequency=config['app_track_frequency'],
+                                           open_browser=config['app_open_browser'],
+                                           is_default=False)
+        self.app_sync_url = get_app_url_for_handle('sync', base_url=app_url)
+        self.app_polling_url = get_app_url_for_handle('polling', base_url=app_url)
 
     def __str__(self):
         return f"<Computer uuid={self.uuid}>"
@@ -88,11 +89,9 @@ class Computer:
     @staticmethod
     def __default_config():
         return dict(
-            web_api=get_api_url('computer'),
-            web_api_frequency=0,
-            web_api_open_browser=True,
-            web_api_sync=get_api_url('sync'),
-            web_api_polling=get_api_url('polling'),
+            app_url=None,
+            app_track_frequency=0,
+            app_open_browser=True,
         )
 
     def get_projects(self) -> Set[str]:

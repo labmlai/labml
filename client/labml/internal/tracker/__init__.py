@@ -1,19 +1,18 @@
 from pathlib import PurePath
 from typing import Dict, List, Optional, Callable, Union, Tuple
 
-from labml.internal import util
-from labml.internal.lab import lab_singleton, LabYamlNotfoundError
-from labml.internal.util import strings
-from labml.internal.util.colors import StyleCode
+from labml import logger
 from .indicators import Indicator
 from .indicators.factory import load_indicator_from_dict, create_default_indicator
 from .indicators.numeric import Scalar
 from .namespace import Namespace
 from .writers import Writer
 from .writers.screen import ScreenWriter
+from .. import util
+from ..lab import lab_singleton, LabYamlNotfoundError
 from ..logger import LogPart
-from ... import logger
-from ...logger import Text
+from ..util import strings
+from ..util.colors import StyleCode
 
 
 class Tracker:
@@ -88,7 +87,7 @@ class Tracker:
             if self.__is_looping:
                 self.__set_looping_indicators(indicators_print)
             else:
-                parts = [(f"{self.global_step :8,}:  ", Text.highlight)]
+                parts = [(f"{self.global_step :8,}:  ", logger.Text.highlight)]
                 parts += indicators_print
                 logger.log(parts, is_new_line=False)
 

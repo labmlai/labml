@@ -21,10 +21,21 @@ class Project:
     def load_runs(self):
         from labml.internal.manage.runs import get_runs
         run_paths = list(get_runs(self.lab.experiments))
-        runs = []
+        run_paths_by_uuid = {}
         for p in run_paths:
+            if not p.is_dir():
+                continue
+
+            uuid = p.name.split('.')[0]
+            assert uuid.strip()
+            if uuid not in run_paths_by_uuid:
+                run_paths_by_uuid['uuid'] = []
+            run_paths_by_uuid['uuid'].append(p)
+
+        runs = []
+        for uuid, run_paths in run_paths_by_uuid.items():
             try:
-                run = RunSummary(p)
+                run = RunSummary(uuid, run_paths)
                 runs.append(run)
             except RunLoadError as e:
                 logger.log([('Error loading run: ', Text.warning), (str(p), Text.value)])
