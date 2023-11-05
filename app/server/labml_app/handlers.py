@@ -463,8 +463,8 @@ def _add_ui(app: FastAPI, method: str, func: Callable, url: str):
 
 
 def add_handlers(app: FastAPI):
-    _add_server(app, 'POST', update_run, 'track')
-    _add_server(app, 'POST', update_session, 'computer')
+    _add_server(app, 'POST', update_run, '{labml_token}/track')
+    _add_server(app, 'POST', update_session, '{labml_token}/computer')
 
     _add_ui(app, 'GET', get_runs, 'runs/{labml_token}')
     _add_ui(app, 'PUT', delete_runs, 'runs')
