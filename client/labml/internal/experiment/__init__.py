@@ -22,8 +22,6 @@ from labml.utils.notice import labml_notice
 
 if TYPE_CHECKING:
     from labml.internal.api.experiment import ApiExperiment
-    from labml.internal.tracker.writers.wandb import Writer as WandBWriter
-    from labml.internal.tracker.writers.comet import Writer as CometWriter
 
 
 class ModelSaver:
@@ -180,8 +178,6 @@ class Experiment:
         tags (Set[str], optional): Set of tags for experiment
     """
     web_api: Optional['ApiExperiment']
-    wandb: Optional['WandBWriter']
-    comet: Optional['CometWriter']
 
     is_started: bool
     run: Run
@@ -270,8 +266,6 @@ class Experiment:
         self.checkpoint_saver = CheckpointSaver(self.run.checkpoint_path)
         self.is_evaluate = is_evaluate
         self.web_api = None
-        self.wandb = None
-        self.comet = None
         self.writers = writers
         self.is_started = False
         self.is_worker = False
@@ -389,33 +383,11 @@ class Experiment:
             from labml.internal.tracker.writers import screen
             tracker().add_writer(screen.ScreenWriter())
 
-        if 'sqlite' in self.writers:
-            from labml.internal.tracker.writers import sqlite
-            tracker().add_writer(sqlite.Writer(self.run.sqlite_path, self.run.artifacts_folder))
-
-        if 'tensorboard' in self.writers:
-            from labml.internal.tracker.writers import tensorboard
-            tracker().add_writer(tensorboard.Writer(self.run.tensorboard_log_path))
-
-        if 'wandb' in self.writers:
-            from labml.internal.tracker.writers import wandb
-            self.wandb = wandb.Writer()
-            tracker().add_writer(self.wandb)
-        else:
-            self.wandb = None
-
-        if 'comet' in self.writers:
-            from labml.internal.tracker.writers import comet
-            self.comet = comet.Writer()
-            tracker().add_writer(self.comet)
-        else:
-            self.comet = None
-
         if 'file' in self.writers:
             from labml.internal.tracker.writers import file
             tracker().add_writer(file.Writer(self.run.log_file))
 
-        if 'web_api' in self.writers:
+        if 'app' in self.writers:
             web_api_conf = lab_singleton().web_api
             if web_api_conf is not None:
                 from labml.internal.tracker.writers import web_api
@@ -479,23 +451,6 @@ class Experiment:
                     self.web_api.set_dynamic_handler(ExperimentDynamicUpdateHandler(self.configs_processor))
 
             if self.run.distributed_rank == self.run.distributed_main_rank:
-                if self.wandb is not None:
-                    self.wandb.init(self.run.name, self.run.run_path)
-                    if self.configs_processor is not None:
-                        self.configs_processor.add_saver(self.wandb.get_configs_saver())
-
-                if self.comet is not None:
-                    try:
-                        self.comet.init(self.run.name)
-                    except ValueError as e:
-                        logger.log(str(e), Text.danger)
-                        tracker().remove_writer(self.comet)
-                        self.comet = None
-
-                if self.comet is not None:
-                    if self.configs_processor is not None:
-                        self.configs_processor.add_saver(self.comet.get_configs_saver())
-
                 tracker().save_indicators(self.run.indicators_path)
 
         self.is_started = True

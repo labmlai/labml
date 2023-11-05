@@ -18,7 +18,7 @@ from labml.internal.monitor import monitor_singleton as monitor
 if TYPE_CHECKING:
     import torch
 
-AVAILABLE_WRITERS = {'screen', 'web_api', 'sqlite', 'tensorboard', 'wandb', 'comet', 'file'}
+AVAILABLE_WRITERS = {'screen', 'app', 'file'}
 
 
 def generate_uuid() -> str:
@@ -32,6 +32,7 @@ def worker():
     """
     if _has_experiment():
         _experiment_singleton().worker()
+
 
 def save_checkpoint():
     r"""
@@ -69,7 +70,7 @@ def create(*,
             created the experiment
         comment (str, optional): a short description of the experiment
         writers (Set[str], optional): list of writers to write stat to.
-            Defaults to ``{'tensorboard', 'sqlite', 'web_api'}``.
+            Defaults to ``{'screen', 'app'}``.
         ignore_callers: (Set[str], optional): list of files to ignore when
             automatically determining ``python_file``
         tags (Set[str], optional): set of tags for experiment
@@ -78,14 +79,7 @@ def create(*,
     """
 
     if writers is None:
-        writers = {'screen', 'sqlite', 'web_api'}
-        from labml.internal.util.tensorboard_writer import has_tensorboard
-        if has_tensorboard():
-            writers.add('tensorboard')
-
-    if 'labml' in writers:
-        writers.remove('labml')
-        writers.add('web_api')
+        writers = {'screen', 'app'}
 
     for w in writers:
         if w not in AVAILABLE_WRITERS:
@@ -139,7 +133,6 @@ def evaluate():
                        ignore_callers=set(),
                        tags=None,
                        is_evaluate=True)
-
 
 
 def add_model_savers(savers: Dict[str, ModelSaver]):
@@ -421,7 +414,7 @@ def record(*,
         name (str, optional): name of the experiment
         comment (str, optional): a short description of the experiment
         writers (Set[str], optional): list of writers to write stat to.
-            Defaults to ``{'tensorboard', 'sqlite', 'web_api'}``.
+            Defaults to ``{'screen', 'app'}``.
         tags (Set[str], optional): Set of tags for experiment
         exp_conf (Dict[str, any], optional): a dictionary of experiment configurations
         lab_conf (Dict[str, any], optional): a dictionary of configurations for LabML.

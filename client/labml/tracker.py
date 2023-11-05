@@ -1,32 +1,6 @@
 from typing import Dict, overload, Optional
 
 from labml.internal.tracker import tracker_singleton as _internal
-from labml.internal.track_debug import tracker_debug_singleton as _tracker_debug_singleton
-
-
-@overload
-def debug(is_debug: bool):
-    ...
-
-
-@overload
-def debug(name: str):
-    ...
-
-
-@overload
-def debug(name: str, value: any):
-    ...
-
-
-def debug(*args):
-    if len(args) == 1:
-        if isinstance(args[0], bool):
-            _tracker_debug_singleton().is_debug = args[0]
-        else:
-            return _tracker_debug_singleton().get(args[0])
-    else:
-        _tracker_debug_singleton().store(args[0], args[1])
 
 
 def set_global_step(global_step: Optional[int]):
@@ -303,10 +277,7 @@ def save(*args, **kwargs):
     .. function:: save(global_step: int, **kwargs: any)
         :noindex:
 
-    This saves the tracking information in all the writers
-    such as `labml.ai monitoring app <https://github.com/labmlai/labml/tree/master/app>`_,
-    `TensorBoard <https://www.tensorflow.org/tensorboard>`_ and
-    `Weights and Biases <https://wandb.ai/>`_.
+    This saves the tracking information.
 
     Arguments:
         global_step (int): The current step

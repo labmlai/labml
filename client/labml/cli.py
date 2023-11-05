@@ -14,7 +14,6 @@ from labml.internal.api.url import ApiUrlHandler
 from labml.internal.lab import get_api_url
 from labml.logger import Text
 from labml.utils.validators import ip_validator
-from typing.io import IO
 
 COMMAND_APP_SERVER = 'app-server'
 COMMAND_CAPTURE = 'capture'
@@ -22,19 +21,6 @@ COMMAND_LAUNCH = 'launch'
 COMMAND_MONITOR = 'monitor'
 COMMAND_SERVICE = 'service'
 COMMAND_SERVICE_RUN = 'service-run'
-COMMAND_DASHBOARD = 'dashboard'
-
-
-def _open_dashboard():
-    try:
-        import labml_dashboard
-    except (ImportError, ModuleNotFoundError):
-        logger.log("Cannot import ", ('labml_dashboard', Text.highlight), '.')
-        logger.log('Install with ',
-                   ('pip install labml_dashboard', Text.value))
-        return
-
-    labml_dashboard.start_server()
 
 
 def _start_app_server(ip: str, port: int):
@@ -58,7 +44,7 @@ class ExecutorThread(threading.Thread):
         self.command = command
         self.exit_code = 0
 
-    def _read(self, stream: IO, name: str):
+    def _read(self, stream, name: str):
         buffer = ''
         while stream.readable():
             data = stream.read(1)
@@ -225,16 +211,10 @@ def main():
     subparser.add_parser(COMMAND_MONITOR, help='Start hardware monitoring')
     subparser.add_parser(COMMAND_SERVICE, help='Setup and start a service for hardware monitoring')
     subparser.add_parser(COMMAND_SERVICE_RUN, help='Start hardware monitoring (for internal use)')
-    subparser.add_parser(COMMAND_DASHBOARD, help='Open the labml dashboard (deprecated)')
 
     args = parser.parse_args()
 
-    if args.command == COMMAND_DASHBOARD:
-        logger.log([('labml dashboard', Text.heading),
-                    (' is deprecated. Please use labml.ai app instead\n', Text.danger),
-                    ('https://github.com/labmlai/labml/tree/master/app', Text.value)])
-        _open_dashboard()
-    elif args.command == COMMAND_APP_SERVER:
+    if args.command == COMMAND_APP_SERVER:
         _start_app_server(ip=args.ip, port=args.port)
     elif args.command == COMMAND_CAPTURE:
         _capture(args.args)
