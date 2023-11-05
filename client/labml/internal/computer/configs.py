@@ -49,7 +49,7 @@ class Computer:
                     config = {}
         else:
             logger.log([
-                ('~/labml/configs.yaml', Text.value),
+                ('~/.labml/configs.yaml', Text.value),
                 ' does not exist. Creating ',
                 (str(self.configs_file), Text.meta)])
             config = {}
