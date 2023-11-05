@@ -1,5 +1,5 @@
 import {API_BASE_URL} from './env'
-import {PasswordResetModel, SignInModel, SignUpModel, User} from './models/user'
+import {User} from './models/user'
 
 export function getAppToken() {
     return localStorage.getItem('app_token')
@@ -98,22 +98,6 @@ class Network {
         return this.sendHttpRequest('POST', `/user`, {'user': user})
     }
 
-    async signIn(data: SignInModel): Promise<any> {
-        return this.sendHttpRequest('POST', `/auth/sign_in`, data)
-    }
-
-    async signUp(data: SignUpModel): Promise<any> {
-        return this.sendHttpRequest('POST', `/auth/sign_up`, data)
-    }
-
-    async signOut(): Promise<any> {
-        return this.sendHttpRequest('POST', `/auth/sign_out`)
-    }
-
-    async passwordReset(data: PasswordResetModel): Promise<any> {
-        return this.sendHttpRequest('POST', `/auth/password_reset`, data)
-    }
-
     async getAnalysis(url: string, runUUID: string): Promise<any> {
         return this.sendHttpRequest('GET', `/${url}/${runUUID}`, {})
     }
@@ -132,14 +116,6 @@ class Network {
 
     async updatePreferences(url: string, runUUID: string, data: object): Promise<any> {
         return this.sendHttpRequest('POST', `/${url}/preferences/${runUUID}`, data)
-    }
-
-    async startTensorBoard(computerUUId: string, runUUIDs: Array<string>): Promise<any> {
-        return this.sendHttpRequest('POST', `/start_tensorboard/${computerUUId}`, {'runs': runUUIDs})
-    }
-
-    async clearCheckPoints(computerUUId: string, runUUIDs: Array<string>): Promise<any> {
-        return this.sendHttpRequest('POST', `/clear_checkpoints/${computerUUId}`, {'runs': runUUIDs})
     }
 
     private sendHttpRequest = (method: string, url: string, data: object = {}, retryAuth: boolean = true): Promise<any> => {

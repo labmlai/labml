@@ -6,11 +6,9 @@ import {Status} from "../../../models/status"
 import {
     BackButton,
     CancelButton,
-    CleanButton,
     DeleteButton,
     EditButton,
     SaveButton,
-    TensorBoardButton
 } from "../../../components/buttons"
 import EditableField from "../../../components/input/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
@@ -20,8 +18,6 @@ import {StatusView} from "../../../components/status"
 import mix_panel from "../../../mix_panel"
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
-import {UserMessages} from "../../../components/user_messages"
-import {openInNewTab} from "../../../utils/new_tab"
 import {formatFixed} from "../../../utils/value"
 import {ScreenView} from '../../../screen_view'
 import {User} from '../../../models/user'
@@ -48,9 +44,6 @@ class RunHeaderView extends ScreenView {
     sizeCheckPoints: EditableField
     sizeTensorBoard: EditableField
     private deleteButton: DeleteButton
-    private cleanButton: CleanButton
-    private startTBButton: TensorBoardButton
-    private userMessages: UserMessages
     private loader: DataLoader
 
     constructor(uuid: string) {
@@ -63,17 +56,6 @@ class RunHeaderView extends ScreenView {
         this.isEditMode = false
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
-        this.cleanButton = new CleanButton({
-            onButtonClick: this.onCleaningCheckPoints.bind(this),
-            parent: this.constructor.name
-        })
-        this.startTBButton = new TensorBoardButton({
-            onButtonClick: this.onStartTensorBoard.bind(this),
-            parent: this.constructor.name,
-        })
-
-        this.userMessages = new UserMessages()
-
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
@@ -105,7 +87,6 @@ class RunHeaderView extends ScreenView {
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
                     $('div', $ => {
-                        this.userMessages.render($)
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                             if (this.isEditMode) {
@@ -135,7 +116,6 @@ class RunHeaderView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Run Details', item: this.run.name})
-            this.renderComputerButtons()
             this.renderFields()
         } catch (e) {
             handleNetworkErrorInplace(e)
@@ -298,79 +278,6 @@ class RunHeaderView extends ScreenView {
 
         this.runCache.setRun(this.run).then()
         this.onToggleEdit()
-    }
-
-    renderComputerButtons() {
-        this.computerButtonsContainer.innerHTML = ''
-        $(this.computerButtonsContainer, $ => {
-            if (this.run.size_tensorboard && this.run.is_project_run) {
-                $('span', '.float-right', $ => {
-                    this.startTBButton.render($)
-                    this.startTBButton.isLoading = false
-                })
-            }
-
-            if (this.run.size_checkpoints && this.run.is_project_run) {
-                this.cleanButton.render($)
-                this.cleanButton.isLoading = false
-            }
-        })
-    }
-
-    async onCleaningCheckPoints() {
-        this.userMessages.hide(true)
-        this.cleanButton.disabled = true
-        this.cleanButton.isLoading = true
-
-        try {
-            let job = await this.runListCache.clearCheckPoints(this.run.computer_uuid, [this.run.run_uuid])
-
-            if (job.isSuccessful) {
-                let size_checkpoints = job.data['runs'][0]['size_checkpoints']
-                this.sizeCheckPoints.updateValue(formatFixed(size_checkpoints, 1))
-                this.userMessages.success('Successfully cleaned the checkpoints')
-            } else if (job.isComputerOffline) {
-                this.userMessages.warning('Your computer is currently offline')
-            } else {
-                this.userMessages.warning('Error occurred while cleaning checkpoints')
-            }
-        } catch (e) {
-            this.userMessages.networkError()
-        }
-
-        this.cleanButton.disabled = false
-        this.cleanButton.isLoading = false
-    }
-
-    async onStartTensorBoard() {
-        this.userMessages.hide(true)
-        this.startTBButton.disabled = true
-        this.startTBButton.isLoading = true
-
-        try {
-            let job = await this.runListCache.startTensorBoard(this.run.computer_uuid, [this.run.run_uuid])
-            let url = job.data['url']
-
-            if (job.isSuccessful && url) {
-                let message = job.data['message']
-                this.userMessages.success(message)
-                openInNewTab(url, this.userMessages)
-            } else if (job.isComputerOffline) {
-                this.userMessages.warning('Your computer is currently offline')
-            } else if (job.isFailed) {
-                let message = job.data['message']
-                this.userMessages.warning(`Failed to start TensorBoard: ${message}`)
-            } else if (job.isTimeOut) {
-                this.userMessages.warning(`Timeout occurred while starting TensorBoard`)
-            } else {
-                this.userMessages.warning('Error occurred while starting TensorBoard')
-            }
-        } catch (e) {
-            this.userMessages.networkError()
-        }
-
-        this.startTBButton.disabled = false
-        this.startTBButton.isLoading = false
     }
 }
 

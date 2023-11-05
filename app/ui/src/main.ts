@@ -5,7 +5,6 @@ import {RunHandler} from './views/run_view'
 import {PageNotFoundHandler} from './views/errors/page_not_found_view'
 import {RunsListHandler} from './views/runs_list_view'
 import {SessionsListHandler} from './views/sessions_list_view'
-import {SignInHandler} from './views/auth/signin_view'
 import {SettingsHandler} from './views/settings_view'
 
 import {experimentAnalyses, sessionAnalyses} from "./analyses/analyses"
@@ -17,20 +16,12 @@ import {SENTRY_DSN} from './env'
 import {AuthErrorHandler} from './views/errors/auth_error_view'
 import {OtherErrorHandler} from './views/errors/other_error_view'
 import {NetworkErrorHandler} from './views/errors/network_error_view'
-import {SignOutHandler} from './views/auth/signout_view'
-import {SignUpHandler} from './views/auth/signup_view'
-import {PasswordResetHandler} from './views/auth/password_reset_view'
 import {DistributedMetricsHandler} from "./analyses/experiments/distributed_metrics/view"
 import {MergedDistributedMetricsHandler} from "./analyses/experiments/merged_metrics/view"
 
 ROUTER.route(/^(.*)$/g, [() => {
     ROUTER.navigate('/404')
 }])
-
-new SignInHandler()
-new SignOutHandler()
-new SignUpHandler()
-new PasswordResetHandler()
 
 new PageNotFoundHandler()
 new AuthErrorHandler()

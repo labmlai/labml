@@ -5,7 +5,7 @@ import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
-import {CancelButton, DeleteButton, EditButton, TensorBoardButton} from '../components/buttons'
+import {CancelButton, DeleteButton, EditButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
 import EmptyRunsList from './empty_runs_list'
@@ -24,7 +24,6 @@ class RunsListView extends ScreenView {
     searchQuery: string
     buttonContainer: HTMLDivElement
     deleteButton: DeleteButton
-    startTBButton: TensorBoardButton
     editButton: EditButton
     cancelButton: CancelButton
     isEditMode: boolean
@@ -40,10 +39,6 @@ class RunsListView extends ScreenView {
         this.runListCache = CACHE.getRunsList()
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
-        this.startTBButton = new TensorBoardButton({
-            onButtonClick: this.onStartTensorBoard,
-            parent: this.constructor.name
-        })
         this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
 
@@ -81,16 +76,13 @@ class RunsListView extends ScreenView {
             })
         })
         $(this.buttonContainer, $ => {
-            this.startTBButton.render($)
             this.deleteButton.render($)
             this.cancelButton.render($)
             this.editButton.render($)
             this.refresh.render($)
             this.deleteButton.hide(true)
-            this.startTBButton.hide(true)
             this.cancelButton.hide(true)
             this.editButton.hide(true)
-            this.startTBButton.isLoading = false
         })
 
         try {
@@ -118,7 +110,6 @@ class RunsListView extends ScreenView {
         let noRuns = this.currentRunsList.length == 0
 
         this.deleteButton.hide(noRuns || !this.isEditMode)
-        this.startTBButton.hide(noRuns || !this.isEditMode)
         this.cancelButton.hide(noRuns || !this.isEditMode)
         this.editButton.hide(noRuns || this.isEditMode)
 
@@ -155,8 +146,6 @@ class RunsListView extends ScreenView {
         this.isEditMode = true
         this.refresh.disabled = true
         this.deleteButton.disabled = isRunsSelected
-        this.startTBButton.disabled = isRunsSelected || this.isTBProcessing
-        this.startTBButton.isLoading = this.isTBProcessing
         this.updateButtons()
     }
 
@@ -179,56 +168,6 @@ class RunsListView extends ScreenView {
         } catch (e) {
             this.userMessages.networkError()
         }
-    }
-
-    onStartTensorBoard = async () => {
-        this.userMessages.hide(true)
-        this.updateTBButtonState(true)
-
-        let computerUUID: string = ''
-        let runUUIDs: Array<string> = []
-
-        for (let run of this.selectedRunsSet) {
-            if (!computerUUID) {
-                computerUUID = run.computer_uuid
-            }
-
-            if (computerUUID !== run.computer_uuid) {
-                this.userMessages.warning('All the selected runs should be from a single computer')
-                this.updateTBButtonState(false)
-            } else {
-                runUUIDs.push(run.run_uuid)
-            }
-        }
-
-        if (!computerUUID) {
-            this.userMessages.warning('Selected runs do not belong to any computer')
-            this.updateTBButtonState(false)
-        }
-
-        try {
-            let job = await this.runListCache.startTensorBoard(computerUUID, runUUIDs)
-            let url = job.data['url']
-
-            if (job.isSuccessful && url) {
-                let message = job.data['message']
-                this.userMessages.success(message)
-                openInNewTab(url, this.userMessages)
-            } else if (job.isComputerOffline) {
-                this.userMessages.warning('Your computer is currently offline')
-            } else if (job.isFailed) {
-                let message = job.data['message']
-                this.userMessages.warning(`Failed to start TensorBoard: ${message}`)
-            } else if (job.isTimeOut) {
-                this.userMessages.warning(`Timeout occurred while starting TensorBoard`)
-            } else {
-                this.userMessages.warning('Error occurred while starting TensorBoard')
-            }
-        } catch (e) {
-            this.userMessages.networkError()
-        }
-
-        this.updateTBButtonState(false)
     }
 
     onCancel = () => {
@@ -257,20 +196,12 @@ class RunsListView extends ScreenView {
         let isRunsSelected = this.selectedRunsSet.size === 0
 
         this.deleteButton.disabled = isRunsSelected || this.isTBProcessing
-        this.startTBButton.disabled = isRunsSelected || this.isTBProcessing
     }
 
     onSearch = async (query: string) => {
         this.searchQuery = query
         await this.loader.load()
         this.renderList().then()
-    }
-
-    private updateTBButtonState(isLoading: boolean) {
-        this.isTBProcessing = isLoading
-        let isRunsDeselected = this.selectedRunsSet.size === 0
-        this.startTBButton.disabled = isRunsDeselected || this.isTBProcessing
-        this.startTBButton.isLoading = this.isTBProcessing
     }
 
     private async renderList() {

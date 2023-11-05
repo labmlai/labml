@@ -1,36 +1,13 @@
 import functools
 import inspect
-import json
 from typing import Optional
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from .. import settings
 from ..db import project
 from ..db import user
 from ..db.user import User
-
-
-def get_app_token(request: Request) -> ('str', User):
-    if not settings.IS_LOGIN_REQUIRED:
-        token, u = _login_not_required()
-        return token, u
-
-    res = request.headers.get('Authorization', '')
-    try:
-        res = json.loads(res)
-    except ValueError:
-        res = {}
-
-    token = res.get('token', '')
-    u = None
-    if 'auth' in request.url.path:
-        u = user.get_user_secure(token)
-    else:
-        u = user.get_by_session_token(token)
-
-    return token, u
 
 
 def check_labml_token_permission(func) -> functools.wraps:
@@ -47,13 +24,6 @@ def check_labml_token_permission(func) -> functools.wraps:
         return await func(*args, **kwargs)
 
     return wrapper
-
-
-# TODO: fix this
-def _login_not_required():
-    u = user.get_or_create_user(identifier='local', is_local_user=True)
-
-    return 'local', u
 
 
 def login_required(func) -> functools.wraps:
@@ -92,16 +62,18 @@ def login_required(func) -> functools.wraps:
     return wrapper
 
 
+def _login_not_required():
+    u = user.get_or_create_user(identifier='local', is_local_user=True)
+
+    return 'local', u
+
+
+def get_app_token(request: Request) -> ('str', User):
+    token, u = _login_not_required()
+    return token, u
+
+
 def get_auth_user(request: Request) -> Optional['user.User']:
     token, u = get_app_token(request)
 
     return u
-
-
-def get_is_user_logged(request: Request) -> bool:
-    token, u = get_app_token(request)
-
-    if u is None:
-        return False
-
-    return True
