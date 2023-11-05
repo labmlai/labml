@@ -1,8 +1,3 @@
-import re
-
-TOKEN_REGEX = re.compile(r'labml_token=(?P<token>[^&]*)')
-
-
 class WebAPIConfigs:
     url: str
     frequency: float
@@ -20,13 +15,3 @@ class WebAPIConfigs:
         self.frequency = frequency
         self.verify_connection = verify_connection
         self.url = url
-
-    @property
-    def token(self):
-        tokens = TOKEN_REGEX.findall(self.url)
-
-        if not tokens:
-            return None
-        assert len(tokens) == 1, self.url
-
-        return tokens[0]
