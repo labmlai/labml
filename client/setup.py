@@ -12,7 +12,7 @@ setuptools.setup(
     description="Organize Machine Learning Experiments",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/labml.ai/labml",
+    url="https://github.com/labmlai/labml",
     project_urls={
         'Documentation': 'https://docs.labml.ai/'
     },
