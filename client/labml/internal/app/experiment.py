@@ -67,7 +67,8 @@ class AppExperiment(AppTrackDataSource):
             return packet
 
     def start(self, run: 'Run'):
-        self.app_tracker.add_handler(AppUrlResponseHandler(self.open_browser, 'Monitor experiment at '))
+        if run.distributed_rank == 0:
+            self.app_tracker.add_handler(AppUrlResponseHandler(self.open_browser, 'Monitor experiment at '))
 
         with self.lock:
             from labml.internal.computer.configs import computer_singleton
