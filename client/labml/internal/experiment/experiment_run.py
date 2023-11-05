@@ -78,7 +78,7 @@ class RunInfo:
         else:
             self.run_path = experiment_path / str(uuid)
 
-        self.pids_path = self.run_path / 'pids'
+        self.pid_path = self.run_path / 'run.pid'
         self.checkpoint_path = self.run_path / "checkpoints"
         self.numpy_path = self.run_path / "numpy"
 

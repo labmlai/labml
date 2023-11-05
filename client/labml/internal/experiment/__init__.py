@@ -365,13 +365,9 @@ class Experiment:
             self.checkpoint_saver.load(checkpoint_path, models)
 
     def _save_pid(self):
-        if not self.run.pids_path.exists():
-            self.run.pids_path.mkdir(parents=True)
+        assert not self.run.pid_path.exists(), str(self.run.pid_path)
 
-        pid_path = self.run.pids_path / f'{self.run.distributed_rank}.pid'
-        assert not pid_path.exists(), str(pid_path)
-
-        with open(str(pid_path), 'w') as f:
+        with open(str(self.run.pid_path), 'w') as f:
             f.write(f'{os.getpid()}')
 
     def _start_tracker(self):
