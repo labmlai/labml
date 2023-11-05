@@ -86,7 +86,6 @@ class RunInfo:
 
         self.sqlite_path = self.run_path / "sqlite.db"
         self.artifacts_folder = self.run_path / "artifacts"
-        self.tensorboard_log_path = self.run_path / "tensorboard"
         self.log_file = self.run_path / 'log.jsonl'
 
         self.info_path = self.run_path / "run.yaml"
@@ -195,7 +194,7 @@ class Run(RunInfo):
     Every trial in an experiment has same configs.
     It's just multiple runs.
 
-    A new trial will replace checkpoints and TensorBoard summaries
+    A new trial will replace checkpoints
     or previous trials, you should make a copy if needed.
     The performance log in `trials.yaml` is not replaced.
 

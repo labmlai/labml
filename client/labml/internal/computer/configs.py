@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Set, Union
+from typing import Optional, Set
 
 from labml import logger, monit
 from labml.internal import util
@@ -26,7 +26,6 @@ class Computer:
         self.config_folder = self.home / CONFIGS_FOLDER
         self.projects_folder = self.config_folder / 'projects'
         self.runs_cache = self.config_folder / 'runs_cache'
-        self.tensorboard_symlink_dir = self.config_folder / 'tensorboard'
         self.configs_file = self.config_folder / 'configs.yaml'
         self.app_folder = self.config_folder / 'app'
 
@@ -88,11 +87,6 @@ class Computer:
         self.web_api_sync = config['web_api_sync']
         self.web_api_polling = config['web_api_polling']
 
-        self.tensorboard_port = config['tensorboard_port']
-        self.tensorboard_visible_port = config['tensorboard_visible_port']
-        self.tensorboard_host = config['tensorboard_host']
-        self.tensorboard_protocol = config['tensorboard_protocol']
-
     def set_token(self, token: str):
         with monit.section('Update ~/labml/configs.yaml'):
             with open(str(self.configs_file)) as f:
@@ -119,10 +113,6 @@ class Computer:
             web_api_open_browser=True,
             web_api_sync=get_api_url('sync'),
             web_api_polling=get_api_url('polling'),
-            tensorboard_port=6006,
-            tensorboard_visible_port=6006,
-            tensorboard_host='localhost',
-            tensorboard_protocol='http',
         )
 
     def get_projects(self) -> Set[str]:
