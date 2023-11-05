@@ -41,7 +41,7 @@ class ApiResponseHandler:
         raise NotImplementedError
 
 
-class _WebApiThread(threading.Thread):
+class _AppTrackThread(threading.Thread):
     def __init__(self, url: str, *, timeout_seconds: int, daemon: bool):
         super().__init__(daemon=daemon)
         self.please_wait_count = 0
@@ -201,7 +201,7 @@ class _WebApiThread(threading.Thread):
 class ApiCaller:
     app_track_url: str
     params: Dict[str, str]
-    thread: Optional[_WebApiThread]
+    thread: Optional[_AppTrackThread]
     state_attributes: Set[str]
 
     def __init__(self, app_track_url: str, params: Dict[str, str], *,
@@ -224,9 +224,9 @@ class ApiCaller:
             return False
 
         if self.thread is None:
-            self.thread = _WebApiThread(self.app_track_url,
-                                        timeout_seconds=self.timeout_seconds,
-                                        daemon=self.daemon)
+            self.thread = _AppTrackThread(self.app_track_url,
+                                          timeout_seconds=self.timeout_seconds,
+                                          daemon=self.daemon)
 
         if self.thread.errored:
             raise RuntimeError('LabML App error: See above for error details')

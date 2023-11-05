@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 LOGS_FREQUENCY = 0
 
 
-class WebApiConfigsSaver(ConfigsSaver):
+class AppConfigsSaver(ConfigsSaver):
     def __init__(self, api_experiment: 'ApiExperiment'):
         self.api_experiment = api_experiment
 
@@ -34,7 +34,7 @@ class DynamicHyperParamHandler(ApiResponseHandler):
 
 
 class ApiExperiment(ApiDataSource):
-    configs_saver: Optional[WebApiConfigsSaver]
+    configs_saver: Optional[AppConfigsSaver]
 
     def __init__(self, api_caller: ApiCaller, *,
                  frequency: float,
@@ -50,7 +50,7 @@ class ApiExperiment(ApiDataSource):
 
     def get_configs_saver(self):
         if self.configs_saver is None:
-            self.configs_saver = WebApiConfigsSaver(self)
+            self.configs_saver = AppConfigsSaver(self)
         return self.configs_saver
 
     def save_configs(self, configs: Dict[str, any]):

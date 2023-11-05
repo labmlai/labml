@@ -6,7 +6,7 @@ from labml.logger import Text
 from labml.utils import get_caller_file
 from labml.utils.notice import labml_notice
 from . import util
-from .app.configs import WebAPIConfigs
+from .app.configs import AppTrackConfigs
 from .util import is_colab, is_kaggle
 
 _CONFIG_FILE_NAME = '.labml.yaml'
@@ -42,7 +42,7 @@ class Lab:
     data_path: Optional[Path]
     check_repo_dirty: Optional[bool]
     path: Optional[Path]
-    app_configs: Optional[WebAPIConfigs]
+    app_configs: Optional[AppTrackConfigs]
     configs: Dict
 
     def __init__(self, path: Optional[Path] = None):
@@ -117,10 +117,10 @@ class Lab:
                 # base_url = get_api_url('track')
                 raise RuntimeError(f'app_track_url: {app_track_url} is not a valid URL')
 
-            self.app_configs = WebAPIConfigs(url=app_track_url,
-                                             frequency=self.configs['app_track_frequency'],
-                                             open_browser=self.configs['app_open_browser'],
-                                             is_default=False)
+            self.app_configs = AppTrackConfigs(url=app_track_url,
+                                               frequency=self.configs['app_track_frequency'],
+                                               open_browser=self.configs['app_open_browser'],
+                                               is_default=False)
         else:
             self.app_configs = None
 

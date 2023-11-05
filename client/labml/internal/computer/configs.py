@@ -5,7 +5,7 @@ from labml import logger
 from labml.logger import Text
 from . import CONFIGS_FOLDER
 from .. import util
-from ..app.configs import WebAPIConfigs
+from ..app.configs import AppTrackConfigs
 from ..lab import get_app_url_for_handle
 
 
@@ -17,7 +17,7 @@ class Computer:
     """
     app_sync_url: str
     app_polling_url: str
-    app_configs: WebAPIConfigs
+    app_configs: AppTrackConfigs
     uuid: str
     config_folder: Path
 
@@ -72,10 +72,10 @@ class Computer:
 
         self.uuid = config['uuid']
 
-        self.app_configs = WebAPIConfigs(url=config['app_computer_url'],
-                                         frequency=config['app_track_frequency'],
-                                         open_browser=config['app_open_browser'],
-                                         is_default=False)
+        self.app_configs = AppTrackConfigs(url=config['app_computer_url'],
+                                           frequency=config['app_track_frequency'],
+                                           open_browser=config['app_open_browser'],
+                                           is_default=False)
         self.app_sync_url = config['app_sync_url']
         self.app_polling_url = config['app_polling_url']
 
