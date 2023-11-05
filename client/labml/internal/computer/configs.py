@@ -10,11 +10,6 @@ from ..lab import get_app_url_for_handle
 
 
 class Computer:
-    """
-    ### Computer
-
-    Lab contains the labml specific properties.
-    """
     app_sync_url: str
     app_polling_url: str
     app_configs: AppTrackConfigs
