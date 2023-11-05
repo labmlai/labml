@@ -7,13 +7,13 @@ from ...app import ApiCaller
 
 class MonitorComputer:
     def __init__(self, session_uuid: str, open_browser):
-        api_caller = ApiCaller(computer_singleton().web_api.url,
+        api_caller = ApiCaller(computer_singleton().app_configs.url,
                                {'computer_uuid': computer_singleton().uuid, 'session_uuid': session_uuid},
                                timeout_seconds=120,
                                daemon=True)
-        self.writer = Writer(api_caller, frequency=computer_singleton().web_api.frequency)
+        self.writer = Writer(api_caller, frequency=computer_singleton().app_configs.frequency)
         self.header = Header(api_caller,
-                             frequency=computer_singleton().web_api.frequency,
+                             frequency=computer_singleton().app_configs.frequency,
                              open_browser=open_browser)
         self.scanner = Scanner()
 

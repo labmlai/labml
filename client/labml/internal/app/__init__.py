@@ -199,12 +199,12 @@ class _WebApiThread(threading.Thread):
 
 
 class ApiCaller:
-    web_api_url: str
+    app_track_url: str
     params: Dict[str, str]
     thread: Optional[_WebApiThread]
     state_attributes: Set[str]
 
-    def __init__(self, web_api_url: str, params: Dict[str, str], *,
+    def __init__(self, app_track_url: str, params: Dict[str, str], *,
                  timeout_seconds: int = 15,
                  daemon: bool = False):
         super().__init__()
@@ -214,7 +214,7 @@ class ApiCaller:
         params['labml_version'] = labml.__version__
         params = '&'.join([f'{k}={v}' for k, v in params.items()])
 
-        self.web_api_url = f'{web_api_url}{params}'
+        self.app_track_url = f'{app_track_url}{params}'
         self.timeout_seconds = timeout_seconds
         self.thread = None
         self.stopped = False
@@ -224,7 +224,7 @@ class ApiCaller:
             return False
 
         if self.thread is None:
-            self.thread = _WebApiThread(self.web_api_url,
+            self.thread = _WebApiThread(self.app_track_url,
                                         timeout_seconds=self.timeout_seconds,
                                         daemon=self.daemon)
 

@@ -418,7 +418,7 @@ def record(*,
         tags (Set[str], optional): Set of tags for experiment
         exp_conf (Dict[str, any], optional): a dictionary of experiment configurations
         lab_conf (Dict[str, any], optional): a dictionary of configurations for LabML.
-         Use this if you want to change default configurations such as ``web_api``, and
+         Use this if you want to change default configurations such as ``app_track_url``, and
          ``data_path``.
         app_url (str, optional): a shortcut to provide LabML app url
          instead of including it in ``lab_conf``. You can set this with :func:`labml.lab.configure`,
@@ -430,7 +430,7 @@ def record(*,
     if app_url is not None:
         if lab_conf is None:
             lab_conf = {}
-        lab_conf['web_api'] = app_url
+        lab_conf['app_track_url'] = app_url
 
     if lab_conf is not None:
         from labml.internal.lab import lab_singleton as _internal

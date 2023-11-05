@@ -12,7 +12,7 @@ from .util import is_colab, is_kaggle
 _CONFIG_FILE_NAME = '.labml.yaml'
 
 
-def get_api_url(handle: str):
+def get_app_url_for_handle(handle: str):
     import os
     if 'labml_server' in os.environ:
         base_url = os.environ['labml_server']
@@ -42,7 +42,7 @@ class Lab:
     data_path: Optional[Path]
     check_repo_dirty: Optional[bool]
     path: Optional[Path]
-    web_api: Optional[WebAPIConfigs]
+    app_configs: Optional[WebAPIConfigs]
     configs: Dict
 
     def __init__(self, path: Optional[Path] = None):
@@ -51,7 +51,7 @@ class Lab:
         self.check_repo_dirty = None
         self.data_path = None
         self.experiments = None
-        self.web_api = None
+        self.app_configs = None
         self.configs = self.__default_config()
         self.custom_configs = []
         self.__update_configs()
@@ -111,18 +111,18 @@ class Lab:
 
         self.check_repo_dirty = self.configs['check_repo_dirty']
         self.indicators = self.configs['indicators']
-        if self.configs['web_api']:
-            web_api_url = self.configs['web_api']
-            if web_api_url[0:4] != 'http':
+        if self.configs['app_track_url']:
+            app_track_url = self.configs['app_track_url']
+            if app_track_url[0:4] != 'http':
                 # base_url = get_api_url('track')
-                raise RuntimeError(f'web_api ({web_api_url}) is not a valid URL')
+                raise RuntimeError(f'app_track_url: {app_track_url} is not a valid URL')
 
-            self.web_api = WebAPIConfigs(url=web_api_url,
-                                         frequency=self.configs['web_api_frequency'],
-                                         open_browser=self.configs['web_api_open_browser'],
-                                         is_default=False)
+            self.app_configs = WebAPIConfigs(url=app_track_url,
+                                             frequency=self.configs['web_api_frequency'],
+                                             open_browser=self.configs['web_api_open_browser'],
+                                             is_default=False)
         else:
-            self.web_api = None
+            self.app_configs = None
 
     def set_configurations(self, configs: Dict[str, any]):
         self.custom_configs.append(configs)
@@ -146,7 +146,7 @@ class Lab:
             experiments_path='logs',
             analytics_path='analytics',
             analytics_templates={},
-            web_api=get_api_url('track'),
+            app_track_url=get_app_url_for_handle('track'),
             web_api_frequency=0,
             web_api_open_browser=True,
             indicators=[

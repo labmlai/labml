@@ -11,7 +11,7 @@ from labml.experiment import generate_uuid
 from labml.internal.app import ApiCaller, SimpleApiDataSource
 from labml.internal.app.logs import ApiLogs
 from labml.internal.app.url import ApiUrlHandler
-from labml.internal.lab import get_api_url
+from labml.internal.lab import get_app_url_for_handle
 from labml.logger import Text
 from labml.utils.validators import ip_validator
 
@@ -92,7 +92,7 @@ class ExecutorThread(threading.Thread):
 
 
 def _capture(args: List[str]):
-    base_url = get_api_url('track')
+    base_url = get_app_url_for_handle('track')
     if base_url is None:
         raise RuntimeError(f'Please specify labml_server environment variable. '
                            f'How to setup a labml server https://github.com/labmlai/labml/tree/master/app')
@@ -178,7 +178,7 @@ def _monitor():
     from labml.internal.computer import process
     from labml.internal.computer.configs import computer_singleton
 
-    process.run(True, computer_singleton().web_api.open_browser)
+    process.run(True, computer_singleton().app_configs.open_browser)
 
 
 def _service():

@@ -6,7 +6,7 @@ from labml.logger import Text
 from . import CONFIGS_FOLDER
 from .. import util
 from ..app.configs import WebAPIConfigs
-from ..lab import get_api_url
+from ..lab import get_app_url_for_handle
 
 
 class Computer:
@@ -15,9 +15,9 @@ class Computer:
 
     Lab contains the labml specific properties.
     """
-    web_api_sync: str
-    web_api_polling: str
-    web_api: WebAPIConfigs
+    app_sync_url: str
+    app_polling_url: str
+    app_configs: WebAPIConfigs
     uuid: str
     config_folder: Path
 
@@ -72,12 +72,12 @@ class Computer:
 
         self.uuid = config['uuid']
 
-        self.web_api = WebAPIConfigs(url=config['web_api'],
-                                     frequency=config['web_api_frequency'],
-                                     open_browser=config['web_api_open_browser'],
-                                     is_default=False)
-        self.web_api_sync = config['web_api_sync']
-        self.web_api_polling = config['web_api_polling']
+        self.app_configs = WebAPIConfigs(url=config['app_computer_url'],
+                                         frequency=config['web_api_frequency'],
+                                         open_browser=config['web_api_open_browser'],
+                                         is_default=False)
+        self.app_sync_url = config['app_sync_url']
+        self.app_polling_url = config['app_polling_url']
 
     def __str__(self):
         return f"<Computer uuid={self.uuid}>"
@@ -88,11 +88,11 @@ class Computer:
     @staticmethod
     def __default_config():
         return dict(
-            web_api=get_api_url('computer'),
+            app_computer_url=get_app_url_for_handle('computer'),
             web_api_frequency=0,
             web_api_open_browser=True,
-            web_api_sync=get_api_url('sync'),
-            web_api_polling=get_api_url('polling'),
+            app_sync_url=get_app_url_for_handle('sync'),
+            app_polling_url=get_app_url_for_handle('polling'),
         )
 
     def get_projects(self) -> Set[str]:
