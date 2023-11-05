@@ -36,6 +36,7 @@ class SimpleApiDataSource(ApiDataSource):
 
 
 class ApiResponseHandler:
+    """All handlers gets called when there's a message from the App"""
     def handle(self, data) -> bool:
         raise NotImplementedError
 
