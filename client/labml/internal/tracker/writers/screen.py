@@ -50,11 +50,6 @@ class ScreenWriter(Writer):
         else:
             return fmt.format(v=v)
 
-    @staticmethod
-    def __format_artifact(length: int, value: str):
-        fmt = "{v:>" + str(length + 1) + "}"
-        return fmt.format(v=value)
-
     def _get_indicator_string(self, indicators: Dict[str, Indicator]):
         parts = []
 

@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 
 class Namespace:
     def __init__(self, *,
-                 tracker: 'Trakcer',
+                 tracker: 'Tracker',
                  name: str):
         self.tracker = tracker
         self.name = name
