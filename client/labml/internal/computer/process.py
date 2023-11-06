@@ -80,7 +80,7 @@ def run(is_check_process: bool = True, open_browser: bool = True):
 
     m.start()
 
-    _sync_thread()
+    # _sync_thread()
 
     i = 0
     while True:
