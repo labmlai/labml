@@ -70,7 +70,7 @@ class ProcessMonitor:
 
     def _start_tracking(self, key):
         p = self.processes[key]
-        print(f'Tracking {p.pid} {p.name}')
+        # print(f'Tracking {p.pid} {p.name}')
         assert not p.is_tracked
         p.is_tracked = True
         self.n_tracking += 1
@@ -84,7 +84,6 @@ class ProcessMonitor:
             return False
 
         if self.n_tracking > 24 and not p.is_gpu:
-            # print(f'Not tracking {self.n_tracking}')
             return False
         else:
             return True
