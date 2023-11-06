@@ -16,8 +16,8 @@ class ProcessInfo:
         self.is_tracked = False
         self.is_gpu = False
 
-        self.rss = 0
-        self.cpu_user = 0
+        self.rss = None
+        self.cpu_user = None
 
         self.alive = True
         self.active = True
@@ -74,6 +74,9 @@ class ProcessMonitor:
 
     def _should_track(self, key):
         p = self.processes[key]
+        if p.cpu_user is None or p.rss is None:
+            return False
+        
         if self.n_tracking > 24 and not p.is_gpu:
             print(f'Not tracking {self.n_tracking}')
             return False
