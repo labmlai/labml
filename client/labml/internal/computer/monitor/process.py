@@ -18,6 +18,8 @@ class ProcessInfo:
 
         self.rss = None
         self.cpu_user = None
+        self.cpu_percent = 0
+        self.n_cpu_percent = 0
 
         self.alive = True
         self.active = True
@@ -76,6 +78,9 @@ class ProcessMonitor:
     def _should_track(self, key):
         p = self.processes[key]
         if p.cpu_user is None or p.rss is None:
+            return False
+
+        if p.cpu_percent / (max(10, p.n_cpu_percent)) < 1.:
             return False
 
         if self.n_tracking > 24 and not p.is_gpu:
@@ -161,11 +166,12 @@ class ProcessMonitor:
             except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass
 
-            if not proc.is_tracked:
-                return
-
             try:
                 res = p.cpu_percent()
+
+                proc.cpu_percent = res.cpu_percent
+                proc.n_cpu_percent += 1
+
                 if proc.is_tracked:
                     self.data.update({
                         f'process.{key}.cpu': res,
