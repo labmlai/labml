@@ -50,7 +50,7 @@ class BatteryAnalysis(Analysis):
 
     def get_tracking(self):
         res = []
-        summary = {}
+        summary = None
         for ind, track in self.battery.tracking.items():
             name = ind.split('.')
 
@@ -70,6 +70,9 @@ class BatteryAnalysis(Analysis):
 
         if len(res) > 1:
             res.sort(key=lambda s: s['name'])
+
+        if summary is None:
+            summary = []
 
         return res, summary
 
