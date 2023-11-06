@@ -136,7 +136,7 @@ class Run(Model['Run']):
         if not self.comment:
             self.comment = data.get('comment', '')
         if not self.tags:
-            self.tags = data.get('tags', '')
+            self.tags = data.get('tags', [])
         if not self.python_file:
             self.python_file = data.get('python_file', '')
         if not self.repo_remotes:

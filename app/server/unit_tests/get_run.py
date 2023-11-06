@@ -1,7 +1,9 @@
-from labml_app.db import run, init_db
+from labml_app.db import run, init_mongo_db
 
-init_db()
+init_mongo_db()
 
-r = run.get('18cfffe437f711ee8e4254ef33f17c7c')
+r = run.get('eeb8e34067ff11eeaf633275fba9aeb4')
 
-print(r)
+r.name = 'XXXX'
+r.tags = []
+r.save()
