@@ -75,7 +75,7 @@ class ProcessMonitor:
     def _should_track(self, key):
         p = self.processes[key]
         if self.n_tracking > 24 and not p.is_gpu:
-            print('Not tracking')
+            print(f'Not tracking {self.n_tracking}')
             return False
         else:
             return True
