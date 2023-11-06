@@ -68,6 +68,7 @@ class ProcessMonitor:
 
     def _start_tracking(self, key):
         p = self.processes[key]
+        print(f'Tracking {p.pid} {p.name}')
         assert not p.is_tracked
         p.is_tracked = True
         self.n_tracking += 1
