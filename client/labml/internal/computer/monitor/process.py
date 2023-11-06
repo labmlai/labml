@@ -169,7 +169,7 @@ class ProcessMonitor:
             try:
                 res = p.cpu_percent()
 
-                proc.cpu_percent = res.cpu_percent
+                proc.cpu_percent = res
                 proc.n_cpu_percent += 1
 
                 if proc.is_tracked:
