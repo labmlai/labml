@@ -7,11 +7,17 @@ class ProcessInfo:
     key: int
     pid: int
     name: str
+    is_tracked: bool
 
     def __init__(self, key: int, pid: int, name: str):
         self.key = key
         self.pid = pid
         self.name = name
+        self.is_tracked = False
+        self.is_gpu = False
+
+        self.rss = 0
+        self.cpu_user = 0
 
         self.alive = True
         self.active = True
@@ -26,6 +32,7 @@ class ProcessMonitor:
         self.processes = []
         self.data = {}
         self.nvml = nvml
+        self.n_tracking = 0
 
     def _track_gpu(self, idx: int):
         handle = self.nvml.nvmlDeviceGetHandleByIndex(idx)
@@ -33,16 +40,20 @@ class ProcessMonitor:
         procs = self.nvml.nvmlDeviceGetGraphicsRunningProcesses(handle)
         for p in procs:
             key = self.pids[p.pid]
-            self.data.update({
-                f'process.{key}.gpu.{idx}.mem': p.usedGpuMemory,
-            })
+            self.processes[key].is_gpu = True
+            if self.processes[key].is_tracked:
+                self.data.update({
+                    f'process.{key}.gpu.{idx}.mem': p.usedGpuMemory,
+                })
 
         procs = self.nvml.nvmlDeviceGetComputeRunningProcesses(handle)
         for p in procs:
             key = self.pids[p.pid]
-            self.data.update({
-                f'process.{key}.gpu.{idx}.mem': p.usedGpuMemory,
-            })
+            self.processes[key].is_gpu = True
+            if self.processes[key].is_tracked:
+                self.data.update({
+                    f'process.{key}.gpu.{idx}.mem': p.usedGpuMemory,
+                })
 
     def track_gpus(self):
         self.data = {}
@@ -55,6 +66,26 @@ class ProcessMonitor:
 
         return self.data
 
+    def _start_tracking(self, key):
+        p = self.processes[key]
+        assert not p.is_tracked
+        p.is_tracked = True
+        self.n_tracking += 1
+
+    def _should_track(self, key):
+        p = self.processes[key]
+        if self.n_tracking > 24 and not p.is_gpu:
+            return False
+        else:
+            return True
+
+    def _stop_tracking_dead(self, key):
+        p = self.processes[key]
+        assert not p.alive
+        assert p.is_tracked
+        p.is_tracked = False
+        self.n_tracking -= 1
+
     def track_process(self, p: psutil.Process):
         with p.oneshot():
             key = None
@@ -65,9 +96,16 @@ class ProcessMonitor:
             if key is None:
                 key = len(self.processes)
                 self.processes.append(ProcessInfo(key,
-                                               p.pid,
-                                               p.name()))
+                                                  p.pid,
+                                                  p.name()))
                 self.pids[p.pid] = key
+
+            proc = self.processes[key]
+            proc.active = True
+
+            if not self.processes[key].is_tracked and self._should_track(key):
+                self._start_tracking(key)
+
                 self.data.update({
                     f'process.{key}.name': p.name(),
                     f'process.{key}.pid': p.pid,
@@ -89,43 +127,49 @@ class ProcessMonitor:
                 except (psutil.AccessDenied, psutil.ZombieProcess):
                     pass
 
-            self.processes[key].active = True
-
             try:
                 res = p.memory_info()
-                self.data.update({
-                    f'process.{key}.rss': res.rss,
-                    f'process.{key}.vms': res.vms,
-                })
-            except (psutil.AccessDenied, psutil.ZombieProcess):
-                pass
+                proc.rss = res.rss
 
-            try:
-                res = p.cpu_times()
-                self.data.update({
-                    f'process.{key}.user': res.user,
-                    f'process.{key}.system': res.system,
-                })
-                if hasattr(res, 'iowait'):
+                if proc.is_tracked:
                     self.data.update({
-                        f'process.{key}.iowait': res.iowait,
+                        f'process.{key}.rss': res.rss,
+                        f'process.{key}.vms': res.vms,
                     })
             except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass
 
             try:
+                res = p.cpu_times()
+                proc.cpu_user = res.user
+
+                if proc.is_tracked:
+                    self.data.update({
+                        f'process.{key}.user': res.user,
+                        f'process.{key}.system': res.system,
+                    })
+                    if hasattr(res, 'iowait'):
+                        self.data.update({
+                            f'process.{key}.iowait': res.iowait,
+                        })
+            except (psutil.AccessDenied, psutil.ZombieProcess):
+                pass
+
+            try:
                 res = p.cpu_percent()
-                self.data.update({
-                    f'process.{key}.cpu': res,
-                })
+                if proc.is_tracked:
+                    self.data.update({
+                        f'process.{key}.cpu': res,
+                    })
             except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass
 
             try:
                 res = p.num_threads()
-                self.data.update({
-                    f'process.{key}.threads': res,
-                })
+                if proc.is_tracked:
+                    self.data.update({
+                        f'process.{key}.threads': res,
+                    })
             except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass
 
@@ -141,8 +185,10 @@ class ProcessMonitor:
         for p in self.processes:
             if not p.active and p.alive:
                 p.alive = False
-                self.data.update({
-                    f'process.{p.key}.dead': True,
-                })
+                if p.is_tracked:
+                    self.data.update({
+                        f'process.{p.key}.dead': True,
+                    })
+                    self._stop_tracking_dead(p.key)
 
         return self.data
