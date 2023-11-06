@@ -59,8 +59,11 @@ export class RunHeaderCard {
 
             Weya(this.elem, $ => {
                 $('div', $ => {
-                    $('div', $ => {
+                    $('div.status', $ => {
                         this.lastRecordedContainer = $('div', '.last-updated.mb-2')
+                        if (this.run.world_size != 0) {
+                            $(`div.text-uppercase.label-info.label.text-light.run-info`, "distributed")
+                        }
                     })
                     $('div', '.run-info', $ => {
                         this.statusViewContainer = $('div')
@@ -70,11 +73,7 @@ export class RunHeaderCard {
 
                     if (this.showRank && this.run.world_size > 0) {
                         $('div', '.rank.mt-2', $ => {
-                            if (this.run.rank == 0) {
-                                $('span', 'Distributed')
-                            } else {
-                                $('span', `Rank ${this.run.rank + 1} of ${this.run.world_size}`)
-                            }
+                            $('span', `Rank ${this.run.rank + 1} of ${this.run.world_size}`)
                         })
                     }
                 })

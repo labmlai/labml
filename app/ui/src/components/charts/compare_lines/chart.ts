@@ -199,7 +199,8 @@ export class LineChart {
                                                 color: document.body.classList.contains("light")
                                                         ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
                                                         : this.chartColors.getColor(this.uniqueItems.get(s.name)),
-                                                renderHorizontalLine: true
+                                                renderHorizontalLine: true,
+                                                smoothFocused: this.focusSmoothed
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
@@ -217,7 +218,8 @@ export class LineChart {
                                                         ? this.chartColors.getColor(this.uniqueItems.get(s.name))
                                                         : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
                                                 isBase: true,
-                                                renderHorizontalLine: true
+                                                renderHorizontalLine: true,
+                                                smoothFocused: this.focusSmoothed
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)

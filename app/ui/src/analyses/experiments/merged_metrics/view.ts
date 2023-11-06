@@ -76,7 +76,7 @@ class DistributedMetricsView extends ScreenView {
     }
 
     async _render() {
-        setTitle({section: 'Mean Metrics'})
+        setTitle({section: 'Distributed Metrics'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -95,7 +95,7 @@ class DistributedMetricsView extends ScreenView {
                         })
                         this.runHeaderCard.render($).then()
                         this.toggleButtonContainer = $('div.button-row')
-                        $('h2', '.header.text-center', 'Mean Metrics')
+                        $('h2', '.header.text-center', 'Distributed Metrics')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
                             this.lineChartContainer = $('div', '.fixed-chart')

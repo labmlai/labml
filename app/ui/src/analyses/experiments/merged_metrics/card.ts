@@ -42,7 +42,7 @@ export class DistributedMetricsCard extends Card {
 
     async render($: WeyaElementFunction) {
         this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3','.header', 'Mean Metrics')
+            $('h3','.header', 'Distributed Metrics')
             this.loader.render($)
             this.lineChartContainer = $('div', '')
             this.sparkLineContainer = $('div', '')

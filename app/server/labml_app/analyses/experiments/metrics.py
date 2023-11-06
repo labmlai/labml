@@ -44,6 +44,11 @@ def mget(run_uuids: List[str]) -> List[Optional['MetricsAnalysis']]:
     return load_keys(run_keys)
 
 
+def mget_preferences(run_uuids: List[str]) -> List[Optional['MetricsPreferencesModel']]:
+    run_keys = MetricsPreferencesIndex.mget(run_uuids)
+    return load_keys(run_keys)
+
+
 class MetricsAnalysis(Analysis):
     metrics: MetricsModel
 
@@ -102,6 +107,15 @@ class MetricsAnalysis(Analysis):
             MetricsPreferencesIndex.set(run_uuid, mp.key)
 
             return MetricsAnalysis(m)
+
+        return MetricsAnalysis(metrics_key.load())
+
+    @staticmethod
+    def get(run_uuid: str):
+        metrics_key = MetricsIndex.get(run_uuid)
+
+        if not metrics_key:
+            return None
 
         return MetricsAnalysis(metrics_key.load())
 

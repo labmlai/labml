@@ -54,7 +54,7 @@ export class StatusView {
         $('div.status', $=> {
             $(`div.text-uppercase.${this.statusClass}`, this.statusText)
             if (this.isDistributed) {
-                $(`div.text-uppercase.text-info`, "distributed")
+                $(`div.text-uppercase.label-info.label.text-light`, "distributed")
             }
         })
     }

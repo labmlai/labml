@@ -12,6 +12,7 @@ from . import project
 from . import computer
 from . import status
 from .. import settings
+from ..analyses.experiments.metrics import MetricsAnalysis, MetricsPreferencesIndex, MetricsPreferencesModel
 from ..logger import logger
 from .. import analyses
 from ..enums import RunEnums
@@ -289,6 +290,8 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
             'world_size': self.world_size,
+            'preview_series': None,
+            'metric_values': None
         }
 
     def edit_run(self, data: Dict[str, any]) -> None:
