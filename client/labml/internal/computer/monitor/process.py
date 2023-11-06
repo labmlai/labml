@@ -75,6 +75,7 @@ class ProcessMonitor:
     def _should_track(self, key):
         p = self.processes[key]
         if self.n_tracking > 24 and not p.is_gpu:
+            print('Not tracking')
             return False
         else:
             return True
@@ -93,6 +94,7 @@ class ProcessMonitor:
                 key = self.pids[p.pid]
                 if self.processes[key].name != p.name():
                     key = None
+
             if key is None:
                 key = len(self.processes)
                 self.processes.append(ProcessInfo(key,
@@ -154,6 +156,9 @@ class ProcessMonitor:
                         })
             except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass
+
+            if not proc.is_tracked:
+                return
 
             try:
                 res = p.cpu_percent()
