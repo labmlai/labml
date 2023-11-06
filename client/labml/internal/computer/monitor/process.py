@@ -76,9 +76,9 @@ class ProcessMonitor:
         p = self.processes[key]
         if p.cpu_user is None or p.rss is None:
             return False
-        
+
         if self.n_tracking > 24 and not p.is_gpu:
-            print(f'Not tracking {self.n_tracking}')
+            # print(f'Not tracking {self.n_tracking}')
             return False
         else:
             return True
