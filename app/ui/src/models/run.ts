@@ -25,6 +25,8 @@ export interface RunModel {
     stdout: string
     logger: string
     stderr: string
+    selected_configs?: string[]
+    favourite_configs?: string[]
 }
 
 export interface PointValue {
@@ -84,6 +86,8 @@ export class Run {
     stdout: string
     logger: string
     stderr: string
+    selected_configs: string[]
+    favourite_configs: string[]
 
     constructor(run: RunModel) {
         this.run_uuid = run.run_uuid
@@ -107,12 +111,22 @@ export class Run {
         this.size_tensorboard = run.size_tensorboard
         this.computer_uuid = run.computer_uuid
         this.configs = []
+        this.favourite_configs = run.favourite_configs ?? []
+        this.selected_configs = run.selected_configs ?? []
         for (let c of run.configs) {
-            this.configs.push(new Config(c))
+            this.configs.push(new Config(c,this.selected_configs.includes(c.key), this.favourite_configs.includes(c.key)))
         }
         this.stdout = run.stdout
         this.logger = run.logger
         this.stderr = run.stderr
+    }
+
+    public updateConfigs() {
+        let updatedConfigs: Config[] = []
+        for (let c of this.configs) {
+            updatedConfigs.push(new Config(c,this.selected_configs.includes(c.key), this.favourite_configs.includes(c.key)))
+        }
+        this.configs = updatedConfigs
     }
 }
 

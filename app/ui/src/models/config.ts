@@ -28,7 +28,10 @@ export class Config {
     isDefault: boolean
     otherOptions: Set<string>
 
-    constructor(config: ConfigModel) {
+    isSelected: boolean
+    isFavourite: boolean
+
+    constructor(config: ConfigModel, isSelected?: boolean, isFavourite?: boolean) {
         this.key = config.key
         this.name = config.name
         this.computed = config.computed
@@ -39,6 +42,8 @@ export class Config {
         this.isHyperparam = config.is_hyperparam
         this.isMeta = config.is_meta
         this.isExplicitlySpecified = config.is_explicitly_specified
+        this.isFavourite = isFavourite ?? false
+        this.isSelected = isSelected ?? false
 
         let options = new Set<string>()
         for (let opt of this.options) {
