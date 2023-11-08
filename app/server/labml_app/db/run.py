@@ -57,6 +57,8 @@ class Run(Model['Run']):
     logger_unmerged: str
     stderr: str
     stderr_unmerged: str
+    selected_configs: List['str']
+    favourite_configs: List['str']
 
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -95,7 +97,9 @@ class Run(Model['Run']):
                     stderr_unmerged='',
                     wildcard_indicators={},
                     indicators={},
-                    errors=[]
+                    errors=[],
+                    selected_configs=[],
+                    favourite_configs=[],
                     )
 
     @property
@@ -177,6 +181,11 @@ class Run(Model['Run']):
         if 'stderr' in data and data['stderr']:
             stderr_processed, self.stderr_unmerged = self.merge_output(self.stderr_unmerged, data['stderr'])
             self.stderr += stderr_processed
+
+        if 'favorite_configs' in data:
+            self.favourite_configs = data.get('favorite_configs', [])
+        if 'selected_configs' in data:
+            self.selected_configs = data.get('selected_configs', [])
 
         if not self.indicators:
             self.indicators = data.get('indicators', {})
@@ -280,6 +289,8 @@ class Run(Model['Run']):
             'stdout': self.stdout + self.stdout_unmerged,
             'logger': self.logger + self.logger_unmerged,
             'stderr': self.stderr + self.stderr_unmerged,
+            'favorite_configs': self.favourite_configs,
+            'selected_configs': self.selected_configs,
         }
 
     def get_summary(self) -> Dict[str, str]:
@@ -291,18 +302,28 @@ class Run(Model['Run']):
             'start_time': self.start_time,
             'world_size': self.world_size,
             'preview_series': None,
-            'metric_values': None
+            'metric_values': None,
+            'favorite_configs': self.favourite_configs,
         }
 
     def edit_run(self, data: Dict[str, any]) -> None:
+        change_ranks: bool = False
         if 'name' in data:
             self.name = data.get('name', self.name)
+            change_ranks = True
         if 'comment' in data:
             self.comment = data.get('comment', self.comment)
+            change_ranks = True
         if 'note' in data:
             self.note = data.get('note', self.note)
+            change_ranks = True
 
-        if self.world_size > 0:
+        if 'favorite_configs' in data:
+            self.favourite_configs = data.get('favorite_configs', self.favourite_configs)
+        if 'selected_configs' in data:
+            self.selected_configs = data.get('selected_configs', self.selected_configs)
+
+        if self.world_size > 0 and change_ranks:
             run_uuids = [f'{self.run_uuid}_{rank}' for rank in range(1, self.world_size)]
             runs = mget(run_uuids)
             for r in runs:

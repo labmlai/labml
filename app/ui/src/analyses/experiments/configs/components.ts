@@ -79,6 +79,7 @@ interface ConfigItemOptions {
     configs: Config[]
     isHyperParamOnly: boolean
     width: number
+    onTap?: (key: string) => void
 }
 
 class ConfigItemView {
@@ -89,6 +90,7 @@ class ConfigItemView {
     key: string
     width: number
     elem: WeyaElement
+    onTap?: (key: string) => void
 
     constructor(opt: ConfigItemOptions) {
         this.conf = opt.config
@@ -98,6 +100,7 @@ class ConfigItemView {
         }
         this.width = opt.width
         this.isHyperParamOnly = opt.isHyperParamOnly
+        this.onTap = opt.onTap
 
         this.classes = ['info_list', 'config']
 
@@ -138,7 +141,18 @@ class ConfigItemView {
             }
         }
 
-        this.elem = $('div', $ => {
+        this.elem = $('div', {on: {click: () => {
+                    if (this.onTap == null) {
+                        return
+                    }
+                    this.conf.isSelected = !this.conf.isSelected
+                    if (this.conf.isSelected) {
+                        this.elem.classList.add('selected')
+                    } else {
+                        this.elem.classList.remove('selected')
+                    }
+                    this.onTap(this.conf.key)
+                }}}, $ => {
             $('span.key', this.key)
             $('span.combined', {style: {width: `${this.width - KEY_WIDTH - 2 * PADDING}px`}}, $ => {
                 new ComputedValue({computed: this.conf.computed}).render($)
@@ -176,6 +190,10 @@ class ConfigItemView {
         for (let cls of this.classes) {
             this.elem.classList.add(cls)
         }
+
+        if (this.conf.isSelected) {
+            this.elem.classList.add('selected')
+        }
     }
 }
 
@@ -183,6 +201,7 @@ interface ConfigsOptions {
     configs: Config[]
     isHyperParamOnly: boolean
     width: number
+    onTap?: (key: string) => void
 }
 
 export class Configs {
@@ -190,11 +209,13 @@ export class Configs {
     isHyperParamOnly: boolean
     width: number
     count: number
+    onTap?: (key: string)=>void
 
     constructor(opt: ConfigsOptions) {
         this.configs = opt.configs
         this.isHyperParamOnly = opt.isHyperParamOnly
         this.width = opt.width
+        this.onTap = opt.onTap
 
         this.configs.sort((a, b) => {
             if (a.key < b.key) return -1;
@@ -223,7 +244,8 @@ export class Configs {
                     config: c,
                     configs: this.configs,
                     width: this.width,
-                    isHyperParamOnly: this.isHyperParamOnly
+                    isHyperParamOnly: this.isHyperParamOnly,
+                    onTap: this.onTap
                 }).render($)
             )
         })

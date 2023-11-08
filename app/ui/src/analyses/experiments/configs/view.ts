@@ -4,7 +4,7 @@ import {Run} from "../../../models/run"
 import {Status} from "../../../models/status"
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {DataLoader} from "../../../components/loader"
-import {BackButton} from "../../../components/buttons"
+import {BackButton, SaveButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {Configs} from "./components"
 import mix_panel from "../../../mix_panel"
@@ -26,6 +26,8 @@ class RunConfigsView extends ScreenView {
     configsContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
+    private save: SaveButton
+    private configsChanged: boolean
 
     constructor(uuid: string) {
         super()
@@ -39,6 +41,8 @@ class RunConfigsView extends ScreenView {
             this.run = await this.runCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
+        this.save = new SaveButton({onButtonClick: this.onSave.bind(this), parent: this.constructor.name, isDisabled: true})
+        this.configsChanged = false
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
@@ -66,6 +70,7 @@ class RunConfigsView extends ScreenView {
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
+                            this.save.render($)
                             this.refresh.render($)
                         })
                         this.runHeaderCard = new RunHeaderCard({
@@ -107,6 +112,16 @@ class RunConfigsView extends ScreenView {
         this.refresh.stop()
     }
 
+    onSave() {
+        if (!this.configsChanged) {
+            return
+        }
+
+        CACHE.getRun(this.uuid).setRun(this.run).then()
+        this.save.disabled = true
+        this.configsChanged = false
+    }
+
     async onRefresh() {
         try {
             await this.loader.load(true)
@@ -125,10 +140,27 @@ class RunConfigsView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
+    protected onTap(key: string) {
+        this.configsChanged = true
+        this.save.disabled = false
+
+        if (this.run.selected_configs == null) {
+            this.run.selected_configs = []
+        }
+        let index = this.run.selected_configs.indexOf(key)
+        if (index >= 0) {
+            this.run.selected_configs.splice(index, 1)
+        } else {
+            this.run.selected_configs.push(key)
+        }
+
+        this.run.updateConfigs()
+    }
+
     renderConfigsView() {
         this.configsContainer.innerHTML = ''
         $(this.configsContainer, $ => {
-            new Configs({configs: this.run.configs, width: this.actualWidth, isHyperParamOnly: false}).render($)
+            new Configs({configs: this.run.configs, width: this.actualWidth, isHyperParamOnly: false, onTap: this.onTap.bind(this)}).render($)
         })
     }
 
