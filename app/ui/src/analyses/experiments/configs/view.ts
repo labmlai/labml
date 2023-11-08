@@ -160,7 +160,7 @@ class RunConfigsView extends ScreenView {
     renderConfigsView() {
         this.configsContainer.innerHTML = ''
         $(this.configsContainer, $ => {
-            new Configs({configs: this.run.configs, width: this.actualWidth, isHyperParamOnly: false, onTap: this.onTap.bind(this)}).render($)
+            new Configs({configs: this.run.configs, width: this.actualWidth, isSummary: false, onTap: this.onTap.bind(this)}).render($)
         })
     }
 
