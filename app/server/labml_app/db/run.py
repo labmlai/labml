@@ -326,6 +326,8 @@ class Run(Model['Run']):
                 r.name = self.name
                 r.note = self.note
                 r.comment = self.comment
+                r.favourite_configs = self.favourite_configs
+                r.selected_configs = self.selected_configs
             Run.msave(runs)
 
         self.save()
