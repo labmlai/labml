@@ -307,23 +307,19 @@ class Run(Model['Run']):
         }
 
     def edit_run(self, data: Dict[str, any]) -> None:
-        change_ranks: bool = False
         if 'name' in data:
             self.name = data.get('name', self.name)
-            change_ranks = True
         if 'comment' in data:
             self.comment = data.get('comment', self.comment)
-            change_ranks = True
         if 'note' in data:
             self.note = data.get('note', self.note)
-            change_ranks = True
 
         if 'favorite_configs' in data:
             self.favourite_configs = data.get('favorite_configs', self.favourite_configs)
         if 'selected_configs' in data:
             self.selected_configs = data.get('selected_configs', self.selected_configs)
 
-        if self.world_size > 0 and change_ranks:
+        if self.world_size > 0:
             run_uuids = [f'{self.run_uuid}_{rank}' for rank in range(1, self.world_size)]
             runs = mget(run_uuids)
             for r in runs:
