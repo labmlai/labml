@@ -1,22 +1,14 @@
 from pathlib import Path
-from typing import Optional, Set, Dict, List, TYPE_CHECKING, overload, Tuple
+from typing import Optional, Set, Dict, overload
 
 import numpy as np
-
 from labml.configs import BaseConfigs
 from labml.internal.experiment import \
     create_experiment as _create_experiment, \
     experiment_singleton as _experiment_singleton, \
-    has_experiment as _has_experiment, \
-    ModelSaver
-from labml.internal.experiment.experiment_run import \
-    get_configs as _get_configs, \
-    save_bundle as _save_bundle, \
-    load_bundle as _load_bundle
+    has_experiment as _has_experiment
+from labml.internal.experiment.experiment_run import get_configs as _get_configs
 from labml.internal.monitor import monitor_singleton as monitor
-
-if TYPE_CHECKING:
-    import torch
 
 AVAILABLE_WRITERS = {'screen', 'app', 'file'}
 
@@ -32,13 +24,6 @@ def worker():
     """
     if _has_experiment():
         _experiment_singleton().worker()
-
-# TODO remove
-def save_checkpoint():
-    r"""
-    Saves model checkpoints
-    """
-    _experiment_singleton().save_checkpoint()
 
 
 def get_uuid():
@@ -135,67 +120,6 @@ def evaluate():
                        is_evaluate=True)
 
 
-# TODO remove
-def add_model_savers(savers: Dict[str, ModelSaver]):
-    """
-    Add custom model savers
-
-    Arguments:
-        savers (Dict[str, ModelSaver]): a dictionary of :class:`labml.experiment.ModelSaver`.
-            These will be saved with :func:`labml.experiment.save_checkpoint`
-            and loaded with :func:`labml.experiment.load`.
-    """
-    _experiment_singleton().checkpoint_saver.add_savers(savers)
-
-
-# TODO remove
-@overload
-def add_pytorch_models(**kwargs: 'torch.nn.Module'):
-    ...
-
-
-@overload
-def add_pytorch_models(models: Dict[str, 'torch.nn.Module']):
-    ...
-
-
-def add_pytorch_models(*args, **kwargs):
-    """
-    Set variables for saving and loading
-
-    Arguments:
-        models (Dict[str, torch.nn.Module]): a dictionary of torch modules
-            used in the experiment.
-            These will be saved with :func:`labml.experiment.save_checkpoint`
-            and loaded with :func:`labml.experiment.load`.
-    """
-
-    from labml.internal.experiment.pytorch import add_models as _add_pytorch_models
-
-    if len(args) > 0:
-        assert len(args) == 1
-        assert isinstance(args[0], dict)
-        _add_pytorch_models(args[0])
-    else:
-        _add_pytorch_models(kwargs)
-
-
-def add_sklearn_models(models: Dict[str, any]):
-    """
-    .. warning::
-        This is still experimental.
-
-    Set variables for saving and loading
-
-    Arguments:
-        models (Dict[str, any]): a dictionary of SKLearn models
-            These will be saved with :func:`labml.experiment.save_checkpoint`
-            and loaded with :func:`labml.experiment.load`.
-    """
-    from labml.internal.experiment.sklearn import add_models as _add_sklearn_models
-    _add_sklearn_models(models)
-
-
 @overload
 def configs(conf_dict: Dict[str, any]):
     ...
@@ -271,20 +195,14 @@ def configs(*args):
         raise RuntimeError("Invalid call to calculate configs")
 
 
-_load_run_uuid: Optional[str] = None
-_load_checkpoint: Optional[int] = None
-
-
-def start():
+def start(global_step: int = 0):
     r"""
     Starts the experiment.
     Run it using ``with`` statement and it will monitor and report, experiment completion
     and exceptions.
     """
-    global _load_run_uuid
-    global _load_checkpoint
 
-    return _experiment_singleton().start(run_uuid=_load_run_uuid, checkpoint=_load_checkpoint)
+    return _experiment_singleton().start()
 
 
 def load_configs(run_uuid: str, *, is_only_hyperparam: bool = True):
@@ -317,76 +235,6 @@ def load_configs(run_uuid: str, *, is_only_hyperparam: bool = True):
 
     return values
 
-
-# TODO set prev UUID
-def load(run_uuid: str, checkpoint: Optional[int] = None):
-    r"""
-    Loads a the run from a previous checkpoint.
-    You need to separately call ``experiment.start`` to start the experiment.
-
-    Arguments:
-        run_uuid (str): experiment will start from
-            a saved state in the run with UUID ``run_uuid``
-        checkpoint (str, optional): if provided the experiment will start from
-            given checkpoint. Otherwise it will start from the last checkpoint.
-    """
-    global _load_run_uuid
-    global _load_checkpoint
-
-    _load_run_uuid = run_uuid
-    _load_checkpoint = checkpoint
-
-
-# TODO remove
-def save_bundle(path: Path, run_uuid: str, checkpoint: Optional[int] = None, *,
-                data_files: List[str] = None):
-    """
-    Create a ``.tar.gz`` file with the configs and checkpoints that can be distributed and loaded
-    easily.
-
-    Arguments:
-        path (Path): ``.tar.gz`` file path
-        run_uuid (str): experiment run to bundle
-        checkpoint (str, optional): if provided the given checkpoint will be bundled.
-            Otherwise it will bundle the last checkpoint.
-        data_files: List of data files (relative to :func:`labml.lab.get_data_path`) to be bundled.
-    """
-    if data_files is None:
-        data_files = []
-
-    if not checkpoint:
-        checkpoint = -1
-
-    _save_bundle(path, run_uuid, checkpoint,
-                 data_files=data_files)
-
-
-# TODO remove
-def load_bundle(path: Path, *, url: Optional[str] = None) -> Tuple[str, int]:
-    """
-    Extract a bundle into experiments folder and returns the ``run_uuid`` and checkpoint.
-
-    Arguments:
-        path (Path): ``.tar.gz`` file path
-        url (str): url to download the ``.tar.gz`` file from
-    """
-    return _load_bundle(path, url=url)
-
-
-# TODO remove
-def load_models(models: List[str], run_uuid: str, checkpoint: Optional[int] = None):
-    r"""
-    Loads and starts the run from a previous checkpoint.
-
-    Arguments:
-        models (List[str]): List of names of models to be loaded
-        run_uuid (str): experiment will start from
-            a saved state in the run with UUID ``run_uuid``
-        checkpoint (str, optional): if provided the experiment will start from
-            given checkpoint. Otherwise it will start from the last checkpoint.
-    """
-
-    _experiment_singleton().load_models(models=models, run_uuid=run_uuid, checkpoint=checkpoint)
 
 # TODO get_path
 # TODO remove
