@@ -31,24 +31,6 @@ def get_global_step() -> int:
     return _internal().global_step
 
 
-def set_queue(name: str, queue_size: int = 10, is_print: bool = False):
-    """
-    Set indicator type to be a queue. This will maintain a queue of size ``queue_size``
-    to store the tracked values.
-    A histogram of the queue contents and stats like mean will be logged.
-
-    This is useful when we want to track statistics like moving average.
-
-    Arguments:
-        name (str): Name of the indicator
-        queue_size (int, optional): Size of the queue. Defaults to ``10``.
-        is_print: (bool, optional): Whether the indicator should be printed in console.
-            Defaults to ``False``.
-    """
-    from labml.internal.tracker.indicators.numeric import Queue
-    _internal().add_indicator(Queue(name, queue_size, is_print))
-
-
 def set_histogram(name: str, is_print: bool = False):
     """
     Set indicator type to be a histogram.

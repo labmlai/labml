@@ -18,6 +18,7 @@ def get_path() -> Path:
     return _internal().path
 
 
+# TODO remove
 def get_data_path() -> Path:
     r"""
     Get the path to the data folder

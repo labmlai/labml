@@ -2,16 +2,14 @@ from typing import Dict
 
 import numpy as np
 
-from .numeric import Queue, Histogram, Scalar
+from .numeric import Histogram, Scalar
 
 
 def load_indicator_from_dict(data: Dict[str, any]):
     class_name = data['class_name']
     del data['class_name']
 
-    if class_name == 'Queue':
-        return Queue(**data)
-    elif class_name == 'Histogram':
+    if class_name == 'Histogram':
         return Histogram(**data)
     elif class_name == 'Scalar':
         return Scalar(**data)

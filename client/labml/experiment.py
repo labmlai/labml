@@ -33,7 +33,7 @@ def worker():
     if _has_experiment():
         _experiment_singleton().worker()
 
-
+# TODO remove
 def save_checkpoint():
     r"""
     Saves model checkpoints
@@ -135,6 +135,7 @@ def evaluate():
                        is_evaluate=True)
 
 
+# TODO remove
 def add_model_savers(savers: Dict[str, ModelSaver]):
     """
     Add custom model savers
@@ -147,6 +148,7 @@ def add_model_savers(savers: Dict[str, ModelSaver]):
     _experiment_singleton().checkpoint_saver.add_savers(savers)
 
 
+# TODO remove
 @overload
 def add_pytorch_models(**kwargs: 'torch.nn.Module'):
     ...
@@ -316,6 +318,7 @@ def load_configs(run_uuid: str, *, is_only_hyperparam: bool = True):
     return values
 
 
+# TODO set prev UUID
 def load(run_uuid: str, checkpoint: Optional[int] = None):
     r"""
     Loads a the run from a previous checkpoint.
@@ -334,6 +337,7 @@ def load(run_uuid: str, checkpoint: Optional[int] = None):
     _load_checkpoint = checkpoint
 
 
+# TODO remove
 def save_bundle(path: Path, run_uuid: str, checkpoint: Optional[int] = None, *,
                 data_files: List[str] = None):
     """
@@ -357,6 +361,7 @@ def save_bundle(path: Path, run_uuid: str, checkpoint: Optional[int] = None, *,
                  data_files=data_files)
 
 
+# TODO remove
 def load_bundle(path: Path, *, url: Optional[str] = None) -> Tuple[str, int]:
     """
     Extract a bundle into experiments folder and returns the ``run_uuid`` and checkpoint.
@@ -368,6 +373,7 @@ def load_bundle(path: Path, *, url: Optional[str] = None) -> Tuple[str, int]:
     return _load_bundle(path, url=url)
 
 
+# TODO remove
 def load_models(models: List[str], run_uuid: str, checkpoint: Optional[int] = None):
     r"""
     Loads and starts the run from a previous checkpoint.
@@ -382,7 +388,8 @@ def load_models(models: List[str], run_uuid: str, checkpoint: Optional[int] = No
 
     _experiment_singleton().load_models(models=models, run_uuid=run_uuid, checkpoint=checkpoint)
 
-
+# TODO get_path
+# TODO remove
 def save_numpy(name: str, array: np.ndarray):
     r"""
     Saves a single numpy array. This is used to save processed data.
