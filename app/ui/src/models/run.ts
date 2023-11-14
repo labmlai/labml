@@ -128,5 +128,15 @@ export class Run {
         }
         this.configs = updatedConfigs
     }
+
+    public get favouriteConfigs(): Config[] {
+        let configs: Config[] = []
+        for (let c of this.configs) {
+            if (c.isFavourite) {
+                configs.push(c)
+            }
+        }
+        return configs
+    }
 }
 

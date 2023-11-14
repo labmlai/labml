@@ -82,7 +82,7 @@ interface ConfigItemOptions {
     onTap?: (key: string) => void
 }
 
-class ConfigItemView {
+export class ConfigItemView {
     conf: Config
     isParentDefault: boolean
     classes: string[]

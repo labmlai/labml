@@ -1,7 +1,7 @@
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
 import CACHE, {RunsListCache} from "../cache/cache"
-import {RunListItemModel} from '../models/run_list'
+import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
 import {CancelButton} from '../components/buttons'
@@ -19,7 +19,7 @@ interface RunsPickerViewOptions {
 
 export class RunsPickerView extends ScreenView {
     runListCache: RunsListCache
-    currentRunsList: RunListItemModel[]
+    currentRunsList: RunListItem[]
     elem: HTMLDivElement
     runsListContainer: HTMLDivElement
     searchQuery: string
@@ -40,8 +40,12 @@ export class RunsPickerView extends ScreenView {
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
 
         this.loader = new DataLoader(async (force) => {
-            this.currentRunsList = (await this.runListCache.get(force)).runs
+            let runsList = (await this.runListCache.get(force)).runs
                 .filter(run => !opt.excludedRuns.has(run.run_uuid))
+            this.currentRunsList = []
+            for (let run of runsList) {
+                this.currentRunsList.push(new RunListItem(run))
+            }
         })
 
         this.searchQuery = ''
