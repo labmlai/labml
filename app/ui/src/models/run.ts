@@ -25,8 +25,8 @@ export interface RunModel {
     stdout: string
     logger: string
     stderr: string
-    selected_configs?: string[]
-    favourite_configs?: string[]
+    selected_configs: string[]
+    favourite_configs: string[]
 }
 
 export interface PointValue {

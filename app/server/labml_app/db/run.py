@@ -289,7 +289,7 @@ class Run(Model['Run']):
             'stdout': self.stdout + self.stdout_unmerged,
             'logger': self.logger + self.logger_unmerged,
             'stderr': self.stderr + self.stderr_unmerged,
-            'favorite_configs': self.favourite_configs,
+            'favourite_configs': self.favourite_configs,
             'selected_configs': self.selected_configs,
         }
 
@@ -316,8 +316,8 @@ class Run(Model['Run']):
         if 'note' in data:
             self.note = data.get('note', self.note)
 
-        if 'favorite_configs' in data:
-            self.favourite_configs = data.get('favorite_configs', self.favourite_configs)
+        if 'favourite_configs' in data:
+            self.favourite_configs = data.get('favourite_configs', self.favourite_configs)
         if 'selected_configs' in data:
             self.selected_configs = data.get('selected_configs', self.selected_configs)
 
