@@ -28,6 +28,7 @@ export class RunsPickerView extends ScreenView {
     private readonly onPicked: (run: RunListItemModel) => void
     private readonly onCancel: () => void
     private readonly title: string
+    private actualWidth: number
 
     constructor(opt: RunsPickerViewOptions) {
         super()
@@ -51,6 +52,16 @@ export class RunsPickerView extends ScreenView {
         this.searchQuery = ''
 
         mix_panel.track('Runs Picker View')
+    }
+
+    onResize(width: number) {
+        super.onResize(width)
+
+        this.actualWidth = Math.min(800, width)
+
+        if (this.elem) {
+            this._render().then()
+        }
     }
 
     async _render() {
@@ -118,7 +129,10 @@ export class RunsPickerView extends ScreenView {
         this.runsListContainer.innerHTML = ''
         $(this.runsListContainer, $ => {
             for (let i = 0; i < this.currentRunsList.length; i++) {
-                new RunsListItemView({item: this.currentRunsList[i], onClick: this.onItemClicked}).render($)
+                new RunsListItemView({
+                    item: this.currentRunsList[i],
+                    onClick: this.onItemClicked,
+                    width: this.actualWidth}).render($)
             }
         })
 

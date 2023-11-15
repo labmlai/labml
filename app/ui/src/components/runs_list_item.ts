@@ -9,16 +9,19 @@ import {ConfigItemView} from "../analyses/experiments/configs/components";
 export interface RunsListItemOptions {
     item: RunListItem
     onClick: (elem: RunsListItemView) => void
+    width: number
 }
 
 export class RunsListItemView {
     public elem: HTMLElement
     public item: RunListItem
     private readonly onClick: (evt: Event) => void
+    private readonly width: number
     static readonly METRIC_LIMIT = 3
 
     constructor(opt: RunsListItemOptions) {
         this.item = opt.item
+        this.width = opt.width
         this.onClick = (e: Event) => {
             e.preventDefault()
             opt.onClick(this)
@@ -55,15 +58,15 @@ export class RunsListItemView {
                     })
                 })
                 if (this.item.favorite_configs != null) {
-                    this.item.favorite_configs.map((c) =>
-                new ConfigItemView({
-                    config: c,
-                    configs: this.item.favorite_configs,
-                    width: 500,
-                    onTap: undefined,
-                    isSummary: true
-                }).render($)
-            )
+                    this.item.favorite_configs.map((c) => {
+                        new ConfigItemView({
+                            config: c,
+                            configs: this.item.favorite_configs,
+                            width: this.width-20,
+                            onTap: undefined,
+                            isSummary: true
+                        }).render($)
+                    })
                 }
             })
     }

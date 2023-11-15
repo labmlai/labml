@@ -31,6 +31,7 @@ class RunsListView extends ScreenView {
     private userMessages: UserMessages
     private refresh: AwesomeRefreshButton
     private isTBProcessing: boolean
+    private actualWidth: number
 
     constructor() {
         super()
@@ -58,6 +59,16 @@ class RunsListView extends ScreenView {
         this.isTBProcessing = false
 
         mix_panel.track('Runs List View')
+    }
+
+    onResize(width: number) {
+        super.onResize(width)
+
+        this.actualWidth = Math.min(800, width)
+
+        if (this.elem) {
+            this._render().then()
+        }
     }
 
     async _render() {
@@ -215,7 +226,10 @@ class RunsListView extends ScreenView {
             this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {
                 for (let i = 0; i < this.currentRunsList.length; i++) {
-                    new RunsListItemView({item: this.currentRunsList[i], onClick: this.onItemClicked}).render($)
+                    new RunsListItemView({
+                        item: this.currentRunsList[i],
+                        onClick: this.onItemClicked,
+                        width: this.actualWidth}).render($)
                 }
             })
         } else {

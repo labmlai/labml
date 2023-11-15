@@ -294,7 +294,7 @@ class Run(Model['Run']):
         }
 
     def get_summary(self) -> Dict[str, str]:
-        fav_configs = [self.configs[key] for key in self.configs.keys() if key in self.favourite_configs]
+        fav_configs = [{'key': key, **self.configs[key]} for key in self.configs.keys() if key in self.favourite_configs]
 
         return {
             'run_uuid': self.run_uuid,
