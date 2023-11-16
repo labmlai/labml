@@ -1,23 +1,27 @@
 import {WeyaElementFunction} from '../../../lib/weya/weya'
-import {RunListItemModel} from '../models/run_list'
+import {RunListItem} from '../models/run_list'
 import {StatusView} from './status'
 import {formatTime} from '../utils/time'
 import {StandaloneSparkLine} from "./charts/spark_lines/spark_line";
 import {getExtent, toPointValue} from "./charts/utils";
+import {ConfigItemView} from "../analyses/experiments/configs/components";
 
 export interface RunsListItemOptions {
-    item: RunListItemModel
+    item: RunListItem
     onClick: (elem: RunsListItemView) => void
+    width: number
 }
 
 export class RunsListItemView {
     public elem: HTMLElement
-    public item: RunListItemModel
+    public item: RunListItem
     private readonly onClick: (evt: Event) => void
+    private readonly width: number
     static readonly METRIC_LIMIT = 3
 
     constructor(opt: RunsListItemOptions) {
         this.item = opt.item
+        this.width = opt.width
         this.onClick = (e: Event) => {
             e.preventDefault()
             opt.onClick(this)
@@ -53,6 +57,17 @@ export class RunsListItemView {
                         this.renderSparkLine($)
                     })
                 })
+                if (this.item.favorite_configs != null) {
+                    this.item.favorite_configs.map((c) => {
+                        new ConfigItemView({
+                            config: c,
+                            configs: this.item.favorite_configs,
+                            width: this.width-20,
+                            onTap: undefined,
+                            isSummary: true
+                        }).render($)
+                    })
+                }
             })
     }
 }

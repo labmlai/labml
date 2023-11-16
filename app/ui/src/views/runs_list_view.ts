@@ -2,7 +2,7 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
 import CACHE, {RunsListCache} from "../cache/cache"
-import {RunListItemModel} from '../models/run_list'
+import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
 import {CancelButton, DeleteButton, EditButton} from '../components/buttons'
@@ -13,12 +13,11 @@ import {UserMessages} from '../components/user_messages'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
-import {openInNewTab} from "../utils/new_tab"
 import {ScreenView} from '../screen_view'
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
-    currentRunsList: RunListItemModel[]
+    currentRunsList: RunListItem[]
     elem: HTMLDivElement
     runsListContainer: HTMLDivElement
     searchQuery: string
@@ -32,6 +31,7 @@ class RunsListView extends ScreenView {
     private userMessages: UserMessages
     private refresh: AwesomeRefreshButton
     private isTBProcessing: boolean
+    private actualWidth: number
 
     constructor() {
         super()
@@ -45,7 +45,11 @@ class RunsListView extends ScreenView {
         this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
-            this.currentRunsList = (await this.runListCache.get(force)).runs
+            let runsList = (await this.runListCache.get(force)).runs
+            this.currentRunsList = []
+            for (let run of runsList) {
+                this.currentRunsList.push(new RunListItem(run))
+            }
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -55,6 +59,16 @@ class RunsListView extends ScreenView {
         this.isTBProcessing = false
 
         mix_panel.track('Runs List View')
+    }
+
+    onResize(width: number) {
+        super.onResize(width)
+
+        this.actualWidth = Math.min(800, width)
+
+        if (this.elem) {
+            this._render().then()
+        }
     }
 
     async _render() {
@@ -212,7 +226,10 @@ class RunsListView extends ScreenView {
             this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {
                 for (let i = 0; i < this.currentRunsList.length; i++) {
-                    new RunsListItemView({item: this.currentRunsList[i], onClick: this.onItemClicked}).render($)
+                    new RunsListItemView({
+                        item: this.currentRunsList[i],
+                        onClick: this.onItemClicked,
+                        width: this.actualWidth}).render($)
                 }
             })
         } else {

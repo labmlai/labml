@@ -25,8 +25,8 @@ export interface RunModel {
     stdout: string
     logger: string
     stderr: string
-    selected_configs?: string[]
-    favourite_configs?: string[]
+    selected_configs: string[]
+    favourite_configs: string[]
 }
 
 export interface PointValue {
@@ -127,6 +127,16 @@ export class Run {
             updatedConfigs.push(new Config(c,this.selected_configs.includes(c.key), this.favourite_configs.includes(c.key)))
         }
         this.configs = updatedConfigs
+    }
+
+    public get favouriteConfigs(): Config[] {
+        let configs: Config[] = []
+        for (let c of this.configs) {
+            if (c.isFavourite) {
+                configs.push(c)
+            }
+        }
+        return configs
     }
 }
 

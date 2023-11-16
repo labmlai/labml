@@ -1,7 +1,7 @@
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
 import CACHE, {RunsListCache} from "../cache/cache"
-import {RunListItemModel} from '../models/run_list'
+import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
 import {CancelButton} from '../components/buttons'
@@ -19,7 +19,7 @@ interface RunsPickerViewOptions {
 
 export class RunsPickerView extends ScreenView {
     runListCache: RunsListCache
-    currentRunsList: RunListItemModel[]
+    currentRunsList: RunListItem[]
     elem: HTMLDivElement
     runsListContainer: HTMLDivElement
     searchQuery: string
@@ -28,6 +28,7 @@ export class RunsPickerView extends ScreenView {
     private readonly onPicked: (run: RunListItemModel) => void
     private readonly onCancel: () => void
     private readonly title: string
+    private actualWidth: number
 
     constructor(opt: RunsPickerViewOptions) {
         super()
@@ -40,13 +41,27 @@ export class RunsPickerView extends ScreenView {
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
 
         this.loader = new DataLoader(async (force) => {
-            this.currentRunsList = (await this.runListCache.get(force)).runs
+            let runsList = (await this.runListCache.get(force)).runs
                 .filter(run => !opt.excludedRuns.has(run.run_uuid))
+            this.currentRunsList = []
+            for (let run of runsList) {
+                this.currentRunsList.push(new RunListItem(run))
+            }
         })
 
         this.searchQuery = ''
 
         mix_panel.track('Runs Picker View')
+    }
+
+    onResize(width: number) {
+        super.onResize(width)
+
+        this.actualWidth = Math.min(800, width)
+
+        if (this.elem) {
+            this._render().then()
+        }
     }
 
     async _render() {
@@ -114,7 +129,10 @@ export class RunsPickerView extends ScreenView {
         this.runsListContainer.innerHTML = ''
         $(this.runsListContainer, $ => {
             for (let i = 0; i < this.currentRunsList.length; i++) {
-                new RunsListItemView({item: this.currentRunsList[i], onClick: this.onItemClicked}).render($)
+                new RunsListItemView({
+                    item: this.currentRunsList[i],
+                    onClick: this.onItemClicked,
+                    width: this.actualWidth}).render($)
             }
         })
 

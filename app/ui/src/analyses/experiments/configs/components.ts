@@ -82,7 +82,7 @@ interface ConfigItemOptions {
     onTap?: (key: string) => void
 }
 
-class ConfigItemView {
+export class ConfigItemView {
     conf: Config
     isParentDefault: boolean
     classes: string[]
@@ -123,6 +123,35 @@ class ConfigItemView {
         }
     }
 
+    private onTapHandler(): void {
+        if (this.onTap == null) {
+            return
+        }
+        if (this.conf.isSelected && this.conf.isFavourite) {
+            this.conf.isSelected = false
+            this.conf.isFavourite = false
+        } else if (this.conf.isSelected) {
+            this.conf.isSelected = true
+            this.conf.isFavourite = true
+        } else {
+            this.conf.isSelected = true
+            this.conf.isFavourite = false
+        }
+
+        if (this.conf.isFavourite) {
+            this.elem.classList.add('favourite')
+            this.elem.classList.remove('selected')
+        } else if (this.conf.isSelected) {
+            this.elem.classList.add('selected')
+            this.elem.classList.remove('favourite')
+        } else {
+            this.elem.classList.remove('selected')
+            this.elem.classList.remove('favourite')
+        }
+
+        this.onTap(this.conf.key)
+    }
+
     render($: WeyaElementFunction) {
         if (this.conf.order < 0) {
             this.classes.push('ignored')
@@ -133,16 +162,7 @@ class ConfigItemView {
         }
 
         this.elem = $('div', {on: {click: () => {
-                    if (this.onTap == null) {
-                        return
-                    }
-                    this.conf.isSelected = !this.conf.isSelected
-                    if (this.conf.isSelected) {
-                        this.elem.classList.add('selected')
-                    } else {
-                        this.elem.classList.remove('selected')
-                    }
-                    this.onTap(this.conf.key)
+                    this.onTapHandler()
                 }}}, $ => {
             $('span.key', this.key)
             $('span.combined', {style: {width: `${this.width - KEY_WIDTH - 2 * PADDING}px`}}, $ => {
@@ -182,7 +202,9 @@ class ConfigItemView {
             this.elem.classList.add(cls)
         }
 
-        if (this.conf.isSelected && !this.isSummary) {
+        if (this.conf.isFavourite && !this.isSummary) {
+            this.elem.classList.add('favourite')
+        } else if (this.conf.isSelected && !this.isSummary) {
             this.elem.classList.add('selected')
         }
     }

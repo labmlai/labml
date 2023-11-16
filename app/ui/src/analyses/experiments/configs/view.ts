@@ -146,12 +146,39 @@ class RunConfigsView extends ScreenView {
 
         if (this.run.selected_configs == null) {
             this.run.selected_configs = []
+        } else if (this.run.favourite_configs == null) {
+            this.run.favourite_configs = []
         }
-        let index = this.run.selected_configs.indexOf(key)
-        if (index >= 0) {
-            this.run.selected_configs.splice(index, 1)
+
+        let selectedIndex: number = this.run.selected_configs.indexOf(key)
+        let isSelected: boolean = selectedIndex >= 0
+        let favouriteIndex: number = this.run.favourite_configs.indexOf(key)
+        let isFavourite: boolean = favouriteIndex >= 0
+
+        // cleanup before updates
+        if (isSelected) {
+            this.run.selected_configs.splice(selectedIndex, 1)
+        }
+        if (isFavourite) {
+            this.run.favourite_configs.splice(favouriteIndex, 1)
+        }
+
+        if (isSelected && isFavourite) {
+            isSelected = false
+            isFavourite = false
+        } else if (isSelected) {
+            isFavourite = true
+            isSelected = true
         } else {
+            isSelected = true
+            isFavourite = false
+        }
+
+        if (isSelected) {
             this.run.selected_configs.push(key)
+        }
+        if (isFavourite) {
+            this.run.favourite_configs.push(key)
         }
 
         this.run.updateConfigs()

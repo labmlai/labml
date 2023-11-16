@@ -1,5 +1,6 @@
 import {RunStatus} from "./status"
 import {SeriesModel} from "./run"
+import {Config, ConfigModel} from "./config"
 
 export interface MetricValue {
     name: string
@@ -17,6 +18,7 @@ export interface RunListItemModel {
     world_size: number
     preview_series?: SeriesModel
     metric_values?: MetricValue[]
+    favorite_configs?: ConfigModel[]
 }
 
 export interface RunsListModel {
@@ -35,6 +37,7 @@ export class RunListItem {
     world_size: number
     preview_series?: SeriesModel
     metric_values?: MetricValue[]
+    favorite_configs?: Config[]
 
     constructor(run_list_item: RunListItemModel) {
         this.run_uuid = run_list_item.run_uuid
@@ -47,6 +50,12 @@ export class RunListItem {
         this.world_size = run_list_item.world_size
         this.preview_series = run_list_item.preview_series
         this.metric_values = run_list_item.metric_values
+        this.favorite_configs = []
+        if (run_list_item.favorite_configs != null) {
+            for (let c of run_list_item.favorite_configs) {
+                this.favorite_configs.push(new Config(c))
+            }
+        }
     }
 }
 

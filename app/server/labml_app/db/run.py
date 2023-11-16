@@ -289,11 +289,13 @@ class Run(Model['Run']):
             'stdout': self.stdout + self.stdout_unmerged,
             'logger': self.logger + self.logger_unmerged,
             'stderr': self.stderr + self.stderr_unmerged,
-            'favorite_configs': self.favourite_configs,
+            'favourite_configs': self.favourite_configs,
             'selected_configs': self.selected_configs,
         }
 
     def get_summary(self) -> Dict[str, str]:
+        fav_configs = [{'key': key, **self.configs[key]} for key in self.configs.keys() if key in self.favourite_configs]
+
         return {
             'run_uuid': self.run_uuid,
             'computer_uuid': self.computer_uuid,
@@ -303,7 +305,7 @@ class Run(Model['Run']):
             'world_size': self.world_size,
             'preview_series': None,
             'metric_values': None,
-            'favorite_configs': self.favourite_configs,
+            'favorite_configs': fav_configs,
         }
 
     def edit_run(self, data: Dict[str, any]) -> None:
@@ -314,8 +316,8 @@ class Run(Model['Run']):
         if 'note' in data:
             self.note = data.get('note', self.note)
 
-        if 'favorite_configs' in data:
-            self.favourite_configs = data.get('favorite_configs', self.favourite_configs)
+        if 'favourite_configs' in data:
+            self.favourite_configs = data.get('favourite_configs', self.favourite_configs)
         if 'selected_configs' in data:
             self.selected_configs = data.get('selected_configs', self.selected_configs)
 
