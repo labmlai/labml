@@ -45,8 +45,20 @@ class ConfigProcessor:
         self.values = values
         self.savers = []
 
+    def update_configs(self, values: Dict[str, any]):
+        if self.configs is not None:
+            assert self.configs_dict is None
+            self.configs._set_values(values)
+        else:
+            self.configs_dict.update(values)
+
+        self._on_configs_updated()
+
     def _on_configs_updated(self):
-        self.configs._register_dynamic_hyper_params()
+        if self.configs is not None:
+            self.configs._register_dynamic_hyper_params()
+        else:
+            self._register_dynamic_hyper_params()
 
         configs = self.to_json()
         for s in self.savers:

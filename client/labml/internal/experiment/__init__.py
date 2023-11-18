@@ -186,10 +186,16 @@ class Experiment:
         if global_params_singleton().configs is not None:
             configs_override.update(global_params_singleton().configs)
 
-        self.configs_processor = ConfigProcessor(configs, configs_override)
+        assert isinstance(configs, dict)
 
-        if self.run.distributed_rank == self.run.distributed_main_rank:
-            logger.log()
+        if self.configs_processor is None:
+            self.configs_processor = ConfigProcessor(configs, configs_override)
+            if self.run.distributed_rank == self.run.distributed_main_rank:
+                logger.log()
+        else:
+            if configs_override is not None:
+                configs.update(configs_override)
+            self.configs_processor.update_configs(configs)
 
     def _save_pid(self):
         assert not self.run.pid_path.exists(), str(self.run.pid_path)
