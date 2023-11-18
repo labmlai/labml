@@ -4,12 +4,10 @@ import pathlib
 import time
 from typing import Optional, Set, Dict, Union, TYPE_CHECKING
 
-import git
 from labml import logger
 from labml.logger import Text
 from labml.utils import get_caller_file
 from labml.utils.notice import labml_notice
-
 from ..app.dynamic import DynamicUpdateHandler
 from ..configs.base import Configs
 from ..configs.dynamic_hyperparam import DynamicHyperParam
@@ -19,7 +17,8 @@ from ..experiment.watcher import ExperimentWatcher
 from ..lab import lab_singleton
 from ..monitor import monitor_singleton as monitor
 from ..tracker import tracker_singleton as tracker
-from ..util import is_ipynb, is_colab, is_kaggle
+from ..util import is_ipynb
+from ..util.git_info import get_git_status
 
 if TYPE_CHECKING:
     from ..app.experiment import AppExperiment
@@ -116,25 +115,22 @@ class Experiment:
             distributed_main_rank=distributed_main_rank,
         )
 
-        try:
-            repo = git.Repo(lab_singleton().path)
+        info, status = get_git_status()
 
-            try:
-                self.run.repo_remotes = list(repo.remote().urls)
-            except (ValueError, git.GitCommandError):
-                self.run.repo_remotes = []
-            self.run.commit = repo.head.commit.hexsha
-            self.run.commit_message = repo.head.commit.message.strip()
-            self.run.is_dirty = repo.is_dirty()
-            self.run.diff = repo.git.diff()
-        except (git.InvalidGitRepositoryError, ValueError):
-            if not is_colab() and not is_kaggle():
-                labml_notice(["Not a valid git repository: ",
-                              (str(lab_singleton().path), Text.value)])
-            self.run.commit = 'unknown'
-            self.run.commit_message = ''
-            self.run.is_dirty = False
-            self.run.diff = ''
+        if status is None:
+            pass
+        if status == 'no_git':
+            labml_notice(["Not a valid git repository: ", (str(lab_singleton().path), Text.value)])
+        elif status == 'no_gitpython':
+            labml_notice(["Install gitpython to record git commit: ", ('pip install gitpython', Text.value)])
+        elif status == 'no_git_google_colab':
+            pass
+
+        self.run.repo_remotes = info['remotes']
+        self.run.commit = info['commit']
+        self.run.commit_message = info['commit_message']
+        self.run.is_dirty = info['is_dirty']
+        self.run.diff = info['diff']
 
         self.is_evaluate = is_evaluate
         self.app_experiment = None
