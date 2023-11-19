@@ -27,17 +27,8 @@ export class ComputedValue {
             $('span.computed', this.computed)
             return
         }
-
-        let truncated = this.computed.substr(0, CONFIG_PRINT_LEN) + '...'
-        let split = this.computed.split('.')
-        if (this.computed.indexOf(' ') === -1 && split.length > 1) {
-            truncated = '...' + split[split.length - 1]
-            if (truncated.length > CONFIG_PRINT_LEN) {
-                truncated = truncated.substr(0, CONFIG_PRINT_LEN) + '...'
-            }
-        }
         $('span.computed', $ => {
-            $('span.empty', truncated, {title: this.computed})
+            $('span.empty', this.computed, {title: this.computed})
         })
     }
 }
