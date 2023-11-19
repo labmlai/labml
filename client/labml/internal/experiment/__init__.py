@@ -7,6 +7,7 @@ from typing import Optional, Set, Dict, Union, TYPE_CHECKING
 from labml import logger
 from labml.logger import Text
 from labml.utils import get_caller_file
+from labml.utils.git_info import get_git_status
 from labml.utils.notice import labml_notice
 from ..app.dynamic import DynamicUpdateHandler
 from ..configs.base import Configs
@@ -18,7 +19,6 @@ from ..lab import lab_singleton
 from ..monitor import monitor_singleton as monitor
 from ..tracker import tracker_singleton as tracker
 from ..util import is_ipynb
-from ..util.git_info import get_git_status
 
 if TYPE_CHECKING:
     from ..app.experiment import AppExperiment

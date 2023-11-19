@@ -1,5 +1,5 @@
-from . import is_colab, is_kaggle
-from ..lab import lab_singleton
+from labml.internal.util import is_colab, is_kaggle
+from labml.internal.lab import lab_singleton
 
 
 def get_git_status():
