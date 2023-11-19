@@ -954,7 +954,6 @@ $keyFontSize: 0.8rem;
   .config {
     .combined {
       width: 330px;
-
       > span {
         display: inline-block
       }
@@ -1472,4 +1471,13 @@ a.generic-link {
 
 .favourite {
   background-color: rgba(153, 49, 251, 0.5);
+}
+
+.config {
+  .combined {
+    width: 330px;
+    display: inline-block;
+    overflow: hidden;
+    text-wrap: nowrap;
+  }
 }
