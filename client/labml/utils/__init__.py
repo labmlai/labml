@@ -1,6 +1,9 @@
-import os, os.path
-from  pathlib import Path
+import os
+import os.path
+from pathlib import Path
 from typing import Set, List
+
+from ..internal.util.git_info import get_git_status
 
 
 def get_caller_file(ignore_callers: Set[str] = None) -> str:
@@ -31,3 +34,9 @@ def get_caller_file(ignore_callers: Set[str] = None) -> str:
         return str(module_path)
 
     return str(Path('').absolute())
+
+
+__all__ = [
+    'get_caller_file',
+    'get_git_status',
+]
