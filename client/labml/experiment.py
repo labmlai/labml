@@ -6,7 +6,7 @@ from labml.configs import BaseConfigs
 from labml.internal.experiment import \
     create_experiment as _create_experiment, \
     experiment_singleton as _experiment_singleton, \
-    has_experiment as _has_experiment
+    has_experiment
 from labml.internal.experiment.experiment_run import get_configs as _get_configs
 from labml.internal.monitor import monitor_singleton as monitor
 
@@ -22,7 +22,7 @@ def worker():
     """
     A worker like a data loader
     """
-    if _has_experiment():
+    if has_experiment():
         _experiment_singleton().worker()
 
 
