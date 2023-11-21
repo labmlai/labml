@@ -1,5 +1,6 @@
 import math
 from typing import Dict, List, Optional, Union
+from datetime import datetime, timedelta
 
 import numpy as np
 
@@ -11,6 +12,27 @@ OUTLIER_MARGIN = 0.04
 SeriesModel = Dict[str, Union[np.ndarray, List[float], float]]
 
 
+def _remove_old(values, steps):
+    break_time = datetime.fromtimestamp(steps[-1]) - timedelta(days=1)
+
+    left = 0
+    right = len(steps) - 1
+    while left < right:
+        m = (left + right) // 2
+        if datetime.fromtimestamp(steps[m]) < break_time:
+            left = m + 1
+        else:
+            right = m
+
+    if datetime.fromtimestamp(steps[left]) < break_time:
+        return values, steps
+
+    # find index to break
+    break_index = left
+
+    return values[break_index:], steps[break_index:]
+
+
 class Series:
     step: np.ndarray
     last_step: np.ndarray
@@ -19,14 +41,16 @@ class Series:
     is_smoothed_updated: bool
     step_gap: float
     max_buffer_length: int
+    keep_last_24h: bool
 
-    def __init__(self, max_buffer_length: int = None):
+    def __init__(self, max_buffer_length: int = None, keep_last_24h: bool = False):
         self.step = np.array([])
         self.last_step = np.array([])
         self.value = np.array([])
         self.smoothed = []
         self.is_smoothed_updated = False
         self.step_gap = 0
+        self.keep_last_24h = keep_last_24h
         if max_buffer_length:
             self.max_buffer_length = max_buffer_length
         else:
@@ -95,6 +119,11 @@ class Series:
         self.value = np.concatenate((self.value, value))
         self.step = np.concatenate((self.step, step))
         self.last_step = np.concatenate((self.last_step, last_step))
+
+        if self.keep_last_24h:
+            self.value, self.step = _remove_old(self.value, self.step)
+            # todo how does last step work?
+            self.last_step = self.step.copy()
 
         self.step_gap = self.find_step_gap()
 
