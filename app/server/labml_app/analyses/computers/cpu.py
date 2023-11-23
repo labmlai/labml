@@ -47,7 +47,7 @@ class CPUAnalysis(Analysis):
             if ind_type == COMPUTEREnums.CPU:
                 res[ind] = s
 
-        self.cpu.track(res)
+        self.cpu.track(res, keep_last_24h=True)
 
     def get_tracking(self):
         res = []

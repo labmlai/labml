@@ -78,7 +78,7 @@ class GPUAnalysis(Analysis):
             if ind_type == COMPUTEREnums.GPU:
                 res[ind] = s
 
-        self.gpu.track(res)
+        self.gpu.track(res, keep_last_24h=True)
 
     def get_tracking(self):
         res = []

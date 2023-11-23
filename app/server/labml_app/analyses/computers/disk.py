@@ -47,7 +47,7 @@ class DiskAnalysis(Analysis):
             if ind_type == COMPUTEREnums.DISK:
                 res[ind] = s
 
-        self.disk.track(res)
+        self.disk.track(res, keep_last_24h=True)
 
     def get_tracking(self):
         res = []
