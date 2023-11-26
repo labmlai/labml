@@ -48,7 +48,7 @@ class NetworkAnalysis(Analysis):
             if ind_type == COMPUTEREnums.NETWORK:
                 res[ind] = s
 
-        self.network.track(res)
+        self.network.track(res, keep_last_24h=True)
 
     def get_tracking(self):
         res = []

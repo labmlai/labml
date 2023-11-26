@@ -46,7 +46,7 @@ class BatteryAnalysis(Analysis):
             if ind_type == COMPUTEREnums.BATTERY:
                 res[ind] = s
 
-        self.battery.track(res)
+        self.battery.track(res, keep_last_24h=True)
 
     def get_tracking(self):
         res = []

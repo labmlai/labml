@@ -48,7 +48,7 @@ class MemoryAnalysis(Analysis):
             if ind_type == COMPUTEREnums.MEMORY:
                 res[ind] = s
 
-        self.memory.track(res)
+        self.memory.track(res, keep_last_24h=True)
 
     def get_tracking(self):
         res = []

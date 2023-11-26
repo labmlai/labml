@@ -117,7 +117,7 @@ class ProcessAnalysis(Analysis):
 
                 res[ind] = s
 
-        self.process.track(res)
+        self.process.track(res, keep_last_24h=True)
         self.clean_dead_processes()
 
     def clean_dead_processes(self):

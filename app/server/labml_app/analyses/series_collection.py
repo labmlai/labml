@@ -38,18 +38,18 @@ class SeriesCollection:
 
         return res
 
-    def track(self, data: Dict[str, SeriesModel]) -> None:
+    def track(self, data: Dict[str, SeriesModel], keep_last_24h: bool = False) -> None:
         for ind, series in data.items():
             self.step = max(self.step, series['step'][-1])
-            self._update_series(ind, series)
+            self._update_series(ind, series, keep_last_24h)
 
         self.save()
 
-    def _update_series(self, ind: str, series: SeriesModel) -> None:
+    def _update_series(self, ind: str, series: SeriesModel, keep_last_24h: bool) -> None:
         if ind not in self.tracking:
-            self.tracking[ind] = Series(self.max_buffer_length).to_data()
+            self.tracking[ind] = Series(self.max_buffer_length, keep_last_24h).to_data()
 
-        s = Series(self.max_buffer_length).load(self.tracking[ind])
+        s = Series(self.max_buffer_length, keep_last_24h).load(self.tracking[ind])
         s.update(series['step'], series['value'])
 
         self.tracking[ind] = s.to_data()
