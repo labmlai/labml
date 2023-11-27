@@ -141,6 +141,9 @@ export class TimeSeriesChart {
         }
 
         if (clientX) {
+            if (clientX > this.svgBoundingClientRect.right) {
+                clientX = this.svgBoundingClientRect.right
+            }
             let currentX: Date = this.xScale.invert(clientX - this.svgBoundingClientRect.left - this.margin)
             if (currentX) {
                 cursorStep = currentX
