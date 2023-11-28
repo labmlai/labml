@@ -30,3 +30,27 @@ export function formatDateTime(dateTime: Date) {
 
     return `${month} ${date},${timeStr}`
 }
+
+export function getTimeString(dateTime: Date): string {
+    let year = dateTime.getFullYear().toString()
+    let month = (dateTime.getMonth() + 1).toString()
+    let date = dateTime.getDate().toString()
+    let hours = dateTime.getHours().toString()
+    let minutes = dateTime.getMinutes().toString()
+
+
+    while (month.length != 2) {
+        month = '0' + month
+    }
+    while (date.length != 2) {
+        date = '0' + date
+    }
+    while (minutes.length != 2) {
+        minutes = '0' + minutes
+    }
+    while (hours.length != 2) {
+        hours = '0' + hours
+    }
+
+    return `${year}-${month}-${date}T${hours}:${minutes}`
+}

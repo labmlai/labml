@@ -17,6 +17,7 @@ import {Session} from '../../../models/session'
 import {ScreenView} from '../../../screen_view'
 import {AnalysisCache} from "../../helpers"
 import {getSeriesData} from "../gpu/utils"
+import {DateRangeField} from "../../../components/input/date_range_field"
 
 export class SessionView extends ScreenView {
     elem: HTMLDivElement
@@ -38,6 +39,9 @@ export class SessionView extends ScreenView {
     actualWidth: number
     title: string
     subSeries?: string
+    optionRow: HTMLDivElement
+    private stepRange: number[]
+    private stepRangeField: DateRangeField
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
     private sessionCache: SessionCache
@@ -69,6 +73,14 @@ export class SessionView extends ScreenView {
             this.preferenceData = await this.preferenceCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
+
+        this.stepRangeField = new DateRangeField({
+            max: 0, min: 0,
+            minDate: new Date(0),
+            maxDate: new Date(),
+            onClick: this.onChangeStepRange.bind(this),
+            buttonLabel: "Filter Steps"
+        })
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
@@ -108,6 +120,7 @@ export class SessionView extends ScreenView {
                         $('h2', '.header.text-center', this.title)
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
+                            this.optionRow = $('div', '.row');
                             this.lineChartContainer = $('div', '.fixed-chart')
                             this.sparkLinesContainer = $('div')
                         })
@@ -124,6 +137,7 @@ export class SessionView extends ScreenView {
             this.renderSparkLines()
             this.renderLineChart()
             this.renderSaveButton()
+            this.renderOptions()
 
         } catch (e) {
             handleNetworkErrorInplace(e)
@@ -154,6 +168,7 @@ export class SessionView extends ScreenView {
             this.calcPreferences()
             this.renderSparkLines()
             this.renderLineChart()
+            this.renderOptions()
         } catch (e) {
 
         } finally {
@@ -186,7 +201,8 @@ export class SessionView extends ScreenView {
                 plotIdx: this.plotIdx,
                 onCursorMove: [this.sparkTimeLines.changeCursorValues],
                 isCursorMoveOpt: true,
-                isDivergent: true
+                isDivergent: true,
+                stepRange: this.stepRange
             }).render($)
         })
     }
@@ -202,6 +218,14 @@ export class SessionView extends ScreenView {
                 isDivergent: true
             })
             this.sparkTimeLines.render($)
+        })
+    }
+
+    renderOptions() {
+        this.optionRow.innerHTML = ''
+        this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
+        $(this.optionRow, $ => {
+            this.stepRangeField.render($)
         })
     }
 
@@ -221,7 +245,22 @@ export class SessionView extends ScreenView {
         this.renderSparkLines()
         this.renderLineChart()
         this.renderSaveButton()
+        this.renderOptions()
     }
+
+
+    private onChangeStepRange(min: number, max: number) {
+        console.log(min, max)
+        this.isUpdateDisable = false
+
+        this.stepRange = [min, max]
+
+        this.renderSparkLines()
+        this.renderLineChart()
+        this.renderSaveButton()
+        this.renderOptions()
+    }
+
 
     calcPreferences() {
         if (this.isUpdateDisable) {
@@ -240,6 +279,8 @@ export class SessionView extends ScreenView {
                 }
                 this.plotIdx = res
             }
+            this.stepRange = this.preferenceData.step_range
+            this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
         }
     }
 
@@ -249,7 +290,7 @@ export class SessionView extends ScreenView {
         } else {
             this.preferenceData.series_preferences = this.plotIdx
         }
-
+        this.preferenceData.step_range = this.stepRange
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true
