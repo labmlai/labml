@@ -30,6 +30,16 @@ class DatePicker extends  EditableField {
         this.inputElem.value = value
     }
 
+    public setMinMax(min: Date, max: Date) {
+        this.min = getTimeString(min)
+        this.max = getTimeString(max)
+
+        if (this.inputElem != null) {
+            this.inputElem.min = this.min
+            this.inputElem.max = this.max
+        }
+    }
+
     render($: WeyaElementFunction) {
         console.log(this.min, this.max, this.value)
         $('div.input-container', $ => {
@@ -106,6 +116,11 @@ export class DateRangeField {
 
         this.minField.updateValue(min == -1 || isNaN(this.min) ? getTimeString(new Date(0)) : getTimeString(new Date(min * 1000)))
         this.maxField.updateValue(min == -1 || isNaN(this.max) ? getTimeString(new Date()) : getTimeString(new Date(max * 1000)))
+    }
+
+    public setMinMax(min: Date, max: Date) {
+        this.minField.setMinMax(min, max)
+        this.maxField.setMinMax(min, max)
     }
 
     render($: WeyaElementFunction) {

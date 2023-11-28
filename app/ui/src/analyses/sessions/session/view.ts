@@ -71,6 +71,15 @@ export class SessionView extends ScreenView {
                 this.series = toPointValues((await this.analysisCache.get(force)).series)
             }
             this.preferenceData = await this.preferenceCache.get(force)
+
+            let min: number = Number.MAX_VALUE
+            let max: number = 0
+            for (let s of this.series) {
+                min = Math.min(min, s.series[0].step)
+                max = Math.max(max, s.series[s.series.length - 1].step)
+            }
+
+            this.stepRangeField.setMinMax(new Date(min*1000), new Date(max*1000))
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
