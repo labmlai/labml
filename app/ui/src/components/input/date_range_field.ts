@@ -6,6 +6,7 @@ import {getTimeString} from "../../utils/time"
 interface DatePickerOptions extends EditableFieldOptions {
     min: Date
     max: Date
+    default: Date
 }
 
 class DatePicker extends  EditableField {
@@ -13,15 +14,20 @@ class DatePicker extends  EditableField {
     value: string
     min: string
     max: string
+    default: number
 
     constructor(opt: DatePickerOptions) {
         super(opt)
         this.value = opt.value
         this.max = getTimeString(opt.max)
         this.min = getTimeString(opt.min)
+        this.default = opt.default.getTime() / 1000
     }
 
     public getInput(): string {
+        if (this.inputElem.value == '') {
+            return `${this.default}`
+        }
         let date = new Date(this.inputElem.value);
         return (date.getTime()/ 1000).toString() // convert to python timestamp
     }
@@ -84,8 +90,8 @@ export class DateRangeField {
         console.log(this.min, this.max)
         this.minDate = opt.minDate
         this.maxDate = opt.maxDate
-        this.minField = new DatePicker({name: "", value: `${this.min}`, min: this.minDate, max: this.maxDate})
-        this.maxField = new DatePicker({name: "", value: `${this.max}`, min: this.minDate, max: this.maxDate})
+        this.minField = new DatePicker({name: "", value: `${this.min}`, min: this.minDate, max: this.maxDate, default: this.minDate})
+        this.maxField = new DatePicker({name: "", value: `${this.max}`, min: this.minDate, max: this.maxDate, default: this.maxDate})
         this.doneButton = new CustomButton({
             onButtonClick: () => {
                 let range: number[] = this.getRange()
@@ -114,11 +120,21 @@ export class DateRangeField {
             return
         }
 
-        this.minField.updateValue(min == -1 || isNaN(this.min) ? getTimeString(new Date(0)) : getTimeString(new Date(min * 1000)))
-        this.maxField.updateValue(min == -1 || isNaN(this.max) ? getTimeString(new Date()) : getTimeString(new Date(max * 1000)))
+        if (this.minDate == null) {
+            this.minDate = new Date(0)
+        }
+        if (this.maxDate == null) {
+            this.maxDate = new Date()
+        }
+
+        this.minField.updateValue(min == -1 || isNaN(this.min) ? getTimeString(this.minDate) : getTimeString(new Date(min * 1000)))
+        this.maxField.updateValue(min == -1 || isNaN(this.max) ? getTimeString(this.maxDate) : getTimeString(new Date(max * 1000)))
     }
 
     public setMinMax(min: Date, max: Date) {
+        this.minDate = min
+        this.maxDate = max
+
         this.minField.setMinMax(min, max)
         this.maxField.setMinMax(min, max)
     }
