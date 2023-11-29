@@ -8,6 +8,7 @@ import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {Labels} from "../../../components/charts/labels"
 import {ROUTER} from '../../../app'
 import {AnalysisCache} from "../../helpers"
+import {getSeriesData} from "../gpu/utils";
 
 export class SessionCard extends Card {
     uuid: string
@@ -21,7 +22,8 @@ export class SessionCard extends Card {
     private readonly title: string
     private readonly url: string
     private readonly yExtend?: [number, number]
-    private readonly plotIndex: number[]
+    private plotIndex: number[]
+    private readonly subSeries?: string
 
     constructor(opt: CardOptions,
                 title: string,
@@ -29,7 +31,7 @@ export class SessionCard extends Card {
                 cache: AnalysisCache<any, any>,
                 plotIndex: number[],
                 isSummary: boolean,
-                yExtend?: [number, number],) {
+                yExtend?: [number, number], subSeries?: string) {
         super(opt)
 
         this.uuid = opt.uuid
@@ -37,16 +39,29 @@ export class SessionCard extends Card {
         this.title = title
         this.url = url
         this.yExtend = yExtend
+        this.subSeries = subSeries
         this.analysisCache = cache.getAnalysis(this.uuid)
         this.plotIndex = plotIndex
         this.loader = new DataLoader(async (force) => {
-            let data: any[]
-                if (isSummary) {
-                    data = (await this.analysisCache.get(force)).summary
+            if (isSummary) {
+                let data: any[] = (await this.analysisCache.get(force)).summary
+                this.series = toPointValues(data)
+            } else {
+                if (this.subSeries) {
+                    let data: any[] = getSeriesData((await this.analysisCache.get(force)).series, this.subSeries)
+                    this.series = toPointValues(data)
                 } else {
-                    data = (await this.analysisCache.get(force)).series
+                    this.series = (await this.analysisCache.get(force)).series
                 }
-            this.series = toPointValues(data)
+            }
+
+            if (this.subSeries) { // show all plots of sub series
+                this.plotIndex = []
+                let i = 0
+                for (let _ of this.series) {
+                    this.plotIndex.push(i++)
+                }
+            }
         })
     }
 
