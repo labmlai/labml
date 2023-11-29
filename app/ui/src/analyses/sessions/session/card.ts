@@ -1,20 +1,23 @@
 import {Weya as $, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
-import {AnalysisDataCache} from "../../../cache/cache"
+import {AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {toPointValues} from "../../../components/charts/utils"
 import {DataLoader} from "../../../components/loader"
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {Labels} from "../../../components/charts/labels"
 import {ROUTER} from '../../../app'
 import {AnalysisCache} from "../../helpers"
-import {getSeriesData} from "../gpu/utils";
+import {getSeriesData} from "../gpu/utils"
+import {AnalysisPreferenceModel} from "../../../models/preferences"
 
 export class SessionCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
     analysisCache: AnalysisDataCache
+    preferenceCache: AnalysisPreferenceCache
+    preferenceData: AnalysisPreferenceModel
     lineChartContainer: HTMLDivElement
     elem: HTMLDivElement
     private loader: DataLoader
@@ -41,6 +44,7 @@ export class SessionCard extends Card {
         this.yExtend = yExtend
         this.subSeries = subSeries
         this.analysisCache = cache.getAnalysis(this.uuid)
+        this.preferenceCache = cache.getPreferences(this.uuid)
         this.plotIndex = plotIndex
         this.loader = new DataLoader(async (force) => {
             if (isSummary) {
@@ -48,13 +52,13 @@ export class SessionCard extends Card {
                 this.series = toPointValues(data)
             } else {
                 if (this.subSeries) {
-                    let data: any[] = getSeriesData((await this.analysisCache.get(force)).series, this.subSeries)
-                    this.series = toPointValues(data)
+                    this.series = getSeriesData((await this.analysisCache.get(force)).series, this.subSeries)
                 } else {
-                    this.series = (await this.analysisCache.get(force)).series
+                    let data: any[] = (await this.analysisCache.get(force)).series
+                    this.series = toPointValues(data)
                 }
             }
-
+            this.preferenceData = await this.preferenceCache.get(force)
             if (this.subSeries) { // show all plots of sub series
                 this.plotIndex = []
                 let i = 0
@@ -100,6 +104,7 @@ export class SessionCard extends Card {
                 yExtend: this.yExtend,
                 chartHeightFraction: 4,
                 isDivergent: true,
+                stepRange: this.preferenceData.step_range,
             }).render($)
         })
 
