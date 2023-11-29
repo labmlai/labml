@@ -259,7 +259,6 @@ export class SessionView extends ScreenView {
 
 
     private onChangeStepRange(min: number, max: number) {
-        console.log(min, max)
         this.isUpdateDisable = false
 
         this.stepRange = [min, max]
