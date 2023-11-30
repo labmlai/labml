@@ -30,6 +30,13 @@ class DatePicker extends  EditableField {
             return `${this.default}`
         }
         let date = new Date(this.inputElem.value);
+        if (date.getTime() < new Date(this.min).getTime()) {
+            this.updateValue(this.min)
+            return (new Date(this.min).getTime() / 1000).toString()
+        } else if (date.getTime() > new Date(this.max).getTime()) {
+            this.updateValue(this.max)
+            return (new Date(this.max).getTime() / 1000).toString()
+        }
         return (date.getTime()/ 1000).toString() // convert to python timestamp
     }
 
