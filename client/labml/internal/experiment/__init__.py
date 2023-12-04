@@ -197,11 +197,6 @@ class Experiment:
                 configs.update(configs_override)
             self.configs_processor.update_configs(configs)
 
-    def _save_pid(self):
-        assert not self.run.pid_path.exists(), str(self.run.pid_path)
-
-        with open(str(self.run.pid_path), 'w') as f:
-            f.write(f'{os.getpid()}')
 
     def _start_tracker(self):
         tracker().reset_writers()
@@ -261,7 +256,6 @@ class Experiment:
                 computer_singleton().add_project(lab_singleton().path)
 
             self.run.save_info()
-            self._save_pid()
 
             if self.run.distributed_rank == self.run.distributed_main_rank:
                 if self.configs_processor is not None:

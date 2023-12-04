@@ -88,6 +88,7 @@ class AppExperiment(AppTrackDataSource):
                 load_run=run.load_run,
                 tags=run.tags,
                 notes=run.notes,
+                pid=run.pid,
             ))
 
         self.app_tracker.has_data(self)
