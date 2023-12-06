@@ -137,13 +137,17 @@ class Scanner:
             'cpu.system': res.system,
             'cpu.user': res.user,
         })
-        res = psutil.cpu_freq()
-        if res is not None:
-            self.data.update({
-                'cpu.freq': res.current,
-                'cpu.freq.min': res.min,
-                'cpu.freq.max': res.max,
-            })
+        try:
+            res = psutil.cpu_freq()
+            if res is not None:
+                self.data.update({
+                    'cpu.freq': res.current,
+                    'cpu.freq.min': res.min,
+                    'cpu.freq.max': res.max,
+                })
+        except Exception as e:
+            pass
+
         res = psutil.cpu_percent(percpu=True)
         self.data.update({f'cpu.perc.{i}': p for i, p in enumerate(res)})
 
@@ -186,15 +190,44 @@ class Scanner:
         self.data = {}
         try:
             self.track_net_io_counters()
+        except Exception as e:
+            print(f'track_net_io_counters: {e}')
+
+        try:
             self.track_memory()
+        except Exception as e:
+            print(f'track_memory: {e}')
+
+        try:
             self.track_cpu()
+        except Exception as e:
+            print(f'track_cpu: {e}')
+            raise e
+
+        try:
             self.track_disk()
+        except Exception as e:
+            print(f'track_disk: {e}')
+
+        try:
             self.track_sensors()
+        except Exception as e:
+            print(f'track_sensors: {e}')
+
+        try:
             self.track_battery()
+        except Exception as e:
+            print(f'track_battery: {e}')
+
+        try:
             self.track_processes()
+        except Exception as e:
+            print(f'track_processes: {e}')
+
+        try:
             self.track_gpu()
         except Exception as e:
-            print(e)
+            print(f'track_gpu: {e}')
 
         return self.data
 

@@ -151,6 +151,10 @@ export class LineChart {
         }
 
         if (clientX) {
+            if (clientX > this.svgBoundingClientRect.right) {
+                clientX = this.svgBoundingClientRect.right
+            }
+
             let currentX = this.xScale.invert(clientX - this.svgBoundingClientRect.left - this.margin)
             if (currentX > 0) {
                 cursorStep = currentX

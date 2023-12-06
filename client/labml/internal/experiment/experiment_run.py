@@ -1,3 +1,4 @@
+import os
 import time
 from pathlib import Path
 from typing import List, Dict, Optional
@@ -42,6 +43,7 @@ class RunInfo:
                  experiment_path: Path,
                  start_step: int = 0,
                  notes: str = '',
+                 pid: int,
                  load_run: Optional[str] = None,
                  tags: List[str],
                  distributed_rank: int,
@@ -68,6 +70,7 @@ class RunInfo:
         self.distributed_rank = distributed_rank
         self.distributed_world_size = distributed_world_size
         self.distributed_main_rank = distributed_main_rank
+        self.pid = pid
 
         if distributed_world_size > 0:
             self.run_path = experiment_path / f'{uuid}.{self.distributed_rank}'
@@ -215,6 +218,7 @@ class Run(RunInfo):
                  experiment_path: Path,
                  start_step: int = 0,
                  notes: str = '',
+                 pid: int,
                  tags: List[str],
                  distributed_rank: int,
                  distributed_world_size: int,
@@ -225,7 +229,9 @@ class Run(RunInfo):
             name=name, comment=comment, uuid=uuid, experiment_path=experiment_path,
             repo_remotes=repo_remotes,
             commit=commit, commit_message=commit_message, is_dirty=is_dirty,
-            start_step=start_step, notes=notes, tags=tags,
+            start_step=start_step, notes=notes,
+            pid=pid,
+            tags=tags,
             distributed_rank=distributed_rank, distributed_world_size=distributed_world_size,
             distributed_main_rank=distributed_main_rank,
         )
@@ -247,6 +253,7 @@ class Run(RunInfo):
         """
         ## Create a new trial
         """
+
         return cls(python_file=python_file,
                    trial_date=struct_time_to_date(trial_time),
                    trial_time=struct_time_to_time(trial_time),
@@ -255,6 +262,7 @@ class Run(RunInfo):
                    name=name,
                    comment=comment,
                    tags=tags,
+                   pid=os.getpid(),
                    distributed_rank=distributed_rank,
                    distributed_world_size=distributed_world_size,
                    distributed_main_rank=distributed_main_rank,
@@ -270,6 +278,12 @@ class Run(RunInfo):
 
     def save_info(self):
         self.make_path()
+
+        assert not self.pid_path.exists(), str(self.pid_path)
+        assert os.getpid() == self.pid, f'{os.getpid()} != {self.pid}'
+
+        with open(str(self.pid_path), 'w') as f:
+            f.write(f'{self.pid}')
 
         with open(str(self.info_path), "w") as file:
             file.write(util.yaml_dump(self.to_dict()))
