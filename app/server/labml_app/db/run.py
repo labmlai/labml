@@ -47,6 +47,7 @@ class Run(Model['Run']):
     status: Key['status.Status']
     configs: Dict[str, any]
     computer_uuid: str
+    pid: int
     size: float
     size_checkpoints: float
     size_tensorboard: float
@@ -100,6 +101,7 @@ class Run(Model['Run']):
                     errors=[],
                     selected_configs=[],
                     favourite_configs=[],
+                    pid=0,
                     )
 
     @property
@@ -155,6 +157,8 @@ class Run(Model['Run']):
         if not self.computer_uuid:
             self.computer_uuid = data.get('computer', '')
             computer.add_run(self.computer_uuid, self.run_uuid)
+        if self.pid != 0:
+            self.pid = data.get('pid', 0)
 
         if 'configs' in data:
             configs = data.get('configs', {})
