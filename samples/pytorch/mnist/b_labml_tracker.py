@@ -52,7 +52,6 @@ def train(model, optimizer, train_loader, device, train_log_interval):
         #
         if batch_idx % train_log_interval == 0:
             # **✨ Save added stats**
-            tracker.add(model=model)
             tracker.save()
 
 
