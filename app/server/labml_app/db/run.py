@@ -2,6 +2,7 @@ import time
 from typing import Dict, List, Optional, Union, NamedTuple
 
 from fastapi import Request
+from labml_app.analyses.computers import process
 
 from labml_db import Model, Key, Index, load_keys
 
@@ -12,6 +13,7 @@ from . import project
 from . import computer
 from . import status
 from .. import settings
+from ..analyses.computers.process import ProcessAnalysis, ExperimentProcess, ExperimentProcessIndex
 from ..analyses.experiments.metrics import MetricsAnalysis, MetricsPreferencesIndex, MetricsPreferencesModel
 from ..logger import logger
 from .. import analyses
@@ -48,6 +50,7 @@ class Run(Model['Run']):
     configs: Dict[str, any]
     computer_uuid: str
     pid: int
+    process_id: str
     size: float
     size_checkpoints: float
     size_tensorboard: float
@@ -102,6 +105,7 @@ class Run(Model['Run']):
                     selected_configs=[],
                     favourite_configs=[],
                     pid=0,
+                    process_id='',
                     )
 
     @property
@@ -157,7 +161,7 @@ class Run(Model['Run']):
         if not self.computer_uuid:
             self.computer_uuid = data.get('computer', '')
             computer.add_run(self.computer_uuid, self.run_uuid)
-        if self.pid != 0:
+        if self.pid == 0:
             self.pid = data.get('pid', 0)
 
         if 'configs' in data:
@@ -195,6 +199,22 @@ class Run(Model['Run']):
             self.indicators = data.get('indicators', {})
         if not self.wildcard_indicators:
             self.wildcard_indicators = data.get('wildcard_indicators', {})
+
+        if not self.process_id and self.computer_uuid and self.pid != 0:
+            # get sessions with the computer_uuid
+            sessions_keys = computer.get_or_create(self.computer_uuid).get_sessions()
+
+            for session_key in sessions_keys:
+                ans = ProcessAnalysis.get_or_create(session_key)
+                if ans:
+                    track_data, _ = ans.get_tracking()
+                    for track_item in track_data:
+                        if track_item['pid'] == self.pid:  # found the process
+                            data = process.get_process_detail(session_key, track_item['process_id'])
+                            experiment_process = ExperimentProcess(data)
+                            experiment_process.save()
+                            ExperimentProcessIndex.set(track_item['process_id'], experiment_process.key)
+                            self.process_id = track_item['process_id']
 
         self.save()
 

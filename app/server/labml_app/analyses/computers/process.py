@@ -19,6 +19,47 @@ STATIC_NAMES = ['name', 'create_time', 'pid', 'ppid', 'dead', 'exe', 'cmdline']
 ALMOST_ZERO = 1.0E-2
 
 
+@Analysis.db_model(PickleSerializer, 'ExperimentProcess')
+class ExperimentProcess(Model['ExperimentProcessModel'], SeriesCollection):
+    process_id: str
+    name: str
+    create_time: float
+    cmdline: str
+    exe: str
+    pid: int
+    ppid: int
+    dead: bool
+
+    @classmethod
+    def defaults(cls):
+        return dict(
+            process_id='',
+            name='',
+            create_time=0,
+            cmdline='',
+            exe='',
+            pid=0,
+            ppid=0,
+            dead=False,
+        )
+
+    def __init__(self, data):
+        super().__init__()
+        self.process_id = data.get('process_id', '')
+        self.name = data.get('name', '')
+        self.create_time = data.get('create_time', 0)
+        self.cmdline = data.get('cmdline', '')
+        self.exe = data.get('exe', '')
+        self.pid = data.get('pid', 0)
+        self.ppid = data.get('ppid', 0)
+        self.dead = data.get('dead', False)
+
+
+@Analysis.db_index(PickleSerializer, 'experiment_process_index')
+class ExperimentProcessIndex(Index['ExperimentProcess']):
+    pass
+
+
 @Analysis.db_model(PickleSerializer, 'Process')
 class ProcessModel(Model['ProcessModel'], SeriesCollection):
     names: Dict[str, str]
