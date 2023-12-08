@@ -158,6 +158,19 @@ class ProcessAnalysis(Analysis):
 
                 res[ind] = s
 
+        for process_id in self.process.pids.keys():
+            # check if there's an experiment process with a process id
+            experiment_process_key = ExperimentProcessIndex.get(process_id)
+            if experiment_process_key is None:
+                continue
+            experiment_process: ExperimentProcess = experiment_process_key.load()
+            if experiment_process is None:
+                continue
+            # filter res to have only relevant series
+            experiment_process_res = {k: v for k, v in res.items() if k.startswith(process_id)}
+            if experiment_process is not None:
+                experiment_process.track(experiment_process_res, keep_last_24h=False)
+
         self.process.track(res, keep_last_24h=True)
         self.clean_dead_processes()
 

@@ -2,7 +2,6 @@ import time
 from typing import Dict, List, Optional, Union, NamedTuple
 
 from fastapi import Request
-from labml_app.analyses.computers import process
 
 from labml_db import Model, Key, Index, load_keys
 
@@ -13,7 +12,7 @@ from . import project
 from . import computer
 from . import status
 from .. import settings
-from ..analyses.computers.process import ProcessAnalysis, ExperimentProcess, ExperimentProcessIndex
+from ..analyses.computers.process import ProcessAnalysis, ExperimentProcess, ExperimentProcessIndex, get_process_detail
 from ..analyses.experiments.metrics import MetricsAnalysis, MetricsPreferencesIndex, MetricsPreferencesModel
 from ..logger import logger
 from .. import analyses
@@ -210,7 +209,7 @@ class Run(Model['Run']):
                     track_data, _ = ans.get_tracking()
                     for track_item in track_data:
                         if track_item['pid'] == self.pid:  # found the process
-                            data = process.get_process_detail(session_key, track_item['process_id'])
+                            data = get_process_detail(session_key, track_item['process_id'])
                             experiment_process = ExperimentProcess(data)
                             experiment_process.save()
                             ExperimentProcessIndex.set(track_item['process_id'], experiment_process.key)
