@@ -74,9 +74,6 @@ def main():
     # ✨ Save configurations
     experiment.configs(configs)
 
-    # ✨ Set PyTorch models for checkpoint saving and loading
-    experiment.add_pytorch_models(dict(model=model))
-
     # ✨ Start and monitor the experiment
     with experiment.start():
         for _ in monit.loop(range(1, configs['epochs'] + 1)):
@@ -98,9 +95,6 @@ def main():
                         tracker.save({'loss.': loss, 'accuracy.': pred.eq(target.view_as(pred)).sum() / pred.shape[0]})
 
             tracker.new_line()
-
-    # save the model
-    experiment.save_checkpoint()
 
 
 if __name__ == '__main__':

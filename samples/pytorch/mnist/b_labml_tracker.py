@@ -134,9 +134,6 @@ def main():
     # ✨ Save configurations
     experiment.configs(configs)
 
-    # ✨ Set PyTorch models for checkpoint saving and loading
-    experiment.add_pytorch_models(dict(model=model))
-
     # ✨ Start and monitor the experiment
     with experiment.start():
         #
@@ -144,9 +141,6 @@ def main():
             train(model, optimizer, train_loader, device, configs['train_log_interval'])
             validate(model, valid_loader, device)
             logger.log()
-
-    # ✨ Save the models
-    experiment.save_checkpoint()
 
 
 #
