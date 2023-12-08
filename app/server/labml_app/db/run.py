@@ -209,11 +209,15 @@ class Run(Model['Run']):
                     track_data, _ = ans.get_tracking()
                     for track_item in track_data:
                         if track_item['pid'] == self.pid:  # found the process
-                            data = get_process_detail(session_key, track_item['process_id'])
+                            ans = ProcessAnalysis.get_or_create(session_key)
+                            if not ans:
+                                continue
+                            data = ans.get_process(track_item['process_id'])
                             experiment_process = ExperimentProcess(data)
                             experiment_process.save()
                             ExperimentProcessIndex.set(track_item['process_id'], experiment_process.key)
                             self.process_id = track_item['process_id']
+                            break
 
         self.save()
 
