@@ -83,7 +83,7 @@ def validate(model, valid_loader, device):
 def main():
     # ✨ Set the types of the stats/indicators.
     # They default to scalars if not specified
-    tracker.set_queue('loss.train', 20, True)
+    tracker.set_histogram('loss.train', True)
     tracker.set_histogram('loss.valid', True)
     tracker.set_scalar('accuracy.valid', True)
 
