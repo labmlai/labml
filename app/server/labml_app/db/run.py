@@ -213,10 +213,11 @@ class Run(Model['Run']):
                             if not ans:
                                 continue
                             data = ans.get_process(track_item['process_id'])
-                            experiment_process = ExperimentProcess(data)
+                            experiment_process = ExperimentProcess()
+                            experiment_process.load_data(data)
                             experiment_process.save()
                             ExperimentProcessIndex.set(track_item['process_id'], experiment_process.key)
-                            self.process_id = track_item['process_id']
+                            self.process_id = data['process_id']
                             break
 
         self.save()

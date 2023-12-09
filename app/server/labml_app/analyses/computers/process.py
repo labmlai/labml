@@ -43,8 +43,7 @@ class ExperimentProcess(Model['ExperimentProcessModel'], SeriesCollection):
             dead=False,
         )
 
-    def __init__(self, data):
-        super().__init__()
+    def load_data(self, data):
         self.process_id = data.get('process_id', '')
         self.name = data.get('name', '')
         self.create_time = data.get('create_time', 0)
