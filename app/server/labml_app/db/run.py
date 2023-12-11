@@ -12,7 +12,7 @@ from . import project
 from . import computer
 from . import status
 from .. import settings
-from ..analyses.computers.process import ProcessAnalysis, ExperimentProcess, ExperimentProcessIndex, get_process_detail
+from ..analyses.computers.process import ProcessAnalysis, ExperimentProcess
 from ..analyses.experiments.metrics import MetricsAnalysis, MetricsPreferencesIndex, MetricsPreferencesModel
 from ..logger import logger
 from .. import analyses
@@ -50,6 +50,7 @@ class Run(Model['Run']):
     computer_uuid: str
     pid: int
     process_id: str
+    process_key: Key['ExperimentProcess']
     size: float
     size_checkpoints: float
     size_tensorboard: float
@@ -105,6 +106,7 @@ class Run(Model['Run']):
                     favourite_configs=[],
                     pid=0,
                     process_id='',
+                    process_key=None,
                     )
 
     @property
@@ -214,10 +216,17 @@ class Run(Model['Run']):
                                 continue
                             data = ans.get_process(track_item['process_id'])
                             experiment_process = ExperimentProcess()
+                            data['run_uuid'] = self.run_uuid
                             experiment_process.load_data(data)
                             experiment_process.save()
-                            ExperimentProcessIndex.set(track_item['process_id'], experiment_process.key)
+
+                            # save experiment process on process model
+                            ans.add_experiment_process(track_item['process_id'], experiment_process.key)
+
+                            # save experiment process on run
+                            self.process_key = experiment_process.key
                             self.process_id = data['process_id']
+
                             break
 
         self.save()
@@ -415,6 +424,10 @@ def delete(run_uuid: str) -> None:
 
     if r:
         s = r.status.load()
+
+        if r.process_key:
+            process = r.process_key.load()
+            process.delete()
 
         computer.remove_run(r.computer_uuid, run_uuid)
 

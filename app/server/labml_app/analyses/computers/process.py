@@ -2,7 +2,7 @@ from typing import Dict, Set, Any
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from labml_db import Model, Index
+from labml_db import Model, Index, Key
 from labml_db.serializer.pickle import PickleSerializer
 
 from labml_app.logger import logger
@@ -21,6 +21,7 @@ ALMOST_ZERO = 1.0E-2
 
 @Analysis.db_model(PickleSerializer, 'ExperimentProcess')
 class ExperimentProcess(Model['ExperimentProcessModel'], SeriesCollection):
+    run_uuid: str
     process_id: str
     name: str
     create_time: float
@@ -33,6 +34,7 @@ class ExperimentProcess(Model['ExperimentProcessModel'], SeriesCollection):
     @classmethod
     def defaults(cls):
         return dict(
+            run_uuid='',
             process_id='',
             name='',
             create_time=0,
@@ -54,11 +56,6 @@ class ExperimentProcess(Model['ExperimentProcessModel'], SeriesCollection):
         self.dead = data.get('dead', False)
 
 
-@Analysis.db_index(PickleSerializer, 'experiment_process_index')
-class ExperimentProcessIndex(Index['ExperimentProcess']):
-    pass
-
-
 @Analysis.db_model(PickleSerializer, 'Process')
 class ProcessModel(Model['ProcessModel'], SeriesCollection):
     names: Dict[str, str]
@@ -70,6 +67,7 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
     dead: Dict[str, bool]
     gpu_processes: Dict[str, Set[str]]
     zero_cpu_processes: Dict[str, Dict['str', Any]]
+    experiment_process_keys: Dict[str, Key['ExperimentProcess']]  # key: process_id
 
     @classmethod
     def defaults(cls):
@@ -83,6 +81,7 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
             dead={},
             gpu_processes={},
             zero_cpu_processes={},
+            experiment_process_keys={},
         )
 
 
@@ -107,6 +106,11 @@ class ProcessAnalysis(Analysis):
     def __init__(self, data):
         self.process = data
         self.process.max_buffer_length = 100
+        self.experiment_process_keys = {}
+
+    def add_experiment_process(self, process_id: str, process_key: Key['ExperimentProcess']):
+        self.process.experiment_process_keys[process_id] = process_key
+        self.process.save()
 
     def track(self, data: Dict[str, SeriesModel]):
         res: Dict[str, SeriesModel] = {}
@@ -159,9 +163,9 @@ class ProcessAnalysis(Analysis):
 
         for process_id in self.process.pids.keys():
             # check if there's an experiment process with a process id
-            experiment_process_key = ExperimentProcessIndex.get(process_id)
-            if experiment_process_key is None:
+            if process_id not in self.process.experiment_process_keys:
                 continue
+            experiment_process_key = self.process.experiment_process_keys[process_id]
             experiment_process: ExperimentProcess = experiment_process_key.load()
             if experiment_process is None:
                 continue
@@ -180,6 +184,14 @@ class ProcessAnalysis(Analysis):
 
         inds_to_remove = {}
         for process_id in process_ids_to_remove:
+            # clean out experiment processes
+            if process_id in self.process.experiment_process_keys:
+                experiment_process_key = self.process.experiment_process_keys[process_id]
+                experiment_process: ExperimentProcess = experiment_process_key.load()
+                if experiment_process is not None:
+                    experiment_process.delete()
+                self.process.experiment_process_keys.pop(process_id)
+
             for s in series_names:
                 ind = f'{process_id}.{s}'
                 inds_to_remove[ind] = process_id
