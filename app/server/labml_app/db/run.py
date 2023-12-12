@@ -51,6 +51,7 @@ class Run(Model['Run']):
     pid: int
     process_id: str
     process_key: Key['ExperimentProcess']
+    session_id: str
     size: float
     size_checkpoints: float
     size_tensorboard: float
@@ -107,6 +108,7 @@ class Run(Model['Run']):
                     pid=0,
                     process_id='',
                     process_key=None,
+                    session_id='',
                     )
 
     @property
@@ -226,6 +228,7 @@ class Run(Model['Run']):
                             # save experiment process on run
                             self.process_key = experiment_process.key
                             self.process_id = data['process_id']
+                            self.session_id = session_key
 
                             break
 
@@ -328,6 +331,8 @@ class Run(Model['Run']):
             'stderr': self.stderr + self.stderr_unmerged,
             'favourite_configs': self.favourite_configs,
             'selected_configs': self.selected_configs,
+            'process_id': self.process_id,
+            'session_id': self.session_id
         }
 
     def get_summary(self) -> Dict[str, str]:
