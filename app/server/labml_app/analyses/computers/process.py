@@ -189,6 +189,14 @@ class ProcessAnalysis(Analysis):
                 experiment_process_key = self.process.experiment_process_keys[process_id]
                 experiment_process: ExperimentProcess = experiment_process_key.load()
                 if experiment_process is not None:
+                    run_uuid = experiment_process.run_uuid
+                    from ...db.run import get as get_run
+                    run = get_run(run_uuid)
+                    if run is not None:
+                        run.session_id = ''
+                        run.process_id = ''
+                        run.process_key = None
+                        run.save()
                     experiment_process.delete()
                 self.process.experiment_process_keys.pop(process_id)
 
