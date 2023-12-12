@@ -106,7 +106,6 @@ class ProcessAnalysis(Analysis):
     def __init__(self, data):
         self.process = data
         self.process.max_buffer_length = 100
-        self.experiment_process_keys = {}
 
     def add_experiment_process(self, process_id: str, process_key: Key['ExperimentProcess']):
         self.process.experiment_process_keys[process_id] = process_key
@@ -294,7 +293,12 @@ class ProcessAnalysis(Analysis):
         for s_name in SERIES_NAMES:
             ind = process_id + f'.{s_name}'
 
-            track = self.process.tracking.get(ind, {})
+            if process_id in self.process.experiment_process_keys:
+                experiment_process = self.process.experiment_process_keys[process_id].load()
+                track = experiment_process.tracking.get(ind, {})
+            else:
+                track = self.process.tracking.get(ind, {})
+
             if track:
                 series: Dict[str, Any] = Series().load(track).detail
                 series['name'] = s_name
