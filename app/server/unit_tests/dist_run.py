@@ -12,7 +12,6 @@ def worker(rank: int):
                       name='Distributed Training Simulator',
                       distributed_rank=rank,
                       distributed_world_size=WORLD_SIZE,
-                      writers={'screen', 'labml'}
                       )
     print(f'created experiment for rank:{rank}')
     with experiment.start():

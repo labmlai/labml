@@ -122,7 +122,6 @@ class Series:
 
         if self.keep_last_24h:
             self.value, self.step = _remove_old(self.value, self.step)
-            # todo how does last step work?
             self.last_step = self.step.copy()
 
         self.step_gap = self.find_step_gap()
