@@ -113,4 +113,4 @@ async def log_process_time(request: Request, call_next):
 
 
 if __name__ == '__main__':
-    uvicorn.run("labml_app.flask_app:app", host='0.0.0.0', port=5005, workers=2)
+    uvicorn.run("labml_app.flask_app:app", host='0.0.0.0', port=5005, workers=1)
