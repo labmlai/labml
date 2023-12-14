@@ -249,6 +249,14 @@ class Run(Model['Run']):
 
         return url + f'/commit/{commit}'
 
+    def get_other_uuids(self) -> Dict[int, str]:
+        if self.rank == 0 and self.world_size > 1:
+            other_rank_run_uuids = {rank: f'{self.run_uuid}_{rank}' for rank in range(self.world_size)}
+        else:
+            other_rank_run_uuids = {}
+
+        return other_rank_run_uuids
+
     def get_data(self, request: Request) -> Dict[str, Union[str, any]]:
         u = auth.get_auth_user(request)
         if u:
@@ -259,10 +267,7 @@ class Run(Model['Run']):
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         formatted_repo = self.format_remote_repo(self.repo_remotes)
 
-        if self.rank == 0 and self.world_size > 1:
-            other_rank_run_uuids = {rank: f'{self.run_uuid}_{rank}' for rank in range(self.world_size)}
-        else:
-            other_rank_run_uuids = {}
+        other_rank_run_uuids = self.get_other_uuids()
 
         return {
             'run_uuid': self.run_uuid,
