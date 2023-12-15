@@ -67,7 +67,7 @@ async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> A
     if r is None:
         return JSONResponse({'series': {}, 'insights': []}, status_code=404)
 
-    rank_uuids = r.get_other_uuids()
+    rank_uuids = r.get_rank_uuids()
 
     if len(rank_uuids.keys()) == 0:  # not distributed main rank
         ans = metrics.MetricsAnalysis.get_or_create(run_uuid)
