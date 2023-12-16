@@ -33,6 +33,31 @@ def _remove_old(values, steps, last_steps):
     return values[break_index:], steps[break_index:], last_steps[break_index]
 
 
+def _merge_same_step(steps, values):
+    if not steps or not values or len(steps) != len(values):
+        return [], []
+
+    merged_steps = [steps[0]]
+    merged_values = [values[0]]
+    count = 1
+
+    for i in range(1, len(steps)):
+        if steps[i] == merged_steps[-1]:
+            merged_values[-1] += values[i]
+            count += 1
+        else:
+            merged_values[-1] /= count
+            merged_steps.append(steps[i])
+            merged_values.append(values[i])
+            count = 1
+
+    # Average the last group if necessary
+    if count > 1:
+        merged_values[-1] /= count
+
+    return merged_steps, merged_values
+
+
 class Series:
     step: np.ndarray
     last_step: np.ndarray
@@ -110,6 +135,9 @@ class Series:
 
     def update(self, step: List[float], value: List[float]) -> None:
         prev_size = len(self.value)
+
+        step, value = _merge_same_step(step, value)
+
         value = np.array(value)
         step = np.array(step)
         last_step = np.array(step)
@@ -188,7 +216,7 @@ class Series:
         else:
             prev_last_step = 0
 
-        n = self._merge(self.value, self.last_step, self.step, prev_last_step, from_step)
+        n = self._merge_old(self.value, self.last_step, self.step, prev_last_step, from_step)
 
         self.last_step = self.last_step[:n]
         self.step = self.step[:n]

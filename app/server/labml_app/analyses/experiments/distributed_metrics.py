@@ -81,23 +81,23 @@ async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> A
         metric_list = [metrics.MetricsAnalysis(m) if m else None for m in metrics.mget(list(rank_uuids.values()))]
         metric_list = [m for m in metric_list if m is not None]
         track_data_list = [m.get_tracking() for m in metric_list]
+
         series_list = {}
         for track_data in track_data_list:
             for track_item in track_data:
                 if track_item['name'] not in series_list:
-                    series_list[track_item['name']] = track_item
-                series_list[track_item['name']]['step'] += track_item['step']
-                series_list[track_item['name']]['value'] += track_item['value']
+                    series_list[track_item['name']] = {'step': [], 'value': []}
+
+                series_list[track_item['name']]['step'].extend(track_item['step'])
+                series_list[track_item['name']]['value'].extend(track_item['value'])
 
         merged_list = []
 
         for key in series_list:
             steps, values = zip(*sorted(zip(series_list[key]['step'], series_list[key]['value'])))
-            series_list[key]['step'] = list(steps)
-            series_list[key]['value'] = list(values)
 
-            s = Series().load(Series().to_data())
-            s.update(series_list[key]['step'], series_list[key]['value'])
+            s = Series()
+            s.update(list(steps), list(values))
             details = s.detail
             details['name'] = key
             merged_list.append(details)
