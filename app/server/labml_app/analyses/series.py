@@ -216,7 +216,7 @@ class Series:
         else:
             prev_last_step = 0
 
-        n = self._merge_old(self.value, self.last_step, self.step, prev_last_step, from_step)
+        n = self._merge(self.value, self.last_step, self.step, prev_last_step, from_step)
 
         self.last_step = self.last_step[:n]
         self.step = self.step[:n]
