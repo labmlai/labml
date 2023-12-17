@@ -12,7 +12,7 @@ OUTLIER_MARGIN = 0.04
 SeriesModel = Dict[str, Union[np.ndarray, List[float], float]]
 
 
-def _remove_old(values, steps):
+def _remove_old(values, steps, last_steps):
     break_time = datetime.fromtimestamp(steps[-1]) - timedelta(days=1)
 
     left = 0
@@ -30,7 +30,7 @@ def _remove_old(values, steps):
     # find index to break
     break_index = left
 
-    return values[break_index:], steps[break_index:]
+    return values[break_index:], steps[break_index:], last_steps[break_index]
 
 
 class Series:
@@ -110,6 +110,7 @@ class Series:
 
     def update(self, step: List[float], value: List[float]) -> None:
         prev_size = len(self.value)
+
         value = np.array(value)
         step = np.array(step)
         last_step = np.array(step)
@@ -121,8 +122,7 @@ class Series:
         self.last_step = np.concatenate((self.last_step, last_step))
 
         if self.keep_last_24h:
-            self.value, self.step = _remove_old(self.value, self.step)
-            self.last_step = self.step.copy()
+            self.value, self.step, self.last_step = _remove_old(self.value, self.step, self.last_step)
 
         self.step_gap = self.find_step_gap()
 
@@ -160,6 +160,7 @@ class Series:
                    prev_last_step: int = 0,
                    i: int = 0  # from_step
                    ):
+        # Assumes that steps are evenly spaced
         j = i + 1
         while j < len(values):
             if last_step[j] - prev_last_step < self.step_gap or last_step[j] - last_step[j - 1] < 1e-3:  # merge
