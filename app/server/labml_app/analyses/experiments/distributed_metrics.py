@@ -88,13 +88,31 @@ async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> A
                 if track_item['name'] not in series_list:
                     series_list[track_item['name']] = {'step': [], 'value': []}
 
-                series_list[track_item['name']]['step'].extend(track_item['step'])
-                series_list[track_item['name']]['value'].extend(track_item['value'])
+                series_list[track_item['name']]['step'].append(track_item['step'])
+                series_list[track_item['name']]['value'].append(track_item['value'])
 
         merged_list = []
 
         for key in series_list:
-            steps, values = zip(*sorted(zip(series_list[key]['step'], series_list[key]['value'])))
+            step_list = series_list[key]['step']
+            value_list = series_list[key]['value']
+            length = max([len(v) for v in value_list if v is not None])
+            num_series = len(step_list)
+
+            steps = []
+            values = []
+            for i in range(length):
+                value_sum = 0
+                step_sum = 0
+                count = 0
+                for j in range(num_series):
+                    if i >= len(value_list[j]):
+                        continue
+                    value_sum += value_list[j][i]
+                    step_sum += step_list[j][i]
+                    count += 1
+                steps.append(step_sum / count)
+                values.append(value_sum / count)
 
             s = Series()
             s.update(list(steps), list(values))

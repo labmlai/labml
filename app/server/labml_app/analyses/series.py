@@ -160,6 +160,7 @@ class Series:
                    prev_last_step: int = 0,
                    i: int = 0  # from_step
                    ):
+        # Assumes that steps are evenly spaced
         j = i + 1
         while j < len(values):
             if last_step[j] - prev_last_step < self.step_gap or last_step[j] - last_step[j - 1] < 1e-3:  # merge
