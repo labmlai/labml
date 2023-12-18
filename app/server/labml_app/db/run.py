@@ -300,7 +300,8 @@ class Run(Model['Run']):
         }
 
     def get_summary(self) -> Dict[str, str]:
-        fav_configs = [{'key': key, **self.configs[key]} for key in self.configs.keys() if key in self.favourite_configs]
+        fav_configs = [{'key': key, **self.configs[key]} for key in self.configs.keys() if
+                       key in self.favourite_configs]
 
         return {
             'run_uuid': self.run_uuid,
@@ -350,6 +351,10 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, l
 
     if run_uuid in p.runs:
         return p.runs[run_uuid].load()
+
+    run = get(run_uuid)
+    if run is not None:
+        return run
 
     if labml_token == settings.FLOAT_PROJECT_TOKEN:
         is_claimed = False
