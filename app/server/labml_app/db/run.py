@@ -289,6 +289,15 @@ class Run(Model['Run']):
 
         return url + f'/commit/{commit}'
 
+    def get_rank_uuids(self) -> Dict[int, str]:
+        if self.rank == 0 and self.world_size > 1:
+            other_rank_run_uuids = \
+                {rank: f'{self.run_uuid}_{rank}' if rank != 0 else self.run_uuid for rank in range(self.world_size)}
+        else:
+            other_rank_run_uuids = {}
+
+        return other_rank_run_uuids
+
     def get_data(self, request: Request) -> Dict[str, Union[str, any]]:
         u = auth.get_auth_user(request)
         if u:
@@ -299,10 +308,7 @@ class Run(Model['Run']):
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         formatted_repo = self.format_remote_repo(self.repo_remotes)
 
-        if self.rank == 0 and self.world_size > 1:
-            other_rank_run_uuids = {rank: f'{self.run_uuid}_{rank}' for rank in range(self.world_size)}
-        else:
-            other_rank_run_uuids = {}
+        other_rank_run_uuids = self.get_rank_uuids()
 
         return {
             'run_uuid': self.run_uuid,
@@ -336,7 +342,8 @@ class Run(Model['Run']):
         }
 
     def get_summary(self) -> Dict[str, str]:
-        fav_configs = [{'key': key, **self.configs[key]} for key in self.configs.keys() if key in self.favourite_configs]
+        fav_configs = [{'key': key, **self.configs[key]} for key in self.configs.keys() if
+                       key in self.favourite_configs]
 
         return {
             'run_uuid': self.run_uuid,
@@ -386,6 +393,10 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, l
 
     if run_uuid in p.runs:
         return p.runs[run_uuid].load()
+
+    run = get(run_uuid)
+    if run is not None:
+        return run
 
     if labml_token == settings.FLOAT_PROJECT_TOKEN:
         is_claimed = False

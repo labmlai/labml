@@ -222,6 +222,7 @@ class Experiment:
                                          {
                                              'run_uuid': self.run.uuid,
                                              'rank': self.run.distributed_rank,
+                                             'main_rank': self.run.distributed_main_rank,
                                              'world_size': self.run.distributed_world_size,
                                          },
                                          timeout_seconds=120)
