@@ -27,6 +27,8 @@ export interface RunModel {
     stderr: string
     selected_configs: string[]
     favourite_configs: string[]
+    session_id: string
+    process_id: string
 }
 
 export interface PointValue {
@@ -88,6 +90,8 @@ export class Run {
     stderr: string
     selected_configs: string[]
     favourite_configs: string[]
+    session_id: string
+    process_id: string
 
     constructor(run: RunModel) {
         this.run_uuid = run.run_uuid
@@ -119,6 +123,8 @@ export class Run {
         this.stdout = run.stdout
         this.logger = run.logger
         this.stderr = run.stderr
+        this.session_id = run.session_id
+        this.process_id = run.process_id
     }
 
     public updateConfigs() {

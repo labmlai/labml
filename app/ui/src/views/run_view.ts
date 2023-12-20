@@ -40,6 +40,7 @@ class RunView extends ScreenView {
     private share: ShareButton
     private isRankExpanded: boolean
     private rankElems: WeyaElement
+    private processContainer: WeyaElement
 
     constructor(uuid: string, rank?: string) {
         super()
@@ -108,6 +109,7 @@ class RunView extends ScreenView {
                         this.loader.render($)
                         this.runHeaderCard.render($)
                         this.rankContainer = $('div.list.runs-list.list-group')
+                        this.processContainer = $('div.fit-content')
                         this.cardContainer = $('div')
                     })
                 })
@@ -122,6 +124,7 @@ class RunView extends ScreenView {
             this.renderRanks()
             this.share.text = `${this.run.name} run`
             this.renderCards()
+            this.renderProcess()
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -130,6 +133,23 @@ class RunView extends ScreenView {
                 this.refresh.start()
             }
         }
+    }
+
+    renderProcess() {
+        if (this.run == null || this.run.process_id == "" || this.run.session_id == "") {
+            return
+        }
+
+        $(this.processContainer, $ => {
+            new CustomButton({
+                onButtonClick: () => {
+                    ROUTER.navigate(`session/${this.run.session_id}/process/${this.run.process_id}`)
+                },
+                text: 'Process',
+                title: 'Running process for the experiment',
+                parent: this.constructor.name
+            }).render($)
+        })
     }
 
     renderButtons() {
