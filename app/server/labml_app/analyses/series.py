@@ -30,7 +30,7 @@ def _remove_old(values, steps, last_steps):
     # find index to break
     break_index = left
 
-    return values[break_index:], steps[break_index:], last_steps[break_index]
+    return values[break_index:], steps[break_index:], last_steps[break_index:]
 
 
 class Series:

@@ -178,7 +178,7 @@ def _monitor():
     from labml.internal.computer import monitoring_process
     from labml.internal.computer.configs import computer_singleton
 
-    process.run(True, computer_singleton().app_configs.open_browser)
+    monitoring_process.run(True, computer_singleton().app_configs.open_browser)
 
 
 def _service():
@@ -190,7 +190,7 @@ def _service():
 def _service_run():
     from labml.internal.computer import monitoring_process
 
-    process.run(True, False)
+    monitoring_process.run(True, False)
 
 
 def main():
