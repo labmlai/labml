@@ -54,6 +54,7 @@ class ExperimentProcess(Model['ExperimentProcessModel'], SeriesCollection):
         self.pid = data.get('pid', 0)
         self.ppid = data.get('ppid', 0)
         self.dead = data.get('dead', False)
+        self.run_uuid = data.get('run_uuid', '')
 
 
 @Analysis.db_model(PickleSerializer, 'Process')
