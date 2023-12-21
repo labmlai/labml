@@ -10,7 +10,7 @@ import {AnalysisPreferenceModel} from "../../../models/preferences"
 import metricsCache from "./cache"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import {getChartType, toPointValues} from "../../../components/charts/utils"
+import {defaultSeriesToPlot, getChartType, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
@@ -268,6 +268,8 @@ class MetricsView extends ScreenView {
             let analysisPreferences = this.preferenceData.series_preferences
             if (analysisPreferences && analysisPreferences.length > 0) {
                 this.plotIdx = [...analysisPreferences]
+            } else if (this.series) {
+                this.plotIdx = defaultSeriesToPlot(this.series)
             }
         }
     }
