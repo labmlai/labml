@@ -14,6 +14,7 @@ interface CompareSparkLinesOptions extends ChartOptions {
     onBaseSelect?: (i: number) => void
     isMouseMoveOpt?: boolean
     isDivergent?: boolean
+    onlySelected?: boolean
 }
 
 export class CompareSparkLines {
@@ -35,6 +36,7 @@ export class CompareSparkLines {
     chartColors: ChartColors
     isDivergent?: boolean
     uniqueItems: Map<string, number>
+    onlySelected: boolean
 
     constructor(opt: CompareSparkLinesOptions) {
         this.currentSeries = opt.series
@@ -45,6 +47,7 @@ export class CompareSparkLines {
         this.onBaseSelect = opt.onBaseSelect
         this.isMouseMoveOpt = opt.isMouseMoveOpt
         this.uniqueItems = new Map<string, number>()
+        this.onlySelected = opt.onlySelected ?? false
 
         const margin = Math.floor(opt.width / 64)
         this.rowWidth = Math.min(450, opt.width - 3 * margin)
@@ -99,6 +102,8 @@ export class CompareSparkLines {
         this.sparkLines = []
         $('div.sparkline-list.list-group', $ => {
             this.currentSeries.map((s, i) => {
+                if (this.onlySelected && this.currentPlotIdx[i]==-1)
+                    return
                 $('svg', {style: {height: `${1}px`}}, $ => {
                     new DefaultLineGradient().render($)
                 })
@@ -123,6 +128,8 @@ export class CompareSparkLines {
                 this.sparkLines.push(sparkLine)
             })
             this.baseSeries.map((s, i) => {
+                if (this.onlySelected && this.basePlotIdx[i]==-1)
+                    return
                 $('svg', {style: {height: `${1}px`}}, $ => {
                     new DefaultLineGradient().render($)
                 })
