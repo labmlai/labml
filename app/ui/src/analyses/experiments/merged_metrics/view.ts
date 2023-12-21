@@ -174,7 +174,7 @@ class DistributedMetricsView extends ScreenView {
             if (analysisPreferences && analysisPreferences.length > 0) {
                 this.plotIdx = [...analysisPreferences]
             } else if (this.series) {
-                this.series = defaultSeriesToPlot(this.series)
+                this.plotIdx = defaultSeriesToPlot(this.series)
             }
 
             this.content.updateData({
