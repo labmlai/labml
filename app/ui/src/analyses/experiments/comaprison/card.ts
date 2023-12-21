@@ -136,7 +136,8 @@ export class ComparisonCard extends Card {
                 currentPlotIdx: [...(this.preferenceData.series_preferences ?? [])],
                 basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
                 width: this.width,
-                isDivergent: true
+                isDivergent: true,
+                onlySelected: true,
             }).render($)
         })
     }

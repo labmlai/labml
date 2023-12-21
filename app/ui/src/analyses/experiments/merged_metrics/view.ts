@@ -173,12 +173,6 @@ class DistributedMetricsView extends ScreenView {
             let analysisPreferences = this.preferenceData.series_preferences
             if (analysisPreferences && analysisPreferences.length > 0) {
                 this.plotIdx = [...analysisPreferences]
-            } else if (this.series) {
-                let res: number[] = []
-                for (let i = 0; i < this.series.length; i++) {
-                    res.push(i)
-                }
-                this.plotIdx = res
             }
 
             this.content.updateData({
