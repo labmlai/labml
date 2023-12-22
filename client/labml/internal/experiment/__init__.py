@@ -186,13 +186,13 @@ class Experiment:
         if global_params_singleton().configs is not None:
             configs_override.update(global_params_singleton().configs)
 
-        assert isinstance(configs, dict)
-
         if self.configs_processor is None:
             self.configs_processor = ConfigProcessor(configs, configs_override)
             if self.run.distributed_rank == self.run.distributed_main_rank:
                 logger.log()
         else:
+            assert isinstance(configs, dict)
+
             if configs_override is not None:
                 configs.update(configs_override)
             self.configs_processor.update_configs(configs)
