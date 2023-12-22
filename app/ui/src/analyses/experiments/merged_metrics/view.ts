@@ -7,7 +7,7 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
-import {toPointValues} from "../../../components/charts/utils"
+import {defaultSeriesToPlot, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
@@ -173,6 +173,8 @@ class DistributedMetricsView extends ScreenView {
             let analysisPreferences = this.preferenceData.series_preferences
             if (analysisPreferences && analysisPreferences.length > 0) {
                 this.plotIdx = [...analysisPreferences]
+            } else if (this.series) {
+                this.plotIdx = defaultSeriesToPlot(this.series)
             }
 
             this.content.updateData({
