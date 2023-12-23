@@ -59,6 +59,7 @@ class Run(Model['Run']):
     stderr_unmerged: str
     selected_configs: List['str']
     favourite_configs: List['str']
+    main_rank: int
 
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -100,6 +101,7 @@ class Run(Model['Run']):
                     errors=[],
                     selected_configs=[],
                     favourite_configs=[],
+                    main_rank=0,
                     )
 
     @property
@@ -270,6 +272,19 @@ class Run(Model['Run']):
 
         other_rank_run_uuids = self.get_rank_uuids()
 
+        # get the std out and std error from main rank
+        stdout = self.stdout + self.stdout_unmerged
+        stderr = self.stderr + self.stderr_unmerged
+        run_logger = self.logger + self.logger_unmerged
+
+        if self.world_size != 0 and other_rank_run_uuids:
+            run_uuid = other_rank_run_uuids[self.main_rank]
+            run = get(run_uuid)
+            if run:
+                stdout = run.stdout + run.stdout_unmerged
+                stderr = run.stderr + run.stderr_unmerged
+                run_logger = run.logger + run.logger_unmerged
+
         return {
             'run_uuid': self.run_uuid,
             'rank': self.rank,
@@ -292,9 +307,9 @@ class Run(Model['Run']):
             'size_tensorboard': self.size_tensorboard,
             'computer_uuid': self.computer_uuid,
             'configs': configs,
-            'stdout': self.stdout + self.stdout_unmerged,
-            'logger': self.logger + self.logger_unmerged,
-            'stderr': self.stderr + self.stderr_unmerged,
+            'stdout': stdout,
+            'logger': run_logger,
+            'stderr': stderr,
             'favourite_configs': self.favourite_configs,
             'selected_configs': self.selected_configs,
         }
@@ -346,7 +361,7 @@ class RunIndex(Index['Run']):
     pass
 
 
-def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, labml_token: str = '') -> 'Run':
+def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, main_rank: int, labml_token: str = '') -> 'Run':
     p = project.get_project(labml_token)
 
     if run_uuid in p.runs:
@@ -377,6 +392,7 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, l
               run_ip=request.client.host,
               is_claimed=is_claimed,
               status=s.key,
+              main_rank=main_rank,
               )
 
     if run.rank == 0:  # TODO

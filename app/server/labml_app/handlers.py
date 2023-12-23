@@ -39,7 +39,7 @@ def _is_new_run_added(request: Request) -> bool:
 
 
 async def _update_run(request: Request, labml_token: str, labml_version: str, run_uuid: str, rank: int,
-                      world_size: int):
+                      world_size: int, main_rank: int):
     errors = []
 
     token = labml_token
@@ -77,7 +77,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     if world_size > 1 and rank > 0:
         run_uuid = f'{run_uuid}_{rank}'
 
-    r = run.get_or_create(request, run_uuid, rank, world_size, token)
+    r = run.get_or_create(request, run_uuid, rank, world_size, main_rank, token)
     s = r.status.load()
 
     json = await request.json()
@@ -112,8 +112,9 @@ async def update_run(request: Request) -> EndPointRes:
     run_uuid = request.query_params.get('run_uuid', '')
     rank = int(request.query_params.get('rank', 0))
     world_size = int(request.query_params.get('world_size', 0))
+    main_rank = int(request.query_params.get('main_rank', 0))
 
-    res = await _update_run(request, labml_token, labml_version, run_uuid, rank, world_size)
+    res = await _update_run(request, labml_token, labml_version, run_uuid, rank, world_size, main_rank)
 
     await asyncio.sleep(3)
 
