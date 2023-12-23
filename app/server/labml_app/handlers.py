@@ -100,7 +100,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
 
     run_uuid = r.url
     if len(run_uuid.split("_")) == 2:
-        run_uuid = run_uuid.split("_")[0] + f'/{rank}'
+        run_uuid = run_uuid.split("_")[0]
 
     return {'errors': errors, 'url': f'{request.url.hostname}:{request.url.port}/{run_uuid}', 'dynamic': hp_values}
 
