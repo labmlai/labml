@@ -249,11 +249,12 @@ async def get_run(request: Request, run_uuid: str) -> JSONResponse:
     status_code = 404
 
     # TODO temporary change to used run_uuid as rank 0
+    is_dist_run = len(run_uuid.split("_")) == 1
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
     r = run.get(run_uuid)
     if r:
-        run_data = r.get_data(request)
+        run_data = r.get_data(request, is_dist_run)
         status_code = 200
 
     response = JSONResponse(run_data)

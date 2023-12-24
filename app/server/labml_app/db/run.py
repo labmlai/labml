@@ -260,7 +260,7 @@ class Run(Model['Run']):
 
         return other_rank_run_uuids
 
-    def get_data(self, request: Request) -> Dict[str, Union[str, any]]:
+    def get_data(self, request: Request, is_dist_run: bool = False) -> Dict[str, Union[str, any]]:
         u = auth.get_auth_user(request)
         if u:
             is_project_run = u.default_project.is_project_run(self.run_uuid)
@@ -277,7 +277,7 @@ class Run(Model['Run']):
         stderr = self.stderr + self.stderr_unmerged
         run_logger = self.logger + self.logger_unmerged
 
-        if self.world_size != 0 and other_rank_run_uuids:
+        if self.world_size != 0 and other_rank_run_uuids and is_dist_run:
             run_uuid = other_rank_run_uuids[self.main_rank]
             run = get(run_uuid)
             if run:
