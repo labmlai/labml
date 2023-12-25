@@ -22,6 +22,12 @@ import {formatFixed} from "../../../utils/value"
 import {ScreenView} from '../../../screen_view'
 import {User} from '../../../models/user'
 
+enum EditStatus {
+    NOCHANGE,
+    SAVING,
+    CHANGE
+}
+
 class RunHeaderView extends ScreenView {
     elem: HTMLDivElement
     run: Run
@@ -31,7 +37,6 @@ class RunHeaderView extends ScreenView {
     statusCache: RunStatusCache
     user: User
     userCache: UserCache
-    isEditMode: boolean
     uuid: string
     actualWidth: number
     isProjectRun: boolean = false
@@ -44,6 +49,7 @@ class RunHeaderView extends ScreenView {
     sizeCheckPoints: EditableField
     sizeTensorBoard: EditableField
     private deleteButton: DeleteButton
+    private saveButton: SaveButton
     private loader: DataLoader
 
     constructor(uuid: string) {
@@ -53,7 +59,6 @@ class RunHeaderView extends ScreenView {
         this.runListCache = CACHE.getRunsList()
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.userCache = CACHE.getUser()
-        this.isEditMode = false
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
         this.loader = new DataLoader(async (force) => {
@@ -63,10 +68,27 @@ class RunHeaderView extends ScreenView {
         })
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
+
+        this.editStatus = EditStatus.NOCHANGE
     }
 
     get requiresAuth(): boolean {
         return false
+    }
+
+    set editStatus(value: EditStatus) {
+        if (this.saveButton) {
+            if (value === EditStatus.CHANGE) {
+                this.saveButton.disabled = false
+                this.saveButton.loading = false
+            } else if (value === EditStatus.SAVING) {
+                this.saveButton.disabled = true
+                this.saveButton.loading = true
+            } else {
+                this.saveButton.disabled = true
+                this.saveButton.loading = false
+            }
+        }
     }
 
     onResize(width: number) {
@@ -89,20 +111,10 @@ class RunHeaderView extends ScreenView {
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                            if (this.isEditMode) {
-                                new CancelButton({
-                                    onButtonClick: this.onToggleEdit,
-                                    parent: this.constructor.name
-                                }).render($)
-                                new SaveButton({onButtonClick: this.updateRun, parent: this.constructor.name}).render($)
-                                this.deleteButton.render($)
-                                this.deleteButton.hide(true)
-                            } else {
-                                new EditButton({
-                                    onButtonClick: this.onToggleEdit,
-                                    parent: this.constructor.name
-                                }).render($)
-                            }
+                            this.saveButton = new SaveButton({onButtonClick: this.updateRun, parent: this.constructor.name, isDisabled: true})
+                            this.saveButton.render($)
+                            this.deleteButton.render($)
+                            this.deleteButton.hide(true)
                             this.computerButtonsContainer = $('span')
                         })
                         $('h2', '.header.text-center', 'Run Details')
@@ -139,7 +151,8 @@ class RunHeaderView extends ScreenView {
                 this.nameField = new EditableField({
                     name: 'Run Name',
                     value: this.run.name,
-                    isEditable: this.isEditMode
+                    isEditable: true,
+                    onChange: this.onInputChange.bind(this)
                 })
                 this.nameField.render($)
                 new EditableField({
@@ -153,7 +166,8 @@ class RunHeaderView extends ScreenView {
                 this.commentField = new EditableField({
                     name: 'Comment',
                     value: this.run.comment,
-                    isEditable: this.isEditMode
+                    isEditable: true,
+                    onChange: this.onInputChange.bind(this)
                 })
                 this.commentField.render($)
                 $(`li`, $ => {
@@ -171,7 +185,8 @@ class RunHeaderView extends ScreenView {
                     value: this.run.note,
                     placeholder: 'write your note here',
                     numEditRows: 5,
-                    isEditable: this.isEditMode
+                    isEditable: true,
+                    onChange: this.onInputChange.bind(this)
                 })
                 this.noteField.render($)
                 $(`li`, $ => {
@@ -245,10 +260,8 @@ class RunHeaderView extends ScreenView {
         this.deleteButton.hide(!(this.user.is_complete && this.run.is_claimed))
     }
 
-    onToggleEdit = () => {
-        this.isEditMode = !this.isEditMode
-
-        this._render().then()
+    onInputChange(_: string) {
+        this.editStatus = EditStatus.CHANGE
     }
 
     onDelete = async () => {
@@ -264,6 +277,7 @@ class RunHeaderView extends ScreenView {
     }
 
     updateRun = () => {
+        this.editStatus = EditStatus.SAVING
         if (this.nameField.getInput()) {
             this.run.name = this.nameField.getInput()
         }
@@ -276,8 +290,10 @@ class RunHeaderView extends ScreenView {
             this.run.note = this.noteField.getInput()
         }
 
-        this.runCache.setRun(this.run).then()
-        this.onToggleEdit()
+        this.runCache.setRun(this.run).then(async () => {
+            await this._render()
+            this.editStatus = EditStatus.NOCHANGE
+        })
     }
 }
 

@@ -17,7 +17,7 @@ class Preferences:
                     chart_type=0,
                     errors=[],
                     step_range=[-1, -1],
-                    focus_smoothed=False
+                    focus_smoothed=True
                     )
 
     def update_preferences(self, data: PreferencesData) -> None:

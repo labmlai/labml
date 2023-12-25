@@ -9,6 +9,7 @@ export interface EditableFieldOptions {
     type?: string
     autocomplete?: string
     required?: boolean
+    onChange?: (value: string) => void
 }
 
 export default class EditableField {
@@ -22,6 +23,7 @@ export default class EditableField {
     protected type: string
     protected readonly autocomplete?: string
     protected readonly required: boolean
+    private readonly onChange?: (value: string) => void
 
     constructor(opt: EditableFieldOptions) {
         this.name = opt.name
@@ -32,6 +34,7 @@ export default class EditableField {
         this.type = opt.type
         this.autocomplete = opt.autocomplete
         this.required = opt.required ?? false
+        this.onChange = opt.onChange
     }
 
     protected _disabled: boolean
@@ -63,6 +66,12 @@ export default class EditableField {
                                     autocomplete: this.autocomplete,
                                 }
                             )
+                            this.inputElem.innerText = this.value
+                            this.inputElem.addEventListener('input', (event: KeyboardEvent) => {
+                                if (this.onChange) {
+                                    this.onChange(this.inputElem.value)
+                                }
+                            })
                         } else {
                             this.inputElem = <HTMLInputElement>$('input', {
                                     placeholder: this.placeholder,
@@ -71,6 +80,11 @@ export default class EditableField {
                                     autocomplete: this.autocomplete,
                                 }
                             )
+                            this.inputElem.addEventListener('input', (event: KeyboardEvent) => {
+                                if (this.onChange) {
+                                    this.onChange(this.inputElem.value)
+                                }
+                            })
                         }
                         this.inputElem.required = this.required
                         this.inputElem.disabled = this._disabled
