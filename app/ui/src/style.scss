@@ -1481,3 +1481,13 @@ a.generic-link {
     text-wrap: nowrap;
   }
 }
+
+.sparkline-list {
+  .sparkline-list-item.list-group-item-action {
+    opacity: 0.4;
+
+    &.selected {
+      opacity: 1;
+    }
+  }
+}
