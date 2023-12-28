@@ -377,7 +377,7 @@ export class DistributedViewContent {
                 isDivergent: true,
                 stepRange: this.stepRange,
                 focusSmoothed: this.focusSmoothed,
-                isDistributed: true
+                isDistributed: false
             }).render($)
         })
     }
@@ -391,7 +391,7 @@ export class DistributedViewContent {
                 width: this.actualWidth,
                 onSelect: this.toggleChart,
                 isDivergent: true,
-                isDistributed: true
+                isDistributed: false
             })
             this.sparkLines.render($)
         })
