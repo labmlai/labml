@@ -1465,8 +1465,10 @@ a.generic-link {
   }
 }
 
-.selected {
-  background-color: rgba(14, 132, 181, 0.2);
+.configs {
+  .selected {
+    background-color: rgba(14, 132, 181, 0.2);
+  }
 }
 
 .favourite {
