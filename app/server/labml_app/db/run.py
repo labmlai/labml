@@ -454,3 +454,34 @@ def get_status(run_uuid: str) -> Union[None, 'status.Status']:
         return r.status.load()
 
     return None
+
+
+def get_merged_status_data(run_uuids: List[str]) -> Union[None, 'status.Status']:
+    r = mget(run_uuids)
+    status_keys = [run.status for run in r if run]
+    status_list = load_keys(status_keys)
+    run_status_keys = [s.run_status for s in status_list if s]
+    run_status_list = load_keys(run_status_keys)
+
+    status_data_list = [s.get_data(run_status.to_dict())
+                        for s, run_status in zip(status_list, run_status_list) if s and run_status]
+
+    if len(status_data_list) == 0:
+        return None
+
+    status_data = status_data_list[0]
+    status_data['last_updated_time'] = max([s['last_updated_time'] for s in status_data_list])
+    status_data['run_status']['time'] = max([s['run_status']['time'] for s in status_data_list])
+
+    status_priority = {
+        RunEnums.RUN_IN_PROGRESS: 1,
+        RunEnums.RUN_COMPLETED: 2,
+        RunEnums.RUN_CRASHED: 3,
+        RunEnums.RUN_NOT_RESPONDING: 4,
+        RunEnums.RUN_INTERRUPTED: 5,
+        RunEnums.RUN_UNKNOWN: 6,
+    }
+    status_data['run_status']['status'] = min([s['run_status']['status'] for s in status_data_list],
+                                              key=lambda x: status_priority[x])
+
+    return status_data
