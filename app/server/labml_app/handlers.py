@@ -326,19 +326,19 @@ async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
         response.status_code = status_code
 
         return response
+    else:
+        # TODO temporary change to used run_uuid as rank 0
+        run_uuid = utils.get_true_run_uuid(run_uuid)
 
-    # TODO temporary change to used run_uuid as rank 0
-    run_uuid = utils.get_true_run_uuid(run_uuid)
+        s = run.get_status(run_uuid)
+        if s:
+            status_data = s.get_data()
+            status_code = 200
 
-    s = run.get_status(run_uuid)
-    if s:
-        status_data = s.get_data()
-        status_code = 200
+        response = JSONResponse(status_data)
+        response.status_code = status_code
 
-    response = JSONResponse(status_data)
-    response.status_code = status_code
-
-    return response
+        return response
 
 
 async def get_session_status(request: Request, session_uuid: str) -> JSONResponse:
