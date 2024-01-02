@@ -477,8 +477,8 @@ def get_merged_status_data(run_uuids: List[str]) -> Union[None, 'status.Status']
         RunEnums.RUN_IN_PROGRESS: 1,
         RunEnums.RUN_COMPLETED: 2,
         RunEnums.RUN_CRASHED: 3,
-        RunEnums.RUN_NOT_RESPONDING: 4,
-        RunEnums.RUN_INTERRUPTED: 5,
+        RunEnums.RUN_INTERRUPTED: 4,
+        RunEnums.RUN_NOT_RESPONDING: 5,
         RunEnums.RUN_UNKNOWN: 6,
     }
     status_data['run_status']['status'] = min([s['run_status']['status'] for s in status_data_list],
