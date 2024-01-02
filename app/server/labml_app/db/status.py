@@ -29,8 +29,11 @@ class Status(Model['Status']):
                     run_status=None
                     )
 
-    def get_data(self) -> Dict[str, any]:
-        run_status = self.run_status.load().to_dict()
+    # run_status can be sent as a parameter if loaded from outside
+    def get_data(self, run_status: Dict[str, any] = None) -> Dict[str, any]:
+        if run_status is None:
+            run_status = self.run_status.load().to_dict()
+
         run_status['status'] = self.get_true_status(run_status.get('status', ''))
 
         return {

@@ -309,18 +309,36 @@ async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_data = {}
     status_code = 404
 
-    # TODO temporary change to used run_uuid as rank 0
-    run_uuid = utils.get_true_run_uuid(run_uuid)
+    if len(run_uuid.split('_')) == 1:  # distributed
+        r = run.get(run_uuid)
+        uuids = [f'{run_uuid}_{i}' for i in range(1, r.world_size)]
+        uuids.append(run_uuid)
 
-    s = run.get_status(run_uuid)
-    if s:
-        status_data = s.get_data()
-        status_code = 200
+        status_data = run.get_merged_status_data(uuids)
 
-    response = JSONResponse(status_data)
-    response.status_code = status_code
+        if status_data is None:
+            status_data = {}
+            status_code = 404
+        else:
+            status_code = 200
 
-    return response
+        response = JSONResponse(status_data)
+        response.status_code = status_code
+
+        return response
+    else:
+        # TODO temporary change to used run_uuid as rank 0
+        run_uuid = utils.get_true_run_uuid(run_uuid)
+
+        s = run.get_status(run_uuid)
+        if s:
+            status_data = s.get_data()
+            status_code = 200
+
+        response = JSONResponse(status_data)
+        response.status_code = status_code
+
+        return response
 
 
 async def get_session_status(request: Request, session_uuid: str) -> JSONResponse:
