@@ -5,7 +5,7 @@ import {Card, CardOptions} from "../../types"
 import {toPointValues} from "../../../components/charts/utils"
 import {ROUTER} from '../../../app'
 import {DataLoader} from '../../../components/loader'
-import {MetricChartWrapper} from "../distributed_metrics/card"
+import {CardWrapper} from "../chart_wrapper/card"
 import metricsCache from "./cache"
 
 
@@ -19,7 +19,7 @@ export class DistributedMetricsCard extends Card {
     private lineChartContainer: WeyaElement
     private insightsContainer: WeyaElement
     private loader: DataLoader
-    private chartWrapper: MetricChartWrapper
+    private chartWrapper: CardWrapper
     private sparkLineContainer: WeyaElement
 
     constructor(opt: CardOptions) {
@@ -52,7 +52,7 @@ export class DistributedMetricsCard extends Card {
         try {
             await this.loader.load()
 
-            this.chartWrapper = new MetricChartWrapper({
+            this.chartWrapper = new CardWrapper({
                 elem: this.elem,
                 preferenceData: this.preferenceData,
                 insights: this.insights,

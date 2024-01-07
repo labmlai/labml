@@ -15,7 +15,7 @@ import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
 import metricsCache from "./cache"
-import {DistributedViewContent, ViewContentData} from "../distributed_metrics/view"
+import {ViewWrapper, ViewWrapperData} from "../chart_wrapper/view"
 
 class DistributedMetricsView extends ScreenView {
     uuid: string
@@ -39,7 +39,7 @@ class DistributedMetricsView extends ScreenView {
     private refresh: AwesomeRefreshButton
 
     private loader: DataLoader
-    private content: DistributedViewContent
+    private content: ViewWrapper
     private preferenceCache: AnalysisPreferenceCache
 
     constructor(uuid: string) {
@@ -110,7 +110,7 @@ class DistributedMetricsView extends ScreenView {
 
             // setTitle({section: 'Metrics', item: this.run.name})
 
-            this.content = new DistributedViewContent({
+            this.content = new ViewWrapper({
                 updatePreferences: this.updatePreferences,
                 lineChartContainer: this.lineChartContainer,
                 sparkLinesContainer: this.sparkLinesContainer,
@@ -187,7 +187,7 @@ class DistributedMetricsView extends ScreenView {
         }
     }
 
-    updatePreferences = (data: ViewContentData) => {
+    updatePreferences = (data: ViewWrapperData) => {
         this.plotIdx = data.plotIdx
         this.currentChart = data.currentChart
         this.focusSmoothed = data.focusSmoothed

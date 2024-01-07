@@ -8,7 +8,7 @@ import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import InsightsList from "../../../components/insights_list"
 
-interface MetricChartWrapperOptions {
+interface CardWrapperOptions {
     width: number
     series: SeriesModel[]
     insights: InsightModel[]
@@ -25,7 +25,7 @@ interface MetricChartWrapperOptions {
     showValues?: boolean
 }
 
-export class MetricChartWrapper {
+export class CardWrapper {
     private width: number
     private series: SeriesModel[]
     private insights: InsightModel[]
@@ -44,7 +44,7 @@ export class MetricChartWrapper {
     private readonly title?: string
     private readonly showValues?: boolean
 
-    constructor(opt: MetricChartWrapperOptions) {
+    constructor(opt: CardWrapperOptions) {
         this.elem = opt.elem
         this.width = opt.width
         this.isDistributed = opt.isDistributed

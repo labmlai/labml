@@ -6,8 +6,8 @@ import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType} from "../../../components/charts/utils"
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
 
-interface ViewContentOpt {
-    updatePreferences: (data: ViewContentData) => void
+interface ViewWrapperOpt {
+    updatePreferences: (data: ViewWrapperData) => void
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: WeyaElement
@@ -17,7 +17,7 @@ interface ViewContentOpt {
     isUpdateDisable: boolean
 }
 
-export interface ViewContentData {
+export interface ViewWrapperData {
     series?: SeriesModel[]
     plotIdx?: number[]
     currentChart?: number
@@ -25,7 +25,7 @@ export interface ViewContentData {
     stepRange?: number[]
 }
 
-export class DistributedViewContent {
+export class ViewWrapper {
     private sparkLines: SparkLines
     private readonly lineChartContainer: HTMLDivElement
     private readonly sparkLinesContainer: HTMLDivElement
@@ -44,7 +44,7 @@ export class DistributedViewContent {
     private focusSmoothed: boolean
     private stepRange: number[]
 
-    constructor(opt: ViewContentOpt) {
+    constructor(opt: ViewWrapperOpt) {
         this.lineChartContainer = opt.lineChartContainer
         this.sparkLinesContainer = opt.sparkLinesContainer
         this.saveButtonContainer = opt.saveButtonContainer
@@ -68,7 +68,7 @@ export class DistributedViewContent {
             }, parent: this.constructor.name})
     }
 
-    public updateData(data: ViewContentData) {
+    public updateData(data: ViewWrapperData) {
         this.series = data.series != null ? data.series : this.series
         this.plotIdx = data.plotIdx != null ? data.plotIdx : this.plotIdx
         this.currentChart = data.currentChart != null ? data.currentChart : this.currentChart
