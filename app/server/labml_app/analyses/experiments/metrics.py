@@ -155,7 +155,24 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = JSONResponse({'series': track_data, 'insights': []})
+    preference_data = []
+    preferences_key = MetricsPreferencesIndex.get(run_uuid)
+    if preferences_key:
+        mp: MetricsPreferencesModel = preferences_key.load()
+        preference_data = mp.get_data()['series_preferences']
+
+    filtered_track_data = []
+    if len(preference_data) == len(track_data):
+        for i in range(len(track_data)):
+            filtered_track_data.append(track_data[i])
+            if preference_data[i] == -1:
+                filtered_track_data[-1]['value'] = filtered_track_data[-1]['value'][-1:]
+                filtered_track_data[-1]['step'] = filtered_track_data[-1]['step'][-1:]
+                filtered_track_data[-1]['smoothed'] = filtered_track_data[-1]['smoothed'][-1:]
+    else:  # initially (when no pref data) send all data
+        filtered_track_data = track_data
+
+    response = JSONResponse({'series': filtered_track_data, 'insights': []})
     response.status_code = status_code
 
     return response
