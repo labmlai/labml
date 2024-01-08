@@ -86,13 +86,11 @@ export function toDate(time: number) {
 }
 
 export function defaultSeriesToPlot(series: SeriesModel[]) {
-    let count = 0
     let plotIdx = []
     for (let s of series) {
         let name = s.name.split('.')
         if (name[0] === 'loss') {
-            plotIdx.push(count)
-            count++
+            plotIdx.push(1)
         } else {
             plotIdx.push(-1)
         }
