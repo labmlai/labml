@@ -75,7 +75,7 @@ export class LineChart {
         }
 
         for (let i = 0; i < this.plotIdx.length; i++) {
-            if (this.plotIdx[i] >= 0) {
+            if (this.plotIdx[i] == 1) {
                 this.filteredPlotIdx.push(i)
                 this.plot.push(this.series[i])
             }
