@@ -63,8 +63,10 @@ export class SparkLine {
             return d.step
         }).left
 
-        if (this.onClick != null && this.selected >= 0) {
+        if (this.onClick != null && this.selected >= 1) {
             this.className = 'selected'
+        } else if (this.onClick != null && this.selected == -1) {
+            this.className = 'unselected'
         }
 
         if (this.onClick != null) {

@@ -163,14 +163,15 @@ export class ViewWrapper {
     private toggleChart = (idx: number) => {
         this.isUpdateDisable = false
 
-        if (this.plotIdx[idx] >= 0) {
-            this.plotIdx[idx] = -1
-        } else {
-            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
-        }
+        if (this.plotIdx[idx] > 1) // fix for existing plot idxs
+            this.plotIdx[idx] = 1
 
-        if (this.plotIdx.length > 1) {
-            this.plotIdx = new Array<number>(...this.plotIdx)
+        if (this.plotIdx[idx] == 0) {
+            this.plotIdx[idx] = 1
+        } else if (this.plotIdx[idx] == 1) {
+            this.plotIdx[idx] = -1
+        } else if (this.plotIdx[idx] == -1) {
+            this.plotIdx[idx] = 0
         }
 
         this.renderSparkLines()
