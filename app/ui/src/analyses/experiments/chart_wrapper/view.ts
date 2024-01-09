@@ -7,7 +7,7 @@ import {getChartType} from "../../../components/charts/utils"
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
 
 interface ViewWrapperOpt {
-    updatePreferences: (data: ViewWrapperData) => void
+    updatePreferences: (data: ViewWrapperData, saveData: boolean) => void
     onRequestAllMetrics: () => void
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
@@ -46,6 +46,7 @@ export class ViewWrapper {
     private stepRange: number[]
 
     private readonly onRequestAllMetrics: () => void
+    private readonly updatePreferences: (data: ViewWrapperData, saveData: boolean) => void
 
     constructor(opt: ViewWrapperOpt) {
         this.lineChartContainer = opt.lineChartContainer
@@ -54,6 +55,7 @@ export class ViewWrapper {
         this.toggleButtonContainer = opt.toggleButtonContainer
         this.actualWidth = opt.actualWidth
         this.onRequestAllMetrics = opt.onRequestAllMetrics
+        this.updatePreferences = opt.updatePreferences
 
         this.stepRangeField = new NumericRangeField({
             max: 0, min: 0,
@@ -68,7 +70,7 @@ export class ViewWrapper {
                 currentChart: this.currentChart,
                 focusSmoothed: this.focusSmoothed,
                 stepRange: this.stepRange
-            })
+            }, true)
             }, parent: this.constructor.name})
     }
 
@@ -170,17 +172,24 @@ export class ViewWrapper {
         if (this.plotIdx[idx] > 1) // fix for existing plot idxs
             this.plotIdx[idx] = 1
 
-        if (this.plotIdx[idx] == -1 && this.series[idx].is_summary) {
-            // have to load from the backend
-            this.onRequestAllMetrics()
-        }
-
         if (this.plotIdx[idx] == 0) {
             this.plotIdx[idx] = 1
         } else if (this.plotIdx[idx] == 1) {
             this.plotIdx[idx] = -1
         } else if (this.plotIdx[idx] == -1) {
             this.plotIdx[idx] = 0
+        }
+
+        if (this.series[idx].is_summary) {
+            this.updatePreferences({
+                series: this.series,
+                plotIdx: this.plotIdx,
+                currentChart: this.currentChart,
+                focusSmoothed: this.focusSmoothed,
+                stepRange: this.stepRange
+            }, false)
+            // have to load from the backend
+            this.onRequestAllMetrics()
         }
 
         this.renderSparkLines()
