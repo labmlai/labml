@@ -98,8 +98,8 @@ class Network {
         return this.sendHttpRequest('POST', `/user`, {'user': user})
     }
 
-    async getAnalysis(url: string, runUUID: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/${url}/${runUUID}`, {})
+    async getAnalysis(url: string, runUUID: string, isMetricSummary: boolean = true): Promise<any> {
+        return this.sendHttpRequest('GET', `/${url}/${runUUID}?is_metric_summary=${isMetricSummary}`)
     }
 
     async getCustomAnalysis(url: string): Promise<any> {

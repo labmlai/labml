@@ -298,17 +298,24 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
     private readonly uuid: string
     private readonly url: string
     private statusCache: StatusCache
+    private isMetricSummary: boolean
 
     constructor(uuid: string, url: string, statusCache: StatusCache) {
         super()
         this.uuid = uuid
         this.statusCache = statusCache
         this.url = url
+        this.isMetricSummary = true
+    }
+
+    public requestAllMetrics() {
+        this.isMetricSummary = false
+        this.data = null
     }
 
     async load(): Promise<AnalysisDataModel> {
         return this.broadcastPromise.create(async () => {
-            return await NETWORK.getAnalysis(this.url, this.uuid)
+            return await NETWORK.getAnalysis(this.url, this.uuid, this.isMetricSummary)
         })
     }
 

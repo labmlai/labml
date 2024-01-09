@@ -117,7 +117,8 @@ class MetricsView extends ScreenView {
                 saveButtonContainer: this.saveButtonContainer,
                 toggleButtonContainer: this.toggleButtonContainer,
                 actualWidth: this.actualWidth,
-                isUpdateDisable: this.isUpdateDisable
+                isUpdateDisable: this.isUpdateDisable,
+                onRequestAllMetrics: this.requestAllMetrics.bind(this)
             })
 
             this.calcPreferences()
@@ -163,6 +164,14 @@ class MetricsView extends ScreenView {
 
     onVisibilityChange() {
         this.refresh.changeVisibility(!document.hidden)
+    }
+
+    private requestAllMetrics() {
+        metricsCache.getAnalysis(this.uuid).requestAllMetrics()
+        this.loader.load(true).then(() => {
+            this.calcPreferences()
+            this.content.render()
+        })
     }
 
     private calcPreferences() {

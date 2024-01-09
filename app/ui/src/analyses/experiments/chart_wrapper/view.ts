@@ -8,6 +8,7 @@ import {NumericRangeField} from "../../../components/input/numeric_range_field"
 
 interface ViewWrapperOpt {
     updatePreferences: (data: ViewWrapperData) => void
+    onRequestAllMetrics: () => void
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: WeyaElement
@@ -44,12 +45,15 @@ export class ViewWrapper {
     private focusSmoothed: boolean
     private stepRange: number[]
 
+    private readonly onRequestAllMetrics: () => void
+
     constructor(opt: ViewWrapperOpt) {
         this.lineChartContainer = opt.lineChartContainer
         this.sparkLinesContainer = opt.sparkLinesContainer
         this.saveButtonContainer = opt.saveButtonContainer
         this.toggleButtonContainer = opt.toggleButtonContainer
         this.actualWidth = opt.actualWidth
+        this.onRequestAllMetrics = opt.onRequestAllMetrics
 
         this.stepRangeField = new NumericRangeField({
             max: 0, min: 0,
@@ -165,6 +169,11 @@ export class ViewWrapper {
 
         if (this.plotIdx[idx] > 1) // fix for existing plot idxs
             this.plotIdx[idx] = 1
+
+        if (this.plotIdx[idx] == -1 && this.series[idx].is_summary) {
+            // have to load from the backend
+            this.onRequestAllMetrics()
+        }
 
         if (this.plotIdx[idx] == 0) {
             this.plotIdx[idx] = 1
