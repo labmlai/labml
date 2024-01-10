@@ -5,6 +5,7 @@ import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType} from "../../../components/charts/utils"
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
+import {Loader} from "../../../components/loader";
 
 interface ViewWrapperOpt {
     updatePreferences: (data: ViewWrapperData, saveData: boolean) => void
@@ -82,6 +83,19 @@ export class ViewWrapper {
         this.stepRange = data.stepRange != null ? data.stepRange : this.stepRange
 
         this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
+    }
+
+    public setLoading(isLoading: boolean) {
+        console.log("set loading")
+        if (isLoading) {
+            $(this.lineChartContainer, $=> {
+                $('div', '.chart-overlay', $ => {
+                    new Loader().render($)
+                })
+            })
+        } else {
+            this.renderCharts()
+        }
     }
 
     public renderCharts() {
@@ -180,6 +194,10 @@ export class ViewWrapper {
             this.plotIdx[idx] = 0
         }
 
+        this.renderSparkLines()
+        this.renderLineChart()
+        this.renderSaveButton()
+
         if (this.series[idx].is_summary) {
             this.updatePreferences({
                 series: this.series,
@@ -191,10 +209,6 @@ export class ViewWrapper {
             // have to load from the backend
             this.onRequestAllMetrics()
         }
-
-        this.renderSparkLines()
-        this.renderLineChart()
-        this.renderSaveButton()
     }
 
     private onChangeSmoothFocus = () => {
