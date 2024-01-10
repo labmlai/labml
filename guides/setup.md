@@ -34,3 +34,5 @@ Please be aware that the above command utilizes port 5005 as the default. If you
 ```commandline
  labml app-server --port PORT
 ```
+
+Please access the UI by visiting http://localhost:{port}/ or, if set up on a different machine, use http://{server-ip}:{port}.
