@@ -6,6 +6,8 @@ from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
 from labml_app.logger import logger
+from .distributed_metrics import get_merged_dist_metrics_tracking
+from .metrics import get_metrics_tracking
 from ..analysis import Analysis
 from .. import preferences
 from ...db import run
@@ -74,6 +76,17 @@ class ComparisonPreferencesModel(Model['ComparisonPreferencesModel'], Comparison
 @Analysis.db_index(YamlSerializer, 'comparison_preferences_index.yaml')
 class ComparisonPreferencesIndex(Index['ComparisonPreferences']):
     pass
+
+
+@Analysis.route('GET', 'compare/metrics/{run_uuid}')
+async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
+    r = run.get(run_uuid)
+    if r is None:
+        return {}
+    if r.world_size == 0:
+        return await get_metrics_tracking(request, run_uuid)
+    else:  # distributed run
+        return await get_merged_dist_metrics_tracking(request, run_uuid)
 
 
 @Analysis.route('GET', 'compare/preferences/{run_uuid}')

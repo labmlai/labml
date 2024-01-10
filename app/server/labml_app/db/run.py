@@ -59,6 +59,7 @@ class Run(Model['Run']):
     stderr_unmerged: str
     selected_configs: List['str']
     favourite_configs: List['str']
+    main_rank: int
 
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -100,6 +101,7 @@ class Run(Model['Run']):
                     errors=[],
                     selected_configs=[],
                     favourite_configs=[],
+                    main_rank=0,
                     )
 
     @property
@@ -258,7 +260,7 @@ class Run(Model['Run']):
 
         return other_rank_run_uuids
 
-    def get_data(self, request: Request) -> Dict[str, Union[str, any]]:
+    def get_data(self, request: Request, is_dist_run: bool = False) -> Dict[str, Union[str, any]]:
         u = auth.get_auth_user(request)
         if u:
             is_project_run = u.default_project.is_project_run(self.run_uuid)
@@ -269,6 +271,19 @@ class Run(Model['Run']):
         formatted_repo = self.format_remote_repo(self.repo_remotes)
 
         other_rank_run_uuids = self.get_rank_uuids()
+
+        # get the std out and std error from main rank
+        stdout = self.stdout + self.stdout_unmerged
+        stderr = self.stderr + self.stderr_unmerged
+        run_logger = self.logger + self.logger_unmerged
+
+        if self.world_size != 0 and other_rank_run_uuids and is_dist_run:
+            run_uuid = other_rank_run_uuids[self.main_rank]
+            run = get(run_uuid)
+            if run:
+                stdout = run.stdout + run.stdout_unmerged
+                stderr = run.stderr + run.stderr_unmerged
+                run_logger = run.logger + run.logger_unmerged
 
         return {
             'run_uuid': self.run_uuid,
@@ -292,9 +307,9 @@ class Run(Model['Run']):
             'size_tensorboard': self.size_tensorboard,
             'computer_uuid': self.computer_uuid,
             'configs': configs,
-            'stdout': self.stdout + self.stdout_unmerged,
-            'logger': self.logger + self.logger_unmerged,
-            'stderr': self.stderr + self.stderr_unmerged,
+            'stdout': stdout,
+            'logger': run_logger,
+            'stderr': stderr,
             'favourite_configs': self.favourite_configs,
             'selected_configs': self.selected_configs,
         }
@@ -346,7 +361,7 @@ class RunIndex(Index['Run']):
     pass
 
 
-def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, labml_token: str = '') -> 'Run':
+def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, main_rank: int, labml_token: str = '') -> 'Run':
     p = project.get_project(labml_token)
 
     if run_uuid in p.runs:
@@ -377,6 +392,7 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, l
               run_ip=request.client.host,
               is_claimed=is_claimed,
               status=s.key,
+              main_rank=main_rank,
               )
 
     if run.rank == 0:  # TODO
@@ -438,3 +454,34 @@ def get_status(run_uuid: str) -> Union[None, 'status.Status']:
         return r.status.load()
 
     return None
+
+
+def get_merged_status_data(run_uuids: List[str]) -> Union[None, 'status.Status']:
+    r = mget(run_uuids)
+    status_keys = [run.status for run in r if run]
+    status_list = load_keys(status_keys)
+    run_status_keys = [s.run_status for s in status_list if s]
+    run_status_list = load_keys(run_status_keys)
+
+    status_data_list = [s.get_data(run_status.to_dict())
+                        for s, run_status in zip(status_list, run_status_list) if s and run_status]
+
+    if len(status_data_list) == 0:
+        return None
+
+    status_data = status_data_list[0]
+    status_data['last_updated_time'] = max([s['last_updated_time'] for s in status_data_list])
+    status_data['run_status']['time'] = max([s['run_status']['time'] for s in status_data_list])
+
+    status_priority = {
+        RunEnums.RUN_IN_PROGRESS: 1,
+        RunEnums.RUN_COMPLETED: 2,
+        RunEnums.RUN_CRASHED: 3,
+        RunEnums.RUN_INTERRUPTED: 4,
+        RunEnums.RUN_NOT_RESPONDING: 5,
+        RunEnums.RUN_UNKNOWN: 6,
+    }
+    status_data['run_status']['status'] = min([s['run_status']['status'] for s in status_data_list],
+                                              key=lambda x: status_priority[x])
+
+    return status_data

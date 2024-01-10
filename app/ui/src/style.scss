@@ -1465,8 +1465,10 @@ a.generic-link {
   }
 }
 
-.selected {
-  background-color: rgba(14, 132, 181, 0.2);
+.configs {
+  .selected {
+    background-color: rgba(14, 132, 181, 0.2);
+  }
 }
 
 .favourite {
@@ -1479,5 +1481,15 @@ a.generic-link {
     display: inline-block;
     overflow: hidden;
     text-wrap: nowrap;
+  }
+}
+
+.sparkline-list {
+  .sparkline-list-item.list-group-item-action {
+    opacity: 0.4;
+
+    &.selected {
+      opacity: 1;
+    }
   }
 }

@@ -39,7 +39,7 @@ def _is_new_run_added(request: Request) -> bool:
 
 
 async def _update_run(request: Request, labml_token: str, labml_version: str, run_uuid: str, rank: int,
-                      world_size: int):
+                      world_size: int, main_rank: int):
     errors = []
 
     token = labml_token
@@ -77,7 +77,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     if world_size > 1 and rank > 0:
         run_uuid = f'{run_uuid}_{rank}'
 
-    r = run.get_or_create(request, run_uuid, rank, world_size, token)
+    r = run.get_or_create(request, run_uuid, rank, world_size, main_rank, token)
     s = r.status.load()
 
     json = await request.json()
@@ -100,7 +100,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
 
     run_uuid = r.url
     if len(run_uuid.split("_")) == 2:
-        run_uuid = run_uuid.split("_")[0] + f'/{rank}'
+        run_uuid = run_uuid.split("_")[0]
 
     return {'errors': errors, 'url': f'{request.url.hostname}:{request.url.port}/{run_uuid}', 'dynamic': hp_values}
 
@@ -112,8 +112,9 @@ async def update_run(request: Request) -> EndPointRes:
     run_uuid = request.query_params.get('run_uuid', '')
     rank = int(request.query_params.get('rank', 0))
     world_size = int(request.query_params.get('world_size', 0))
+    main_rank = int(request.query_params.get('main_rank', 0))
 
-    res = await _update_run(request, labml_token, labml_version, run_uuid, rank, world_size)
+    res = await _update_run(request, labml_token, labml_version, run_uuid, rank, world_size, main_rank)
 
     await asyncio.sleep(3)
 
@@ -248,11 +249,12 @@ async def get_run(request: Request, run_uuid: str) -> JSONResponse:
     status_code = 404
 
     # TODO temporary change to used run_uuid as rank 0
+    is_dist_run = len(run_uuid.split("_")) == 1
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
     r = run.get(run_uuid)
     if r:
-        run_data = r.get_data(request)
+        run_data = r.get_data(request, is_dist_run)
         status_code = 200
 
     response = JSONResponse(run_data)
@@ -307,18 +309,36 @@ async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_data = {}
     status_code = 404
 
-    # TODO temporary change to used run_uuid as rank 0
-    run_uuid = utils.get_true_run_uuid(run_uuid)
+    if len(run_uuid.split('_')) == 1:  # distributed
+        r = run.get(run_uuid)
+        uuids = [f'{run_uuid}_{i}' for i in range(1, r.world_size)]
+        uuids.append(run_uuid)
 
-    s = run.get_status(run_uuid)
-    if s:
-        status_data = s.get_data()
-        status_code = 200
+        status_data = run.get_merged_status_data(uuids)
 
-    response = JSONResponse(status_data)
-    response.status_code = status_code
+        if status_data is None:
+            status_data = {}
+            status_code = 404
+        else:
+            status_code = 200
 
-    return response
+        response = JSONResponse(status_data)
+        response.status_code = status_code
+
+        return response
+    else:
+        # TODO temporary change to used run_uuid as rank 0
+        run_uuid = utils.get_true_run_uuid(run_uuid)
+
+        s = run.get_status(run_uuid)
+        if s:
+            status_data = s.get_data()
+            status_code = 200
+
+        response = JSONResponse(status_data)
+        response.status_code = status_code
+
+        return response
 
 
 async def get_session_status(request: Request, session_uuid: str) -> JSONResponse:

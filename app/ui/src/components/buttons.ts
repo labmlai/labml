@@ -130,8 +130,22 @@ export class RefreshButton extends Button {
 }
 
 export class SaveButton extends Button {
+
     constructor(opt: ButtonOptions) {
         super(opt)
+    }
+
+    set loading(value: boolean) {
+        this.elem.innerHTML = ''
+        if (value) {
+            $(this.elem, $ => {
+                $('span', '.fa.fa-spinner.fa-spin', '')
+            })
+        } else {
+            $(this.elem, $ => {
+                $('span', '.fas.fa-save', '')
+            })
+        }
     }
 
     render($: WeyaElementFunction) {

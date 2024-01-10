@@ -88,7 +88,8 @@ class ComparisonView extends ScreenView {
             this.currentSeries = toPointValues((await this.currentAnalysisCache.get(force)).series)
             this.runHeaderCard = new RunHeaderCard({
                 uuid: this.currentUuid,
-                width: this.actualWidth/2
+                width: this.actualWidth/2,
+                showRank: false
             })
             if (!!this.baseUuid) {
                 await this.updateBaseRun(force)
