@@ -86,7 +86,6 @@ export class ViewWrapper {
     }
 
     public setLoading(isLoading: boolean) {
-        console.log("set loading")
         if (isLoading) {
             $(this.lineChartContainer, $=> {
                 $('div', '.chart-overlay', $ => {
