@@ -97,7 +97,7 @@ class MetricsView extends ScreenView {
                         })
                         this.runHeaderCard.render($).then()
                         this.toggleButtonContainer = $('div.button-row')
-                        $('h2', '.header.text-center', 'Distributed Metrics')
+                        $('h2', '.header.text-center', 'Metrics')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
                             this.lineChartContainer = $('div', '.fixed-chart')

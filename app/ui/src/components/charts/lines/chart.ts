@@ -109,6 +109,13 @@ export class LineChart {
     changeScale() {
         let plotSeries = this.plot.map(s => s.series)
 
+        if (plotSeries.length == 0) {
+            this.yScale = d3.scaleLinear()
+                .domain([0, 0])
+                .range([0, 0]);
+            return
+        }
+
         if (this.chartType === 'log') {
             this.yScale = getLogScale(getExtent(plotSeries, d => this.focusSmoothed ? d.smoothed : d.value, false, true), -this.chartHeight)
         } else {
