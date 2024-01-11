@@ -61,6 +61,7 @@ async def set_merged_metrics_preferences(request: Request, run_uuid: str) -> Any
 async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     status_code = 404
+    is_metric_summary = request.query_params['is_metric_summary'] == 'true'
 
     r: Optional['run.Run'] = run.get(run_uuid)
 
@@ -70,17 +71,41 @@ async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> A
     rank_uuids = r.get_rank_uuids()
 
     if len(rank_uuids.keys()) == 0:  # not distributed main rank
-        ans = metrics.MetricsAnalysis.get_or_create(run_uuid)
-        if ans:
-            track_data = ans.get_tracking()
-            status_code = 200
-
-        response = JSONResponse({'series': track_data, 'insights': []})
-        response.status_code = status_code
+        response = JSONResponse({'error': 'invalid endpoint'})
+        return response
     else:
         metric_list = [metrics.MetricsAnalysis(m) if m else None for m in metrics.mget(list(rank_uuids.values()))]
         metric_list = [m for m in metric_list if m is not None]
         track_data_list = [m.get_tracking() for m in metric_list]
+
+        # filter out metrics
+        preference_data = []
+        preferences_key = DistMetricsPreferencesIndex.get(run_uuid)
+        if preferences_key:
+            mp: DistMetricsPreferencesModel = preferences_key.load()
+            preference_data = mp.get_data()['series_preferences']
+
+        if is_metric_summary and len(track_data_list) > 0 and len(preference_data) == len(track_data_list[0]):
+            for j in range(0, len(track_data_list)):
+                track_data = track_data_list[j]
+                filtered_track_data = []
+                for i in range(len(track_data)):
+                    filtered_track_data.append(track_data[i])
+                    if preference_data[i] == -1:
+                        filtered_track_data[-1]['value'] = filtered_track_data[-1]['value'][-1:]
+                        filtered_track_data[-1]['step'] = filtered_track_data[-1]['step'][-1:]
+                        filtered_track_data[-1]['smoothed'] = filtered_track_data[-1]['smoothed'][-1:]
+                        filtered_track_data[-1]['is_summary'] = True
+                    else:
+                        filtered_track_data[-1]['is_summary'] = False
+                track_data_list[j] = filtered_track_data
+        else:
+            for j in range(0, len(track_data_list)):
+                track_data = track_data_list[j]
+                filtered_track_data = []
+                for i in range(len(track_data)):
+                    filtered_track_data.append(track_data[i])
+                    filtered_track_data[-1]['is_summary'] = False
 
         series_list = {}
         for track_data in track_data_list:
@@ -119,6 +144,12 @@ async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> A
             details = s.detail
             details['name'] = key
             merged_list.append(details)
+
+        is_metric_summary = (is_metric_summary and len(track_data_list) > 0 and
+                             len(preference_data) == len(track_data_list[0]))
+
+        for i in range(len(merged_list)):
+            merged_list[i]['is_summary'] = True if is_metric_summary and (preference_data[i] == -1) else False
 
         response = JSONResponse({'series': merged_list, 'insights': []})
         response.status_code = 200
