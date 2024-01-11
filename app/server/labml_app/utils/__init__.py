@@ -3,8 +3,6 @@ from typing import Callable
 from uuid import uuid4
 from functools import wraps
 
-from . import analytics
-
 
 def check_version(user_v, new_v) -> bool:
     for uv, nw in zip(user_v.split('.'), new_v.split('.')):

@@ -376,8 +376,6 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, m
         is_claimed = True
 
         identifier = user.get_token_owner(labml_token)
-        utils.analytics.AnalyticsEvent.track(request, 'run_claimed', {'run_uuid': run_uuid}, identifier=identifier)
-        utils.analytics.AnalyticsEvent.run_claimed_set(identifier)
 
     time_now = time.time()
 
@@ -401,8 +399,6 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, m
     p.save()
 
     RunIndex.set(run.run_uuid, run.key)
-
-    utils.analytics.AnalyticsEvent.track(request, 'run_created', {'run_uuid': run_uuid, 'labml_token': labml_token})
 
     return run
 

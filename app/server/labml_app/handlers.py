@@ -215,9 +215,6 @@ async def claim_run(request: Request, run_uuid: str, token: Optional[str] = None
             r.owner = u.email
             r.save()
 
-            utils.analytics.AnalyticsEvent.track(request, 'run_claimed', {'run_uuid': r.run_uuid})
-            utils.analytics.AnalyticsEvent.run_claimed_set(u.email)
-
     return {'is_successful': True}
 
 
@@ -237,9 +234,6 @@ async def claim_session(request: Request, session_uuid: str, token: Optional[str
             c.is_claimed = True
             c.owner = u.email
             c.save()
-
-            utils.analytics.AnalyticsEvent.track(request, 'session_claimed', {'session_uuid': c.session_uuid})
-            utils.analytics.AnalyticsEvent.computer_claimed_set(u.email)
 
     return {'is_successful': True}
 

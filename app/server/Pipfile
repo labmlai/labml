@@ -8,20 +8,13 @@ verify_ssl = true
 [packages]
 requests = "*"
 gunicorn = "*"
-labml="*"
+labml = "*"
 numpy = "*"
-sentry-sdk = {extras = ["flask"], version = "*"}
 labml-db = "*"
-redis = "*"
-mixpanel = "*"
-slack-sdk = "*"
 fastapi = "*"
 pydantic = "*"
 uvicorn = "*"
 aiofiles = "*"
-argon2-cffi = "*"
-libgravatar = "*"
-boto3 = "*"
 pymongo = "*"
 
 [requires]
