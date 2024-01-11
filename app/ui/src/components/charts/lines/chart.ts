@@ -85,7 +85,7 @@ export class LineChart {
             this.filteredPlotIdx = [0]
         }
 
-        const stepExtent = getExtent(this.series.map(s => s.series), d => d.step)
+        const stepExtent = getExtent(this.plot.map(s => s.series), d => d.step)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
         let uniqueItemIdx = 0
