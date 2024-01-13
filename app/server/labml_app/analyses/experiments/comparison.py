@@ -4,10 +4,11 @@ from fastapi import Request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
+from starlette.responses import JSONResponse
 
 from labml_app.logger import logger
 from .distributed_metrics import get_merged_dist_metrics_tracking
-from .metrics import get_metrics_tracking
+from .metrics import MetricsAnalysis, get_metrics_tracking_util
 from ..analysis import Analysis
 from .. import preferences
 from ...db import run
@@ -80,13 +81,33 @@ class ComparisonPreferencesIndex(Index['ComparisonPreferences']):
 
 @Analysis.route('GET', 'compare/metrics/{run_uuid}')
 async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
+    is_metric_summary = request.query_params['is_metric_summary'] == 'true'
+    current_uuid = request.query_params['current']
+    is_base = current_uuid != run_uuid
+
     r = run.get(run_uuid)
     if r is None:
         return {}
+
+    preferences_key = ComparisonPreferencesIndex.get(current_uuid)
+    preference_data = preferences_key.load().get_data()
+    preference_data = preference_data['base_series_preferences'] if is_base else preference_data['series_preferences']
+    status_code = 404
+    track_data = []
+
     if r.world_size == 0:
-        return await get_metrics_tracking(request, run_uuid)
+        ans = MetricsAnalysis.get_or_create(run_uuid)
+        if ans:
+            track_data = ans.get_tracking()
+            status_code = 200
+        filtered_track_data = get_metrics_tracking_util(track_data, preference_data,
+                                                        is_metric_summary)
+        response = JSONResponse({'series': filtered_track_data, 'insights': []})
+        response.status_code = status_code
+
+        return response
     else:  # distributed run
-        return await get_merged_dist_metrics_tracking(request, run_uuid)
+        pass # TODO distributed
 
 
 @Analysis.route('GET', 'compare/preferences/{run_uuid}')
