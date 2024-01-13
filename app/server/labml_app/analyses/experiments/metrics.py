@@ -135,6 +135,26 @@ class MetricsAnalysis(Analysis):
             mp.delete()
 
 
+def get_metrics_tracking_util(track_data: List[Dict[str, Any]], preference_data: List[int],
+                                    is_metric_summary: bool):
+    filtered_track_data = []
+    if len(preference_data) == len(track_data) and is_metric_summary:
+        for i in range(len(track_data)):
+            filtered_track_data.append(track_data[i])
+            if preference_data[i] == -1:
+                filtered_track_data[-1]['value'] = filtered_track_data[-1]['value'][-1:]
+                filtered_track_data[-1]['step'] = filtered_track_data[-1]['step'][-1:]
+                filtered_track_data[-1]['smoothed'] = filtered_track_data[-1]['smoothed'][-1:]
+                filtered_track_data[-1]['is_summary'] = True
+            else:
+                filtered_track_data[-1]['is_summary'] = False
+    else:  # initially (when no pref data) send all data
+        filtered_track_data = track_data
+        for i in range(len(track_data)):
+            filtered_track_data[i]['is_summary'] = False
+
+    return filtered_track_data
+
 # @utils.mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'metrics/{run_uuid}')
 async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
@@ -163,21 +183,7 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
         mp: MetricsPreferencesModel = preferences_key.load()
         preference_data = mp.get_data()['series_preferences']
 
-    filtered_track_data = []
-    if len(preference_data) == len(track_data) and is_metric_summary:
-        for i in range(len(track_data)):
-            filtered_track_data.append(track_data[i])
-            if preference_data[i] == -1:
-                filtered_track_data[-1]['value'] = filtered_track_data[-1]['value'][-1:]
-                filtered_track_data[-1]['step'] = filtered_track_data[-1]['step'][-1:]
-                filtered_track_data[-1]['smoothed'] = filtered_track_data[-1]['smoothed'][-1:]
-                filtered_track_data[-1]['is_summary'] = True
-            else:
-                filtered_track_data[-1]['is_summary'] = False
-    else:  # initially (when no pref data) send all data
-        filtered_track_data = track_data
-        for i in range(len(track_data)):
-            filtered_track_data[i]['is_summary'] = False
+    filtered_track_data = get_metrics_tracking_util(track_data, preference_data, is_metric_summary)
 
     response = JSONResponse({'series': filtered_track_data, 'insights': []})
     response.status_code = status_code
