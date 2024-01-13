@@ -7,8 +7,8 @@ from labml_db.serializer.yaml import YamlSerializer
 from starlette.responses import JSONResponse
 
 from labml_app.logger import logger
-from .distributed_metrics import get_merged_dist_metrics_tracking
-from .metrics import MetricsAnalysis, get_metrics_tracking_util
+from .distributed_metrics import get_merged_dist_metrics_tracking, get_merged_metric_tracking_util
+from .metrics import MetricsAnalysis, get_metrics_tracking_util, mget
 from ..analysis import Analysis
 from .. import preferences
 from ...db import run
@@ -107,7 +107,17 @@ async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
 
         return response
     else:  # distributed run
-        pass # TODO distributed
+        rank_uuids = r.get_rank_uuids()
+
+        metric_list = [MetricsAnalysis(m) if m else None for m in mget(list(rank_uuids.values()))]
+        metric_list = [m for m in metric_list if m is not None]
+        track_data_list = [m.get_tracking() for m in metric_list]
+
+        merged_tracking = get_merged_metric_tracking_util(track_data_list, preference_data, is_metric_summary)
+
+        response = JSONResponse({'series': merged_tracking, 'insights': []})
+        response.status_code = 200
+        return response
 
 
 @Analysis.route('GET', 'compare/preferences/{run_uuid}')

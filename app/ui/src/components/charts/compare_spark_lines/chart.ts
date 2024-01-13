@@ -111,7 +111,7 @@ export class CompareSparkLines {
                 this.sparkLines.push(sparkLine)
             })
             this.baseSeries.map((s, i) => {
-                if (this.onlySelected && this.basePlotIdx[i]==-1)
+                if (this.onlySelected && this.basePlotIdx[i]!=1)
                     return
                 $('svg', {style: {height: `${1}px`}}, $ => {
                     new DefaultLineGradient().render($)
