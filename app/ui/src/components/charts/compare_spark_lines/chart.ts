@@ -28,8 +28,6 @@ export class CompareSparkLines {
     maxLastValue: number
     isMouseMoveOpt: boolean
     stepExtent: [number, number]
-    currentColorIndices: number[] = []
-    baseColorIndices: number[] = []
     onCurrentSelect?: (i: number) => void
     onBaseSelect?: (i: number) => void
     sparkLines: CompareSparkLine[] = []
@@ -74,21 +72,6 @@ export class CompareSparkLines {
             this.basePlotIdx = defaultSeriesToPlot(this.baseSeries)
         }
 
-        for (let i = 0; i < this.currentPlotIdx.length; i++) {
-            if (this.currentPlotIdx[i] >= 0) {
-                this.currentColorIndices.push(i)
-            } else {
-                this.currentColorIndices.push(-1)
-            }
-        }
-        for (let i = 0; i < this.basePlotIdx.length; i++) {
-            if (this.basePlotIdx[i] >= 0) {
-                this.baseColorIndices.push(i)
-            } else {
-                this.baseColorIndices.push(-1)
-            }
-        }
-
         this.chartColors = new ChartColors({nColors: this.uniqueItems.size, secondNColors: this.uniqueItems.size, isDivergent: opt.isDivergent})
     }
 
@@ -102,7 +85,7 @@ export class CompareSparkLines {
         this.sparkLines = []
         $('div.sparkline-list.list-group', $ => {
             this.currentSeries.map((s, i) => {
-                if (this.onlySelected && this.currentPlotIdx[i]==-1)
+                if (this.onlySelected && this.currentPlotIdx[i]!=1)
                     return
                 $('svg', {style: {height: `${1}px`}}, $ => {
                     new DefaultLineGradient().render($)

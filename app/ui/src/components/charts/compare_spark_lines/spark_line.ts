@@ -61,9 +61,11 @@ export class CompareSparkLine {
             return d.step
         }).left
 
-        if (this.onClick != null && this.selected >= 0) {
-            this.className = 'selected'
-        }
+        if (this.onClick != null && this.selected >= 1) {
+             this.className = 'selected'
+         } else if (this.onClick != null && this.selected == -1) {
+             this.className = 'unselected'
+         }
 
         if (this.onClick != null) {
             this.className += '.list-group-item-action'
