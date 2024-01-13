@@ -53,9 +53,7 @@ class MetricsView extends ScreenView {
         this.loader = new DataLoader(async (force) => {
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
             this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
-            if (this.preferenceData == null) {
-                this.preferenceData = await this.preferenceCache.get(force)
-            }
+            this.preferenceData = await this.preferenceCache.get(force)
         })
 
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
@@ -171,6 +169,7 @@ class MetricsView extends ScreenView {
     private requestAllMetrics() {
         metricsCache.getAnalysis(this.uuid).requestAllMetrics()
         this.content.setLoading(true)
+        this.isUpdateDisable = false
         this.loader.load(true).then(() => {
             this.calcPreferences()
             this.content.render()
@@ -188,15 +187,15 @@ class MetricsView extends ScreenView {
             } else if (this.series) {
                 this.plotIdx = defaultSeriesToPlot(this.series)
             }
-
-            this.content.updateData({
-                series: this.series,
-                plotIdx: this.plotIdx,
-                currentChart: this.currentChart,
-                focusSmoothed: this.focusSmoothed,
-                stepRange: this.stepRange
-            })
         }
+
+        this.content.updateData({
+            series: this.series,
+            plotIdx: this.plotIdx,
+            currentChart: this.currentChart,
+            focusSmoothed: this.focusSmoothed,
+            stepRange: this.stepRange
+        })
     }
 
     updatePreferences = (data: ViewWrapperData, saveData: boolean = true) => {
