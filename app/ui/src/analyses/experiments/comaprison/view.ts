@@ -3,7 +3,7 @@ import {ScreenView} from "../../../screen_view"
 import {ViewHandler} from "../../types"
 import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunCache, RunStatusCache} from "../../../cache/cache"
 import comparisonCache from "./cache"
-import {DataLoader} from "../../../components/loader"
+import {DataLoader, Loader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {Status} from "../../../models/status"
 import {Run, SeriesModel} from "../../../models/run"
@@ -234,7 +234,11 @@ class ComparisonView extends ScreenView {
     private requestAllMetrics() {
         comparisonCache.getAnalysis(this.currentUuid).requestAllMetrics()
         comparisonCache.getAnalysis(this.baseUuid).requestAllMetrics()
-        // TODO this.content.setLoading(true)
+        $(this.lineChartContainer, $=> {
+            $('div', '.chart-overlay', $ => {
+                new Loader().render($)
+            })
+        })
         this.loader.load(true).then(() => {
             this.calcPreferences()
             this.renderCharts()
