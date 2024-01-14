@@ -57,6 +57,7 @@ export class ViewWrapper {
         this.actualWidth = opt.actualWidth
         this.onRequestAllMetrics = opt.onRequestAllMetrics
         this.updatePreferences = opt.updatePreferences
+        this.isUpdateDisable = opt.isUpdateDisable
 
         this.stepRangeField = new NumericRangeField({
             max: 0, min: 0,
@@ -72,6 +73,8 @@ export class ViewWrapper {
                 focusSmoothed: this.focusSmoothed,
                 stepRange: this.stepRange
             }, true)
+                this.saveButton.disabled = true
+                this.isUpdateDisable = true
             }, parent: this.constructor.name})
     }
 
