@@ -87,9 +87,15 @@ async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
 
     r = run.get(run_uuid)
     if r is None:
-        return {}
+        response = JSONResponse({'series': [], 'insights': []})
+        response.status_code = 200
+        return response
 
     preferences_key = ComparisonPreferencesIndex.get(current_uuid)
+    if preferences_key is None:
+        response = JSONResponse({'series': [], 'insights': []})
+        response.status_code = 200
+        return response
     preference_data = preferences_key.load().get_data()
     preference_data = preference_data['base_series_preferences'] if is_base else preference_data['series_preferences']
     status_code = 404
