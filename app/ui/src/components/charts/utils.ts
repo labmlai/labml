@@ -33,6 +33,10 @@ export function getExtentWithoutOutliers(series: PointValue[], func: (d: PointVa
 }
 
 export function getExtent(series: PointValue[][], func: (d: PointValue) => number, forceZero: boolean = false, skipZero: boolean = false): [number, number] {
+    if (series.length === 0) {
+        return [0, 0]
+    }
+
     let extent = getExtentWithoutOutliers(series[0], func)
 
     for (let s of series) {
