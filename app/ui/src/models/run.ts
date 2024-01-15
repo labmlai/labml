@@ -46,6 +46,7 @@ export interface SeriesModel {
     range: [number, number]
     is_editable: boolean
     sub: SeriesModel
+    is_summary: boolean
 }
 
 export interface InsightModel {

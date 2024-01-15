@@ -31,6 +31,8 @@ export class LineChart {
     private readonly currentPlotIndex: number[]
     private readonly baseSeries: SeriesModel[]
     private readonly basePlotIndex: number[]
+    private readonly filteredBaseSeries: SeriesModel[]
+    private readonly filteredCurrentSeries: SeriesModel[]
     chartType: string
     chartWidth: number
     chartHeight: number
@@ -77,7 +79,10 @@ export class LineChart {
             this.basePlotIndex = defaultSeriesToPlot(this.baseSeries)
         }
 
-        const stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step, false, true)
+        this.filteredBaseSeries = this.baseSeries.filter((_, i) => this.basePlotIndex[i] == 1)
+        this.filteredCurrentSeries = this.currentSeries.filter((_, i) => this.currentPlotIndex[i] == 1)
+
+        const stepExtent = getExtent(this.filteredBaseSeries.concat(this.filteredCurrentSeries).map(s => s.series), d => d.step, false, true)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
         let idx: number = 0
@@ -96,8 +101,7 @@ export class LineChart {
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     changeScale() {
-        let plotSeries = this.currentSeries.flatMap((s, i) => this.currentPlotIndex[i]<0 ? [] : [s.series])
-            .concat(this.baseSeries.flatMap((s, i) => this.basePlotIndex[i]<0 ? [] : [s.series]))
+        let plotSeries = this.filteredBaseSeries.concat(this.filteredCurrentSeries).map(s => s.series)
         if (plotSeries.length == 0) {
             return
         }
@@ -168,8 +172,8 @@ export class LineChart {
 
     render($: WeyaElementFunction) {
         this.changeScale()
-        let filteredBaseSeriesLength = this.baseSeries.filter((_, i) => this.basePlotIndex[i] >= 0).length
-        let filteredCurrentSeriesLength = this.currentSeries.filter((_, i) => this.currentPlotIndex[i] >= 0).length
+        let filteredBaseSeriesLength = this.filteredBaseSeries.length
+        let filteredCurrentSeriesLength = this.filteredCurrentSeries.length
 
         if (filteredBaseSeriesLength + filteredCurrentSeriesLength === 0) {
             $('div', '')
@@ -192,10 +196,7 @@ export class LineChart {
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
-                                        this.currentSeries.map((s, i) => {
-                                            if (this.currentPlotIndex[i] < 0) {
-                                                    return;
-                                                }
+                                        this.filteredCurrentSeries.map((s, i) => {
                                             let linePlot = new LinePlot({
                                                 series: s.series,
                                                 xScale: this.xScale,
@@ -210,10 +211,7 @@ export class LineChart {
                                             linePlot.render($)
                                         })
 
-                                        this.baseSeries.map((s, i) => {
-                                            if (this.basePlotIndex[i] < 0) {
-                                                    return;
-                                                }
+                                        this.filteredBaseSeries.map((s, i) => {
                                             let linePlot = new LinePlot({
                                                 series: s.series,
                                                 xScale: this.xScale,

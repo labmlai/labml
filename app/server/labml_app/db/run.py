@@ -325,8 +325,6 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
             'world_size': self.world_size,
-            'preview_series': None,
-            'metric_values': None,
             'favorite_configs': fav_configs,
         }
 

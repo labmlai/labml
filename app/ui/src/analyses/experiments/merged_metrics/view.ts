@@ -15,7 +15,7 @@ import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
 import metricsCache from "./cache"
-import {DistributedViewContent, ViewContentData} from "../distributed_metrics/view"
+import {ViewWrapper, ViewWrapperData} from "../chart_wrapper/view"
 
 class DistributedMetricsView extends ScreenView {
     uuid: string
@@ -39,7 +39,7 @@ class DistributedMetricsView extends ScreenView {
     private refresh: AwesomeRefreshButton
 
     private loader: DataLoader
-    private content: DistributedViewContent
+    private content: ViewWrapper
     private preferenceCache: AnalysisPreferenceCache
 
     constructor(uuid: string) {
@@ -110,14 +110,15 @@ class DistributedMetricsView extends ScreenView {
 
             // setTitle({section: 'Metrics', item: this.run.name})
 
-            this.content = new DistributedViewContent({
+            this.content = new ViewWrapper({
                 updatePreferences: this.updatePreferences,
                 lineChartContainer: this.lineChartContainer,
                 sparkLinesContainer: this.sparkLinesContainer,
                 saveButtonContainer: this.saveButtonContainer,
                 toggleButtonContainer: this.toggleButtonContainer,
                 actualWidth: this.actualWidth,
-                isUpdateDisable: this.isUpdateDisable
+                isUpdateDisable: this.isUpdateDisable,
+                onRequestAllMetrics: this.requestAllMetrics.bind(this)
             })
 
             this.calcPreferences()
@@ -165,6 +166,16 @@ class DistributedMetricsView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
+    private requestAllMetrics() {
+        this.isUpdateDisable = false
+        metricsCache.getAnalysis(this.uuid).requestAllMetrics()
+        this.content.setLoading(true)
+        this.loader.load(true).then(() => {
+            this.calcPreferences()
+            this.content.render()
+        })
+    }
+
     private calcPreferences() {
         if(this.isUpdateDisable) {
             this.currentChart = this.preferenceData.chart_type
@@ -176,18 +187,18 @@ class DistributedMetricsView extends ScreenView {
             } else if (this.series) {
                 this.plotIdx = defaultSeriesToPlot(this.series)
             }
+        }
 
-            this.content.updateData({
+        this.content.updateData({
                 series: this.series,
                 plotIdx: this.plotIdx,
                 currentChart: this.currentChart,
                 focusSmoothed: this.focusSmoothed,
                 stepRange: this.stepRange
             })
-        }
     }
 
-    updatePreferences = (data: ViewContentData) => {
+    updatePreferences = (data: ViewWrapperData, saveData: boolean = true) => {
         this.plotIdx = data.plotIdx
         this.currentChart = data.currentChart
         this.focusSmoothed = data.focusSmoothed
@@ -197,6 +208,11 @@ class DistributedMetricsView extends ScreenView {
         this.preferenceData.chart_type = this.currentChart
         this.preferenceData.step_range = this.stepRange
         this.preferenceData.focus_smoothed = this.focusSmoothed
+
+        if (!saveData) {
+            return
+        }
+
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true

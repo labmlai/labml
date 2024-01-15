@@ -36,6 +36,7 @@ export class ComparisonCard extends Card {
         this.width = opt.width
         this.currentAnalysisCache = comparisonCache.getAnalysis(this.currentUUID)
         this.preferenceCache = comparisonCache.getPreferences(this.currentUUID)
+        this.currentAnalysisCache.setCurrentUUID(this.currentUUID)
 
         this.loader = new DataLoader(async (force: boolean) => {
             this.preferenceData = <ComparisonPreferenceModel> await this.preferenceCache.get(force)
@@ -45,6 +46,7 @@ export class ComparisonCard extends Card {
             this.currentSeries = toPointValues(currentAnalysisData.series)
             if (!!this.baseUUID) {
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUUID)
+                this.baseAnalysisCache.setCurrentUUID(this.currentUUID)
                 try {
                     let baseAnalysisData = await this.baseAnalysisCache.get(force)
                     this.baseSeries = toPointValues(baseAnalysisData.series)

@@ -16,8 +16,6 @@ export interface RunListItemModel {
     comment: string
     start_time: number
     world_size: number
-    preview_series?: SeriesModel
-    metric_values?: MetricValue[]
     favorite_configs?: ConfigModel[]
 }
 
@@ -35,8 +33,6 @@ export class RunListItem {
     comment: string
     start_time: number
     world_size: number
-    preview_series?: SeriesModel
-    metric_values?: MetricValue[]
     favorite_configs?: Config[]
 
     constructor(run_list_item: RunListItemModel) {
@@ -48,8 +44,6 @@ export class RunListItem {
         this.last_updated_time = run_list_item.last_updated_time
         this.run_status = new RunStatus(run_list_item.run_status)
         this.world_size = run_list_item.world_size
-        this.preview_series = run_list_item.preview_series
-        this.metric_values = run_list_item.metric_values
         this.favorite_configs = []
         if (run_list_item.favorite_configs != null) {
             for (let c of run_list_item.favorite_configs) {
