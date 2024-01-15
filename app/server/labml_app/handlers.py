@@ -102,7 +102,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     if len(run_uuid.split("_")) == 2:
         run_uuid = run_uuid.split("_")[0]
 
-    return {'errors': errors, 'url': f'{request.url.hostname}:{request.url.port}/{run_uuid}', 'dynamic': hp_values}
+    return {'errors': errors, 'url': f'{request.url.hostname}/{run_uuid}', 'dynamic': hp_values}
 
 
 async def update_run(request: Request) -> EndPointRes:
@@ -181,7 +181,7 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
     logger.debug(
         f'update_session, session_uuid: {session_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
-    return {'errors': errors, 'url': f'{request.url.hostname}:{request.url.port}/{c.url}'}
+    return {'errors': errors, 'url': f'{request.url.hostname}/{c.url}'}
 
 
 async def update_session(request: Request) -> EndPointRes:
