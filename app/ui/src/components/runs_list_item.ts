@@ -28,20 +28,6 @@ export class RunsListItemView {
         }
     }
 
-    private renderSparkLine($: WeyaElementFunction) {
-        if (this.item.preview_series == null || this.item.preview_series.value == null) {
-            return
-        }
-        $('div', $ => {
-            new StandaloneSparkLine({
-                name: this.item.preview_series.name,
-                series: toPointValue(this.item.preview_series),
-                width: 280,
-                stepExtent: getExtent([toPointValue(this.item.preview_series)], d => d.step)
-            }).render($)
-        })
-    }
-
     render($: WeyaElementFunction) {
         this.elem = $('a', '.list-item.list-group-item.list-group-item-action',
             {href: `/run/${this.item.run_uuid}`, on: {click: this.onClick}},
@@ -52,9 +38,6 @@ export class RunsListItemView {
                         $('p', `Started on ${formatTime(this.item.start_time)}`)
                         $('h5', this.item.name)
                         $('h6', this.item.comment)
-                    })
-                    $('div', '.preview-series.label', $ => {
-                        this.renderSparkLine($)
                     })
                 })
                 if (this.item.favorite_configs != null) {

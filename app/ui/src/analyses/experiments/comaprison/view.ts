@@ -3,7 +3,7 @@ import {ScreenView} from "../../../screen_view"
 import {ViewHandler} from "../../types"
 import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunCache, RunStatusCache} from "../../../cache/cache"
 import comparisonCache from "./cache"
-import {DataLoader} from "../../../components/loader"
+import {DataLoader, Loader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {Status} from "../../../models/status"
 import {Run, SeriesModel} from "../../../models/run"
@@ -74,6 +74,8 @@ class ComparisonView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.currentUuid)
         this.preferenceCache = comparisonCache.getPreferences(this.currentUuid)
         this.currentAnalysisCache = comparisonCache.getAnalysis(this.currentUuid)
+        this.currentAnalysisCache.setCurrentUUID(this.currentUuid)
+
         this.shouldPreservePreferences = false
         this.isUpdateDisabled = true
 
@@ -165,6 +167,7 @@ class ComparisonView extends ScreenView {
 
     private async updateBaseRun(force: boolean) {
         this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
+        this.baseAnalysisCache.setCurrentUUID(this.currentUuid)
         this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
         try {
             this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
@@ -184,36 +187,62 @@ class ComparisonView extends ScreenView {
         this.shouldPreservePreferences = true
         this.isUpdateDisabled = false
 
-        if (this.currentPlotIdx[idx] >= 0) {
-            this.currentPlotIdx[idx] = -1
-        } else {
-            this.currentPlotIdx[idx] = Math.max(...this.currentPlotIdx) + 1
-        }
+        if (this.currentPlotIdx[idx] > 1) // fix for existing plot idxs
+            this.currentPlotIdx[idx] = 1
 
-        if (this.currentPlotIdx.length > 1) {
-            this.currentPlotIdx = new Array<number>(...this.currentPlotIdx)
+        if (this.currentPlotIdx[idx] == 0) {
+            this.currentPlotIdx[idx] = 1
+        } else if (this.currentPlotIdx[idx] == 1) {
+            this.currentPlotIdx[idx] = -1
+        } else if (this.currentPlotIdx[idx] == -1) {
+            this.currentPlotIdx[idx] = 0
         }
 
         this.renderCharts()
         this.renderButtons()
+
+        if (this.currentSeries[idx].is_summary) {
+            // have to load from the backend
+            this.requestAllMetrics()
+        }
     }
 
     private toggleBaseChart = (idx: number) => {
         this.shouldPreservePreferences = true
         this.isUpdateDisabled = false
 
-        if (this.basePlotIdx[idx] >= 0) {
-            this.basePlotIdx[idx] = -1
-        } else {
-            this.basePlotIdx[idx] = Math.max(...this.basePlotIdx) + 1
-        }
+        if (this.basePlotIdx[idx] > 1) // fix for existing plot idxs
+            this.basePlotIdx[idx] = 1
 
-        if (this.basePlotIdx.length > 1) {
-            this.basePlotIdx = new Array<number>(...this.basePlotIdx)
+        if (this.basePlotIdx[idx] == 0) {
+            this.basePlotIdx[idx] = 1
+        } else if (this.basePlotIdx[idx] == 1) {
+            this.basePlotIdx[idx] = -1
+        } else if (this.basePlotIdx[idx] == -1) {
+            this.basePlotIdx[idx] = 0
         }
 
         this.renderCharts()
         this.renderButtons()
+
+        if (this.baseSeries[idx].is_summary) {
+            // have to load from the backend
+            this.requestAllMetrics()
+        }
+    }
+
+    private requestAllMetrics() {
+        comparisonCache.getAnalysis(this.currentUuid).requestAllMetrics()
+        comparisonCache.getAnalysis(this.baseUuid).requestAllMetrics()
+        $(this.lineChartContainer, $=> {
+            $('div', '.chart-overlay', $ => {
+                new Loader().render($)
+            })
+        })
+        this.loader.load(true).then(() => {
+            this.calcPreferences()
+            this.renderCharts()
+        })
     }
 
     private onFilterDropdownClick = (id: string) => {

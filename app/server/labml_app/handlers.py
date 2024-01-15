@@ -362,43 +362,11 @@ async def get_runs(request: Request, labml_token: str, token: Optional[str] = No
         labml_token = default_project.labml_token
         runs_list = default_project.get_runs()
 
-    run_uuids = []
-    for r in runs_list:
-        run_uuids.append(r.run_uuid)
-
-    metric_data = metrics.mget(run_uuids)
-    metric_preferences_data = metrics.mget_preferences(run_uuids)
-
     res = []
-    for r, m, mp in zip(runs_list, metric_data, metric_preferences_data):
+    for r in runs_list:
         s = run.get_status(r.run_uuid)
-        if r.run_uuid and r.rank == 0 and m is not None and mp is not None:
-            summary = r.get_summary()
-            preferences = mp.series_preferences
-            preview_series = {}
-            metric_values = []
-
-            track_data = MetricsAnalysis(m).get_tracking()
-            for (idx, series) in enumerate(track_data):
-                if len(preferences) > idx and preferences[idx] != -1:
-                    preview_series = series
-                    break
-            if not preview_series and len(track_data) > 0:
-                preview_series = track_data[0]
-
-            summary['preview_series'] = preview_series
-
-            for (idx, series) in enumerate(track_data):
-                if preview_series['name'] == series['name'] or len(preferences) <= idx or preferences[idx] == -1:
-                    continue
-                metric_values.append({
-                    'name': series['name'],
-                    'value': series['value'][-1]
-                })
-
-            summary['metric_values'] = metric_values
-
-            res.append({**summary, **s.get_data()})
+        if r.run_uuid and r.rank == 0:
+            res.append({**r.get_summary(), **s.get_data()})
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
 

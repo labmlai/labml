@@ -75,7 +75,7 @@ export class LineChart {
         }
 
         for (let i = 0; i < this.plotIdx.length; i++) {
-            if (this.plotIdx[i] >= 0) {
+            if (this.plotIdx[i] >= 1) {
                 this.filteredPlotIdx.push(i)
                 this.plot.push(this.series[i])
             }
@@ -85,7 +85,7 @@ export class LineChart {
             this.filteredPlotIdx = [0]
         }
 
-        const stepExtent = getExtent(this.series.map(s => s.series), d => d.step)
+        const stepExtent = getExtent(this.plot.map(s => s.series), d => d.step)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
         let uniqueItemIdx = 0
@@ -108,6 +108,13 @@ export class LineChart {
 
     changeScale() {
         let plotSeries = this.plot.map(s => s.series)
+
+        if (plotSeries.length == 0) {
+            this.yScale = d3.scaleLinear()
+                .domain([0, 0])
+                .range([0, 0]);
+            return
+        }
 
         if (this.chartType === 'log') {
             this.yScale = getLogScale(getExtent(plotSeries, d => this.focusSmoothed ? d.smoothed : d.value, false, true), -this.chartHeight)

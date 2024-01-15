@@ -16,7 +16,6 @@ import {SENTRY_DSN} from './env'
 import {AuthErrorHandler} from './views/errors/auth_error_view'
 import {OtherErrorHandler} from './views/errors/other_error_view'
 import {NetworkErrorHandler} from './views/errors/network_error_view'
-import {DistributedMetricsHandler} from "./analyses/experiments/distributed_metrics/view"
 import {MergedDistributedMetricsHandler} from "./analyses/experiments/merged_metrics/view"
 
 ROUTER.route(/^(.*)$/g, [() => {
@@ -33,7 +32,6 @@ new SessionHandler()
 new RunsListHandler()
 new SessionsListHandler()
 new SettingsHandler()
-new DistributedMetricsHandler()
 new MergedDistributedMetricsHandler()
 
 new RunHeaderHandler()

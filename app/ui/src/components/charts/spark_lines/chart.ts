@@ -93,7 +93,7 @@ export class SparkLines {
     render($: WeyaElementFunction) {
         $('div.sparkline-list.list-group', $ => {
             this.series.map((s, i) => {
-                if (this.onlySelected && this.plotIdx[i]==-1)
+                if (this.onlySelected && this.plotIdx[i]!=1)
                     return
                 $('svg', {style: {height: `${1}px`}}, $ => {
                     new DefaultLineGradient().render($)

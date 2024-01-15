@@ -6,6 +6,10 @@ SeriesPreferences = List[int]
 
 class Preferences:
     series_preferences: Union[SeriesPreferences, List['SeriesPreferences']]
+    # series_preferences content:
+    # -1 -> do not send data init
+    # 0 -> send data init but not selected
+    # 1 -> send data init and selected
     chart_type: int
     errors: List[Dict[str, str]]
     step_range: List[int]

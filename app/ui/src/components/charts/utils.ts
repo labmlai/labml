@@ -33,6 +33,10 @@ export function getExtentWithoutOutliers(series: PointValue[], func: (d: PointVa
 }
 
 export function getExtent(series: PointValue[][], func: (d: PointValue) => number, forceZero: boolean = false, skipZero: boolean = false): [number, number] {
+    if (series.length === 0) {
+        return [0, 0]
+    }
+
     let extent = getExtentWithoutOutliers(series[0], func)
 
     for (let s of series) {
@@ -86,13 +90,11 @@ export function toDate(time: number) {
 }
 
 export function defaultSeriesToPlot(series: SeriesModel[]) {
-    let count = 0
     let plotIdx = []
     for (let s of series) {
         let name = s.name.split('.')
         if (name[0] === 'loss') {
-            plotIdx.push(count)
-            count++
+            plotIdx.push(1)
         } else {
             plotIdx.push(-1)
         }
