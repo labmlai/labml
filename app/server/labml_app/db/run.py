@@ -374,7 +374,6 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, m
         identifier = ''
     else:
         is_claimed = True
-
         identifier = user.get_token_owner(labml_token)
 
     time_now = time.time()
