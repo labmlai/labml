@@ -136,7 +136,7 @@ class MetricsAnalysis(Analysis):
 
 
 def get_metrics_tracking_util(track_data: List[Dict[str, Any]], preference_data: List[int],
-                                    is_metric_summary: bool):
+                              is_metric_summary: bool):
     filtered_track_data = []
     if len(preference_data) == len(track_data) and is_metric_summary:
         for i in range(len(track_data)):
@@ -154,6 +154,7 @@ def get_metrics_tracking_util(track_data: List[Dict[str, Any]], preference_data:
             filtered_track_data[i]['is_summary'] = False
 
     return filtered_track_data
+
 
 # @utils.mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'metrics/{run_uuid}')
@@ -179,9 +180,24 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
 
     preference_data = []
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
+    mp: MetricsPreferencesModel
     if preferences_key:
-        mp: MetricsPreferencesModel = preferences_key.load()
+        mp = preferences_key.load()
         preference_data = mp.get_data()['series_preferences']
+    else:
+        mp = MetricsPreferencesModel()
+        mp.save()
+        MetricsPreferencesIndex.set(run_uuid, mp.key)
+
+    # update preferences incase it doesn't match with the series
+    if len(preference_data) == 0:
+        preference_data = utils.get_default_series_preference([s['name'] for s in track_data])
+        mp.update_preferences({'series_preferences': preference_data})
+        mp.save()
+    elif len(preference_data) != len(track_data):
+        preference_data = utils.fill_preferences([s['name'] for s in track_data], preference_data)
+        mp.update_preferences({'series_preferences': preference_data})
+        mp.save()
 
     filtered_track_data = get_metrics_tracking_util(track_data, preference_data, is_metric_summary)
 
