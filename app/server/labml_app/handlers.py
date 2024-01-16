@@ -205,9 +205,9 @@ async def claim_run(request: Request, run_uuid: str, token: Optional[str] = None
     default_project = u.default_project
 
     if r.run_uuid not in default_project.runs:
-        float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
+        # float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
 
-        if r.run_uuid in float_project.runs:
+        # if r.run_uuid in float_project.runs:
             default_project.runs[r.run_uuid] = r.key
             default_project.is_run_added = True
             default_project.save()
