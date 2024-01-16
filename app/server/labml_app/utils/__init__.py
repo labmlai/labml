@@ -43,7 +43,7 @@ def get_true_run_uuid(run_uuid: str) -> str:
 
 
 def get_default_series_preference(series_names: List[str]) -> List[int]:
-    return [1 if 'loss' in s.lower() else -1 for s in series_names]
+    return [1 if 'loss' == s.lower().split('.')[0] else -1 for s in series_names]
 
 
 def fill_preferences(series_names: List[str], preferences: List[int]) -> List[int]:
