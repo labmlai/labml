@@ -1,5 +1,5 @@
 import time
-from typing import Callable
+from typing import Callable, List
 from uuid import uuid4
 from functools import wraps
 
@@ -40,3 +40,14 @@ def get_true_run_uuid(run_uuid: str) -> str:
         run_uuid = split[0]
 
     return run_uuid
+
+
+def get_default_series_preference(series_names: List[str]) -> List[int]:
+    return [1 if 'loss' in s.lower() else -1 for s in series_names]
+
+
+def fill_preferences(series_names: List[str], preferences: List[int]) -> List[int]:
+    if len(series_names) > len(preferences):
+        preferences += [-1] * (len(series_names) - len(preferences))
+
+    return preferences
