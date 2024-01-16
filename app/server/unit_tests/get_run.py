@@ -2,7 +2,6 @@ from labml_app.db import run, init_mongo_db
 
 init_mongo_db()
 
-r = run.get('f8850c6c99a211eebae53275fba9aeb4')
+r = run.get('5372ad8ab45311eeb035946dae1e1468')
 
-print(repr(r.stdout))
-print(repr(r.stdout_unmerged))
+print(r)
