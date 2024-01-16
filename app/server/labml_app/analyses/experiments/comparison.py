@@ -23,7 +23,7 @@ class ComparisonPreferences(preferences.Preferences):
     @classmethod
     def defaults(cls):
         return dict(base_series_preferences=[],
-                    base_experiment=str,
+                    base_experiment="",
                     step_range=[-1, -1],
                     is_base_distributed=False
                     )
@@ -171,7 +171,9 @@ async def get_comparison_preferences(request: Request, run_uuid: str) -> Any:
 
     preferences_data = cp.get_data()
 
-    return preferences_data
+    response = JSONResponse(preferences_data)
+    response.status_code = 200
+    return response
 
 
 @Analysis.route('POST', 'compare/preferences/{run_uuid}')
