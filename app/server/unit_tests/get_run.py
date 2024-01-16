@@ -4,4 +4,5 @@ init_mongo_db()
 
 r = run.get('5372ad8ab45311eeb035946dae1e1468')
 
-print(r)
+print(r.run_uuid)
+print(r.is_claimed)
