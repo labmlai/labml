@@ -12,6 +12,7 @@ from ..preferences import Preferences
 from ..series import Series
 from ...logger import logger
 from ...db import run
+from ...utils import get_default_series_preference, fill_preferences
 
 
 @Analysis.db_model(PickleSerializer, 'merged_metrics_preferences')
@@ -151,9 +152,31 @@ async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> A
         # filter out metrics
         preference_data = []
         preferences_key = DistMetricsPreferencesIndex.get(run_uuid)
+        mp: DistMetricsPreferencesModel
         if preferences_key:
-            mp: DistMetricsPreferencesModel = preferences_key.load()
+            mp = preferences_key.load()
             preference_data = mp.get_data()['series_preferences']
+        else:
+            mp = DistMetricsPreferencesModel()
+            mp.save()
+            DistMetricsPreferencesIndex.set(run_uuid, mp.key)
+
+        # update preferences incase it doesn't match with the series
+        series_list_set = set()
+        series_list = []
+        for track_data in track_data_list:
+            for track_item in track_data:
+                if track_item['name'] not in series_list:
+                    series_list.append(track_item['name'])
+                    series_list_set.add(track_item['name'])
+        if len(preference_data) == 0:
+            preference_data = get_default_series_preference(series_list)
+            mp.update_preferences({'series_preferences': preference_data})
+            mp.save()
+        elif len(preference_data) != len(series_list):
+            preference_data = fill_preferences(series_list, preference_data)
+            mp.update_preferences({'series_preferences': preference_data})
+            mp.save()
 
         merged_tracking = get_merged_metric_tracking_util(track_data_list, preference_data, is_metric_summary)
 

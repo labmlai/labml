@@ -43,6 +43,9 @@ export class CompareSparkLine {
 
     constructor(opt: CompareSparkLineOptions) {
         this.series = opt.series
+        if (opt.selected == -1) {
+            this.series = [this.series[this.series.length - 1]]
+        }
         this.name = opt.name
         this.selected = opt.selected
         this.onClick = opt.onClick
