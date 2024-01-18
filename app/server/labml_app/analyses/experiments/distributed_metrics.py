@@ -58,7 +58,7 @@ async def set_merged_metrics_preferences(request: Request, run_uuid: str) -> Any
     return {'errors': mp.errors}
 
 
-def _dist_series_merge(step_list: List, value_list: List) -> Dict[str: Any]:
+def _dist_series_merge(step_list: List, value_list: List) -> Dict[str, Any]:
     length = max([len(v) for v in value_list if v is not None])
     num_series = len(step_list)
 

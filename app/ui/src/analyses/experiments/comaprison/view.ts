@@ -232,8 +232,8 @@ class ComparisonView extends ScreenView {
     }
 
     private requestAllMetrics() {
-        comparisonCache.getAnalysis(this.currentUuid).requestAllMetrics()
-        comparisonCache.getAnalysis(this.baseUuid).requestAllMetrics()
+        comparisonCache.getAnalysis(this.currentUuid).setMetricData(this.currentPlotIdx)
+        comparisonCache.getAnalysis(this.baseUuid).setMetricData(this.basePlotIdx)
         $(this.lineChartContainer, $=> {
             $('div', '.chart-overlay', $ => {
                 new Loader().render($)
