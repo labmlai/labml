@@ -128,7 +128,7 @@ def get_merged_metric_tracking_util(track_data_list, preference_data, is_metric_
     return merged_list
 
 
-@Analysis.route('GET', 'distributed/metrics/merged/{run_uuid}')
+@Analysis.route('POST', 'distributed/metrics/merged/{run_uuid}')
 async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     status_code = 404

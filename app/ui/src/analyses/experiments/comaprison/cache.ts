@@ -3,7 +3,7 @@ import {AnalysisCache} from "../../helpers"
 
 class ComparisonAnalysisCache extends AnalysisDataCache {
     constructor(uuid: string, statusCache: RunStatusCache) {
-        super(uuid, 'compare/metrics', statusCache)
+        super(uuid, 'compare/metrics', statusCache, true)
     }
 }
 

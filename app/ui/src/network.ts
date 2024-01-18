@@ -98,8 +98,14 @@ class Network {
         return this.sendHttpRequest('POST', `/user`, {'user': user})
     }
 
-    async getAnalysis(url: string, runUUID: string, isMetricSummary: boolean = true, currentUUID: string = ""): Promise<any> {
-        return this.sendHttpRequest('GET',
+    async getAnalysis(url: string, runUUID: string, isMetricSummary: boolean = true, currentUUID: string = "",
+                      isExperiment: boolean): Promise<any> {
+        let method = 'GET'
+        if (isExperiment) {
+            method = 'POST'
+        }
+
+        return this.sendHttpRequest(method,
             `/${url}/${runUUID}?is_metric_summary=${isMetricSummary}&current=${currentUUID}`)
     }
 

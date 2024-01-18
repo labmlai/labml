@@ -157,7 +157,7 @@ def get_metrics_tracking_util(track_data: List[Dict[str, Any]], preference_data:
 
 
 # @utils.mix_panel.MixPanelEvent.time_this(None)
-@Analysis.route('GET', 'metrics/{run_uuid}')
+@Analysis.route('POST', 'metrics/{run_uuid}')
 async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     status_code = 404

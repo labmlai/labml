@@ -80,7 +80,7 @@ class ComparisonPreferencesIndex(Index['ComparisonPreferences']):
     pass
 
 
-@Analysis.route('GET', 'compare/metrics/{run_uuid}')
+@Analysis.route('POST', 'compare/metrics/{run_uuid}')
 async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
     is_metric_summary = request.query_params['is_metric_summary'] == 'true'
     current_uuid = request.query_params['current']
