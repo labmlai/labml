@@ -143,7 +143,6 @@ async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> A
     if len(rank_uuids.keys()) == 0:  # not distributed main rank
         response = JSONResponse({'error': 'invalid endpoint'})
         response.status_code = 400
-        return response
     else:
         metric_list = [metrics.MetricsAnalysis(m) if m else None for m in metrics.mget(list(rank_uuids.values()))]
         metric_list = [m for m in metric_list if m is not None]
