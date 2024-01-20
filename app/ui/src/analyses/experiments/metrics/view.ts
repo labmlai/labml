@@ -167,7 +167,7 @@ class MetricsView extends ScreenView {
     }
 
     private requestAllMetrics() {
-        metricsCache.getAnalysis(this.uuid).requestAllMetrics()
+        metricsCache.getAnalysis(this.uuid).setMetricData(this.plotIdx)
         this.content.setLoading(true)
         this.isUpdateDisable = false
         this.loader.load(true).then(() => {

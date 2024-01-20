@@ -305,12 +305,12 @@ async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
 
     if len(run_uuid.split('_')) == 1:  # distributed
         r = run.get(run_uuid)
-        uuids = [f'{run_uuid}_{i}' for i in range(1, r.world_size)]
-        uuids.append(run_uuid)
+        if r is not None:
+            uuids = [f'{run_uuid}_{i}' for i in range(1, r.world_size)]
+            uuids.append(run_uuid)
+            status_data = run.get_merged_status_data(uuids)
 
-        status_data = run.get_merged_status_data(uuids)
-
-        if status_data is None:
+        if status_data is None or len(status_data.keys()) == 0:
             status_data = {}
             status_code = 404
         else:

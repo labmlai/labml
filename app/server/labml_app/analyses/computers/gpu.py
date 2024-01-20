@@ -31,7 +31,9 @@ class GPUPreferencesModel(Model['GPUPreferencesModel'], Preferences):
         return dict(series_preferences=[],
                     sub_series_preferences=dict(),
                     chart_type=0,
-                    errors=[]
+                    errors=[],
+                    step_range=[-1, -1],
+                    focus_smoothed=True
                     )
 
     def update_preferences(self, data: Dict[str, Any]) -> None:
@@ -57,6 +59,8 @@ class GPUPreferencesModel(Model['GPUPreferencesModel'], Preferences):
             'series_preferences': self.series_preferences,
             'sub_series_preferences': self.sub_series_preferences,
             'chart_type': self.chart_type,
+            'step_range': self.step_range,
+            'focus_smoothed': self.focus_smoothed
         }
 
 

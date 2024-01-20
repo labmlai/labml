@@ -168,7 +168,7 @@ class DistributedMetricsView extends ScreenView {
 
     private requestAllMetrics() {
         this.isUpdateDisable = false
-        metricsCache.getAnalysis(this.uuid).requestAllMetrics()
+        metricsCache.getAnalysis(this.uuid).setMetricData(this.plotIdx)
         this.content.setLoading(true)
         this.loader.load(true).then(() => {
             this.calcPreferences()

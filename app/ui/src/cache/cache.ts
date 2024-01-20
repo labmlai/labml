@@ -298,36 +298,56 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
     private readonly uuid: string
     private readonly url: string
     private statusCache: StatusCache
-    private isMetricSummary: boolean
+    private metricData: Record<string, boolean>
     private currentUUID: string
+    private readonly isExperiment: boolean
 
-    constructor(uuid: string, url: string, statusCache: StatusCache) {
+    constructor(uuid: string, url: string, statusCache: StatusCache, isExperiment: boolean = false) {
         super()
         this.uuid = uuid
         this.statusCache = statusCache
         this.url = url
-        this.isMetricSummary = true
-    }
-
-    public requestAllMetrics() {
-        this.isMetricSummary = false
-        this.data = null
+        this.isExperiment = isExperiment
     }
 
     public setCurrentUUID(currentUUID: string) {
         this.currentUUID = currentUUID
     }
 
+    public setMetricData(preferences: number[]) {
+        if (this.data == null) {
+            throw new Error('Failed to set metrics: Data is not loaded yet')
+        }
+        if (this.data.series.length != preferences.length) {
+            throw new Error('Preferences length does not match series length')
+        }
+        this.metricData = {}
+        for (let i=0; i<preferences.length; i++) {
+            this.metricData[this.data.series[i]['name']] = preferences[i] != -1
+        }
+    }
+
+    // check if an update from backend is needed
+    private checkMetricData(): boolean {
+        for (let series of this.data.series) {
+            if (series['name'] in this.metricData) {
+                if (this.metricData[series['name']] && series['is_summary']) {
+                    return true
+                }
+            }
+        }
+    }
+
     async load(): Promise<AnalysisDataModel> {
         return this.broadcastPromise.create(async () => {
-            return await NETWORK.getAnalysis(this.url, this.uuid, this.isMetricSummary, this.currentUUID)
+            return await NETWORK.getAnalysis(this.url, this.uuid, this.metricData, this.currentUUID, this.isExperiment)
         })
     }
 
     async get(isRefresh = false): Promise<AnalysisDataModel> {
         let status = await this.statusCache.get()
 
-        if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || (isRefresh && isForceReloadTimeout(this.lastUpdated))) {
+        if (this.data == null || this.checkMetricData() || (status.isRunning && isReloadTimeout(this.lastUpdated)) || (isRefresh && isForceReloadTimeout(this.lastUpdated))) {
             this.data = await this.load()
             this.lastUpdated = (new Date()).getTime()
 
@@ -335,6 +355,12 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
                 await this.statusCache.get(true)
             }
         }
+
+        let plotIdx: number[] = []
+        for (let series of this.data.series) {
+            plotIdx.push(series['is_summary'] ? -1 : 1)
+        }
+        this.setMetricData(plotIdx)
 
         return this.data
     }
