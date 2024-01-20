@@ -358,7 +358,7 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
 
         let plotIdx: number[] = []
         for (let series of this.data.series) {
-            plotIdx.push(series['is_summary'])
+            plotIdx.push(series['is_summary'] ? 1 : -1)
         }
         this.setMetricData(plotIdx)
 
