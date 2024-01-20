@@ -1,6 +1,7 @@
 import {Weya, WeyaElement, WeyaElementFunction} from '../../../lib/weya/weya'
 import {ErrorMessage} from './error_message'
 import {waitForFrame} from '../utils/render'
+import {NetworkError} from "../network";
 
 export class Loader {
     elem: WeyaElement
@@ -72,6 +73,9 @@ export class DataLoader {
             this.loaded = true
         } catch (e) {
             this.loaded = false
+            if (e instanceof NetworkError) {
+                this.errorMessage = new ErrorMessage("Server Error", e.errorDescription)
+            }
             this.errorMessage.render(this.elem)
             throw e
         } finally {
