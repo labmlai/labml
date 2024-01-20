@@ -10,6 +10,8 @@ from fastapi.responses import FileResponse
 from pathlib import Path
 from time import strftime
 
+from starlette.responses import JSONResponse
+
 from labml_app import db
 from labml_app import handlers
 from labml_app.logger import logger
@@ -110,6 +112,18 @@ async def log_process_time(request: Request, call_next):
     # response.headers['Access-Control-Max-Age'] = str(60 * 24)
 
     return response
+
+
+@app.middleware("http")
+async def error_handling_middleware(request: Request, call_next):
+    try:
+        response = await call_next(request)
+        return response
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e), "trace": str(e.__traceback__)},
+        )
 
 
 if __name__ == '__main__':
