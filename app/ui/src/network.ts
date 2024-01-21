@@ -196,11 +196,20 @@ export class NetworkError {
     url: string
     message?: string
     errorDescription?: string
+    stackTrace?: string
 
     constructor(statusCode: number, url: string, message?: string, description?: string) {
         this.statusCode = statusCode
         this.url = url
         this.message = message
+
+        try {
+            let jsonMessage = JSON.parse(message)
+            this.stackTrace = jsonMessage['trace']
+        } catch (e) {
+            // there's no stack strace.
+        }
+
         this.errorDescription = description
     }
 }
