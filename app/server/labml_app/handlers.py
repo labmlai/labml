@@ -6,7 +6,7 @@ from typing import Callable, Dict, Any, Optional
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from .analyses.experiments import metrics
+from .analyses.experiments import metrics, distributed_metrics
 from .analyses.experiments.metrics import MetricsAnalysis
 from .logger import logger
 from . import settings
@@ -363,11 +363,21 @@ async def get_runs(request: Request, labml_token: str, token: Optional[str] = No
         runs_list = default_project.get_runs()
 
     run_uuids = []
+    dist_run_uuids = []
     for r in runs_list:
-        run_uuids.append(r.run_uuid)
+        if r.world_size == 0:
+            run_uuids.append(r.run_uuid)
+        else:
+            dist_run_uuids.append(r.run_uuid)
 
     metric_data = metrics.mget(run_uuids)
     metric_preferences_data = metrics.mget_preferences(run_uuids)
+
+    dist_metric_data = metrics.mget(dist_run_uuids)
+    dist_metric_preferences_data = distributed_metrics.mget_preferences(dist_run_uuids)
+
+    metric_data.extend(dist_metric_data)
+    metric_preferences_data.extend(dist_metric_preferences_data)
 
     res = []
     for r, m, mp in zip(runs_list, metric_data, metric_preferences_data):
