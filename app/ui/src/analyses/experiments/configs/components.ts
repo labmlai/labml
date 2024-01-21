@@ -156,7 +156,7 @@ export class ConfigItemView {
                     this.onTapHandler()
                 }}}, $ => {
             $('span.key', this.key)
-            $('span.combined', {style: {width: `${this.width - KEY_WIDTH - 2 * PADDING}px`}}, $ => {
+            $('span.combined', $ => {
                 new ComputedValue({computed: this.conf.computed}).render($)
 
                 if (this.conf.isCustom) {

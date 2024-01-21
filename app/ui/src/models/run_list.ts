@@ -17,6 +17,8 @@ export interface RunListItemModel {
     start_time: number
     world_size: number
     favorite_configs?: ConfigModel[]
+    metric_values?: MetricValue[]
+    step: number
 }
 
 export interface RunsListModel {
@@ -34,6 +36,8 @@ export class RunListItem {
     start_time: number
     world_size: number
     favorite_configs?: Config[]
+    metric_values?: MetricValue[]
+    step: number
 
     constructor(run_list_item: RunListItemModel) {
         this.run_uuid = run_list_item.run_uuid
@@ -45,6 +49,8 @@ export class RunListItem {
         this.run_status = new RunStatus(run_list_item.run_status)
         this.world_size = run_list_item.world_size
         this.favorite_configs = []
+        this.metric_values = run_list_item.metric_values
+        this.step = run_list_item.step
         if (run_list_item.favorite_configs != null) {
             for (let c of run_list_item.favorite_configs) {
                 this.favorite_configs.push(new Config(c))
