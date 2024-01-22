@@ -208,12 +208,12 @@ async def claim_run(request: Request, run_uuid: str, token: Optional[str] = None
         # float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
 
         # if r.run_uuid in float_project.runs:
-            default_project.runs[r.run_uuid] = r.key
-            default_project.is_run_added = True
-            default_project.save()
-            r.is_claimed = True
-            r.owner = u.email
-            r.save()
+        default_project.runs[r.run_uuid] = r.key
+        default_project.is_run_added = True
+        default_project.save()
+        r.is_claimed = True
+        r.owner = u.email
+        r.save()
 
     return {'is_successful': True}
 
@@ -362,32 +362,50 @@ async def get_runs(request: Request, labml_token: str, token: Optional[str] = No
         labml_token = default_project.labml_token
         runs_list = default_project.get_runs()
 
-    run_uuids = []
-    dist_run_uuids = []
-    for r in runs_list:
-        if r.world_size == 0:
-            run_uuids.append(r.run_uuid)
-        else:
-            dist_run_uuids.append(r.run_uuid)
+    run_uuids = [r.run_uuid for r in runs_list if r.world_size == 0]
 
-    metric_data = metrics.mget(run_uuids)
+    track_data_list = [MetricsAnalysis(m).get_tracking() for m in metrics.mget(run_uuids)]
     metric_preferences_data = metrics.mget_preferences(run_uuids)
 
-    dist_metric_data = metrics.mget(dist_run_uuids)
-    dist_metric_preferences_data = distributed_metrics.mget_preferences(dist_run_uuids)
+    dist_metric_data = []
+    dist_metric_preferences_data = distributed_metrics.mget_preferences(
+        [r.run_uuid for r in runs_list if r.world_size != 0])
 
-    metric_data.extend(dist_metric_data)
+    # get all rank run_uuids
+    dist_rank_uuids = [r.get_rank_uuids() for r in runs_list if r.world_size != 0]
+    # flatten it
+    dist_rank_uuid_list = [run_uuid for rank_uuids in dist_rank_uuids for run_uuid in rank_uuids.values()]
+    dist_metrics = metrics.mget(dist_rank_uuid_list)
+
+    dist_metric_list = [metrics.MetricsAnalysis(m) if m else None for m in dist_metrics]
+    # get metrics per each run as a 2d list
+    dist_metrics = []
+    lengths = [len(r.get_rank_uuids()) for r in runs_list if r.world_size != 0]
+    start = 0
+    for length in lengths:
+        dist_metrics.append(dist_metric_list[start:start + length])
+        start += length
+    # get merged metrics
+    for dist_metric in dist_metrics:
+        metric_list = [m for m in dist_metric if m is not None]
+        dist_track_data_list = [m.get_tracking() for m in metric_list]
+        merged_tracking = distributed_metrics.get_merged_metric_tracking_util(dist_track_data_list,
+                                                                              [-1] * len(track_data_list), {})
+        dist_metric_data.append(merged_tracking)
+
+    track_data_list.extend(dist_metric_data)
     metric_preferences_data.extend(dist_metric_preferences_data)
 
+    # change runs list order (normal runs first, then distributed runs)
+    runs_list = [r for r in runs_list if r.world_size == 0] + [r for r in runs_list if r.world_size != 0]
+
     res = []
-    for r, m, mp in zip(runs_list, metric_data, metric_preferences_data):
+    for r, track_data, mp in zip(runs_list, track_data_list, metric_preferences_data):
         s = run.get_status(r.run_uuid)
-        if r.run_uuid and r.rank == 0 and m is not None and mp is not None:
+        if r.run_uuid and r.rank == 0 and track_data is not None and mp is not None:
             summary = r.get_summary()
             preferences = mp.series_preferences
             metric_values = []
-
-            track_data = MetricsAnalysis(m).get_tracking()
 
             summary['step'] = 0
 
