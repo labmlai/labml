@@ -2,7 +2,7 @@ from typing import Any, Optional, Dict, List
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from labml_db import Model, Index
+from labml_db import Model, Index, load_keys
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
@@ -23,6 +23,11 @@ class DistMetricsPreferencesModel(Model['DistMetricsPreferencesModel'], Preferen
 @Analysis.db_index(YamlSerializer, 'merged_metrics_preferences_index.yaml')
 class DistMetricsPreferencesIndex(Index['DistMetricsPreferences']):
     pass
+
+
+def mget_preferences(run_uuids: List[str]) -> List[Optional['DistMetricsPreferencesModel']]:
+    run_keys = DistMetricsPreferencesIndex.mget(run_uuids)
+    return load_keys(run_keys)
 
 
 @Analysis.route('GET', 'distributed/metrics/merged/preferences/{run_uuid}')
