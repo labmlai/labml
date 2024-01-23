@@ -390,7 +390,7 @@ async def get_runs(request: Request, labml_token: str, token: Optional[str] = No
         metric_list = [m for m in dist_metric if m is not None]
         dist_track_data_list = [m.get_tracking() for m in metric_list]
         merged_tracking = distributed_metrics.get_merged_metric_tracking_util(dist_track_data_list,
-                                                                              [-1] * len(track_data_list), {})
+                                                                              [-1] * len(dist_track_data_list), {})
         dist_metric_data.append(merged_tracking)
 
     track_data_list.extend(dist_metric_data)
