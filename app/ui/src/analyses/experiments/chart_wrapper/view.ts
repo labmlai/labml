@@ -20,11 +20,13 @@ interface ViewWrapperOpt {
 }
 
 export interface ViewWrapperData {
-    series?: SeriesModel[]
-    plotIdx?: number[]
-    currentChart?: number
-    focusSmoothed?: boolean
-    stepRange?: number[]
+    series: SeriesModel[]
+    baseSeries?: SeriesModel[]
+    plotIdx: number[]
+    basePlotIdx?: number[]
+    currentChart: number
+    focusSmoothed: boolean
+    stepRange: number[]
 }
 
 export class ViewWrapper {
@@ -34,14 +36,15 @@ export class ViewWrapper {
     private readonly saveButtonContainer: WeyaElement
     private readonly toggleButtonContainer: WeyaElement
     private isUpdateDisable: boolean
-    private actualWidth: number
+    private readonly actualWidth: number
 
     private readonly stepRangeField: NumericRangeField
     private readonly saveButton: SaveButton
 
     private series: SeriesModel[]
-
-    private plotIdx: number[] = []
+    private baseSeries: SeriesModel[]
+    private plotIdx: number[]
+    private basePlotIdx: number[]
     private currentChart: number
     private focusSmoothed: boolean
     private stepRange: number[]
@@ -79,11 +82,13 @@ export class ViewWrapper {
     }
 
     public updateData(data: ViewWrapperData) {
-        this.series = data.series != null ? data.series : this.series
-        this.plotIdx = data.plotIdx != null ? data.plotIdx : this.plotIdx
-        this.currentChart = data.currentChart != null ? data.currentChart : this.currentChart
-        this.focusSmoothed = data.focusSmoothed != null ? data.focusSmoothed : this.focusSmoothed
-        this.stepRange = data.stepRange != null ? data.stepRange : this.stepRange
+        this.series = data.series
+        this.plotIdx = data.plotIdx
+        this.baseSeries = data.baseSeries ?? []
+        this.basePlotIdx = data.basePlotIdx ?? []
+        this.currentChart = data.currentChart
+        this.focusSmoothed = data.focusSmoothed
+        this.stepRange = data.stepRange
 
         this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
     }
@@ -154,8 +159,10 @@ export class ViewWrapper {
         $(this.lineChartContainer, $ => {
             new LineChart({
                 series: this.series,
+                baseSeries: this.baseSeries,
                 width: this.actualWidth,
                 plotIndex: this.plotIdx,
+                basePlotIdx: this.basePlotIdx,
                 chartType: getChartType(this.currentChart),
                 onCursorMove: [this.sparkLines.changeCursorValues],
                 isCursorMoveOpt: true,
@@ -171,37 +178,54 @@ export class ViewWrapper {
         $(this.sparkLinesContainer, $ => {
             this.sparkLines = new SparkLines({
                 series: this.series,
+                baseSeries: this.baseSeries,
                 plotIdx: this.plotIdx,
+                basePlotIdx: this.basePlotIdx,
                 width: this.actualWidth,
-                onSelect: this.toggleChart,
+                onSelect: (idx: number) => {
+                    this.toggleChart(idx, false)
+                },
+                onBaseSelect: (idx: number) => {
+                    this.toggleChart(idx, true)
+                },
                 isDivergent: true
             })
             this.sparkLines.render($)
         })
     }
 
-    private toggleChart = (idx: number) => {
+    private toggleChart = (idx: number, isBase: boolean) => {
         this.isUpdateDisable = false
 
-        if (this.plotIdx[idx] > 1) // fix for existing plot idxs
-            this.plotIdx[idx] = 1
+        let plotIdx = isBase ? this.basePlotIdx : this.plotIdx
 
-        if (this.plotIdx[idx] == 0) {
-            this.plotIdx[idx] = 1
-        } else if (this.plotIdx[idx] == 1) {
-            this.plotIdx[idx] = -1
-        } else if (this.plotIdx[idx] == -1) {
-            this.plotIdx[idx] = 0
+        if (plotIdx[idx] > 1)
+            plotIdx[idx] = 1
+
+        if (plotIdx[idx] == 0) {
+            plotIdx[idx] = 1
+        } else if (plotIdx[idx] == 1) {
+            plotIdx[idx] = -1
+        } else if (plotIdx[idx] == -1) {
+            plotIdx[idx] = 0
+        }
+
+        if (isBase) {
+            this.basePlotIdx = plotIdx
+        } else {
+            this.plotIdx = plotIdx
         }
 
         this.renderSparkLines()
         this.renderLineChart()
         this.renderSaveButton()
 
-        if (this.series[idx].is_summary) {
+        if ((isBase && this.baseSeries[idx].is_summary) || (!isBase && this.series[idx].is_summary)) {
             this.updatePreferences({
                 series: this.series,
+                baseSeries: this.baseSeries,
                 plotIdx: this.plotIdx,
+                basePlotIdx: this.basePlotIdx,
                 currentChart: this.currentChart,
                 focusSmoothed: this.focusSmoothed,
                 stepRange: this.stepRange
