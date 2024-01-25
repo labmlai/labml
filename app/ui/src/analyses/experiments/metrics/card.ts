@@ -60,8 +60,7 @@ export class MetricsCard extends Card {
                 insightsContainer: this.insightsContainer,
                 lineChartContainer: this.lineChartContainer,
                 sparkLinesContainer: this.sparkLineContainer,
-                width: this.width,
-                isDistributed: false
+                width: this.width
             })
 
             this.chartWrapper.render()
@@ -72,7 +71,7 @@ export class MetricsCard extends Card {
     async refresh() {
         try {
             await this.loader.load(true)
-            this.chartWrapper?.updateData(this.series, this.insights, this.preferenceData)
+            this.chartWrapper?.updateData(this.series, null, this.insights, this.preferenceData)
             this.chartWrapper?.render()
         } catch (e) {
         }
