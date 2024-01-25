@@ -1,4 +1,4 @@
-import {SeriesModel} from "../../../models/run"
+import {Run, SeriesModel} from "../../../models/run"
 import CACHE, {AnalysisPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
@@ -41,6 +41,7 @@ class MetricsView extends ScreenView {
     private loader: DataLoader
     private content: ViewWrapper
     private preferenceCache: AnalysisPreferenceCache
+    private run: Run
 
     constructor(uuid: string) {
         super()
@@ -54,6 +55,7 @@ class MetricsView extends ScreenView {
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
             this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
+            this.run = await CACHE.getRun(this.uuid).get(force)
         })
 
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
@@ -108,7 +110,7 @@ class MetricsView extends ScreenView {
         try {
             await this.loader.load()
 
-            // todo setTitle({section: 'Metrics', item: this.run.name})
+            setTitle({section: 'Metrics', item: this.run.name})
 
             this.content = new ViewWrapper({
                 updatePreferences: this.updatePreferences,
