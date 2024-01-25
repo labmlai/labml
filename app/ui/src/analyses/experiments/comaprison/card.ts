@@ -6,12 +6,11 @@ import {DataLoader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {DEBUG} from "../../../env"
 import {clearChildElements} from "../../../utils/document"
-import {getChartType, toPointValues} from "../../../components/charts/utils"
+import {toPointValues} from "../../../components/charts/utils"
 import {SeriesModel} from "../../../models/run"
-import {LineChart} from "../../../components/charts/lines/chart"
-import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ROUTER} from "../../../app"
 import {NetworkError} from "../../../network"
+import {CardWrapper} from "../chart_wrapper/card"
 
 export class ComparisonCard extends Card {
     private readonly  currentUUID: string
@@ -26,8 +25,10 @@ export class ComparisonCard extends Card {
     private loader: DataLoader
     private missingBaseExperiment: boolean
     private lineChartContainer: HTMLDivElement
-    private sparkLinesContainer: HTMLDivElement
+    private sparkLineContainer: HTMLDivElement
+    private insightsContainer: HTMLDivElement
     private elem: HTMLDivElement
+    private chartWrapper: CardWrapper
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -66,15 +67,15 @@ export class ComparisonCard extends Card {
     }
 
     getLastUpdated(): number {
-        return this.currentAnalysisCache.lastUpdated;
+        return this.currentAnalysisCache.lastUpdated
     }
 
     async refresh() {
         try {
              await this.loader.load(true)
              if (this.currentSeries.concat(this.baseSeries).length > 0) {
-                 this.renderLineChart()
-                 this.renderSparkLines()
+                this.chartWrapper?.updateData(this.currentSeries, this.baseSeries, [], this.preferenceData)
+                this.chartWrapper?.render()
              }
          } catch (e) {
          }
@@ -86,15 +87,26 @@ export class ComparisonCard extends Card {
             this.loader.render($)
 
             this.lineChartContainer = $('div', '')
-            this.sparkLinesContainer = $('div', '')
+            this.sparkLineContainer = $('div', '')
+            this.insightsContainer = $('div', '')
         })
 
         try {
             await this.loader.load()
 
+            this.chartWrapper = new CardWrapper({
+                elem: this.elem,
+                preferenceData: this.preferenceData,
+                insights: [],
+                series: this.currentSeries,
+                insightsContainer: this.insightsContainer,
+                lineChartContainer: this.lineChartContainer,
+                sparkLinesContainer: this.sparkLineContainer,
+                width: this.width
+            })
+
             if (!this.missingBaseExperiment) {
-                this.renderLineChart()
-                this.renderSparkLines()
+                this.chartWrapper.render()
             } else {
                 this.renderEmptyChart()
             }
@@ -109,38 +121,6 @@ export class ComparisonCard extends Card {
         clearChildElements(this.lineChartContainer)
         $(this.lineChartContainer, $ => {
             $('div', '.empty-chart-message', `${screen.width < 500 ? "Tap" : "Click"} here to compare with another experiment`)
-        })
-    }
-
-    private renderLineChart() {
-        clearChildElements(this.lineChartContainer)
-        $(this.lineChartContainer, $ => {
-            new LineChart({
-                series: this.currentSeries,
-                baseSeries: this.baseSeries,
-                plotIndex: [...(this.preferenceData.series_preferences ?? [])],
-                basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
-                width: this.width,
-                chartType: getChartType(this.preferenceData.chart_type),
-                isDivergent: true,
-                stepRange: this.preferenceData.step_range,
-                focusSmoothed: this.preferenceData.focus_smoothed
-            }).render($)
-        })
-    }
-
-    private renderSparkLines() {
-        clearChildElements(this.sparkLinesContainer)
-        $(this.sparkLinesContainer, $ => {
-            new SparkLines({
-                series: this.currentSeries,
-                baseSeries: this.baseSeries,
-                plotIdx: [...(this.preferenceData.series_preferences ?? [])],
-                basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
-                width: this.width,
-                isDivergent: true,
-                onlySelected: true,
-            }).render($)
         })
     }
 
