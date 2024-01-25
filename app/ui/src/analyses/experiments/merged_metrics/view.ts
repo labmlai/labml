@@ -1,4 +1,4 @@
-import {SeriesModel} from "../../../models/run"
+import {Run, SeriesModel} from "../../../models/run"
 import CACHE, {AnalysisPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
@@ -27,6 +27,7 @@ class DistributedMetricsView extends ScreenView {
     private currentChart: number
     private focusSmoothed: boolean
     private stepRange: number[]
+    private run: Run
 
     private elem: HTMLDivElement
     private runHeaderCard: RunHeaderCard
@@ -51,6 +52,7 @@ class DistributedMetricsView extends ScreenView {
 
         this.isUpdateDisable = true
         this.loader = new DataLoader(async (force) => {
+            this.run = await CACHE.getRun(this.uuid).get(force)
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
             this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
@@ -108,7 +110,7 @@ class DistributedMetricsView extends ScreenView {
         try {
             await this.loader.load()
 
-            // setTitle({section: 'Metrics', item: this.run.name})
+            setTitle({section: 'Metrics', item: this.run.name})
 
             this.content = new ViewWrapper({
                 updatePreferences: this.updatePreferences,
