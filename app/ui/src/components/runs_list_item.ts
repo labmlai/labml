@@ -2,8 +2,6 @@ import {WeyaElementFunction} from '../../../lib/weya/weya'
 import {RunListItem} from '../models/run_list'
 import {StatusView} from './status'
 import {formatTime} from '../utils/time'
-import {StandaloneSparkLine} from "./charts/spark_lines/spark_line";
-import {getExtent, toPointValue} from "./charts/utils";
 import {ConfigItemView} from "../analyses/experiments/configs/components";
 
 export interface RunsListItemOptions {
