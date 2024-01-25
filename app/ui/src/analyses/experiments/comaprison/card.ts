@@ -8,8 +8,8 @@ import {DEBUG} from "../../../env"
 import {clearChildElements} from "../../../utils/document"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {SeriesModel} from "../../../models/run"
-import {LineChart} from "../../../components/charts/compare_lines/chart"
-import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
+import {LineChart} from "../../../components/charts/lines/chart"
+import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ROUTER} from "../../../app"
 import {NetworkError} from "../../../network"
 
@@ -118,7 +118,7 @@ export class ComparisonCard extends Card {
             new LineChart({
                 series: this.currentSeries,
                 baseSeries: this.baseSeries,
-                currentPlotIndex: [...(this.preferenceData.series_preferences ?? [])],
+                plotIndex: [...(this.preferenceData.series_preferences ?? [])],
                 basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
                 width: this.width,
                 chartType: getChartType(this.preferenceData.chart_type),
@@ -132,10 +132,10 @@ export class ComparisonCard extends Card {
     private renderSparkLines() {
         clearChildElements(this.sparkLinesContainer)
         $(this.sparkLinesContainer, $ => {
-            new CompareSparkLines({
+            new SparkLines({
                 series: this.currentSeries,
                 baseSeries: this.baseSeries,
-                currentPlotIdx: [...(this.preferenceData.series_preferences ?? [])],
+                plotIdx: [...(this.preferenceData.series_preferences ?? [])],
                 basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
                 width: this.width,
                 isDivergent: true,

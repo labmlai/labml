@@ -7,62 +7,62 @@ import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
 import {DropShadow, LineGradients} from "../chart_gradients"
-import ChartColors, {ChartColorsBase} from "../chart_colors"
+import ChartColors from "../chart_colors"
 import {getWindowDimensions} from '../../../utils/window_dimentions'
-import DistributedChartColors from "../distributed_chart_colors"
 
 const LABEL_HEIGHT = 10
 
 interface LineChartOptions extends ChartOptions {
-    plotIdx: number[]
+    baseSeries?: SeriesModel[]
+    basePlotIdx?: number[]
+    // series is defined in chart options - used as current series
+    plotIndex: number[]
     onSelect?: (i: number) => void
     chartType: string
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
     isDivergent?: boolean
-    stepRange?: number[]
+    stepRange: number[]
     focusSmoothed: boolean
-    isDistributed?: boolean
 }
 
 export class LineChart {
-    series: SeriesModel[]
-    plotIdx: number[]
-    plot: SeriesModel[] = []
-    filteredPlotIdx: number[] = []
-    chartType: string
-    chartWidth: number
-    chartHeight: number
-    margin: number
-    axisSize: number
-    labels: string[] = []
-    xScale: d3.ScaleLinear<number, number>
-    yScale: d3.ScaleLinear<number, number>
-    svgElem: WeyaElement
-    stepElement: WeyaElement
-    linePlots: LinePlot[] = []
-    onCursorMove?: ((cursorStep?: number | null) => void)[]
-    isCursorMoveOpt?: boolean
-    chartColors: ChartColorsBase
-    isDivergent: boolean
-    isDistributed: boolean
+    private readonly currentSeries: SeriesModel[]
+    private readonly currentPlotIndex: number[]
+    private readonly baseSeries: SeriesModel[]
+    private readonly basePlotIndex: number[]
+    private readonly filteredBaseSeries: SeriesModel[]
+    private readonly filteredCurrentSeries: SeriesModel[]
+    private readonly chartType: string
+    private readonly chartWidth: number
+    private readonly chartHeight: number
+    private readonly margin: number
+    private readonly axisSize: number
+    private xScale: d3.ScaleLinear<number, number>
+    private yScale: d3.ScaleLinear<number, number>
+    private svgElem: WeyaElement
+    private stepElement: WeyaElement
+    private readonly linePlots: LinePlot[] = []
+    private readonly onCursorMove?: ((cursorStep?: number | null) => void)[]
+    private readonly isCursorMoveOpt?: boolean
+    private readonly chartColors: ChartColors
     private svgBoundingClientRect: DOMRect
+    private readonly  uniqueItems: Map<string, number>
     private readonly focusSmoothed: boolean
-    uniqueItems: Map<string, number>
 
     constructor(opt: LineChartOptions) {
-        this.series = opt.series
+        this.currentSeries = opt.series
+        this.currentPlotIndex = opt.plotIndex
+        this.baseSeries = opt.baseSeries ?? []
+        this.basePlotIndex = opt.basePlotIdx ?? []
         this.chartType = opt.chartType
-        this.plotIdx = opt.plotIdx
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
+        this.baseSeries = trimSteps(this.baseSeries, opt.stepRange[0], opt.stepRange[1])
+        this.currentSeries = trimSteps(this.currentSeries, opt.stepRange[0], opt.stepRange[1])
         this.focusSmoothed = opt.focusSmoothed
-        this.isDistributed = opt.isDistributed ? opt.isDistributed : false
 
-        if (opt.stepRange != null) {
-            this.series = trimSteps(this.series, opt.stepRange[0], opt.stepRange[1])
-        }
-
+        this.uniqueItems = new Map<string, number>()
         this.axisSize = 30
         let windowWidth = opt.width
         let windowHeight = getWindowDimensions().height
@@ -70,52 +70,44 @@ export class LineChart {
         this.chartWidth = windowWidth - 2 * this.margin - this.axisSize
         this.chartHeight = Math.round(Math.min(this.chartWidth, windowHeight) / 2)
 
-        if (this.plotIdx.length === 0) {
-            this.plotIdx = defaultSeriesToPlot(this.series)
+        if (this.currentPlotIndex.length == 0) {
+            this.currentPlotIndex = defaultSeriesToPlot(this.currentSeries)
+        }
+        if (this.basePlotIndex.length == 0) {
+            this.basePlotIndex = defaultSeriesToPlot(this.baseSeries)
         }
 
-        for (let i = 0; i < this.plotIdx.length; i++) {
-            if (this.plotIdx[i] >= 1) {
-                this.filteredPlotIdx.push(i)
-                this.plot.push(this.series[i])
-            }
-        }
-        if (this.plotIdx.length > 0 && Math.max(...this.plotIdx) < 0) {
-            this.plot = [this.series[0]]
-            this.filteredPlotIdx = [0]
-        }
+        // TODO show something if everything is not selected
 
-        const stepExtent = getExtent(this.plot.map(s => s.series), d => d.step)
+        this.filteredBaseSeries = this.baseSeries.filter((_, i) => this.basePlotIndex[i] == 1)
+        this.filteredCurrentSeries = this.currentSeries.filter((_, i) => this.currentPlotIndex[i] == 1)
+
+        const stepExtent = getExtent(this.filteredBaseSeries.concat(this.filteredCurrentSeries).map(s => s.series), d => d.step, false, true)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
-        let uniqueItemIdx = 0
-        this.uniqueItems = new Map<string, number>()
-        for (let s of this.series) {
-            let series = s.series
+        let idx: number = 0
+        for (let s of this.currentSeries.concat(this.baseSeries)) {
             if (!this.uniqueItems.has(s.name)) {
-                this.uniqueItems.set(s.name, uniqueItemIdx++)
+                this.uniqueItems.set(s.name, idx++)
             }
         }
 
-        if (this.isDistributed) {
-            this.chartColors = new DistributedChartColors({nColors: this.uniqueItems.size, nShades: this.series.length})
-        } else {
-            this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
-        }
+        this.chartColors = new ChartColors({
+            nColors: this.uniqueItems.size,
+            secondNColors: this.uniqueItems.size,
+            isDivergent: opt.isDivergent})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     changeScale() {
-        let plotSeries = this.plot.map(s => s.series)
-
+        let plotSeries = this.filteredBaseSeries.concat(this.filteredCurrentSeries).map(s => s.series)
         if (plotSeries.length == 0) {
             this.yScale = d3.scaleLinear()
                 .domain([0, 0])
                 .range([0, 0]);
             return
         }
-
         if (this.chartType === 'log') {
             this.yScale = getLogScale(getExtent(plotSeries, d => this.focusSmoothed ? d.smoothed : d.value, false, true), -this.chartHeight)
         } else {
@@ -183,12 +175,14 @@ export class LineChart {
 
     render($: WeyaElementFunction) {
         this.changeScale()
+        let filteredBaseSeriesLength = this.filteredBaseSeries.length
+        let filteredCurrentSeriesLength = this.filteredCurrentSeries.length
 
-        if (this.series.length === 0) {
+        if (filteredBaseSeriesLength + filteredCurrentSeriesLength === 0) {
             $('div', '')
         } else {
-            $('div.fit-content', $ => {
-                $('div.fit-content', $ => {
+            $('div', $ => {
+                $('div', $ => {
                         // this.stepElement = $('h6', '.text-center.selected-step', '')
                         this.svgElem = $('svg', '#chart',
                             {
@@ -205,26 +199,46 @@ export class LineChart {
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
-                                        if (this.plot.length < 3) {
-                                            this.plot.map((s, i) => {
+                                        if (this.filteredCurrentSeries.length < 3 && this.filteredBaseSeries.length == 0) {
+                                            this.filteredCurrentSeries.map((s, i) => {
                                                 new LineFill({
                                                     series: s.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
-                                                    color: this.chartColors.getColor(this.filteredPlotIdx[i], this.uniqueItems.get(s.name) ?? 0),
-                                                    colorIdx: this.filteredPlotIdx[i],
+                                                    color: document.body.classList.contains("light")
+                                                        ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
+                                                        : this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                                                    colorIdx: this.uniqueItems.get(s.name),
                                                     chartId: this.chartId
                                                 }).render($)
                                             })
                                         }
-                                        this.plot.map((s, i) => {
+                                        this.filteredCurrentSeries.map((s, i) => {
                                             let linePlot = new LinePlot({
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.chartColors.getColor(this.filteredPlotIdx[i], this.uniqueItems.get(s.name) ?? 0),
+                                                color: document.body.classList.contains("light")
+                                                        ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
+                                                        : this.chartColors.getColor(this.uniqueItems.get(s.name)),
                                                 renderHorizontalLine: true,
-                                                smoothFocused: this.focusSmoothed,
+                                                smoothFocused: this.focusSmoothed
+                                            })
+                                            this.linePlots.push(linePlot)
+                                            linePlot.render($)
+                                        })
+
+                                        this.filteredBaseSeries.map((s, i) => {
+                                            let linePlot = new LinePlot({
+                                                series: s.series,
+                                                xScale: this.xScale,
+                                                yScale: this.yScale,
+                                                color: document.body.classList.contains("light")
+                                                        ? this.chartColors.getColor(this.uniqueItems.get(s.name))
+                                                        : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
+                                                isBase: true,
+                                                renderHorizontalLine: true,
+                                                smoothFocused: this.focusSmoothed
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)

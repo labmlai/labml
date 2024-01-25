@@ -4,10 +4,10 @@ import {FillOptions, PlotOptions} from '../types'
 import {PointValue} from "../../../models/run"
 import {getSelectedIdx} from "../utils"
 
-
 export interface LinePlotOptions extends PlotOptions {
     xScale: d3.ScaleLinear<number, number>
     series: PointValue[]
+    isBase?: boolean
     renderHorizontalLine?: boolean
     smoothFocused?: boolean
 }
@@ -22,6 +22,7 @@ export class LinePlot {
     smoothedLine: d3.Line<PointValue>
     unsmoothedLine: d3.Line<PointValue>
     bisect: d3.Bisector<number, number>
+    isBase: boolean
     renderHorizontalLine: boolean
     smoothFocused: boolean
 
@@ -30,6 +31,7 @@ export class LinePlot {
         this.xScale = opt.xScale
         this.yScale = opt.yScale
         this.color = opt.color
+        this.isBase = opt.isBase ?? false
         this.renderHorizontalLine = opt.renderHorizontalLine ?? false
         this.smoothFocused = opt.smoothFocused ?? false
 
@@ -58,18 +60,21 @@ export class LinePlot {
 
     render($: WeyaElementFunction) {
         $('g', $ => {
-            $('path.smoothed-line.dropshadow',
+            $(`path.smoothed-line.dropshadow${this.isBase ? '.base': '.current'}`,
                 {
                     fill: 'none',
                     stroke: this.color,
-                    d: this.smoothedLine(this.series) as string
+                    d: this.smoothedLine(this.series) as string,
+                    "stroke-dasharray": this.isBase ? "3 1": ""
                 })
-            $('path.unsmoothed-line' + (this.smoothFocused ? '.smooth-focused' : ''),
-                {
-                    fill: 'none',
-                    stroke: this.color,
-                    d: this.unsmoothedLine(this.series) as string
-                })
+            if (!this.isBase) {
+                $('path.unsmoothed-line'+(this.smoothFocused ? '.smooth-focused': ''),
+                    {
+                        fill: 'none',
+                        stroke: this.color,
+                        d: this.unsmoothedLine(this.series) as string
+                    })
+            }
             $('g', $ => {
                 this.circleElem = $('circle',
                     {
@@ -123,7 +128,6 @@ interface LineFillOptions extends FillOptions {
     series: PointValue[]
     chartId?: string
 }
-
 
 export class LineFill {
     series: PointValue[]

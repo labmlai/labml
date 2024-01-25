@@ -3,24 +3,21 @@ import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {PointValue} from "../../../models/run"
 import {getBaseColor} from "../constants"
 import {getExtent, getScale, getSelectedIdx} from "../utils"
-import {LineFill, LinePlot} from "../lines/plot"
 import {formatFixed} from "../../../utils/value"
+import {LineFill, LinePlot} from '../lines/plot'
 
-export interface StandaloneSparkLineOptions {
+export interface SparkLineOptions {
     name: string
     series: PointValue[]
     width: number
     stepExtent: [number, number]
-}
-
-export interface SparkLineOptions extends StandaloneSparkLineOptions {
     selected: number
     minLastValue: number
     maxLastValue: number
     onClick?: () => void
     isMouseMoveOpt?: boolean
     color: string
-    showValue?: boolean
+    isBase?: boolean
 }
 
 export class SparkLine {
@@ -41,15 +38,13 @@ export class SparkLine {
     yScale: d3.ScaleLinear<number, number>
     bisect: d3.Bisector<number, number>
     linePlot: LinePlot
-    showValue: Boolean
+    isBase: boolean
 
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
-
         if (opt.selected == -1) {
             this.series = [this.series[this.series.length - 1]]
         }
-
         this.name = opt.name
         this.selected = opt.selected
         this.onClick = opt.onClick
@@ -59,7 +54,7 @@ export class SparkLine {
         this.titleWidth = (opt.width - this.chartWidth) / 2
         this.minLastValue = opt.minLastValue
         this.maxLastValue = opt.maxLastValue
-        this.showValue = opt.showValue ?? true
+        this.isBase = opt.isBase ?? false
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
@@ -69,10 +64,10 @@ export class SparkLine {
         }).left
 
         if (this.onClick != null && this.selected >= 1) {
-            this.className = 'selected'
-        } else if (this.onClick != null && this.selected == -1) {
-            this.className = 'unselected'
-        }
+             this.className = 'selected'
+         } else if (this.onClick != null && this.selected == -1) {
+             this.className = 'unselected'
+         }
 
         if (this.onClick != null) {
             this.className += '.list-group-item-action'
@@ -87,10 +82,6 @@ export class SparkLine {
     }
 
     renderValue(cursorStep?: number | null) {
-        if (this.showValue === false) {
-            return
-        }
-
         const last = this.series[this.selected >= 0 || this.isMouseMoveOpt ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
 
@@ -104,7 +95,7 @@ export class SparkLine {
 
     render($: WeyaElementFunction) {
         $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
-            $('div.sparkline-content', {style: {width: `${Math.min(this.titleWidth * 2 + this.chartWidth, 450)}px`}}, $ => {
+            $(`div.sparkline-content`, {style: {width: `${Math.min(this.titleWidth * 2 + this.chartWidth, 450)}px`}}, $ => {
                 $('span', '.title', this.name, {style: {color: this.color}})
                 $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth * 2}px`}, height: 36}, $ => {
                     $('g', {transform: `translate(${this.titleWidth}, 30)`}, $ => {
@@ -119,7 +110,8 @@ export class SparkLine {
                             series: this.series,
                             xScale: this.xScale,
                             yScale: this.yScale,
-                            color: '#7f8c8d'
+                            color: '#7f8c8d',
+                            isBase: this.isBase
                         })
                         this.linePlot.render($)
                     })
@@ -136,6 +128,7 @@ export class SparkLine {
                 })
             })
         })
+
         this.renderValue()
     }
 }

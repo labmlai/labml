@@ -155,14 +155,13 @@ export class ViewWrapper {
             new LineChart({
                 series: this.series,
                 width: this.actualWidth,
-                plotIdx: this.plotIdx,
+                plotIndex: this.plotIdx,
                 chartType: getChartType(this.currentChart),
                 onCursorMove: [this.sparkLines.changeCursorValues],
                 isCursorMoveOpt: true,
                 isDivergent: true,
                 stepRange: this.stepRange,
-                focusSmoothed: this.focusSmoothed,
-                isDistributed: false
+                focusSmoothed: this.focusSmoothed
             }).render($)
         })
     }
@@ -175,8 +174,7 @@ export class ViewWrapper {
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 onSelect: this.toggleChart,
-                isDivergent: true,
-                isDistributed: false
+                isDivergent: true
             })
             this.sparkLines.render($)
         })

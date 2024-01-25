@@ -13,9 +13,9 @@ import {clearChildElements, setTitle} from "../../../utils/document"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {BackButton, DeleteButton, EditButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
-import {LineChart} from "../../../components/charts/compare_lines/chart"
+import {LineChart} from "../../../components/charts/lines/chart"
 import {ErrorMessage} from "../../../components/error_message"
-import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
+import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {NetworkError} from "../../../network"
 import {RunsPickerView} from "../../../views/run_picker_view"
 import {AwesomeRefreshButton} from "../../../components/refresh_button"
@@ -47,7 +47,7 @@ class ComparisonView extends ScreenView {
     private lineChartContainer: HTMLDivElement
     private sparkLineContainer: HTMLDivElement
     private missingBaseExperiment: Boolean
-    private sparkLines: CompareSparkLines
+    private sparkLines: SparkLines
     private optionContainer: HTMLDivElement
     private currentPlotIdx: number[]
     private basePlotIdx: number[]
@@ -441,14 +441,14 @@ class ComparisonView extends ScreenView {
         clearChildElements(this.sparkLineContainer)
         $(this.sparkLineContainer, $=> {
             if (!!this.baseSeries) {
-                this.sparkLines = new CompareSparkLines({
+                this.sparkLines = new SparkLines({
                     series: this.currentSeries,
                     baseSeries: this.baseSeries,
-                    currentPlotIdx: this.currentPlotIdx,
+                    plotIdx: this.currentPlotIdx,
                     basePlotIdx: this.basePlotIdx,
                     width: this.actualWidth,
                     isDivergent: true,
-                    onCurrentSelect: this.toggleCurrentChart,
+                    onSelect: this.toggleCurrentChart,
                     onBaseSelect: this.toggleBaseChart
                 })
                 this.sparkLines.render($)
@@ -461,7 +461,7 @@ class ComparisonView extends ScreenView {
                 new LineChart({
                     series: this.currentSeries,
                     baseSeries: this.baseSeries,
-                    currentPlotIndex: this.currentPlotIdx,
+                    plotIndex: this.currentPlotIdx,
                     basePlotIdx: this.basePlotIdx,
                     width: this.actualWidth,
                     chartType: getChartType(this.currentChart),

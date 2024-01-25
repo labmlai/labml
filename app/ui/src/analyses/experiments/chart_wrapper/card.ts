@@ -96,12 +96,11 @@ export class CardWrapper {
             new LineChart({
                 series: this.series,
                 width: this.width,
-                plotIdx: this.plotIdx,
+                plotIndex: this.plotIdx,
                 chartType: this.chartType != null ? getChartType(this.chartType) : 'linear',
                 isDivergent: true,
                 stepRange: this.stepRange,
-                focusSmoothed: this.focusSmoothed,
-                isDistributed: this.isDistributed
+                focusSmoothed: this.focusSmoothed
             }).render($)
         })
     }
@@ -117,9 +116,7 @@ export class CardWrapper {
                 plotIdx: this.plotIdx,
                 width: this.width,
                 isDivergent: true,
-                isDistributed: this.isDistributed,
-                onlySelected: true,
-                showValue: this.showValues
+                onlySelected: true
             }).render($)
         })
     }
