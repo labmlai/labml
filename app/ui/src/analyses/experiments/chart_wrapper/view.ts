@@ -117,6 +117,10 @@ export class ViewWrapper {
     }
 
     public renderSaveButton() {
+        if (this.saveButtonContainer == null) {
+            return
+        }
+
         this.saveButton.disabled = this.isUpdateDisable
         this.saveButtonContainer.innerHTML = ''
         $(this.saveButtonContainer, $ => {
