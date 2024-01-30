@@ -49,5 +49,7 @@ def get_default_series_preference(series_names: List[str]) -> List[int]:
 def fill_preferences(series_names: List[str], preferences: List[int]) -> List[int]:
     if len(series_names) > len(preferences):
         preferences += [-1] * (len(series_names) - len(preferences))
+    else:
+        preferences = preferences[:len(series_names)]
 
     return preferences

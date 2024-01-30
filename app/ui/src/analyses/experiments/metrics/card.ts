@@ -33,7 +33,7 @@ export class MetricsCard extends Card {
             this.insights = analysisData.insights
             this.preferenceData = await metricsCache.getPreferences(this.uuid).get(force)
 
-            this.preferenceData.series_preferences = fillPlotPreferences(this.series)
+            this.preferenceData.series_preferences = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
         })
     }
 

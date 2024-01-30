@@ -73,16 +73,12 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
             this.run = await CACHE.getRun(this.uuid).get(force)
 
+            metricsCache.getAnalysis(this.uuid).setCurrentUUID(this.uuid)
             this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
 
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
             this.baseUuid = this.preferenceData.base_experiment
-            if (this.baseUuid != '') {
-                this.baseSeries = toPointValues((await metricsCache.getAnalysis(this.baseUuid).get(force)).series)
-                this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries)
-            }
-            this.preferenceData.series_preferences = fillPlotPreferences(this.series)
-
+            this.preferenceData.series_preferences = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
 
             if (!!this.baseUuid) {
                 await this.updateBaseRun(force)
@@ -285,7 +281,13 @@ class ComparisonView extends ScreenView implements MetricDataStore {
 
                     this.preservePreferences = false
 
-                    await this.updateBaseRun(false)
+                    await this.preferenceCache.setPreference(this.preferenceData)
+                    await this.updateBaseRun(true)
+                    this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries, [])
+                    this.preferenceData.series_preferences = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
+                    this.plotIdx = this.preferenceData.series_preferences
+                    this.basePlotIdx = this.preferenceData.base_series_preferences
+
 
                     this.renderHeaders()
                     this.content.render()
@@ -321,6 +323,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
         try {
             this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
+            this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)
             this.missingBaseExperiment = false
         } catch (e) {
             if (e instanceof NetworkError && e.statusCode === 404) {

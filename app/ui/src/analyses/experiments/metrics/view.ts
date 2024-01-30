@@ -60,7 +60,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
             this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
 
-            this.preferenceData.series_preferences = fillPlotPreferences(this.series)
+            this.preferenceData.series_preferences = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
 
             if(!this.preservePreferences) {
                 this.chartType = this.preferenceData.chart_type

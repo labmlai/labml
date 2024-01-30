@@ -46,7 +46,7 @@ export class ComparisonCard extends Card {
 
             let currentAnalysisData = await this.currentAnalysisCache.get(force)
             this.currentSeries = toPointValues(currentAnalysisData.series)
-            this.preferenceData.series_preferences = fillPlotPreferences(this.currentSeries)
+            this.preferenceData.series_preferences = fillPlotPreferences(this.currentSeries, this.preferenceData.series_preferences)
 
             if (!!this.baseUUID) {
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUUID)
@@ -54,7 +54,7 @@ export class ComparisonCard extends Card {
                 try {
                     let baseAnalysisData = await this.baseAnalysisCache.get(force)
                     this.baseSeries = toPointValues(baseAnalysisData.series)
-                    this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries)
+                    this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)
                     this.missingBaseExperiment = false
                 } catch (e) {
                     if (e instanceof NetworkError && e.statusCode === 404) {
