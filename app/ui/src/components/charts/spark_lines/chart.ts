@@ -1,7 +1,7 @@
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent} from "../utils"
+import {fillPlotPreferences, getExtent} from "../utils"
 import {SparkLine} from "./spark_line"
 import ChartColors from "../chart_colors"
 import {DefaultLineGradient} from "../chart_gradients"
@@ -64,13 +64,6 @@ export class SparkLines {
         this.minLastValue = Math.min(...lastValues)
 
         this.stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
-
-        if (this.currentPlotIdx.length === 0) {
-            this.currentPlotIdx = defaultSeriesToPlot(this.currentSeries)
-        }
-        if (this.basePlotIdx.length === 0) {
-            this.basePlotIdx = defaultSeriesToPlot(this.baseSeries)
-        }
 
         this.chartColors = new ChartColors({nColors: this.uniqueItems.size, secondNColors: this.uniqueItems.size, isDivergent: opt.isDivergent})
     }

@@ -6,11 +6,12 @@ import {DataLoader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {DEBUG} from "../../../env"
 import {clearChildElements} from "../../../utils/document"
-import {toPointValues} from "../../../components/charts/utils"
+import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
 import {SeriesModel} from "../../../models/run"
 import {ROUTER} from "../../../app"
 import {NetworkError} from "../../../network"
 import {CardWrapper} from "../chart_wrapper/card"
+import metricsCache from "./cache";
 
 export class ComparisonCard extends Card {
     private readonly  currentUUID: string
@@ -45,12 +46,15 @@ export class ComparisonCard extends Card {
 
             let currentAnalysisData = await this.currentAnalysisCache.get(force)
             this.currentSeries = toPointValues(currentAnalysisData.series)
+            this.preferenceData.series_preferences = fillPlotPreferences(this.currentSeries)
+
             if (!!this.baseUUID) {
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUUID)
                 this.baseAnalysisCache.setCurrentUUID(this.currentUUID)
                 try {
                     let baseAnalysisData = await this.baseAnalysisCache.get(force)
                     this.baseSeries = toPointValues(baseAnalysisData.series)
+                    this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries)
                     this.missingBaseExperiment = false
                 } catch (e) {
                     if (e instanceof NetworkError && e.statusCode === 404) {

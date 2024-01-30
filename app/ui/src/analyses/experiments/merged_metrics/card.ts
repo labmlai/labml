@@ -2,7 +2,7 @@ import {WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {InsightModel, SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
-import {toPointValues} from "../../../components/charts/utils"
+import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
 import {ROUTER} from '../../../app'
 import {DataLoader} from '../../../components/loader'
 import {CardWrapper} from "../chart_wrapper/card"
@@ -32,6 +32,8 @@ export class DistributedMetricsCard extends Card {
             this.series = toPointValues(analysisData.series)
             this.insights = analysisData.insights
             this.preferenceData = await metricsCache.getPreferences(this.uuid).get(force)
+
+            this.preferenceData.series_preferences = fillPlotPreferences(this.series)
         })
     }
 

@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getLogScale, getScale, trimSteps} from "../utils"
+import {fillPlotPreferences, getExtent, getLogScale, getScale, trimSteps} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
@@ -69,13 +69,6 @@ export class LineChart {
         this.margin = Math.floor(windowWidth / 64)
         this.chartWidth = windowWidth - 2 * this.margin - this.axisSize
         this.chartHeight = Math.round(Math.min(this.chartWidth, windowHeight) / 2)
-
-        if (this.currentPlotIndex.length == 0) {
-            this.currentPlotIndex = defaultSeriesToPlot(this.currentSeries)
-        }
-        if (this.basePlotIndex.length == 0) {
-            this.basePlotIndex = defaultSeriesToPlot(this.baseSeries)
-        }
 
         // TODO show something if everything is not selected
 
