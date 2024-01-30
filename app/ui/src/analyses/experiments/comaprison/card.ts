@@ -15,7 +15,7 @@ import {CardWrapper} from "../chart_wrapper/card"
 export class ComparisonCard extends Card {
     private readonly  currentUUID: string
     private baseUUID: string
-    private width: number
+    private readonly width: number
     private baseAnalysisCache: AnalysisDataCache
     private baseSeries: SeriesModel[]
     private currentSeries: SeriesModel[]
@@ -99,6 +99,7 @@ export class ComparisonCard extends Card {
                 preferenceData: this.preferenceData,
                 insights: [],
                 series: this.currentSeries,
+                baseSeries: this.baseSeries,
                 insightsContainer: this.insightsContainer,
                 lineChartContainer: this.lineChartContainer,
                 sparkLinesContainer: this.sparkLineContainer,

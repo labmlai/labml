@@ -7,7 +7,7 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
-import {defaultSeriesToPlot, toPointValues} from "../../../components/charts/utils"
+import {toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
@@ -15,47 +15,57 @@ import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
 import metricsCache from "./cache"
-import {ViewWrapper, ViewWrapperData} from "../chart_wrapper/view"
+import {MetricDataStore, ViewWrapper} from "../chart_wrapper/view"
 
-class MetricsView extends ScreenView {
-    uuid: string
-
-    series: SeriesModel[]
-    preferenceData: AnalysisPreferenceModel
-    status: Status
-    private plotIdx: number[] = []
-    private currentChart: number
-    private focusSmoothed: boolean
-    private stepRange: number[]
+class MetricsView extends ScreenView implements MetricDataStore {
+    private readonly uuid: string
 
     private elem: HTMLDivElement
     private runHeaderCard: RunHeaderCard
     private lineChartContainer: HTMLDivElement
     private sparkLinesContainer: HTMLDivElement
     private saveButtonContainer: WeyaElement
-    private toggleButtonContainer: WeyaElement
-    private isUpdateDisable: boolean
+    private optionRowContainer: WeyaElement
     private actualWidth: number
     private refresh: AwesomeRefreshButton
 
     private loader: DataLoader
     private content: ViewWrapper
+
     private preferenceCache: AnalysisPreferenceCache
     private run: Run
+    private preferenceData: AnalysisPreferenceModel
+    private status: Status
+
+    series: SeriesModel[]
+    baseSeries?: SeriesModel[]
+    plotIdx: number[]
+    basePlotIdx?: number[]
+    chartType: number
+    focusSmoothed: boolean
+    stepRange: number[]
+    preservePreferences: boolean
 
     constructor(uuid: string) {
         super()
 
         this.uuid = uuid
-        this.currentChart = 0
+        this.chartType = 0
         this.preferenceCache = metricsCache.getPreferences(this.uuid)
 
-        this.isUpdateDisable = true
+        this.preservePreferences = false
         this.loader = new DataLoader(async (force) => {
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
+            this.run = await CACHE.getRun(this.uuid).get(force)
             this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
-            this.run = await CACHE.getRun(this.uuid).get(force)
+
+            if(!this.preservePreferences) {
+                this.chartType = this.preferenceData.chart_type
+                this.stepRange = this.preferenceData.step_range
+                this.focusSmoothed = this.preferenceData.focus_smoothed
+                this.plotIdx = this.preferenceData.series_preferences
+            }
         })
 
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
@@ -96,7 +106,7 @@ class MetricsView extends ScreenView {
                             showRank: false,
                         })
                         this.runHeaderCard.render($).then()
-                        this.toggleButtonContainer = $('div.button-row')
+                        this.optionRowContainer = $('div.button-row')
                         $('h2', '.header.text-center', 'Metrics')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
@@ -113,17 +123,15 @@ class MetricsView extends ScreenView {
             setTitle({section: 'Metrics', item: this.run.name})
 
             this.content = new ViewWrapper({
-                updatePreferences: this.updatePreferences,
+                dataStore: this,
                 lineChartContainer: this.lineChartContainer,
                 sparkLinesContainer: this.sparkLinesContainer,
                 saveButtonContainer: this.saveButtonContainer,
-                toggleButtonContainer: this.toggleButtonContainer,
+                optionRowContainer: this.optionRowContainer,
                 actualWidth: this.actualWidth,
-                isUpdateDisable: this.isUpdateDisable,
-                onRequestAllMetrics: this.requestAllMetrics.bind(this)
+                requestMissingMetrics: this.requestMissingMetrics.bind(this),
+                savePreferences: this.savePreferences.bind(this)
             })
-
-            this.calcPreferences()
 
             this.content.render()
         } catch (e) {
@@ -152,7 +160,6 @@ class MetricsView extends ScreenView {
         try {
             await this.loader.load(true)
 
-            this.calcPreferences()
             this.content.render()
         } catch (e) {
 
@@ -168,57 +175,20 @@ class MetricsView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
-    private requestAllMetrics() {
+    private async requestMissingMetrics() {
         metricsCache.getAnalysis(this.uuid).setMetricData(this.plotIdx)
-        this.content.setLoading(true)
-        this.isUpdateDisable = false
-        this.loader.load(true).then(() => {
-            this.calcPreferences()
-            this.content.render()
-        })
+        this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(true)).series)
     }
 
-    private calcPreferences() {
-        if(this.isUpdateDisable) {
-            this.currentChart = this.preferenceData.chart_type
-            this.stepRange = this.preferenceData.step_range
-            this.focusSmoothed = this.preferenceData.focus_smoothed
-            let analysisPreferences = this.preferenceData.series_preferences
-            if (analysisPreferences && analysisPreferences.length > 0) {
-                this.plotIdx = [...analysisPreferences]
-            } else if (this.series) {
-                this.plotIdx = defaultSeriesToPlot(this.series)
-            }
-        }
-
-        this.content.updateData({
-            series: this.series,
-            plotIdx: this.plotIdx,
-            currentChart: this.currentChart,
-            focusSmoothed: this.focusSmoothed,
-            stepRange: this.stepRange
-        })
-    }
-
-    updatePreferences = (data: ViewWrapperData, saveData: boolean = true) => {
-        this.plotIdx = data.plotIdx
-        this.currentChart = data.currentChart
-        this.focusSmoothed = data.focusSmoothed
-        this.stepRange = data.stepRange
-
+    private savePreferences = () => {
         this.preferenceData.series_preferences = this.plotIdx
-        this.preferenceData.chart_type = this.currentChart
+        this.preferenceData.chart_type = this.chartType
         this.preferenceData.step_range = this.stepRange
         this.preferenceData.focus_smoothed = this.focusSmoothed
 
-        if (!saveData) {
-            return
-        }
-
         this.preferenceCache.setPreference(this.preferenceData).then()
 
-        this.isUpdateDisable = true
-        this.content.renderSaveButton()
+        this.preservePreferences = false
     }
 }
 
