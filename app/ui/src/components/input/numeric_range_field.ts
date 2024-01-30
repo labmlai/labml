@@ -29,7 +29,7 @@ class NumericEditableField extends EditableField {
 interface NumericRangeFieldOptions {
     min: number
     max: number
-    onClick: (min: number, max: number) => void
+    onClick: () => void
     buttonLabel: string
 }
 
@@ -37,7 +37,7 @@ export class NumericRangeField {
 
     private readonly minField: NumericEditableField
     private readonly maxField: NumericEditableField
-    private readonly onClick: (min: number, max: number) => void
+    private readonly onClick: () => void
     private readonly doneButton: CustomButton
     private elem: WeyaElement
     private min: number
@@ -52,7 +52,7 @@ export class NumericRangeField {
         this.doneButton = new CustomButton({
             onButtonClick: () => {
                 let range: number[] = this.getRange()
-                this.onClick(range[0], range[1])
+                this.onClick()
             }, parent: this.constructor.name, text: opt.buttonLabel, noMargin: true
         })
     }
