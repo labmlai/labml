@@ -36,8 +36,7 @@ export class MetricsCard extends Card {
     }
 
     getLastUpdated(): number {
-        // todo implement this
-        return 0
+        return metricsCache.getAnalysis(this.uuid).lastUpdated
     }
 
     async render($: WeyaElementFunction) {
