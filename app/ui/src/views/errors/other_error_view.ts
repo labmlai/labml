@@ -60,7 +60,7 @@ export class OtherErrorView extends ScreenView {
         setTitle({section: '500'})
         this.elem = $('div', '.error-container', $ => {
             $('h2', '.mt-5', 'Ooops! Something went wrong' + '')
-            $('h1', '500')
+            $('h1', `${this.error.statusCode}` ?? '500')
             $('p', 'Seems like we are having issues right now' + '')
             if (this.error != null) {
                 $('div.code-sample.bg-dark.px-1.py-2.my-3', $ => {
