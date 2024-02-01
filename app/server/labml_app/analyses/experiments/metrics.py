@@ -167,9 +167,6 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
     status_code = 404
 
     request_data = await request.json()
-    print(request_data)
-    if len(request_data.keys()) != 0 and all(isinstance(value, bool) for value in request_data.values()):
-        raise ValueError('Request data should be of the type [str, bool]')
 
     #  return merged metrics if applicable
     if utils.get_true_run_uuid(run_uuid) == run_uuid:  # not a rank
