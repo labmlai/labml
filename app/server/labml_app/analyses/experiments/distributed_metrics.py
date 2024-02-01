@@ -30,8 +30,7 @@ def mget_preferences(run_uuids: List[str]) -> List[Optional['DistMetricsPreferen
     return load_keys(run_keys)
 
 
-@Analysis.route('GET', 'distributed/metrics/merged/preferences/{run_uuid}')
-async def get_merged_metrics_preferences(request: Request, run_uuid: str) -> Any:
+async def get_merged_metrics_preferences(run_uuid: str) -> Any:
     preferences_key = DistMetricsPreferencesIndex.get(run_uuid)
     if not preferences_key:
         mp = DistMetricsPreferencesModel()
@@ -43,7 +42,7 @@ async def get_merged_metrics_preferences(request: Request, run_uuid: str) -> Any
     return mp.get_data()
 
 
-async def set_merged_metrics_preferences(request: Request, run_uuid: str) -> Any:
+async def set_merged_metrics_preferences(run_uuid: str, data: Dict[str, any]) -> Any:
     preferences_key = DistMetricsPreferencesIndex.get(run_uuid)
 
     mp = None
@@ -54,8 +53,8 @@ async def set_merged_metrics_preferences(request: Request, run_uuid: str) -> Any
 
     if not mp:
         mp = preferences_key.load()
-    json = await request.json()
-    mp.update_preferences(json)
+
+    mp.update_preferences(data)
 
     logger.debug(f'update distributed metrics preferences: {mp.key}')
 
@@ -131,19 +130,16 @@ def get_merged_metric_tracking_util(track_data_list, preference_data, request_da
     return filtered_track_data
 
 
-async def get_merged_dist_metrics_tracking(run_uuid: str, request_data: Dict[str, bool]) -> Any:
+def get_merged_dist_metrics_tracking(run_uuid: str, request_data: Dict[str, bool]) -> JSONResponse:
     r: Optional['run.Run'] = run.get(run_uuid)
+
+    rank_uuids = []
+    if r is not None:
+        rank_uuids = r.get_rank_uuids()
 
     if r is None:
         response = JSONResponse({'series': {}, 'insights': []}, status_code=404)
         response.status_code = 404
-        return response
-
-    rank_uuids = r.get_rank_uuids()
-
-    if len(rank_uuids.keys()) == 0:  # not distributed main rank
-        response = JSONResponse({'error': 'invalid endpoint'})
-        response.status_code = 400
     else:
         metric_list = [metrics.MetricsAnalysis(m) if m else None for m in metrics.mget(list(rank_uuids.values()))]
         metric_list = [m for m in metric_list if m is not None]

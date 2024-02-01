@@ -175,7 +175,7 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
     if utils.get_true_run_uuid(run_uuid) == run_uuid:  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
-            return await get_merged_dist_metrics_tracking(run_uuid, request_data)
+            return get_merged_dist_metrics_tracking(run_uuid, request_data)
 
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
@@ -217,7 +217,7 @@ async def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
     if run_uuid == utils.get_true_run_uuid(run_uuid):  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
-            return await get_merged_metrics_preferences(request, run_uuid)
+            return await get_merged_metrics_preferences(run_uuid)
 
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
@@ -240,7 +240,7 @@ async def set_metrics_preferences(request: Request, run_uuid: str) -> Any:
     if run_uuid == utils.get_true_run_uuid(run_uuid):  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
-            return await set_merged_metrics_preferences(request, run_uuid)
+            return await set_merged_metrics_preferences(run_uuid, await request.json())
 
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
