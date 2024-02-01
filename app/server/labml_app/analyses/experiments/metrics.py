@@ -111,7 +111,7 @@ class MetricsAnalysis(Analysis):
         return MetricsAnalysis(metrics_key.load())
 
     @staticmethod
-    def get(run_uuid: str):
+    def get(run_uuid: str) -> Optional['MetricsAnalysis']:
         metrics_key = MetricsIndex.get(run_uuid)
 
         if not metrics_key:

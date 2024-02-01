@@ -43,7 +43,6 @@ async def get_merged_metrics_preferences(request: Request, run_uuid: str) -> Any
     return mp.get_data()
 
 
-@Analysis.route('POST', 'distributed/metrics/merged/preferences/{run_uuid}')
 async def set_merged_metrics_preferences(request: Request, run_uuid: str) -> Any:
     preferences_key = DistMetricsPreferencesIndex.get(run_uuid)
 
@@ -132,7 +131,6 @@ def get_merged_metric_tracking_util(track_data_list, preference_data, request_da
     return filtered_track_data
 
 
-@Analysis.route('POST', 'distributed/metrics/merged/{run_uuid}')
 async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> Any:
     request_data = await request.json()
 
