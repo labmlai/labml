@@ -131,9 +131,7 @@ def get_merged_metric_tracking_util(track_data_list, preference_data, request_da
     return filtered_track_data
 
 
-async def get_merged_dist_metrics_tracking(request: Request, run_uuid: str) -> Any:
-    request_data = await request.json()
-
+async def get_merged_dist_metrics_tracking(run_uuid: str, request_data: Dict[str, bool]) -> Any:
     r: Optional['run.Run'] = run.get(run_uuid)
 
     if r is None:
