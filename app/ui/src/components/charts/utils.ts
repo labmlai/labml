@@ -89,7 +89,22 @@ export function toDate(time: number) {
     return new Date(time * 1000)
 }
 
-export function defaultSeriesToPlot(series: SeriesModel[]) {
+export function fillPlotPreferences(series: SeriesModel[], currentPlotIdx: number[] = []) {
+    if (currentPlotIdx.length != 0) {
+        if (currentPlotIdx.length == series.length) {
+            return currentPlotIdx
+        }
+        if (currentPlotIdx.length > series.length) {
+            return currentPlotIdx.slice(0, series.length)
+        }
+        if (currentPlotIdx.length < series.length) {
+            while (currentPlotIdx.length != series.length) {
+                currentPlotIdx.push(-1)
+            }
+            return currentPlotIdx
+        }
+    }
+
     let plotIdx = []
     for (let s of series) {
         let name = s.name.split('.')

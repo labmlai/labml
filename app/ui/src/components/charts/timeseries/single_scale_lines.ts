@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getScale, getTimeScale, toDate} from "../utils"
+import {fillPlotPreferences, getExtent, getScale, getTimeScale, toDate} from "../utils"
 import {TimeSeriesFill, TimeSeriesPlot} from './plot'
 import {BottomTimeAxis, RightAxis} from "../axis"
 import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients"
@@ -55,7 +55,7 @@ export class SingleScaleLineChart {
         this.chartHeight = Math.round(Math.min(this.chartWidth, windowHeight) / 2)
 
         if (this.plotIdx.length === 0) {
-            this.plotIdx = defaultSeriesToPlot(this.series)
+            this.plotIdx = fillPlotPreferences(this.series)
         }
 
         for (let i = 0; i < this.plotIdx.length; i++) {

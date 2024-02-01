@@ -139,7 +139,7 @@ async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
         series_list = []
         for track_data in track_data_list:
             for track_item in track_data:
-                if track_item['name'] not in series_list:
+                if track_item['name'] not in series_list_set:
                     series_list.append(track_item['name'])
                     series_list_set.add(track_item['name'])
         if len(preference_data) == 0:

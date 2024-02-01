@@ -1,7 +1,7 @@
 import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getScale, toPointValue} from "../utils"
+import {fillPlotPreferences, getExtent, getScale, toPointValue} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
@@ -55,7 +55,7 @@ export class CustomLineChart {
         this.chartHeight = Math.round(Math.min(this.chartWidth, windowHeight) / 2)
 
         if (this.plotIdx.length === 0) {
-            this.plotIdx = defaultSeriesToPlot(this.series)
+            this.plotIdx = fillPlotPreferences(this.series)
         }
 
         for (let i = 0; i < this.plotIdx.length; i++) {

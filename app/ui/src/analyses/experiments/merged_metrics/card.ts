@@ -2,7 +2,7 @@ import {WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {InsightModel, SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
-import {toPointValues} from "../../../components/charts/utils"
+import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
 import {ROUTER} from '../../../app'
 import {DataLoader} from '../../../components/loader'
 import {CardWrapper} from "../chart_wrapper/card"
@@ -32,12 +32,13 @@ export class DistributedMetricsCard extends Card {
             this.series = toPointValues(analysisData.series)
             this.insights = analysisData.insights
             this.preferenceData = await metricsCache.getPreferences(this.uuid).get(force)
+
+            this.preferenceData.series_preferences = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
         })
     }
 
     getLastUpdated(): number {
-        // todo implement this
-        return 0
+        return metricsCache.getAnalysis(this.uuid).lastUpdated
     }
 
     async render($: WeyaElementFunction) {
@@ -60,8 +61,7 @@ export class DistributedMetricsCard extends Card {
                 insightsContainer: this.insightsContainer,
                 lineChartContainer: this.lineChartContainer,
                 sparkLinesContainer: this.sparkLineContainer,
-                width: this.width,
-                isDistributed: false
+                width: this.width
             })
 
             this.chartWrapper.render()
@@ -72,7 +72,7 @@ export class DistributedMetricsCard extends Card {
     async refresh() {
         try {
             await this.loader.load(true)
-            this.chartWrapper?.updateData(this.series, this.insights, this.preferenceData)
+            this.chartWrapper?.updateData(this.series, null, this.insights, this.preferenceData)
             this.chartWrapper?.render()
         } catch (e) {
         }

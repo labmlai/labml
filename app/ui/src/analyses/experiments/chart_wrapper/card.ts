@@ -1,7 +1,7 @@
 import {Weya as $, WeyaElement} from '../../../../../lib/weya/weya'
 import {InsightModel, SeriesModel} from "../../../models/run"
 import {
-    AnalysisPreferenceBaseModel,
+    AnalysisPreferenceBaseModel, AnalysisPreferenceModel, ComparisonPreferenceModel,
 } from "../../../models/preferences"
 import {getChartType} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
@@ -12,24 +12,23 @@ interface CardWrapperOptions {
     width: number
     series: SeriesModel[]
     insights: InsightModel[]
-    isDistributed: boolean
+    baseSeries?: SeriesModel[]
 
     lineChartContainer: WeyaElement
     sparkLinesContainer?: WeyaElement
     insightsContainer: WeyaElement
     elem: WeyaElement
 
-    preferenceData: AnalysisPreferenceBaseModel
+    preferenceData: AnalysisPreferenceModel | ComparisonPreferenceModel
 
     title?: string
-    showValues?: boolean
 }
 
 export class CardWrapper {
     private width: number
     private series: SeriesModel[]
+    private baseSeries: SeriesModel[]
     private insights: InsightModel[]
-    private isDistributed: boolean
 
     private readonly lineChartContainer: WeyaElement
     private readonly sparkLinesContainer?: WeyaElement
@@ -37,28 +36,28 @@ export class CardWrapper {
     private readonly elem: WeyaElement
 
     private plotIdx: number[] = []
+    private basePlotIdx: number[] = []
     private chartType: number
     private stepRange: number[]
     private focusSmoothed: boolean
 
     private readonly title?: string
-    private readonly showValues?: boolean
 
     constructor(opt: CardWrapperOptions) {
         this.elem = opt.elem
         this.width = opt.width
-        this.isDistributed = opt.isDistributed
         this.lineChartContainer = opt.lineChartContainer
         this.sparkLinesContainer = opt.sparkLinesContainer
         this.insightsContainer = opt.insightsContainer
         this.title = opt.title
-        this.showValues = opt.showValues ?? true
 
-        this.updateData(opt.series, opt.insights, opt.preferenceData)
+        this.updateData(opt.series, opt.baseSeries, opt.insights, opt.preferenceData)
     }
 
-    public updateData(series: SeriesModel[], insights: InsightModel[],preferenceData: AnalysisPreferenceBaseModel) {
+    public updateData(series: SeriesModel[], baseSeries: SeriesModel[],
+                      insights: InsightModel[],preferenceData: AnalysisPreferenceModel | ComparisonPreferenceModel) {
         this.series = series
+        this.baseSeries = baseSeries ?? []
         this.insights = insights
 
         let analysisPreferences = preferenceData.series_preferences
@@ -68,13 +67,22 @@ export class CardWrapper {
             this.plotIdx = []
         }
 
+        if ((<ComparisonPreferenceModel>preferenceData)?.base_series_preferences != null) {
+            let baseAnalysisPreferences = (<ComparisonPreferenceModel>preferenceData).base_series_preferences
+            if (baseAnalysisPreferences.length > 0) {
+                this.basePlotIdx = [].concat(...baseAnalysisPreferences)
+            } else {
+                this.basePlotIdx = []
+            }
+        }
+
         this.chartType = preferenceData.chart_type
         this.stepRange = preferenceData.step_range
         this.focusSmoothed = preferenceData.focus_smoothed
     }
 
     public render() {
-        if (this.series.length > 0) {
+        if (this.series.length + this.baseSeries.length > 0) {
             this.elem.classList.remove('hide')
             this.renderLineChart()
             this.renderSparkLines()
@@ -95,13 +103,14 @@ export class CardWrapper {
             }
             new LineChart({
                 series: this.series,
+                baseSeries: this.baseSeries,
                 width: this.width,
-                plotIdx: this.plotIdx,
+                plotIndex: this.plotIdx,
+                basePlotIdx: this.basePlotIdx,
                 chartType: this.chartType != null ? getChartType(this.chartType) : 'linear',
                 isDivergent: true,
                 stepRange: this.stepRange,
-                focusSmoothed: this.focusSmoothed,
-                isDistributed: this.isDistributed
+                focusSmoothed: this.focusSmoothed
             }).render($)
         })
     }
@@ -114,12 +123,12 @@ export class CardWrapper {
         $(this.sparkLinesContainer, $ => {
             new SparkLines({
                 series: this.series,
+                baseSeries: this.baseSeries,
                 plotIdx: this.plotIdx,
+                basePlotIdx: this.basePlotIdx,
                 width: this.width,
                 isDivergent: true,
-                isDistributed: this.isDistributed,
-                onlySelected: true,
-                showValue: this.showValues
+                onlySelected: true
             }).render($)
         })
     }

@@ -111,7 +111,7 @@ class MetricsAnalysis(Analysis):
         return MetricsAnalysis(metrics_key.load())
 
     @staticmethod
-    def get(run_uuid: str):
+    def get(run_uuid: str) -> Optional['MetricsAnalysis']:
         metrics_key = MetricsIndex.get(run_uuid)
 
         if not metrics_key:
@@ -167,20 +167,20 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
     status_code = 404
 
     request_data = await request.json()
+    print(request_data)
+    if len(request_data.keys()) != 0 and all(isinstance(value, bool) for value in request_data.values()):
+        raise ValueError('Request data should be of the type [str, bool]')
 
     #  return merged metrics if applicable
-    if len(run_uuid.split('_')) == 1:  # not a rank
+    if utils.get_true_run_uuid(run_uuid) == run_uuid:  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
-            return await get_merged_dist_metrics_tracking(request, run_uuid)
+            return get_merged_dist_metrics_tracking(run_uuid, request_data)
 
-    # TODO temporary change to used run_uuid as rank 0
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
-    ans = MetricsAnalysis.get_or_create(run_uuid)
-    if ans:
-        track_data = ans.get_tracking()
-        status_code = 200
+    track_data = MetricsAnalysis.get_or_create(run_uuid).get_tracking()
+    status_code = 200
 
     preference_data = []
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
@@ -213,22 +213,23 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
 
 @Analysis.route('GET', 'metrics/preferences/{run_uuid}')
 async def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
-    preferences_data = {}
-
     #  return merged metrics if applicable
-    if len(run_uuid.split('_')) == 1:  # not a rank
+    if run_uuid == utils.get_true_run_uuid(run_uuid):  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
-            return await get_merged_metrics_preferences(request, run_uuid)
+            return await get_merged_metrics_preferences(run_uuid)
 
-    # TODO temporary change to used run_uuid as rank 0
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
-    if not preferences_key:
-        return preferences_data
+    mp: Optional['MetricsPreferencesModel'] = None
+    if preferences_key:
+        mp = preferences_key.load()
 
-    mp: MetricsPreferencesModel = preferences_key.load()
+    if mp is None:
+        mp = MetricsPreferencesModel()
+        mp.save()
+        MetricsPreferencesIndex.set(run_uuid, mp.key)
 
     return mp.get_data()
 
@@ -236,20 +237,21 @@ async def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
 @Analysis.route('POST', 'metrics/preferences/{run_uuid}')
 async def set_metrics_preferences(request: Request, run_uuid: str) -> Any:
     #  return merged metrics if applicable
-    if len(run_uuid.split('_')) == 1:  # not a rank
+    if run_uuid == utils.get_true_run_uuid(run_uuid):  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
-            return await set_merged_metrics_preferences(request, run_uuid)
+            return await set_merged_metrics_preferences(run_uuid, await request.json())
 
-    # TODO temporary change to used run_uuid as rank 0
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
+    if preferences_key is not None:
+        mp = preferences_key.load()
+    else:
+        mp = MetricsPreferencesModel()
+        mp.save()
+        MetricsPreferencesIndex.set(run_uuid, mp.key)
 
-    if not preferences_key:
-        return {}
-
-    mp = preferences_key.load()
     json = await request.json()
     mp.update_preferences(json)
 
