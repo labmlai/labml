@@ -169,7 +169,7 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
     request_data = await request.json()
 
     #  return merged metrics if applicable
-    if utils.get_true_run_uuid(run_uuid) == run_uuid:  # not a rank
+    if len(run_uuid.split('_')) == 1:  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
             return get_merged_dist_metrics_tracking(run_uuid, request_data)
@@ -211,7 +211,7 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
 @Analysis.route('GET', 'metrics/preferences/{run_uuid}')
 async def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
     #  return merged metrics if applicable
-    if run_uuid == utils.get_true_run_uuid(run_uuid):  # not a rank
+    if len(run_uuid.split('_')) == 1:  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
             return await get_merged_metrics_preferences(run_uuid)
@@ -234,7 +234,7 @@ async def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
 @Analysis.route('POST', 'metrics/preferences/{run_uuid}')
 async def set_metrics_preferences(request: Request, run_uuid: str) -> Any:
     #  return merged metrics if applicable
-    if run_uuid == utils.get_true_run_uuid(run_uuid):  # not a rank
+    if len(run_uuid.split('_')) == 1:  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
             return await set_merged_metrics_preferences(run_uuid, await request.json())
