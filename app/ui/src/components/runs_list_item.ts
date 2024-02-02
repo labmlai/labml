@@ -39,7 +39,9 @@ export class RunsListItemView {
                     })
                     $('div', $ => {
                         $('div.info_list.config.custom.label', $ => {
-                            $('span',  `${this.item.step} Steps`)
+                            if (this.item.step != null) {
+                                $('span',  `${this.item.step} Steps`)
+                            }
                         })
                     })
                 })
