@@ -385,7 +385,12 @@ export class AnalysisPreferenceCache extends CacheObject<AnalysisPreferenceModel
     }
 
     async setPreference(preference: AnalysisPreferenceModel): Promise<void> {
-        this.data = preference
+        this.data.series_preferences = preference.series_preferences
+        this.data.chart_type = preference.chart_type
+        this.data.step_range = preference.step_range
+        this.data.focus_smoothed = preference.focus_smoothed
+        this.data.sub_series_preferences = preference.sub_series_preferences
+
         await NETWORK.updatePreferences(this.url, this.uuid, preference)
     }
 }

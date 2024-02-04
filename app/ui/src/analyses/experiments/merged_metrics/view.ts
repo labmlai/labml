@@ -60,13 +60,11 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
             this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
 
-            this.preferenceData.series_preferences = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
-
             if(!this.preservePreferences) {
                 this.chartType = this.preferenceData.chart_type
-                this.stepRange = this.preferenceData.step_range
+                this.stepRange = [...this.preferenceData.step_range]
                 this.focusSmoothed = this.preferenceData.focus_smoothed
-                this.plotIdx = this.preferenceData.series_preferences
+                this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
             }
         })
 
@@ -183,13 +181,15 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
     }
 
     private savePreferences = () => {
-        this.preferenceData.series_preferences = this.plotIdx
-        this.preferenceData.chart_type = this.chartType
-        this.preferenceData.step_range = this.stepRange
-        this.preferenceData.focus_smoothed = this.focusSmoothed
+        let preferenceData: AnalysisPreferenceModel = {
+            series_preferences: this.plotIdx,
+            chart_type: this.chartType,
+            step_range: this.stepRange,
+            focus_smoothed: this.focusSmoothed,
+            sub_series_preferences: undefined
+        }
 
-        this.preferenceCache.setPreference(this.preferenceData).then()
-
+        this.preferenceCache.setPreference(preferenceData).then()
         this.preservePreferences = false
     }
 }

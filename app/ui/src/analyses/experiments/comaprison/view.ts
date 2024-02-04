@@ -58,7 +58,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     private run: Run
     private baseRun: Run
     private baseAnalysisCache: AnalysisDataCache
-    private missingBaseExperiment: Boolean
+    private missingBaseExperiment: boolean
     private deleteButton: DeleteButton
 
 
@@ -78,7 +78,6 @@ class ComparisonView extends ScreenView implements MetricDataStore {
 
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
             this.baseUuid = this.preferenceData.base_experiment
-            this.preferenceData.series_preferences = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
 
             if (!!this.baseUuid) {
                 await this.updateBaseRun(force)
@@ -90,8 +89,12 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                 this.chartType = this.preferenceData.chart_type
                 this.stepRange = this.preferenceData.step_range
                 this.focusSmoothed = this.preferenceData.focus_smoothed
-                this.plotIdx = this.preferenceData.series_preferences
-                this.basePlotIdx = this.preferenceData.base_series_preferences
+                this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
+                if (this.baseSeries) {
+                    this.basePlotIdx = [...fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)]
+                } else {
+                    this.basePlotIdx = [...this.preferenceData.base_series_preferences]
+                }
             }
         })
 
@@ -170,7 +173,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             })
 
             this.renderHeaders()
-            this.content.render()
+            this.content.render(this.missingBaseExperiment)
             this.renderButtons()
         } catch (e) {
             handleNetworkErrorInplace(e)
@@ -198,7 +201,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         try {
             await this.loader.load(true)
 
-            this.content.render()
+            this.content.render(this.missingBaseExperiment)
             this.renderButtons()
         } catch (e) {
 
@@ -215,13 +218,18 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     }
 
     private savePreferences = () => {
-        this.preferenceData.series_preferences = this.plotIdx
-        this.preferenceData.base_series_preferences = this.basePlotIdx
-        this.preferenceData.chart_type = this.chartType
-        this.preferenceData.step_range = this.stepRange
-        this.preferenceData.focus_smoothed = this.focusSmoothed
+        let preferenceData: ComparisonPreferenceModel = {
+            series_preferences: this.plotIdx,
+            chart_type: this.chartType,
+            step_range: this.stepRange,
+            focus_smoothed: this.focusSmoothed,
+            sub_series_preferences: undefined,
+            base_experiment: this.baseUuid,
+            base_series_preferences: this.basePlotIdx,
+            is_base_distributed: this.baseRun.world_size != 0
+        }
 
-        this.preferenceCache.setPreference(this.preferenceData).then()
+        this.preferenceCache.setPreference(preferenceData).then()
 
         this.preservePreferences = false
     }
@@ -255,10 +263,12 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.baseUuid = ''
         this.baseRun = undefined
 
+        this.missingBaseExperiment = true
+
         this.savePreferences()
 
         this.renderHeaders()
-        this.content.render()
+        this.content.render(this.missingBaseExperiment)
         this.renderButtons()
     }
 
@@ -290,7 +300,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
 
 
                     this.renderHeaders()
-                    this.content.render()
+                    this.content.render(this.missingBaseExperiment)
                     this.renderButtons()
                 }
                 this.runPickerElem.classList.remove("fullscreen-cover")
@@ -323,7 +333,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
         try {
             this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
-            this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)
+            this.preferenceData.base_series_preferences = [...fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)]
             this.missingBaseExperiment = false
         } catch (e) {
             if (e instanceof NetworkError && e.statusCode === 404) {
