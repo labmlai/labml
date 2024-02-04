@@ -98,7 +98,7 @@ export abstract class CacheObject<T> {
 
         this.lastUsed = new Date().getTime()
 
-        return structuredClone(this.data)
+        return this.data
     }
 
     invalidate_cache(): void {
@@ -124,7 +124,7 @@ export class RunsListCache extends CacheObject<RunsList> {
             this.lastUpdated = (new Date()).getTime()
         }
 
-        return structuredClone(this.data)
+        return this.data
     }
 
     async deleteRuns(runUUIDS: Array<string>): Promise<void> {
@@ -218,7 +218,7 @@ export class RunCache extends CacheObject<Run> {
             }
         }
 
-        return structuredClone(this.data)
+        return this.data
     }
 
     async setRun(run: Run): Promise<void> {
@@ -364,7 +364,7 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
         }
         this.setMetricData(plotIdx)
 
-        return structuredClone(this.data)
+        return this.data
     }
 }
 
