@@ -88,7 +88,7 @@ export abstract class CacheObject<T> {
         this.lastUpdated = 0
     }
 
-    protected abstract load(...args: any[]): Promise<T>
+    abstract load(...args: any[]): Promise<T>
 
     async get(isRefresh = false, ...args: any[]): Promise<T> {
         if (this.data == null || (isRefresh && isForceReloadTimeout(this.lastUpdated)) || isReloadTimeout(this.lastUpdated)) {
@@ -107,13 +107,13 @@ export abstract class CacheObject<T> {
 }
 
 export class RunsListCache extends CacheObject<RunsList> {
-    protected async load(...args: any[]): Promise<RunsList> {
+    async load(...args: any[]): Promise<RunsList> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getRuns(args[0])
             return new RunsList(res)
         })
     }
-    // TODO why use args here instead of directly saying labml_token?
+
     async get(isRefresh = false, ...args: any[]): Promise<RunsList> {
         if (args && args[0]) {
             return await this.load(args[0])
@@ -155,7 +155,7 @@ export class RunsListCache extends CacheObject<RunsList> {
 }
 
 export class SessionsListCache extends CacheObject<SessionsList> {
-    protected async load(): Promise<SessionsList> {
+    async load(): Promise<SessionsList> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getSessions()
             return new SessionsList(res)
@@ -199,7 +199,7 @@ export class RunCache extends CacheObject<Run> {
         this.statusCache = statusCache
     }
 
-    protected async load(): Promise<Run> {
+    async load(): Promise<Run> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getRun(this.uuid)
             return new Run(res)
@@ -222,7 +222,6 @@ export class RunCache extends CacheObject<Run> {
     }
 
     async setRun(run: Run): Promise<void> {
-        this.data = run
         await NETWORK.setRun(this.uuid, run)
     }
 }
@@ -235,7 +234,7 @@ export class SessionCache extends CacheObject<Session> {
         this.uuid = uuid
     }
 
-    protected async load(): Promise<Session> {
+    async load(): Promise<Session> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getSession(this.uuid)
             return new Session(res)
@@ -258,7 +257,7 @@ export class RunStatusCache extends StatusCache {
         this.uuid = uuid
     }
 
-    protected async load(): Promise<Status> {
+    async load(): Promise<Status> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getRunStatus(this.uuid)
             return new Status(res)
@@ -274,7 +273,7 @@ export class SessionStatusCache extends StatusCache {
         this.uuid = uuid
     }
 
-    protected async load(): Promise<Status> {
+    async load(): Promise<Status> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getSessionStatus(this.uuid)
             return new Status(res)
@@ -283,7 +282,7 @@ export class SessionStatusCache extends StatusCache {
 }
 
 export class UserCache extends CacheObject<User> {
-    protected async load(): Promise<User> {
+    async load(): Promise<User> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getUser()
             return new User(res.user)
@@ -291,7 +290,6 @@ export class UserCache extends CacheObject<User> {
     }
 
     async setUser(user: User) {
-        this.data = user
         await NETWORK.setUser(user)
     }
 }
@@ -340,7 +338,7 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
         }
     }
 
-    protected async load(): Promise<AnalysisDataModel> {
+    async load(): Promise<AnalysisDataModel> {
         return this.broadcastPromise.create(async () => {
             return await NETWORK.getAnalysis(this.url, this.uuid, this.metricData, this.currentUUID, this.isExperiment)
         })
@@ -366,6 +364,10 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
 
         return this.data
     }
+
+    async setAnalysis(data: {}): Promise<void> {
+        await NETWORK.setAnalysis(this.url, this.uuid, data)
+    }
 }
 
 export class AnalysisPreferenceCache extends CacheObject<AnalysisPreferenceModel> {
@@ -378,14 +380,13 @@ export class AnalysisPreferenceCache extends CacheObject<AnalysisPreferenceModel
         this.url = url
     }
 
-    protected async load(): Promise<AnalysisPreferenceModel> {
+    async load(): Promise<AnalysisPreferenceModel> {
         return this.broadcastPromise.create(async () => {
             return await NETWORK.getPreferences(this.url, this.uuid)
         })
     }
 
     async setPreference(preference: AnalysisPreferenceModel): Promise<void> {
-        this.data = preference
         await NETWORK.updatePreferences(this.url, this.uuid, preference)
     }
 }
