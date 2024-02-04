@@ -32,7 +32,7 @@ export class DetailsDataCache extends CacheObject<ProcessDetailsModel> {
             }
         }
 
-        return this.data
+        return structuredClone(this.data)
     }
 }
 
