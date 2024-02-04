@@ -98,7 +98,7 @@ export abstract class CacheObject<T> {
 
         this.lastUsed = new Date().getTime()
 
-        return structuredClone(this.data)
+        return this.data
     }
 
     invalidate_cache(): void {
