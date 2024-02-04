@@ -177,7 +177,13 @@ export class ViewWrapper {
         })
     }
 
-    public render() {
+    public render(missingBaseExperiment: boolean = false) {
+        if (missingBaseExperiment) {
+            this.lineChartContainer.innerHTML = ''
+            this.sparkLinesContainer.innerHTML = ''
+            this.optionRowContainer.innerHTML = ''
+            return
+        }
         this.renderCharts()
         this.renderSaveButton()
         this.renderOptionRow()
