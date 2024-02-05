@@ -51,7 +51,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
 
         this.uuid = uuid
         this.chartType = 0
-        this.preferenceCache = metricsCache.getPreferences(this.uuid)
+        this.preferenceCache = <AnalysisPreferenceCache>metricsCache.getPreferences(this.uuid)
 
         this.preservePreferences = false
         this.loader = new DataLoader(async (force) => {

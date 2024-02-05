@@ -1,6 +1,6 @@
 import {Card, CardOptions} from "../../types"
 import {Weya as $, WeyaElementFunction} from "../../../../../lib/weya/weya"
-import {AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
+import {AnalysisDataCache, AnalysisPreferenceCache, ComparisonAnalysisPreferenceCache} from "../../../cache/cache"
 import comparisonCache from "./cache"
 import {DataLoader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
@@ -21,7 +21,7 @@ export class ComparisonCard extends Card {
     private baseSeries: SeriesModel[]
     private currentSeries: SeriesModel[]
     private currentAnalysisCache: AnalysisDataCache
-    private preferenceCache: AnalysisPreferenceCache
+    private preferenceCache: ComparisonAnalysisPreferenceCache
     private preferenceData: ComparisonPreferenceModel
     private loader: DataLoader
     private missingBaseExperiment: boolean
@@ -37,7 +37,7 @@ export class ComparisonCard extends Card {
         this.currentUUID = opt.uuid
         this.width = opt.width
         this.currentAnalysisCache = comparisonCache.getAnalysis(this.currentUUID)
-        this.preferenceCache = comparisonCache.getPreferences(this.currentUUID)
+        this.preferenceCache = <ComparisonAnalysisPreferenceCache>comparisonCache.getPreferences(this.currentUUID)
         this.currentAnalysisCache.setCurrentUUID(this.currentUUID)
 
         this.loader = new DataLoader(async (force: boolean) => {
