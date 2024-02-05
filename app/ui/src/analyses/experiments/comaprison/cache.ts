@@ -1,4 +1,9 @@
-import {RunStatusCache, AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
+import {
+    RunStatusCache,
+    AnalysisDataCache,
+    AnalysisPreferenceCache,
+    ComparisonAnalysisPreferenceCache
+} from "../../../cache/cache"
 import {AnalysisCache} from "../../helpers"
 
 class ComparisonAnalysisCache extends AnalysisDataCache {
@@ -7,7 +12,7 @@ class ComparisonAnalysisCache extends AnalysisDataCache {
     }
 }
 
-class ComparisonPreferenceCache extends AnalysisPreferenceCache {
+class ComparisonPreferenceCache extends ComparisonAnalysisPreferenceCache {
     constructor(uuid: string) {
         super(uuid, 'compare')
     }

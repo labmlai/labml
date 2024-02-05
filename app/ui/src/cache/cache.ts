@@ -2,8 +2,8 @@ import {AnalysisDataModel, Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK from "../network"
 import { User} from "../models/user"
-import {RunsList} from '../models/run_list'
-import {AnalysisPreferenceModel} from "../models/preferences"
+import {RunListItemModel, RunsList} from '../models/run_list'
+import {AnalysisPreferenceModel, ComparisonPreferenceModel} from "../models/preferences"
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
 
@@ -393,6 +393,56 @@ export class AnalysisPreferenceCache extends CacheObject<AnalysisPreferenceModel
         this.data.focus_smoothed = preference.focus_smoothed
         this.data.sub_series_preferences = preference.sub_series_preferences
         await NETWORK.updatePreferences(this.url, this.uuid, preference)
+    }
+}
+
+export class ComparisonAnalysisPreferenceCache extends CacheObject<ComparisonPreferenceModel> {
+    private readonly uuid: string
+    private readonly url: string
+
+    constructor(uuid: string, url: string) {
+        super()
+        this.uuid = uuid
+        this.url = url
+    }
+
+    protected async load(): Promise<ComparisonPreferenceModel> {
+        return this.broadcastPromise.create(async () => {
+            return await NETWORK.getPreferences(this.url, this.uuid)
+        })
+    }
+
+    async setPreference(preference: ComparisonPreferenceModel): Promise<void> {
+        this.data = structuredClone(preference)
+
+        await NETWORK.updatePreferences(this.url, this.uuid, preference)
+    }
+
+    deleteBaseExperiment(): ComparisonPreferenceModel {
+        if (this.data == null) {
+            return null
+        }
+
+        this.data.base_experiment = ''
+        this.data.base_series_preferences = []
+
+        NETWORK.updatePreferences(this.url, this.uuid, this.data).then()
+
+        return this.data
+    }
+
+    updateBaseExperiment(run: RunListItemModel): ComparisonPreferenceModel {
+        if (this.data == null) {
+            return null
+        }
+
+        this.data.base_experiment = run.run_uuid
+        this.data.base_series_preferences = []
+        this.data.is_base_distributed = run.world_size != 0
+
+        NETWORK.updatePreferences(this.url, this.uuid, this.data).then()
+
+        return this.data
     }
 }
 

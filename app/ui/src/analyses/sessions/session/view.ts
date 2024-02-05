@@ -54,7 +54,7 @@ export class SessionView extends ScreenView {
         this.sessionCache = CACHE.getSession(this.uuid)
         this.statusCache = CACHE.getSessionStatus(this.uuid)
         this.analysisCache = cache.getAnalysis(this.uuid)
-        this.preferenceCache = cache.getPreferences(this.uuid)
+        this.preferenceCache = <AnalysisPreferenceCache>cache.getPreferences(this.uuid)
 
         this.title = title
         this.subSeries = subSeries

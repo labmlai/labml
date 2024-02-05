@@ -1,5 +1,9 @@
 import {Run, SeriesModel} from "../../../models/run"
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
+import CACHE, {
+    AnalysisDataCache,
+    AnalysisPreferenceCache,
+    ComparisonAnalysisPreferenceCache
+} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
@@ -20,7 +24,6 @@ import comparisonCache from "./cache"
 import {NetworkError} from "../../../network"
 import {RunsPickerView} from "../../../views/run_picker_view"
 
-// TODO missing base experiment
 class ComparisonView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
     private baseUuid: string
@@ -54,7 +57,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     private loader: DataLoader
     private content: ViewWrapper
 
-    private preferenceCache: AnalysisPreferenceCache
+    private preferenceCache: ComparisonAnalysisPreferenceCache
     private run: Run
     private baseRun: Run
     private baseAnalysisCache: AnalysisDataCache
@@ -67,7 +70,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
 
         this.uuid = uuid
         this.chartType = 0
-        this.preferenceCache = comparisonCache.getPreferences(this.uuid)
+        this.preferenceCache = <ComparisonAnalysisPreferenceCache>comparisonCache.getPreferences(this.uuid)
 
         this.loader = new DataLoader(async (force) => {
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
@@ -87,7 +90,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
 
             if(!this.preservePreferences) {
                 this.chartType = this.preferenceData.chart_type
-                this.stepRange = this.preferenceData.step_range
+                this.stepRange = [...this.preferenceData.step_range]
                 this.focusSmoothed = this.preferenceData.focus_smoothed
                 this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
                 if (this.baseSeries) {
@@ -256,16 +259,14 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     }
 
     private onDelete = () => {
-        this.preferenceData.base_experiment = ''
-        this.preferenceData.base_series_preferences = []
+        this.preferenceData = this.preferenceCache.deleteBaseExperiment()
+
         this.baseSeries = undefined
         this.basePlotIdx = []
         this.baseUuid = ''
         this.baseRun = undefined
 
         this.missingBaseExperiment = true
-
-        this.savePreferences()
 
         this.renderHeaders()
         this.content.render(this.missingBaseExperiment)
@@ -281,9 +282,8 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             excludedRuns: new Set<string>([this.run.run_uuid]),
             onPicked: async run => {
                 if (this.preferenceData.base_experiment !== run.run_uuid) {
-                    this.preferenceData.base_experiment = run.run_uuid
-                    this.preferenceData.base_series_preferences = []
-                    this.preferenceData.is_base_distributed = run.world_size != 0
+                    this.preferenceData = this.preferenceCache.updateBaseExperiment(run)
+
                     this.baseUuid = run.run_uuid
                     this.basePlotIdx = []
                     this.plotIdx = []
@@ -291,12 +291,10 @@ class ComparisonView extends ScreenView implements MetricDataStore {
 
                     this.preservePreferences = false
 
-                    await this.preferenceCache.setPreference(this.preferenceData)
                     await this.updateBaseRun(true)
-                    this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries, [])
-                    this.preferenceData.series_preferences = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
-                    this.plotIdx = this.preferenceData.series_preferences
-                    this.basePlotIdx = this.preferenceData.base_series_preferences
+
+                    this.plotIdx = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
+                    this.basePlotIdx = fillPlotPreferences(this.baseSeries, [])
 
 
                     this.renderHeaders()
