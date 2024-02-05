@@ -406,7 +406,7 @@ export class ComparisonAnalysisPreferenceCache extends CacheObject<ComparisonPre
         this.url = url
     }
 
-    protected async load(): Promise<ComparisonPreferenceModel> {
+    async load(): Promise<ComparisonPreferenceModel> {
         return this.broadcastPromise.create(async () => {
             return await NETWORK.getPreferences(this.url, this.uuid)
         })
