@@ -27,7 +27,7 @@ export interface MetricDataStore {
     focusSmoothed: boolean
     stepRange: number[]
 
-    preservePreferences: boolean
+    isUnsaved: boolean
 }
 
 abstract class ChangeHandlerBase {
@@ -190,7 +190,7 @@ export class ViewWrapper {
     }
 
     public onChange() {
-        this.dataStore.preservePreferences = true;
+        this.dataStore.isUnsaved = true;
         this.renderLineChart();
         this.saveButton.disabled = false;
     }
@@ -203,38 +203,10 @@ export class ViewWrapper {
         })
     }
 
-    private toggleChart(idx: number, isBase: boolean) {
-        let plotIdx = isBase ? this.dataStore.basePlotIdx : this.dataStore.plotIdx
-
-        if (plotIdx[idx] > 1)
-            plotIdx[idx] = 1
-
-        if (plotIdx[idx] == 0) {
-            plotIdx[idx] = 1
-        } else if (plotIdx[idx] == 1) {
-            plotIdx[idx] = -1
-        } else if (plotIdx[idx] == -1) {
-            plotIdx[idx] = 0
-        }
-
-        if (isBase) {
-            this.dataStore.basePlotIdx = plotIdx
-        } else {
-            this.dataStore.plotIdx = plotIdx
-        }
-        this.renderCharts()
-        this.saveButton.disabled = false
-
-        if ((isBase && this.dataStore.baseSeries[idx].is_summary) || (!isBase && this.dataStore.series[idx].is_summary)) {
-            // have to load from the backend
-            this.requestMissingMetrics()
-        }
-    }
-
     private onSave = () => {
         this.savePreferences()
         this.saveButton.disabled = true
-        this.dataStore.preservePreferences = false
+        this.dataStore.isUnsaved = false
     }
 
     private setLoading(isLoading: boolean) {
@@ -250,7 +222,7 @@ export class ViewWrapper {
     }
 
     private renderSaveButton() {
-        this.saveButton.disabled = !this.dataStore.preservePreferences
+        this.saveButton.disabled = !this.dataStore.isUnsaved
         this.saveButtonContainer.innerHTML = ''
         $(this.saveButtonContainer, $ => {
             this.saveButton.render($)
@@ -301,10 +273,12 @@ export class ViewWrapper {
                 basePlotIdx: this.dataStore.basePlotIdx,
                 width: this.actualWidth,
                 onSelect: (idx: number) => {
-                    this.toggleChart(idx, false)
+                    let changeHandler = new ChangeHandlers.ToggleChangeHandler(this, idx, false)
+                    changeHandler.change()
                 },
                 onBaseSelect: (idx: number) => {
-                    this.toggleChart(idx, true)
+                    let changeHandler = new ChangeHandlers.ToggleChangeHandler(this, idx, true)
+                    changeHandler.change()
                 },
                 isDivergent: true
             })
