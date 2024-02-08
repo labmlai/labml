@@ -136,17 +136,15 @@ class MetricsAnalysis(Analysis):
 
 
 def get_metrics_tracking_util(track_data: List[Dict[str, Any]], preference_data: List[int],
-                              request_data: Dict[str, bool]):
+                              get_all_data: bool):
     filtered_track_data = []
     for preference_item, track_item in zip(preference_data, track_data):
         include_full_data = False
 
-        if track_item['name'] not in request_data:
-            include_full_data = preference_item != -1
-        elif request_data[track_item['name']]:
+        if get_all_data:
             include_full_data = True
-        elif not request_data[track_item['name']]:
-            include_full_data = False
+        else:
+            include_full_data = preference_item != -1
 
         filtered_track_data.append(track_item)
         if include_full_data:
@@ -166,13 +164,13 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     status_code = 404
 
-    request_data = await request.json()
+    get_all_data = (await request.json())['get_all']
 
     #  return merged metrics if applicable
     if len(run_uuid.split('_')) == 1:  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
-            return get_merged_dist_metrics_tracking(run_uuid, request_data)
+            return get_merged_dist_metrics_tracking(run_uuid, get_all_data)
 
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
@@ -200,7 +198,7 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
         mp.update_preferences({'series_preferences': preference_data})
         mp.save()
 
-    filtered_track_data = get_metrics_tracking_util(track_data, preference_data, request_data)
+    filtered_track_data = get_metrics_tracking_util(track_data, preference_data, get_all_data)
 
     response = JSONResponse({'series': filtered_track_data, 'insights': []})
     response.status_code = status_code

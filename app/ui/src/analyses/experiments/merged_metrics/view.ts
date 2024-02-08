@@ -185,8 +185,7 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
     }
 
     private async requestMissingMetrics() {
-        metricsCache.getAnalysis(this.uuid).setMetricData(this.plotIdx)
-        this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(true)).series)
+        this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series)
     }
 
     private onPreferenceChange = () => {

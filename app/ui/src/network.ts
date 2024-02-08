@@ -98,11 +98,15 @@ class Network {
         return this.sendHttpRequest('POST', `/user`, {'user': user})
     }
 
-    async getAnalysis(url: string, runUUID: string, data: Record<string, boolean> = {}, currentUUID: string = "",
+    async getAnalysis(url: string, runUUID: string, getAll: boolean = false, currentUUID: string = "",
                       isExperiment: boolean): Promise<any> {
         let method = 'GET'
         if (isExperiment) {
             method = 'POST'
+        }
+
+        let data = {
+            'get_all': getAll
         }
 
         return this.sendHttpRequest(method,

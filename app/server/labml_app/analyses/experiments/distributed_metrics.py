@@ -87,7 +87,7 @@ def _dist_series_merge(step_list: List, value_list: List) -> Dict[str, Any]:
     return details
 
 
-def get_merged_metric_tracking_util(track_data_list, preference_data, request_data: Dict[str, bool]):
+def get_merged_metric_tracking_util(track_data_list, preference_data, get_all_data: bool):
     series_names = []
     series_list = {}
     for track_data in track_data_list:
@@ -101,10 +101,10 @@ def get_merged_metric_tracking_util(track_data_list, preference_data, request_da
 
     filtered_track_data = []
     for preference_item, series_name in zip(preference_data, series_names):
-        if series_name not in request_data:
-            include_full_data = preference_item != -1
+        if get_all_data:
+            include_full_data = True
         else:
-            include_full_data = request_data[series_name]
+            include_full_data = preference_item != -1
 
         if include_full_data:
             step_list = series_list[series_name]['step']
@@ -130,7 +130,7 @@ def get_merged_metric_tracking_util(track_data_list, preference_data, request_da
     return filtered_track_data
 
 
-def get_merged_dist_metrics_tracking(run_uuid: str, request_data: Dict[str, bool]) -> JSONResponse:
+def get_merged_dist_metrics_tracking(run_uuid: str, get_all_data: bool) -> JSONResponse:
     r: Optional['run.Run'] = run.get(run_uuid)
 
     rank_uuids = []
@@ -173,7 +173,7 @@ def get_merged_dist_metrics_tracking(run_uuid: str, request_data: Dict[str, bool
             mp.update_preferences({'series_preferences': preference_data})
             mp.save()
 
-        merged_tracking = get_merged_metric_tracking_util(track_data_list, preference_data, request_data)
+        merged_tracking = get_merged_metric_tracking_util(track_data_list, preference_data, get_all_data)
 
         response = JSONResponse({'series': merged_tracking, 'insights': []})
         response.status_code = 200

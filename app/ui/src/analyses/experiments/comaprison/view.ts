@@ -1,7 +1,6 @@
 import {Run, SeriesModel} from "../../../models/run"
 import CACHE, {
     AnalysisDataCache,
-    AnalysisPreferenceCache,
     ComparisonAnalysisPreferenceCache
 } from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
@@ -357,12 +356,10 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     }
 
     private async requestMissingMetrics() {
-        metricsCache.getAnalysis(this.uuid).setMetricData(this.plotIdx)
-        this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(true)).series)
+        this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series)
 
         if (this.baseUuid !== '') {
-            metricsCache.getAnalysis(this.baseUuid).setMetricData(this.basePlotIdx)
-            this.baseSeries = toPointValues((await metricsCache.getAnalysis(this.baseUuid).get(true)).series)
+            this.baseSeries = toPointValues((await metricsCache.getAnalysis(this.baseUuid).getAllMetrics()).series)
         }
     }
 }
