@@ -11,6 +11,7 @@ interface ViewWrapperOpt {
     dataStore: MetricDataStore
     savePreferences: () => void
     requestMissingMetrics: () => Promise<void>
+    preferenceChange: () => void
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: WeyaElement
@@ -133,6 +134,7 @@ export class ViewWrapper {
 
     private readonly onRequestMissingMetrics: () => Promise<void>
     private readonly savePreferences: () => void
+    private readonly preferenceChange: () => void
 
     constructor(opt: ViewWrapperOpt) {
         this.dataStore = opt.dataStore
@@ -144,6 +146,7 @@ export class ViewWrapper {
         this.actualWidth = opt.actualWidth
         this.onRequestMissingMetrics = opt.requestMissingMetrics
         this.savePreferences = opt.savePreferences
+        this.preferenceChange = opt.preferenceChange
 
         this.stepRangeField = new NumericRangeField({
             min: this.dataStore.stepRange[0], max: this.dataStore.stepRange[1],
@@ -190,9 +193,11 @@ export class ViewWrapper {
     }
 
     public onChange() {
-        this.dataStore.isUnsaved = true;
-        this.renderLineChart();
-        this.saveButton.disabled = false;
+        this.dataStore.isUnsaved = true
+        this.renderCharts()
+        this.saveButton.disabled = false
+
+        this.preferenceChange()
     }
 
     public requestMissingMetrics() {

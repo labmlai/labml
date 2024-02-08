@@ -39,7 +39,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     focusSmoothed: boolean
     stepRange: number[]
 
-    preservePreferences: boolean
+    isUnsaved: boolean
 
     private elem: HTMLDivElement
     private runHeaderCard: RunHeaderCard
@@ -72,7 +72,13 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.chartType = 0
         this.preferenceCache = <ComparisonAnalysisPreferenceCache>comparisonCache.getPreferences(this.uuid)
 
+        this.isUnsaved = false
+
         this.loader = new DataLoader(async (force) => {
+            if (this.isUnsaved) {
+                return
+            }
+
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
             this.run = await CACHE.getRun(this.uuid).get(force)
 
@@ -88,16 +94,14 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                 this.missingBaseExperiment = true
             }
 
-            if(!this.preservePreferences) {
-                this.chartType = this.preferenceData.chart_type
-                this.stepRange = [...this.preferenceData.step_range]
-                this.focusSmoothed = this.preferenceData.focus_smoothed
-                this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
-                if (this.baseSeries) {
-                    this.basePlotIdx = [...fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)]
-                } else {
-                    this.basePlotIdx = [...this.preferenceData.base_series_preferences]
-                }
+            this.chartType = this.preferenceData.chart_type
+            this.stepRange = [...this.preferenceData.step_range]
+            this.focusSmoothed = this.preferenceData.focus_smoothed
+            this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
+            if (this.baseSeries) {
+                this.basePlotIdx = [...fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)]
+            } else {
+                this.basePlotIdx = [...this.preferenceData.base_series_preferences]
             }
         })
 
@@ -172,7 +176,8 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                 optionRowContainer: this.optionRowContainer,
                 actualWidth: this.actualWidth,
                 requestMissingMetrics: this.requestMissingMetrics.bind(this),
-                savePreferences: this.savePreferences.bind(this)
+                savePreferences: this.savePreferences.bind(this),
+                preferenceChange: this.onPreferenceChange
             })
 
             this.renderHeaders()
@@ -220,6 +225,10 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.refresh.changeVisibility(!document.hidden)
     }
 
+    private onPreferenceChange = () => {
+        this.refresh.pause()
+    }
+
     private savePreferences = () => {
         let preferenceData: ComparisonPreferenceModel = {
             series_preferences: this.plotIdx,
@@ -234,7 +243,8 @@ class ComparisonView extends ScreenView implements MetricDataStore {
 
         this.preferenceCache.setPreference(preferenceData).then()
 
-        this.preservePreferences = false
+        this.isUnsaved = false
+        this.refresh.resume()
     }
 
     private renderHeaders() {
@@ -267,7 +277,8 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.baseRun = undefined
 
         this.missingBaseExperiment = true
-
+        this.isUnsaved = false
+        this.refresh.resume()
         this.renderHeaders()
         this.content.render(this.missingBaseExperiment)
         this.renderButtons()
@@ -289,7 +300,8 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                     this.plotIdx = []
                     this.stepRange = [-1, -1]
 
-                    this.preservePreferences = false
+                    this.isUnsaved = false
+                    this.refresh.resume()
 
                     await this.updateBaseRun(true)
 

@@ -8,6 +8,7 @@ export class AwesomeRefreshButton {
     private refreshTimeout: number
     private lastVisibilityChange: number;
     private isActive: boolean
+    private isPaused: boolean
     private isRefreshing: boolean
     private refreshButton: HTMLElement;
     private refreshIcon: HTMLSpanElement
@@ -20,6 +21,7 @@ export class AwesomeRefreshButton {
         this.refreshTimeout = null
         this.isActive = false
         this.isDisabled = false
+        this.isPaused = false
     }
 
     set disabled(value: boolean) {
@@ -77,6 +79,24 @@ export class AwesomeRefreshButton {
         }
         this.handler = null
         this._stop()
+    }
+
+    pause() {
+        if (this.isActive) {
+            this._stop()
+            this.refreshButton.classList.add('disabled')
+            this.remainingTimeElem.innerText = ''
+            this.isPaused = true
+            this.isActive = false
+        }
+    }
+
+    resume() {
+        if (this.isPaused) {
+            this.refreshButton.classList.remove('disabled')
+            this.start()
+            this.isPaused = false
+        }
     }
 
     changeVisibility(isVisible: boolean) {
