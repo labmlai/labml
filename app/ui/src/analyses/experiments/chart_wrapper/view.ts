@@ -11,6 +11,7 @@ interface ViewWrapperOpt {
     dataStore: MetricDataStore
     savePreferences: () => void
     requestMissingMetrics: () => Promise<void>
+    preferenceChange: () => void
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: WeyaElement
@@ -27,7 +28,7 @@ export interface MetricDataStore {
     focusSmoothed: boolean
     stepRange: number[]
 
-    preservePreferences: boolean
+    isUnsaved: boolean
 }
 
 abstract class ChangeHandlerBase {
@@ -133,6 +134,7 @@ export class ViewWrapper {
 
     private readonly onRequestMissingMetrics: () => Promise<void>
     private readonly savePreferences: () => void
+    private readonly preferenceChange: () => void
 
     constructor(opt: ViewWrapperOpt) {
         this.dataStore = opt.dataStore
@@ -144,6 +146,7 @@ export class ViewWrapper {
         this.actualWidth = opt.actualWidth
         this.onRequestMissingMetrics = opt.requestMissingMetrics
         this.savePreferences = opt.savePreferences
+        this.preferenceChange = opt.preferenceChange
 
         this.stepRangeField = new NumericRangeField({
             min: this.dataStore.stepRange[0], max: this.dataStore.stepRange[1],
@@ -190,9 +193,11 @@ export class ViewWrapper {
     }
 
     public onChange() {
-        this.dataStore.preservePreferences = true;
-        this.renderLineChart();
-        this.saveButton.disabled = false;
+        this.dataStore.isUnsaved = true
+        this.renderCharts()
+        this.saveButton.disabled = false
+
+        this.preferenceChange()
     }
 
     public requestMissingMetrics() {
@@ -203,38 +208,10 @@ export class ViewWrapper {
         })
     }
 
-    private toggleChart(idx: number, isBase: boolean) {
-        let plotIdx = isBase ? this.dataStore.basePlotIdx : this.dataStore.plotIdx
-
-        if (plotIdx[idx] > 1)
-            plotIdx[idx] = 1
-
-        if (plotIdx[idx] == 0) {
-            plotIdx[idx] = 1
-        } else if (plotIdx[idx] == 1) {
-            plotIdx[idx] = -1
-        } else if (plotIdx[idx] == -1) {
-            plotIdx[idx] = 0
-        }
-
-        if (isBase) {
-            this.dataStore.basePlotIdx = plotIdx
-        } else {
-            this.dataStore.plotIdx = plotIdx
-        }
-        this.renderCharts()
-        this.saveButton.disabled = false
-
-        if ((isBase && this.dataStore.baseSeries[idx].is_summary) || (!isBase && this.dataStore.series[idx].is_summary)) {
-            // have to load from the backend
-            this.requestMissingMetrics()
-        }
-    }
-
     private onSave = () => {
         this.savePreferences()
         this.saveButton.disabled = true
-        this.dataStore.preservePreferences = false
+        this.dataStore.isUnsaved = false
     }
 
     private setLoading(isLoading: boolean) {
@@ -250,7 +227,7 @@ export class ViewWrapper {
     }
 
     private renderSaveButton() {
-        this.saveButton.disabled = !this.dataStore.preservePreferences
+        this.saveButton.disabled = !this.dataStore.isUnsaved
         this.saveButtonContainer.innerHTML = ''
         $(this.saveButtonContainer, $ => {
             this.saveButton.render($)
@@ -301,10 +278,12 @@ export class ViewWrapper {
                 basePlotIdx: this.dataStore.basePlotIdx,
                 width: this.actualWidth,
                 onSelect: (idx: number) => {
-                    this.toggleChart(idx, false)
+                    let changeHandler = new ChangeHandlers.ToggleChangeHandler(this, idx, false)
+                    changeHandler.change()
                 },
                 onBaseSelect: (idx: number) => {
-                    this.toggleChart(idx, true)
+                    let changeHandler = new ChangeHandlers.ToggleChangeHandler(this, idx, true)
+                    changeHandler.change()
                 },
                 isDivergent: true
             })

@@ -82,7 +82,7 @@ class ComparisonPreferencesIndex(Index['ComparisonPreferences']):
 
 @Analysis.route('POST', 'compare/metrics/{run_uuid}')
 async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
-    request_data = await request.json()
+    get_all_data = (await request.json())['get_all']
     current_uuid = request.query_params['current']
     is_base = current_uuid != run_uuid
 
@@ -122,7 +122,7 @@ async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
             cp.update_preferences({'base_series_preferences' if is_base else 'series_preferences': preference_data})
             cp.save()
         filtered_track_data = get_metrics_tracking_util(track_data, preference_data,
-                                                        request_data)
+                                                        get_all_data)
         response = JSONResponse({'series': filtered_track_data, 'insights': []})
         response.status_code = status_code
 
@@ -151,7 +151,7 @@ async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
             cp.update_preferences({'base_series_preferences' if is_base else 'series_preferences': preference_data})
             cp.save()
 
-        merged_tracking = get_merged_metric_tracking_util(track_data_list, preference_data, request_data)
+        merged_tracking = get_merged_metric_tracking_util(track_data_list, preference_data, get_all_data)
 
         response = JSONResponse({'series': merged_tracking, 'insights': []})
         response.status_code = 200

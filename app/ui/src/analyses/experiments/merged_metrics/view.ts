@@ -44,7 +44,7 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
     chartType: number
     focusSmoothed: boolean
     stepRange: number[]
-    preservePreferences: boolean
+    isUnsaved: boolean
 
     constructor(uuid: string) {
         super()
@@ -53,19 +53,20 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
         this.chartType = 0
         this.preferenceCache = <AnalysisPreferenceCache>metricsCache.getPreferences(this.uuid)
 
-        this.preservePreferences = false
+        this.isUnsaved = false
         this.loader = new DataLoader(async (force) => {
+            if (this.isUnsaved) {
+                return
+            }
             this.run = await CACHE.getRun(this.uuid).get(force)
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
             this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
 
-            if(!this.preservePreferences) {
-                this.chartType = this.preferenceData.chart_type
-                this.stepRange = [...this.preferenceData.step_range]
-                this.focusSmoothed = this.preferenceData.focus_smoothed
-                this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
-            }
+            this.chartType = this.preferenceData.chart_type
+            this.stepRange = [...this.preferenceData.step_range]
+            this.focusSmoothed = this.preferenceData.focus_smoothed
+            this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
         })
 
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
@@ -130,7 +131,8 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
                 optionRowContainer: this.optionRowContainer,
                 actualWidth: this.actualWidth,
                 requestMissingMetrics: this.requestMissingMetrics.bind(this),
-                savePreferences: this.savePreferences.bind(this)
+                savePreferences: this.savePreferences.bind(this),
+                preferenceChange: this.onPreferenceChange
             })
 
             this.content.render()
@@ -157,6 +159,13 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
     }
 
     async onRefresh() {
+        if (this.isUnsaved) {
+            this.refresh.pause()
+            return
+        } else {
+            this.refresh.resume()
+        }
+
         try {
             await this.loader.load(true)
 
@@ -176,8 +185,11 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
     }
 
     private async requestMissingMetrics() {
-        metricsCache.getAnalysis(this.uuid).setMetricData(this.plotIdx)
-        this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(true)).series)
+        this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series)
+    }
+
+    private onPreferenceChange = () => {
+        this.refresh.pause()
     }
 
     private savePreferences = () => {
@@ -190,7 +202,8 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
         }
 
         this.preferenceCache.setPreference(preferenceData).then()
-        this.preservePreferences = false
+        this.isUnsaved = false
+        this.refresh.resume()
     }
 }
 
