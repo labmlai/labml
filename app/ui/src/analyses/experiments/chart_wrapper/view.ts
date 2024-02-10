@@ -9,7 +9,7 @@ import {Loader} from "../../../components/loader"
 
 interface ViewWrapperOpt {
     dataStore: MetricDataStore
-    savePreferences: () => void
+    savePreferences: () => Promise<void>
     requestMissingMetrics: () => Promise<void>
     preferenceChange: () => void
     lineChartContainer: HTMLDivElement
@@ -132,13 +132,15 @@ export class ViewWrapper {
 
     public dataStore: MetricDataStore
 
+    private isLoading: boolean
+
     private readonly onRequestMissingMetrics: () => Promise<void>
-    private readonly savePreferences: () => void
+    private readonly savePreferences: () => Promise<void>
     private readonly preferenceChange: () => void
 
     constructor(opt: ViewWrapperOpt) {
         this.dataStore = opt.dataStore
-
+        this.isLoading = false
         this.lineChartContainer = opt.lineChartContainer
         this.sparkLinesContainer = opt.sparkLinesContainer
         this.saveButtonContainer = opt.saveButtonContainer
@@ -193,28 +195,35 @@ export class ViewWrapper {
     }
 
     public onChange() {
-        this.dataStore.isUnsaved = true
-        this.renderCharts()
-        this.saveButton.disabled = false
+        if (!this.isLoading) {
+            this.dataStore.isUnsaved = true
+            this.renderCharts()
+            this.saveButton.disabled = false
+        }
 
         this.preferenceChange()
     }
 
     public requestMissingMetrics() {
         this.setLoading(true)
+        this.saveButton.disabled = true
         this.onRequestMissingMetrics().then(() => {
             this.renderCharts()
             this.setLoading(false)
+            this.saveButton.disabled = false
         })
     }
 
-    private onSave = () => {
-        this.savePreferences()
+    private onSave = async () => {
+        this.saveButton.loading = true
         this.saveButton.disabled = true
+        await this.savePreferences()
+        this.saveButton.loading = false
         this.dataStore.isUnsaved = false
     }
 
     private setLoading(isLoading: boolean) {
+        this.isLoading = isLoading
         if (isLoading) {
             $(this.lineChartContainer, $ => {
                 $('div', '.chart-overlay', $ => {
@@ -266,6 +275,9 @@ export class ViewWrapper {
                 focusSmoothed: this.dataStore.focusSmoothed
             }).render($)
         })
+        if (this.isLoading) {
+            this.setLoading(true)
+        }
     }
 
     private renderSparkLines() {
