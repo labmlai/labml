@@ -30,6 +30,14 @@ class BroadcastPromise<T> {
         this.rejectors = []
     }
 
+    forceCreate(load: () => Promise<T>): Promise<T> {
+        if (this.isLoading) {
+            this.reject("")
+            this.isLoading = false
+        }
+        return this.create(load)
+    }
+
     create(load: () => Promise<T>): Promise<T> {
         let promise = new Promise<T>((resolve, reject) => {
             this.add(resolve, reject)
@@ -300,6 +308,7 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
     private statusCache: StatusCache
     private currentUUID: string
     private readonly isExperiment: boolean
+    private currentXHR: XMLHttpRequest | null
 
     constructor(uuid: string, url: string, statusCache: StatusCache, isExperiment: boolean = false) {
         super()
@@ -307,6 +316,7 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
         this.statusCache = statusCache
         this.url = url
         this.isExperiment = isExperiment
+        this.currentXHR = null
     }
 
     public setCurrentUUID(currentUUID: string) {
@@ -315,17 +325,22 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
 
     async load(): Promise<AnalysisDataModel> {
         return this.broadcastPromise.create(async () => {
-            return await NETWORK.getAnalysis(this.url, this.uuid, false, this.currentUUID, this.isExperiment)
+            let response = NETWORK.getAnalysis(this.url, this.uuid, false, this.currentUUID, this.isExperiment)
+            this.currentXHR = response.xhr
+            return await response.promise
         })
     }
 
     async getAllMetrics(): Promise<AnalysisDataModel> {
-        // todo will need this queue here
-        return this.broadcastPromise.create(async () => {
-            this.data = await NETWORK.getAnalysis(this.url, this.uuid, true, this.currentUUID, this.isExperiment)
+        if (this.currentXHR != null) {
+            this.currentXHR.abort()
+        }
+        this.data = await this.broadcastPromise.forceCreate(async () => {
             this.lastUpdated = (new Date()).getTime()
-            return this.data
+            let response = NETWORK.getAnalysis(this.url, this.uuid, true, this.currentUUID, this.isExperiment)
+            return response.promise
         })
+        return this.data
     }
 
     async get(isRefresh = false): Promise<AnalysisDataModel> {
