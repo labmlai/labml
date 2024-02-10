@@ -228,7 +228,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.refresh.pause()
     }
 
-    private savePreferences = () => {
+    private savePreferences = async () => {
         let preferenceData: ComparisonPreferenceModel = {
             series_preferences: this.plotIdx,
             chart_type: this.chartType,
@@ -240,7 +240,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             is_base_distributed: this.baseRun.world_size != 0
         }
 
-        this.preferenceCache.setPreference(preferenceData).then()
+        await this.preferenceCache.setPreference(preferenceData)
 
         this.isUnsaved = false
         this.refresh.resume()

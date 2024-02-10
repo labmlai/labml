@@ -9,7 +9,7 @@ import {Loader} from "../../../components/loader"
 
 interface ViewWrapperOpt {
     dataStore: MetricDataStore
-    savePreferences: () => void
+    savePreferences: () => Promise<void>
     requestMissingMetrics: () => Promise<void>
     preferenceChange: () => void
     lineChartContainer: HTMLDivElement
@@ -133,7 +133,7 @@ export class ViewWrapper {
     public dataStore: MetricDataStore
 
     private readonly onRequestMissingMetrics: () => Promise<void>
-    private readonly savePreferences: () => void
+    private readonly savePreferences: () => Promise<void>
     private readonly preferenceChange: () => void
 
     constructor(opt: ViewWrapperOpt) {
@@ -208,9 +208,11 @@ export class ViewWrapper {
         })
     }
 
-    private onSave = () => {
-        this.savePreferences()
+    private onSave = async () => {
+        this.saveButton.loading = true
         this.saveButton.disabled = true
+        await this.savePreferences()
+        this.saveButton.loading = false
         this.dataStore.isUnsaved = false
     }
 

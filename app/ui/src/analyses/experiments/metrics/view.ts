@@ -192,7 +192,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
         this.refresh.pause()
     }
 
-    private savePreferences = () => {
+    private savePreferences = async () => {
         let preferenceData: AnalysisPreferenceModel = {
             series_preferences: this.plotIdx,
             chart_type: this.chartType,
@@ -201,7 +201,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
             sub_series_preferences: undefined
         }
 
-        this.preferenceCache.setPreference(preferenceData).then()
+        await this.preferenceCache.setPreference(preferenceData)
 
         this.isUnsaved = false
         this.refresh.resume()
