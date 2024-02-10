@@ -132,13 +132,15 @@ export class ViewWrapper {
 
     public dataStore: MetricDataStore
 
+    private isLoading: boolean
+
     private readonly onRequestMissingMetrics: () => Promise<void>
     private readonly savePreferences: () => Promise<void>
     private readonly preferenceChange: () => void
 
     constructor(opt: ViewWrapperOpt) {
         this.dataStore = opt.dataStore
-
+        this.isLoading = false
         this.lineChartContainer = opt.lineChartContainer
         this.sparkLinesContainer = opt.sparkLinesContainer
         this.saveButtonContainer = opt.saveButtonContainer
@@ -217,6 +219,7 @@ export class ViewWrapper {
     }
 
     private setLoading(isLoading: boolean) {
+        this.isLoading = isLoading
         if (isLoading) {
             $(this.lineChartContainer, $ => {
                 $('div', '.chart-overlay', $ => {
@@ -268,6 +271,9 @@ export class ViewWrapper {
                 focusSmoothed: this.dataStore.focusSmoothed
             }).render($)
         })
+        if (this.isLoading) {
+            this.setLoading(true)
+        }
     }
 
     private renderSparkLines() {
