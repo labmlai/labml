@@ -159,13 +159,6 @@ class MetricsView extends ScreenView implements MetricDataStore {
     }
 
     async onRefresh() {
-        if (this.isUnsaved) {
-            this.refresh.pause()
-            return
-        } else {
-            this.refresh.resume()
-        }
-
         try {
             await this.loader.load(true)
 

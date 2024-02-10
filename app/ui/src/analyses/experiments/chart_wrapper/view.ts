@@ -195,18 +195,22 @@ export class ViewWrapper {
     }
 
     public onChange() {
-        this.dataStore.isUnsaved = true
-        this.renderCharts()
-        this.saveButton.disabled = false
+        if (!this.isLoading) {
+            this.dataStore.isUnsaved = true
+            this.renderCharts()
+            this.saveButton.disabled = false
+        }
 
         this.preferenceChange()
     }
 
     public requestMissingMetrics() {
         this.setLoading(true)
+        this.saveButton.disabled = true
         this.onRequestMissingMetrics().then(() => {
             this.renderCharts()
             this.setLoading(false)
+            this.saveButton.disabled = false
         })
     }
 
