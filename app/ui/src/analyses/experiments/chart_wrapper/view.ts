@@ -199,6 +199,8 @@ export class ViewWrapper {
             this.dataStore.isUnsaved = true
             this.renderCharts()
             this.saveButton.disabled = false
+        } else {
+            this.renderSparkLines()
         }
 
         this.preferenceChange()
@@ -223,16 +225,17 @@ export class ViewWrapper {
     }
 
     private setLoading(isLoading: boolean) {
-        this.isLoading = isLoading
-        if (isLoading) {
+        if (isLoading && !this.isLoading) {
             $(this.lineChartContainer, $ => {
                 $('div', '.chart-overlay', $ => {
                     new Loader().render($)
                 })
             })
-        } else {
+        } else if (!isLoading) {
             this.renderCharts()
         }
+
+        this.isLoading = isLoading
     }
 
     private renderSaveButton() {
