@@ -191,7 +191,8 @@ class MetricsView extends ScreenView implements MetricDataStore {
             chart_type: this.chartType,
             step_range: this.stepRange,
             focus_smoothed: this.focusSmoothed,
-            sub_series_preferences: undefined
+            sub_series_preferences: undefined,
+            series_names: this.series.map(s => s.name)
         }
 
         await this.preferenceCache.setPreference(preferenceData)

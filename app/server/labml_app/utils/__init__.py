@@ -43,7 +43,10 @@ def get_true_run_uuid(run_uuid: str) -> str:
 
 
 def get_default_series_preference(series_names: List[str]) -> List[int]:
-    return [1 if 'loss' == s.lower().split('.')[0] else -1 for s in series_names]
+    series_pref = [1 if 'loss' == s.lower().split('.')[0] else -1 for s in series_names]
+    if all(p == -1 for p in series_pref):
+        series_pref[0] = 1
+    return series_pref
 
 
 def fill_preferences(series_names: List[str], preferences: List[int]) -> List[int]:
@@ -53,3 +56,17 @@ def fill_preferences(series_names: List[str], preferences: List[int]) -> List[in
         preferences = preferences[:len(series_names)]
 
     return preferences
+
+
+def update_series_preferences(preferences: List[int], series: List[int], client_series_names: List[str])\
+        -> List[int]:
+    preference_dict = {s: p for s, p in zip(series, preferences)}
+
+    new_preferences = []
+    for s in client_series_names:
+        if s in preference_dict:
+            new_preferences.append(preference_dict[s])
+        else:
+            new_preferences.append(-1)
+
+    return new_preferences

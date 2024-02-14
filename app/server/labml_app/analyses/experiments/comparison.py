@@ -188,6 +188,27 @@ async def set_comparison_preferences(request: Request, run_uuid: str) -> Any:
         cp = preferences_key.load()
 
     json = await request.json()
+
+    app_preferences = json['series_preferences']
+    client_preferences = cp.get_data()['series_preferences']
+
+    if len(app_preferences) != len(client_preferences):
+        if 'series_names' not in json:
+            raise ValueError('series_names not found in the request')
+        series_names = [s['name'] for s in MetricsAnalysis.get_or_create(run_uuid).get_tracking()]
+        json['series_preferences'] = (
+            utils.update_series_preferences(app_preferences, json['series_names'], series_names))
+
+    if 'base_experiment' in json and json['base_experiment'] != '':
+        base_app_preferences = json['base_series_preferences']
+        base_client_preferences = cp.get_data()['base_series_preferences']
+        if len(base_app_preferences) != len(base_client_preferences):
+            if 'base_series_names' not in json:
+                raise ValueError('base_series_names not found in the request')
+            series_names = [s['name'] for s in MetricsAnalysis.get_or_create(json['base_experiment']).get_tracking()]
+            json['base_series_preferences'] = (
+                utils.update_series_preferences(base_app_preferences, json['base_series_names'], series_names))
+
     cp.update_preferences(json)
 
     logger.debug(f'update comparison preferences: {cp.key}')

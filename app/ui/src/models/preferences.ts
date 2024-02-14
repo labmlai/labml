@@ -9,10 +9,12 @@ export interface AnalysisPreferenceBaseModel {
 
 export interface AnalysisPreferenceModel extends AnalysisPreferenceBaseModel {
     series_preferences: number[]
+    series_names?: string[]
 }
 
 export interface ComparisonPreferenceModel extends AnalysisPreferenceModel {
     base_series_preferences: number[]
     base_experiment: string
     is_base_distributed: boolean
+    base_series_names?: string[]
 }

@@ -237,7 +237,9 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             sub_series_preferences: undefined,
             base_experiment: this.baseUuid,
             base_series_preferences: this.basePlotIdx,
-            is_base_distributed: this.baseRun.world_size != 0
+            is_base_distributed: this.baseRun.world_size != 0,
+            series_names: this.series.map(s => s.name),
+            base_series_names: this.baseSeries ? this.baseSeries.map(s => s.name) : []
         }
 
         await this.preferenceCache.setPreference(preferenceData)

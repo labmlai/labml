@@ -55,8 +55,10 @@ class MetricsAnalysis(Analysis):
     def __init__(self, data):
         self.metrics = data
 
-    def track(self, data: Dict[str, SeriesModel]):
+    def track(self, data: Dict[str, SeriesModel], run_uuid: str = None):
         res = {}
+        current_indicators = list(self.metrics.indicators)
+        new_indicators = set()
         for ind, s in data.items():
             ind_split = ind.split('.')
             ind_type = ind_split[0]
@@ -64,9 +66,30 @@ class MetricsAnalysis(Analysis):
                 if ind not in self.metrics.indicators:
                     if len(self.metrics.indicators) >= INDICATOR_LIMIT:
                         continue
-                    self.metrics.indicators.add('.'.join(ind))
-
+                    self.metrics.indicators.add(ind)
+                    new_indicators.add(ind)
                 res[ind] = s
+        if len(new_indicators) > 0:  # update preferences
+            try:
+                preferences_key = MetricsPreferencesIndex.get(run_uuid)
+                mp: MetricsPreferencesModel = preferences_key.load()
+                series_preferences = mp.get_data()['series_preferences']
+
+                complete_indicators = current_indicators + list(new_indicators)
+                complete_indicators.sort()
+
+                if len(current_indicators) == 0:  # first time
+                    series_preferences = utils.get_default_series_preference(complete_indicators)
+                else:
+                    for i in range(len(complete_indicators)):
+                        if complete_indicators[i] in new_indicators:
+                            series_preferences.insert(i, -1)
+
+                mp.update_preferences({'series_preferences': series_preferences})
+                mp.save()
+            except Exception as e:
+                logger.error(f'Error updating preferences: {e}')
+                raise e
 
         self.metrics.track(res)
 
@@ -248,6 +271,17 @@ async def set_metrics_preferences(request: Request, run_uuid: str) -> Any:
         MetricsPreferencesIndex.set(run_uuid, mp.key)
 
     json = await request.json()
+
+    app_preferences = json['series_preferences']
+    client_preferences = mp.get_data()['series_preferences']
+
+    if len(app_preferences) != len(client_preferences):
+        if 'series_names' not in json:
+            raise ValueError('series_names not found in the request')
+        series_names = [s['name'] for s in MetricsAnalysis.get_or_create(run_uuid).get_tracking()]
+        json['series_preferences'] = (
+            utils.update_series_preferences(app_preferences, json['series_names'], series_names))
+
     mp.update_preferences(json)
 
     logger.debug(f'update metrics preferences: {mp.key}')

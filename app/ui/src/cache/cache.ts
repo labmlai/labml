@@ -414,6 +414,7 @@ export class ComparisonAnalysisPreferenceCache extends CacheObject<ComparisonPre
 
         this.data.base_experiment = ''
         this.data.base_series_preferences = []
+        this.data.base_series_names = []
 
         NETWORK.updatePreferences(this.url, this.uuid, this.data).then()
 
@@ -427,6 +428,7 @@ export class ComparisonAnalysisPreferenceCache extends CacheObject<ComparisonPre
 
         this.data.base_experiment = run.run_uuid
         this.data.base_series_preferences = []
+        this.data.base_series_names = []
         this.data.is_base_distributed = run.world_size != 0
 
         NETWORK.updatePreferences(this.url, this.uuid, this.data).then()
