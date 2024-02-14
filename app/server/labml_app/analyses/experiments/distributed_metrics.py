@@ -6,6 +6,7 @@ from labml_db import Model, Index, load_keys
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
+from labml_app import utils
 from ..analysis import Analysis
 from . import metrics
 from ..preferences import Preferences
@@ -53,6 +54,16 @@ async def set_merged_metrics_preferences(run_uuid: str, data: Dict[str, any]) ->
 
     if not mp:
         mp = preferences_key.load()
+
+    app_preferences = data['series_preferences']
+    client_preferences = mp.get_data()['series_preferences']
+
+    if len(app_preferences) != len(client_preferences):
+        if 'series_names' not in data:
+            raise ValueError('series_names not found in the request')
+        series_names = [s['name'] for s in metrics.MetricsAnalysis.get_or_create(run_uuid).get_tracking()]
+        data['series_preferences'] = (
+            utils.update_series_preferences(app_preferences, data['series_names'], series_names))
 
     mp.update_preferences(data)
 

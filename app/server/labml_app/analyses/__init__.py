@@ -13,7 +13,7 @@ class AnalysisManager:
     @staticmethod
     def track(run_uuid: str, data: Dict[str, SeriesModel]) -> None:
         for ans in experiment_analyses:
-            ans.get_or_create(run_uuid).track(data)
+            ans.get_or_create(run_uuid).track(data, run_uuid)
 
     @staticmethod
     def track_computer(session_uuid: str, data: Dict[str, SeriesModel]) -> None:

@@ -8,7 +8,7 @@ DB_INDEXES = []
 
 
 class Analysis:
-    def track(self, data: Dict[str, SeriesModel]) -> None:
+    def track(self, data: Dict[str, SeriesModel], run_uuid: str = None) -> None:
         raise NotImplementedError
 
     @staticmethod
