@@ -105,24 +105,24 @@ export class LinePlot {
 
     private renderCircle(cursorStep: number | null) {
         if (cursorStep != null) {
-            let idx = getSelectedIdx(this.series, this.bisect, cursorStep)
+            let idx = getSelectedIdx(this.smoothedSeries, this.bisect, cursorStep)
 
             if (idx == -1)
                 return
 
-            this.circleElem.setAttribute("cx", `${this.xScale(this.series[idx].step)}`)
-            this.circleElem.setAttribute("cy", `${this.yScale(this.series[idx].smoothed)}`)
+            this.circleElem.setAttribute("cx", `${this.xScale(this.smoothedSeries[idx].step)}`)
+            this.circleElem.setAttribute("cy", `${this.yScale(this.smoothedSeries[idx].smoothed)}`)
             this.circleElem.setAttribute("r", `5`)
         }
     }
 
     private renderLine(cursorStep: number | null) {
         if (cursorStep != null) {
-            let idx = getSelectedIdx(this.series, this.bisect, cursorStep)
+            let idx = getSelectedIdx(this.smoothedSeries, this.bisect, cursorStep)
             this.lineElem.setAttribute("x1", `${this.xScale(this.xScale.domain()[0])}`)
             this.lineElem.setAttribute("x2", `${this.xScale(this.xScale.domain()[1])}`)
-            this.lineElem.setAttribute("y1", `${this.yScale(this.series[idx].smoothed).toFixed(2)}`)
-            this.lineElem.setAttribute("y2", `${this.yScale(this.series[idx].smoothed).toFixed(2)}`)
+            this.lineElem.setAttribute("y1", `${this.yScale(this.smoothedSeries[idx].smoothed).toFixed(2)}`)
+            this.lineElem.setAttribute("y2", `${this.yScale(this.smoothedSeries[idx].smoothed).toFixed(2)}`)
             this.lineElem.setAttribute("stroke-width", `1`)
             this.lineElem.setAttribute("opacity", `0.5`)
         }
