@@ -5,6 +5,7 @@ export interface AnalysisPreferenceBaseModel {
     chart_type: number
     step_range: number[]
     focus_smoothed: boolean
+    smooth_value: number
 }
 
 export interface AnalysisPreferenceModel extends AnalysisPreferenceBaseModel {

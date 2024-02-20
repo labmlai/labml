@@ -24,6 +24,7 @@ interface LineChartOptions extends ChartOptions {
     isDivergent?: boolean
     stepRange: number[]
     focusSmoothed: boolean
+    smoothValue: number
 }
 
 export class LineChart {
@@ -49,6 +50,7 @@ export class LineChart {
     private svgBoundingClientRect: DOMRect
     private readonly  uniqueItems: Map<string, number>
     private readonly focusSmoothed: boolean
+    private readonly smoothValue: number
 
     constructor(opt: LineChartOptions) {
         this.currentSeries = opt.series
@@ -61,6 +63,7 @@ export class LineChart {
         this.baseSeries = trimSteps(this.baseSeries, opt.stepRange[0], opt.stepRange[1])
         this.currentSeries = trimSteps(this.currentSeries, opt.stepRange[0], opt.stepRange[1])
         this.focusSmoothed = opt.focusSmoothed
+        this.smoothValue = opt.smoothValue
 
         this.uniqueItems = new Map<string, number>()
         this.axisSize = 30
@@ -176,7 +179,7 @@ export class LineChart {
         } else {
             $('div', $ => {
                 $('div', $ => {
-                        // this.stepElement = $('h6', '.text-center.selected-step', '')
+                        this.stepElement = $('h6', '.text-center.selected-step', '')
                         this.svgElem = $('svg', '#chart',
                             {
                                 height: LABEL_HEIGHT + 2 * this.margin + this.axisSize + this.chartHeight,
@@ -215,7 +218,8 @@ export class LineChart {
                                                         ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
                                                         : this.chartColors.getColor(this.uniqueItems.get(s.name)),
                                                 renderHorizontalLine: true,
-                                                smoothFocused: this.focusSmoothed
+                                                smoothFocused: this.focusSmoothed,
+                                                smoothValue: this.smoothValue
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
@@ -231,7 +235,8 @@ export class LineChart {
                                                         : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
                                                 isBase: true,
                                                 renderHorizontalLine: true,
-                                                smoothFocused: this.focusSmoothed
+                                                smoothFocused: this.focusSmoothed,
+                                                smoothValue: this.smoothValue
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)

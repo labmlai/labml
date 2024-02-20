@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {FillOptions, PlotOptions} from '../types'
 import {PointValue} from "../../../models/run"
-import {getSelectedIdx} from "../utils"
+import {getSelectedIdx, mapRange, smoothSeries} from "../utils"
 
 export interface LinePlotOptions extends PlotOptions {
     xScale: d3.ScaleLinear<number, number>
@@ -10,6 +10,7 @@ export interface LinePlotOptions extends PlotOptions {
     isBase?: boolean
     renderHorizontalLine?: boolean
     smoothFocused?: boolean
+    smoothValue: number
 }
 
 export class LinePlot {
@@ -26,6 +27,8 @@ export class LinePlot {
     renderHorizontalLine: boolean
     smoothFocused: boolean
 
+    private readonly smoothedSeries: PointValue[]
+
     constructor(opt: LinePlotOptions) {
         this.series = opt.series
         this.xScale = opt.xScale
@@ -38,6 +41,9 @@ export class LinePlot {
         this.bisect = d3.bisector(function (d: PointValue) {
             return d.step
         }).left
+
+        let smoothWindow = mapRange(opt.smoothValue, 1, 100, 1, this.series.length/10)
+        this.smoothedSeries = smoothSeries(this.series, opt.smoothValue)
 
         this.smoothedLine = d3.line()
             .curve(d3.curveMonotoneX)
@@ -64,7 +70,7 @@ export class LinePlot {
                 {
                     fill: 'none',
                     stroke: this.color,
-                    d: this.smoothedLine(this.series) as string,
+                    d: this.smoothedLine(this.smoothedSeries) as string,
                     "stroke-dasharray": this.isBase ? "3 1": ""
                 })
             if (!this.isBase) {
@@ -99,24 +105,24 @@ export class LinePlot {
 
     private renderCircle(cursorStep: number | null) {
         if (cursorStep != null) {
-            let idx = getSelectedIdx(this.series, this.bisect, cursorStep)
+            let idx = getSelectedIdx(this.smoothedSeries, this.bisect, cursorStep)
 
             if (idx == -1)
                 return
 
-            this.circleElem.setAttribute("cx", `${this.xScale(this.series[idx].step)}`)
-            this.circleElem.setAttribute("cy", `${this.yScale(this.series[idx].smoothed)}`)
+            this.circleElem.setAttribute("cx", `${this.xScale(this.smoothedSeries[idx].step)}`)
+            this.circleElem.setAttribute("cy", `${this.yScale(this.smoothedSeries[idx].smoothed)}`)
             this.circleElem.setAttribute("r", `5`)
         }
     }
 
     private renderLine(cursorStep: number | null) {
         if (cursorStep != null) {
-            let idx = getSelectedIdx(this.series, this.bisect, cursorStep)
+            let idx = getSelectedIdx(this.smoothedSeries, this.bisect, cursorStep)
             this.lineElem.setAttribute("x1", `${this.xScale(this.xScale.domain()[0])}`)
             this.lineElem.setAttribute("x2", `${this.xScale(this.xScale.domain()[1])}`)
-            this.lineElem.setAttribute("y1", `${this.yScale(this.series[idx].smoothed).toFixed(2)}`)
-            this.lineElem.setAttribute("y2", `${this.yScale(this.series[idx].smoothed).toFixed(2)}`)
+            this.lineElem.setAttribute("y1", `${this.yScale(this.smoothedSeries[idx].smoothed).toFixed(2)}`)
+            this.lineElem.setAttribute("y2", `${this.yScale(this.smoothedSeries[idx].smoothed).toFixed(2)}`)
             this.lineElem.setAttribute("stroke-width", `1`)
             this.lineElem.setAttribute("opacity", `0.5`)
         }

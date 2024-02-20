@@ -73,6 +73,10 @@ export function getScale(extent: [number, number], size: number, isNice: boolean
     }
 }
 
+export function mapRange(value: number, fromSource: number, toSource: number, fromTarget: number, toTarget: number) {
+    return (value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget;
+}
+
 export function getLogScale(extent: [number, number], size: number): d3.ScaleLogarithmic<number, number> {
     return d3.scaleLog()
         .domain(extent)
@@ -87,6 +91,25 @@ export function getTimeScale(extent: [Date, Date], size: number): d3.ScaleTime<n
 
 export function toDate(time: number) {
     return new Date(time * 1000)
+}
+
+export function smoothSeries(series: PointValue[], windowSize: number): PointValue[] {
+    let result: PointValue[] = []
+    windowSize = ~~windowSize
+    if (series.length < windowSize) {
+        return series
+    }
+    for (let i = windowSize; i < series.length; i++) {
+        let sumX = 0, sumY = 0
+            for (let j = i - windowSize; j < i; j++) {
+                sumY += series[j].smoothed
+                sumX += series[i].step
+            }
+            let avgX = sumX / windowSize
+            let avgY = sumY / windowSize
+            result.push(<PointValue>{step: avgX, value: avgY, smoothed: avgY})
+    }
+    return result
 }
 
 export function fillPlotPreferences(series: SeriesModel[], currentPlotIdx: number[] = []) {

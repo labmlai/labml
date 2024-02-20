@@ -37,6 +37,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     chartType: number
     focusSmoothed: boolean
     stepRange: number[]
+    smoothValue: number
 
     isUnsaved: boolean
 
@@ -102,6 +103,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             } else {
                 this.basePlotIdx = [...this.preferenceData.base_series_preferences]
             }
+            this.smoothValue = this.preferenceData.smooth_value
         })
 
         this.runHeaderCard = new RunHeaderCard({
@@ -239,7 +241,8 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             base_series_preferences: this.basePlotIdx,
             is_base_distributed: this.baseRun.world_size != 0,
             series_names: this.series.map(s => s.name),
-            base_series_names: this.baseSeries ? this.baseSeries.map(s => s.name) : []
+            base_series_names: this.baseSeries ? this.baseSeries.map(s => s.name) : [],
+            smooth_value: this.smoothValue
         }
 
         await this.preferenceCache.setPreference(preferenceData)

@@ -25,7 +25,8 @@ class ComparisonPreferences(preferences.Preferences):
         return dict(base_series_preferences=[],
                     base_experiment="",
                     step_range=[-1, -1],
-                    is_base_distributed=False
+                    is_base_distributed=False,
+                    smooth_value=-1,
                     )
 
     def update_preferences(self, data: preferences.PreferencesData) -> None:
@@ -47,6 +48,9 @@ class ComparisonPreferences(preferences.Preferences):
         if 'focus_smoothed' in data:
             self.focus_smoothed = data['focus_smoothed']
 
+        if 'smooth_value' in data:
+            self.smooth_value = data['smooth_value']
+
         r = run.get(self.base_experiment)
         if r is not None and r.world_size > 0:  # distributed run
             self.is_base_distributed = True
@@ -66,7 +70,8 @@ class ComparisonPreferences(preferences.Preferences):
             'chart_type': self.chart_type,
             'step_range': self.step_range,
             'focus_smoothed': self.focus_smoothed,
-            'is_base_distributed': self.is_base_distributed
+            'is_base_distributed': self.is_base_distributed,
+            'smooth_value': self.smooth_value
         }
 
 

@@ -40,6 +40,7 @@ export class CardWrapper {
     private chartType: number
     private stepRange: number[]
     private focusSmoothed: boolean
+    private smoothValue: number
 
     private readonly title?: string
 
@@ -79,6 +80,7 @@ export class CardWrapper {
         this.chartType = preferenceData.chart_type
         this.stepRange = preferenceData.step_range
         this.focusSmoothed = preferenceData.focus_smoothed
+        this.smoothValue = preferenceData.smooth_value
     }
 
     public render() {
@@ -110,7 +112,8 @@ export class CardWrapper {
                 chartType: this.chartType != null ? getChartType(this.chartType) : 'linear',
                 isDivergent: true,
                 stepRange: this.stepRange,
-                focusSmoothed: this.focusSmoothed
+                focusSmoothed: this.focusSmoothed,
+                smoothValue: this.smoothValue
             }).render($)
         })
     }
