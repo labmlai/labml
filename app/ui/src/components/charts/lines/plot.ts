@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {FillOptions, PlotOptions} from '../types'
 import {PointValue} from "../../../models/run"
-import {getSelectedIdx} from "../utils"
+import {getSelectedIdx, mapRange, smoothSeries} from "../utils"
 
 export interface LinePlotOptions extends PlotOptions {
     xScale: d3.ScaleLinear<number, number>
@@ -10,6 +10,7 @@ export interface LinePlotOptions extends PlotOptions {
     isBase?: boolean
     renderHorizontalLine?: boolean
     smoothFocused?: boolean
+    smoothValue: number
 }
 
 export class LinePlot {
@@ -26,6 +27,8 @@ export class LinePlot {
     renderHorizontalLine: boolean
     smoothFocused: boolean
 
+    private readonly smoothedSeries: PointValue[]
+
     constructor(opt: LinePlotOptions) {
         this.series = opt.series
         this.xScale = opt.xScale
@@ -38,6 +41,9 @@ export class LinePlot {
         this.bisect = d3.bisector(function (d: PointValue) {
             return d.step
         }).left
+
+        let smoothWindow = mapRange(opt.smoothValue, 1, 100, 1, this.series.length/10)
+        this.smoothedSeries = smoothSeries(this.series, opt.smoothValue)
 
         this.smoothedLine = d3.line()
             .curve(d3.curveMonotoneX)
@@ -64,7 +70,7 @@ export class LinePlot {
                 {
                     fill: 'none',
                     stroke: this.color,
-                    d: this.smoothedLine(this.series) as string,
+                    d: this.smoothedLine(this.smoothedSeries) as string,
                     "stroke-dasharray": this.isBase ? "3 1": ""
                 })
             if (!this.isBase) {

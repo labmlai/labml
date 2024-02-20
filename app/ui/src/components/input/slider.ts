@@ -9,7 +9,6 @@ interface SliderOptions {
 }
 
 export class Slider {
-    private valueElem: WeyaElement
     private slider: HTMLInputElement
     private readonly onChange: (value: number) => void
 
@@ -35,12 +34,10 @@ export class Slider {
                 value: this.value,
                 step: this.step
             })
-            this.valueElem = $('span.slider-value', this.value.toFixed(2))
         })
 
         this.slider.oninput = () => {
             this.value = parseFloat(this.slider.value)
-            this.valueElem.textContent = this.slider.value
             this.onChange(this.value)
         }
     }

@@ -197,8 +197,8 @@ export class ViewWrapper {
             parent: this.constructor.name
         })
         this.smoothSlider = new Slider({
-            min: 0,
-            max: 10,
+            min: 1,
+            max: 100,
             value: this.dataStore.smoothValue,
             step: 0.1,
             onChange: (value: number) => {
