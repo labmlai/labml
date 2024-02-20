@@ -6,6 +6,7 @@ import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType} from "../../../components/charts/utils"
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
 import {Loader} from "../../../components/loader"
+import {Slider} from "../../../components/input/slider";
 
 interface ViewWrapperOpt {
     dataStore: MetricDataStore
@@ -27,6 +28,7 @@ export interface MetricDataStore {
     chartType: number
     focusSmoothed: boolean
     stepRange: number[]
+    smoothValue: number
 
     isUnsaved: boolean
 }
@@ -75,6 +77,19 @@ namespace ChangeHandlers {
     export class SmoothFocusChangeHandler extends ChangeHandlerBase {
         protected handleChange() {
             this.wrapper.dataStore.focusSmoothed = !this.wrapper.dataStore.focusSmoothed
+        }
+    }
+
+    export class SmoothValueHandler extends ChangeHandlerBase {
+        private readonly value: number
+
+        constructor(wrapper: ViewWrapper, value: number) {
+            super(wrapper)
+            this.value = value
+        }
+
+        protected handleChange() {
+            this.wrapper.dataStore.smoothValue = this.value
         }
     }
 
@@ -128,6 +143,7 @@ export class ViewWrapper {
     private readonly saveButton: SaveButton
     private readonly scaleButton: ToggleButton
     private readonly focusButton: ToggleButton
+    private readonly smoothSlider: Slider
     private sparkLines: SparkLines
 
     public dataStore: MetricDataStore
@@ -179,6 +195,16 @@ export class ViewWrapper {
             text: 'Focus Smoothed',
             isToggled: this.dataStore.focusSmoothed,
             parent: this.constructor.name
+        })
+        this.smoothSlider = new Slider({
+            min: 0,
+            max: 10,
+            value: this.dataStore.smoothValue,
+            step: 0.1,
+            onChange: (value: number) => {
+                let changeHandler = new ChangeHandlers.SmoothValueHandler(this, value)
+                changeHandler.change()
+            }
         })
     }
 
@@ -258,6 +284,7 @@ export class ViewWrapper {
             this.focusButton.render($)
             this.stepRangeField.render($)
             this.stepRangeField.setRange(this.dataStore.stepRange[0], this.dataStore.stepRange[1])
+            this.smoothSlider.render($)
         })
     }
 
@@ -275,7 +302,8 @@ export class ViewWrapper {
                 isCursorMoveOpt: true,
                 isDivergent: true,
                 stepRange: this.dataStore.stepRange,
-                focusSmoothed: this.dataStore.focusSmoothed
+                focusSmoothed: this.dataStore.focusSmoothed,
+                smoothValue: this.dataStore.smoothValue
             }).render($)
         })
         if (this.isLoading) {

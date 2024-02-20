@@ -24,6 +24,7 @@ interface LineChartOptions extends ChartOptions {
     isDivergent?: boolean
     stepRange: number[]
     focusSmoothed: boolean
+    smoothValue: number
 }
 
 export class LineChart {
@@ -49,6 +50,7 @@ export class LineChart {
     private svgBoundingClientRect: DOMRect
     private readonly  uniqueItems: Map<string, number>
     private readonly focusSmoothed: boolean
+    private readonly smoothValue: number
 
     constructor(opt: LineChartOptions) {
         this.currentSeries = opt.series
@@ -61,6 +63,7 @@ export class LineChart {
         this.baseSeries = trimSteps(this.baseSeries, opt.stepRange[0], opt.stepRange[1])
         this.currentSeries = trimSteps(this.currentSeries, opt.stepRange[0], opt.stepRange[1])
         this.focusSmoothed = opt.focusSmoothed
+        this.smoothValue = opt.smoothValue
 
         this.uniqueItems = new Map<string, number>()
         this.axisSize = 30
