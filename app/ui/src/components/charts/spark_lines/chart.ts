@@ -1,7 +1,7 @@
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {fillPlotPreferences, getExtent} from "../utils"
+import {getExtent, getSmoothWindow, smoothSeries} from "../utils"
 import {SparkLine} from "./spark_line"
 import ChartColors from "../chart_colors"
 import {DefaultLineGradient} from "../chart_gradients"
@@ -15,6 +15,7 @@ interface CompareSparkLinesOptions extends ChartOptions {
     isMouseMoveOpt?: boolean
     isDivergent?: boolean
     onlySelected?: boolean
+    smoothValue: number
 }
 
 export class SparkLines {
@@ -24,8 +25,6 @@ export class SparkLines {
     basePlotIdx: number[]
     isEditable: boolean
     rowWidth: number
-    minLastValue: number
-    maxLastValue: number
     isMouseMoveOpt: boolean
     stepExtent: [number, number]
     onCurrentSelect?: (i: number) => void
@@ -35,6 +34,9 @@ export class SparkLines {
     isDivergent?: boolean
     uniqueItems: Map<string, number>
     onlySelected: boolean
+
+    private readonly currentLastValues: number[]
+    private readonly baseLastValues: number[]
 
     constructor(opt: CompareSparkLinesOptions) {
         this.currentSeries = opt.series
@@ -60,8 +62,17 @@ export class SparkLines {
             }
         }
 
-        this.maxLastValue = Math.max(...lastValues)
-        this.minLastValue = Math.min(...lastValues)
+        this.currentLastValues = []
+        this.baseLastValues = []
+        let smoothWindow = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
+        for (let i = 0; i < this.currentSeries.length; i++) {
+            let smoothedSeries = smoothSeries(this.currentSeries[i].series, smoothWindow)
+            this.currentLastValues.push(smoothedSeries[smoothedSeries.length - 1].value)
+        }
+        for (let i = 0; i < this.baseSeries.length; i++) {
+            let smoothedSeries = smoothSeries(this.baseSeries[i].series, smoothWindow)
+            this.baseLastValues.push(smoothedSeries[smoothedSeries.length - 1].value)
+        }
 
         this.stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
 
@@ -94,12 +105,11 @@ export class SparkLines {
                     stepExtent: this.stepExtent,
                     width: this.rowWidth,
                     onClick: onClick,
-                    minLastValue: this.minLastValue,
-                    maxLastValue: this.maxLastValue,
                     color: document.body.classList.contains("light")
                         ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
                         : this.chartColors.getColor(this.uniqueItems.get(s.name)),
-                    isMouseMoveOpt: this.isMouseMoveOpt
+                    isMouseMoveOpt: this.isMouseMoveOpt,
+                    lastSmoothedValue: this.currentLastValues[i]
                 })
                 this.sparkLines.push(sparkLine)
             })
@@ -120,13 +130,12 @@ export class SparkLines {
                     stepExtent: this.stepExtent,
                     width: this.rowWidth,
                     onClick: onClick,
-                    minLastValue: this.minLastValue,
-                    maxLastValue: this.maxLastValue,
                     color: document.body.classList.contains("light")
                         ? this.chartColors.getColor(this.uniqueItems.get(s.name))
                         : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt,
-                    isBase: true
+                    isBase: true,
+                    lastSmoothedValue: this.baseLastValues[i]
                 })
                 this.sparkLines.push(sparkLine)
             })

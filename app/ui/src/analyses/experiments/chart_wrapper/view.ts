@@ -328,7 +328,8 @@ export class ViewWrapper {
                     let changeHandler = new ChangeHandlers.ToggleChangeHandler(this, idx, true)
                     changeHandler.change()
                 },
-                isDivergent: true
+                isDivergent: true,
+                smoothValue: this.dataStore.smoothValue
             })
             this.sparkLines.render($)
         })

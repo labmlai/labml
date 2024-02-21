@@ -23,7 +23,7 @@ class Preferences:
                     errors=[],
                     step_range=[-1, -1],
                     focus_smoothed=True,
-                    smooth_value=-1
+                    smooth_value=1
                     )
 
     def update_preferences(self, data: PreferencesData) -> None:

@@ -10,7 +10,7 @@ export interface LinePlotOptions extends PlotOptions {
     isBase?: boolean
     renderHorizontalLine?: boolean
     smoothFocused?: boolean
-    smoothValue: number
+    smoothedSeries: PointValue[]
 }
 
 export class LinePlot {
@@ -42,8 +42,7 @@ export class LinePlot {
             return d.step
         }).left
 
-        let smoothWindow = mapRange(opt.smoothValue, 1, 100, 1, this.series.length/10)
-        this.smoothedSeries = smoothSeries(this.series, opt.smoothValue)
+        this.smoothedSeries = opt.smoothedSeries
 
         this.smoothedLine = d3.line()
             .curve(d3.curveMonotoneX)

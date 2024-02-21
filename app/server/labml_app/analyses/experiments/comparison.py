@@ -26,7 +26,7 @@ class ComparisonPreferences(preferences.Preferences):
                     base_experiment="",
                     step_range=[-1, -1],
                     is_base_distributed=False,
-                    smooth_value=-1,
+                    smooth_value=1,
                     )
 
     def update_preferences(self, data: preferences.PreferencesData) -> None:

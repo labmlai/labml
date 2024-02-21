@@ -131,7 +131,8 @@ export class CardWrapper {
                 basePlotIdx: this.basePlotIdx,
                 width: this.width,
                 isDivergent: true,
-                onlySelected: true
+                onlySelected: true,
+                smoothValue: this.smoothValue
             }).render($)
         })
     }
