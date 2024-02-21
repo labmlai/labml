@@ -12,19 +12,16 @@ export interface SparkLineOptions {
     width: number
     stepExtent: [number, number]
     selected: number
-    minLastValue: number
-    maxLastValue: number
     onClick?: () => void
     isMouseMoveOpt?: boolean
     color: string
     isBase?: boolean
+    lastSmoothedValue: number
 }
 
 export class SparkLine {
     series: PointValue[]
     name: string
-    minLastValue: number
-    maxLastValue: number
     color: string
     selected: number
     titleWidth: number
@@ -39,6 +36,7 @@ export class SparkLine {
     bisect: d3.Bisector<number, number>
     linePlot: LinePlot
     isBase: boolean
+    lastSmoothedValue: number
 
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
@@ -52,9 +50,8 @@ export class SparkLine {
         this.color = this.selected >= 0 ? opt.color : getBaseColor()
         this.chartWidth = Math.min(300, Math.round(opt.width * .60))
         this.titleWidth = (opt.width - this.chartWidth) / 2
-        this.minLastValue = opt.minLastValue
-        this.maxLastValue = opt.maxLastValue
         this.isBase = opt.isBase ?? false
+        this.lastSmoothedValue = opt.lastSmoothedValue
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
@@ -90,7 +87,7 @@ export class SparkLine {
         } else {
             this.secondaryElem.textContent = ''
         }
-        this.primaryElem.textContent = formatFixed(last.smoothed, 6)
+        this.primaryElem.textContent = formatFixed(this.lastSmoothedValue, 6)
     }
 
     render($: WeyaElementFunction) {
@@ -112,7 +109,7 @@ export class SparkLine {
                             yScale: this.yScale,
                             color: '#7f8c8d',
                             isBase: this.isBase,
-                            smoothValue: 1
+                            smoothedSeries: this.series
                         })
                         this.linePlot.render($)
                     })
