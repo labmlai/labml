@@ -96,18 +96,29 @@ export function toDate(time: number) {
 export function smoothSeries(series: PointValue[], windowSize: number): PointValue[] {
     let result: PointValue[] = []
     windowSize = ~~windowSize
+    let extraWindow = windowSize / 2
+    extraWindow = ~~extraWindow
+
     if (series.length <= windowSize) {
         return series
     }
-    for (let i = windowSize; i < series.length; i++) {
-        let sumX = 0, sumY = 0
-            for (let j = i - windowSize; j < i; j++) {
-                sumY += series[j].smoothed
-                sumX += series[i].step
-            }
-            let avgX = sumX / windowSize
-            let avgY = sumY / windowSize
-            result.push(<PointValue>{step: avgX, value: avgY, smoothed: avgY})
+
+    let count = 0
+    let total = 0
+
+    for (let i = 0; i < series.length + extraWindow; i++) {
+        let j = i - extraWindow
+        if (i < series.length) {
+            total += series[i].smoothed
+            count++
+        }
+        if (j - extraWindow - 1 >= 0) {
+            total -= series[j - extraWindow - 1].smoothed
+            count--
+        }
+        if (j>=0) {
+            result.push({step: series[j].step, value: total / count, smoothed: total / count})
+        }
     }
     return result
 }
