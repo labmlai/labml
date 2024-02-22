@@ -1,4 +1,6 @@
-# 1. Server Set Up
+# Hosting Your Own Experiments Server
+
+## 1. Server set up
 
 ### Installing MongoDB
 
@@ -39,7 +41,7 @@ following command:
 Please access the UI by visiting `http://localhost:{port}` or, if set up on a different machine,
 use `http://{server-ip}:{port}`.
 
-# 2. Monitor Experiments
+## 2. Monitor experiments
 
 Create a file named `.labml.yaml` at the top level of your project folder.
 
@@ -55,7 +57,9 @@ If you are setting up the project on a different machine, include the following 
 app_url: http://{server-ip}:{port}/api/v1/default
 ```
 
-# 3. Nginx Setup (Optional)
+Please follow the examples given in Readme.md 
+
+## 3. Nginx setup (optional)
 
 ### Install Nginx
 
@@ -71,7 +75,7 @@ systemctl start nginx
 
 ### Configuration
 
-Generate a file called labml_app.conf within the /etc/nginx/sites-available directory, and include the following
+Generate a file called `labml_app.conf` within the `/etc/nginx/sites-available` directory, and include the following
 content.
 
 ```nginx configuration
@@ -96,7 +100,7 @@ Enable the file by creating a link to it within the `sites-enabled` directory.
 sudo ln -s /etc/nginx/sites-available/labml_app.conf /etc/nginx/sites-enabled/
 ```
 
-Restart the Nginx service
+Restart the Nginx service.
 
 ```commandline
 sudo systemctl restart nginx
