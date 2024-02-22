@@ -58,7 +58,7 @@ app_url: http://{server-ip}:{port}/api/v1/default
 ```
 
 
-Please refer to the examples provided in `readme.md` to start pushing data to the server.
+Please refer to the [samples](https://github.com/labmlai/labml/tree/master/samples) to start pushing your data to the server.
 
 ## 3. Nginx setup (optional)
 
