@@ -31,7 +31,7 @@ pip install labml labml-app -U
  labml app-server
 ```
 
-Please be aware that the above command utilizes port 5005 as the default. If you wish to use a different port, use the
+Please be aware that the above command utilizes port `5005` as the default. If you wish to use a different port, use the
 following command:
 
 ```commandline
