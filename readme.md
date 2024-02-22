@@ -13,18 +13,18 @@
 ### 🔥 Features
 
 * Monitor running experiments from [mobile phone](https://github.com/labmlai/labml/tree/master/app) (or laptop)
-* Monitor [hardware usage on any computer](https://github.com/labmlai/labml/blob/master/guides/hardware_monitoring.md) with a single command
+* Monitor [hardware usage on any computer](https://github.com/labmlai/labml/blob/master/guides/hardware_monitoring.md)
+  with a single command
 * Integrate with just 2 lines of code (see examples below)
 * Keeps track of experiments including infomation like git commit, configurations and hyper-parameters
 * Keep Tensorboard logs organized
 * Save and load checkpoints
 * API for custom visualizations
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/labmlai/labml/blob/master/samples/stocks/analysis.ipynb)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/labmlai/labml/blob/master/samples/stocks/analysis.ipynb)
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
 * Pretty logs of training progress
 * [Change hyper-parameters while the model is training](https://github.com/labmlai/labml/blob/master/guides/dynamic_hyperparameters.md)
 * Open source! we also have a small hosted server for the mobile web app
-
 
 ### Installation
 
@@ -47,36 +47,18 @@ with experiment.record(name='sample', exp_conf=conf):
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 ```
 
-### PyTorch Lightning example
+### [Hosting your own experiments server](https://docs.labml.ai/cli/labml.html#cmdoption-labml-arg-app-server)
 
+```sh
+# Install the package
+pip install labml-app -U
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15aSPDwbKihDu_c3aFHNPGG5POjVlM2KO?usp=sharing) [![Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/hnipun/pytorch-lightning)
+# Start the server
 
-```python
-from labml import experiment
-from labml.utils.lightening import LabMLLighteningLogger
-
-trainer = pl.Trainer(gpus=1, max_epochs=5, progress_bar_refresh_rate=20, logger=LabMLLighteningLogger())
-
-with experiment.record(name='sample', exp_conf=conf, disable_screen=True):
-        trainer.fit(model, data_loader)
-
+labml app-server
 ```
 
-
-### TensorFlow 2.X Keras example
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1lx1dUG3MGaIDnq47HVFlzJ2lytjSa9Zy?usp=sharing) [![Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/hnipun/monitor-keras-model-training-on-your-mobile-phone)
-
-```python
-from labml import experiment
-from labml.utils.keras import LabMLKerasCallback
-
-with experiment.record(name='sample', exp_conf=conf):
-    for i in range(50):
-        model.fit(x_train, y_train, epochs=conf['epochs'], validation_data=(x_test, y_test),
-                  callbacks=[LabMLKerasCallback()], verbose=None)
-```
+For more detailed guide please refer to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md)
 
 ### 📚 Documentation
 
@@ -107,18 +89,6 @@ with experiment.record(name='sample', exp_conf=conf):
 </div>
 
 ## Tools
-
-### [Hosting your own experiments server](https://docs.labml.ai/cli/labml.html#cmdoption-labml-arg-app-server)
-
-```sh
-# Install the package
-pip install labml-app -U
-
-# Start the server
-
-labml app-server
-```
-
 
 ### [Training models on cloud](https://github.com/labmlai/labml/tree/master/remote)
 
@@ -157,7 +127,6 @@ labml monitor
 ## Citing
 
 If you use LabML for academic research, please cite the library using the following BibTeX entry.
-
 
 ```bibtext
 @misc{labml,
