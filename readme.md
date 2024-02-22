@@ -47,7 +47,7 @@ with experiment.record(name='sample', exp_conf=conf):
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 ```
 
-### [Hosting your own experiments server](https://docs.labml.ai/cli/labml.html#cmdoption-labml-arg-app-server)
+### Hosting your own experiments server
 
 ```sh
 # Install the package
@@ -58,7 +58,7 @@ pip install labml-app -U
 labml app-server
 ```
 
-For more detailed guide please refer to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md)
+For a more comprehensive guide, please refer to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md).
 
 ### 📚 Documentation
 
