@@ -4,16 +4,16 @@
 
 ### Installing MongoDB
 
-To install MongoDB, refer to the official
+To install `MongoDB`, refer to the official
 documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
 
-Initiate MongoDB Service:
+Initiate `MongoDB` Service:
 
 ```commandline
 sudo systemctl start mongod
 ```
 
-Verify that MongoDB is running with the following command:
+Verify that `MongoDB` is running with the following command:
 
 ```commandline
 sudo systemctl status mongod
@@ -57,7 +57,8 @@ If you are setting up the project on a different machine, include the following 
 app_url: http://{server-ip}:{port}/api/v1/default
 ```
 
-Please follow the examples given in Readme.md 
+
+Please refer to the examples provided in `readme.md` to start pushing data to the server.
 
 ## 3. Nginx setup (optional)
 
@@ -100,7 +101,7 @@ Enable the file by creating a link to it within the `sites-enabled` directory.
 sudo ln -s /etc/nginx/sites-available/labml_app.conf /etc/nginx/sites-enabled/
 ```
 
-Restart the Nginx service.
+Restart the `Nginx` service.
 
 ```commandline
 sudo systemctl restart nginx
