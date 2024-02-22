@@ -1,4 +1,4 @@
-# 1. Set Up
+# 1. Server Set Up
 
 ### Installing MongoDB
 
@@ -17,10 +17,10 @@ Verify that MongoDB is running with the following command:
 sudo systemctl status mongod
 ```
 
-### Installing the Package
+### Installing the Packages
 
 ```commandline
-pip install labml-app -U
+pip install labml labml-app -U
 ```
 
 ### Starting the Server
@@ -46,30 +46,33 @@ Create a file named `.labml.yaml` at the top level of your project folder.
 Add the following line to the file:
 
 ```yaml
-app_url: http://localhost:{port}/api/v1/defualt
+app_url: http://localhost:{port}/api/v1/default
 ```
 
 If you are setting up the project on a different machine, include the following line instead:
 
 ```yaml
-app_url: http://{server-ip}:{port}/api/v1/defualt
+app_url: http://{server-ip}:{port}/api/v1/default
 ```
 
-# 3 Nginx Setup (Optional)
+# 3. Nginx Setup (Optional)
 
 ### Install Nginx
+
 ```commandline
 sudo apt install nginx
 ```
 
-### Start Nginx 
+### Start Nginx
+
 ```commandline
 systemctl start nginx
 ```
 
 ### Configuration
 
-Generate a file called labml_app.conf within the /etc/nginx/sites-available directory, and include the following content.
+Generate a file called labml_app.conf within the /etc/nginx/sites-available directory, and include the following
+content.
 
 ```nginx configuration
 server {
@@ -87,7 +90,6 @@ server {
 }
 ```
 
-
 Enable the file by creating a link to it within the `sites-enabled` directory.
 
 ```commandline
@@ -100,4 +102,6 @@ Restart the Nginx service
 sudo systemctl restart nginx
 ```
 
-You can follow [this guide](https://www.digitalocean.com/community/tutorials/how-to-improve-website-performance-using-gzip-and-nginx-on-ubuntu-20-04) to configure `Nginx` to use `Gzip` for data compression.
+You can
+follow [this guide](https://www.digitalocean.com/community/tutorials/how-to-improve-website-performance-using-gzip-and-nginx-on-ubuntu-20-04)
+to configure `Nginx` to use `Gzip` for data compression.
