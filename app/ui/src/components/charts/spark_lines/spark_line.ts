@@ -16,7 +16,7 @@ export interface SparkLineOptions {
     isMouseMoveOpt?: boolean
     color: string
     isBase?: boolean
-    lastSmoothedValue: number
+    smoothedValues: number[]
 }
 
 export class SparkLine {
@@ -36,7 +36,7 @@ export class SparkLine {
     bisect: d3.Bisector<number, number>
     linePlot: LinePlot
     isBase: boolean
-    lastSmoothedValue: number
+    smoothedValues: number[]
 
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
@@ -51,7 +51,7 @@ export class SparkLine {
         this.chartWidth = Math.min(300, Math.round(opt.width * .60))
         this.titleWidth = (opt.width - this.chartWidth) / 2
         this.isBase = opt.isBase ?? false
-        this.lastSmoothedValue = opt.lastSmoothedValue
+        this.smoothedValues = opt.smoothedValues
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
@@ -79,15 +79,17 @@ export class SparkLine {
     }
 
     renderValue(cursorStep?: number | null) {
-        const last = this.series[this.selected >= 0 || this.isMouseMoveOpt ?
-            getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
+        const index = this.selected >= 0 || this.isMouseMoveOpt ?
+            getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1
+        const last = this.series[index]
+        const lastSmoothed = this.smoothedValues[index]
 
-        if (Math.abs(last.value - last.smoothed) > Math.abs(last.value) / 1e6) {
+        if (Math.abs(last.value - lastSmoothed) > Math.abs(last.value) / 1e6) {
             this.secondaryElem.textContent = formatFixed(last.value, 6)
         } else {
             this.secondaryElem.textContent = ''
         }
-        this.primaryElem.textContent = formatFixed(this.lastSmoothedValue, 6)
+        this.primaryElem.textContent = formatFixed(lastSmoothed, 6)
     }
 
     render($: WeyaElementFunction) {

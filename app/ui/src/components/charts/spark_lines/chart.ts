@@ -35,8 +35,8 @@ export class SparkLines {
     uniqueItems: Map<string, number>
     onlySelected: boolean
 
-    private readonly currentLastValues: number[]
-    private readonly baseLastValues: number[]
+    private readonly currentSmoothedValues: number[][]
+    private readonly baseSmoothedValues: number[][]
 
     constructor(opt: CompareSparkLinesOptions) {
         this.currentSeries = opt.series
@@ -62,16 +62,16 @@ export class SparkLines {
             }
         }
 
-        this.currentLastValues = []
-        this.baseLastValues = []
+        this.currentSmoothedValues = []
+        this.baseSmoothedValues = []
         let smoothWindow = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
         for (let i = 0; i < this.currentSeries.length; i++) {
             let smoothedSeries = smoothSeries(this.currentSeries[i].series, smoothWindow)
-            this.currentLastValues.push(smoothedSeries[smoothedSeries.length - 1].value)
+            this.currentSmoothedValues.push(smoothedSeries.map(d => d.value))
         }
         for (let i = 0; i < this.baseSeries.length; i++) {
             let smoothedSeries = smoothSeries(this.baseSeries[i].series, smoothWindow)
-            this.baseLastValues.push(smoothedSeries[smoothedSeries.length - 1].value)
+            this.baseSmoothedValues.push(smoothedSeries.map(d => d.value))
         }
 
         this.stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
@@ -109,7 +109,7 @@ export class SparkLines {
                         ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
                         : this.chartColors.getColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt,
-                    lastSmoothedValue: this.currentLastValues[i]
+                    smoothedValues: this.currentSmoothedValues[i]
                 })
                 this.sparkLines.push(sparkLine)
             })
@@ -135,7 +135,7 @@ export class SparkLines {
                         : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt,
                     isBase: true,
-                    lastSmoothedValue: this.baseLastValues[i]
+                    smoothedValues: this.baseSmoothedValues[i]
                 })
                 this.sparkLines.push(sparkLine)
             })
