@@ -46,8 +46,8 @@ labml app-server
 labml app-server --port PORT
 ```
 
-For a more comprehensive guide, please refer
-to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md).
+***Optional: to setup and configure Nginx in your server, please refer
+to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md).***
 
 You can access the user interface either by visiting `http://localhost:{port}` or, if configured on a separate machine,
 by navigating to `http://{server-ip}:{port}`.
