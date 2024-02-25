@@ -52,8 +52,7 @@ labml app-server --port PORT
 For a more comprehensive guide, please refer
 to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md).
 
-You can access the UI by visiting `http://localhost:{port}` or, if set up on a different machine,
-use `http://{server-ip}:{port}`.
+You can access the user interface either by visiting `http://localhost:{port}` or, if configured on a separate machine, by navigating to `http://{server-ip}:{port}`.
 
 ### PyTorch example
 
