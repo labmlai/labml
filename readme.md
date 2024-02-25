@@ -37,10 +37,12 @@ pip install labml labml-app
 ### Hosting the experiments server
 
 #### Prerequisites
+
 Ensure that `MongoDB` is installed before starting the server. To install `MongoDB`, refer to the official
 documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
 
 #### Starting the server
+
 ```sh
 # Start the server on the default port (5005)
 labml app-server
@@ -52,9 +54,26 @@ labml app-server --port PORT
 For a more comprehensive guide, please refer
 to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md).
 
-You can access the user interface either by visiting `http://localhost:{port}` or, if configured on a separate machine, by navigating to `http://{server-ip}:{port}`.
+You can access the user interface either by visiting `http://localhost:{port}` or, if configured on a separate machine,
+by navigating to `http://{server-ip}:{port}`.
 
-### PyTorch example
+### Monitor Experiments
+
+Create a file named `.labml.yaml` at the top level of your project folder.
+
+Add the following line to the file:
+
+```yaml
+app_url: http://localhost:{port}/api/v1/default
+```
+
+If you are setting up the project on a different machine, include the following line instead:
+
+```yaml
+app_url: http://{server-ip}:{port}/api/v1/default
+```
+
+#### PyTorch example
 
 ```python
 from labml import tracker, experiment
@@ -65,7 +84,7 @@ with experiment.record(name='sample', exp_conf=conf):
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 ```
 
-### Distributed training example
+#### Distributed training example
 
 ```python
 from labml import tracker, experiment

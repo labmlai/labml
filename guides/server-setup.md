@@ -1,24 +1,3 @@
-# Hosting Your Own Experiments Server
-
-## Monitor experiments
-
-Create a file named `.labml.yaml` at the top level of your project folder.
-
-Add the following line to the file:
-
-```yaml
-app_url: http://localhost:{port}/api/v1/default
-```
-
-If you are setting up the project on a different machine, include the following line instead:
-
-```yaml
-app_url: http://{server-ip}:{port}/api/v1/default
-```
-
-
-Please refer to the [samples](https://github.com/labmlai/labml/tree/master/samples) to start pushing your data to the server.
-
 ## Nginx setup (optional)
 
 ### Install Nginx
