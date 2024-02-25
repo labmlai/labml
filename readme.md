@@ -23,15 +23,14 @@
 * Pretty logs of training progress
 * Open source!
 
-
 ### Hosting the experiments server
 
 #### Prerequisites
 
-To install `MongoDB`, refer to the official
-documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
+1. To install `MongoDB`, refer to the official
+   documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
 
-Make sure you've installed the following package:
+2. Make sure you've installed the following package:
 
 ```bash
 pip install labml-app
@@ -57,23 +56,18 @@ by navigating to `http://{server-ip}:{port}`.
 
 #### Installation
 
-You can install this package using PIP.
+1. You can install the package using PIP.
 
 ```bash
 pip install labml labml-app
 ```
 
-Create a file named `.labml.yaml` at the top level of your project folder.
-
-Add the following line to the file:
+2. Create a file named `.labml.yaml` at the top level of your project folder, and add the following line to the file:
 
 ```yaml
 app_url: http://localhost:{port}/api/v1/default
-```
 
-If you are setting up the project on a different machine, include the following line instead:
-
-```yaml
+# If you are setting up the project on a different machine, include the following line instead,
 app_url: http://{server-ip}:{port}/api/v1/default
 ```
 
