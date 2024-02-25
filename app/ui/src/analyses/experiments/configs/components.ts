@@ -7,6 +7,12 @@ export const CONFIG_PRINT_LEN = 20
 export const KEY_WIDTH = 125
 export const PADDING = 11
 
+export enum ConfigStatus {
+    SELECTED = 'selected',
+    FAVOURITE = 'favourite',
+    NONE = 'none'
+}
+
 export class ComputedValue {
     computed: any
 
@@ -70,7 +76,7 @@ interface ConfigItemOptions {
     configs: Config[]
     isSummary: boolean
     width: number
-    onTap?: (key: string) => void
+    onTap?: (key: string, configStatus: ConfigStatus) => void
 }
 
 export class ConfigItemView {
@@ -80,8 +86,11 @@ export class ConfigItemView {
     key: string
     width: number
     elem: WeyaElement
-    onTap?: (key: string) => void
+    onTap?: (key: string, configStatus: ConfigStatus) => void
     isSummary: boolean
+
+    private selectToggle: HTMLElement
+    private favouriteToggle: HTMLElement
 
     constructor(opt: ConfigItemOptions) {
         this.conf = opt.config
@@ -114,33 +123,50 @@ export class ConfigItemView {
         }
     }
 
-    private onTapHandler(): void {
+    private onTapHandler(configStatus: ConfigStatus): void {
         if (this.onTap == null) {
             return
         }
-        if (this.conf.isSelected && this.conf.isFavourite) {
-            this.conf.isSelected = false
-            this.conf.isFavourite = false
-        } else if (this.conf.isSelected) {
-            this.conf.isSelected = true
-            this.conf.isFavourite = true
-        } else {
-            this.conf.isSelected = true
-            this.conf.isFavourite = false
+
+        if (configStatus === ConfigStatus.FAVOURITE) {
+            if (this.conf.isFavourite) {
+                this.conf.isFavourite = false
+            } else {
+                this.conf.isFavourite = true
+                this.conf.isSelected = true
+            }
+        } else if (configStatus === ConfigStatus.SELECTED) {
+            if (this.conf.isSelected) {
+                this.conf.isSelected = false
+                this.conf.isFavourite = false
+            } else {
+                this.conf.isSelected = true
+            }
         }
 
+        this.updateButtons()
+
+        let newConfigStatus: ConfigStatus = ConfigStatus.NONE
+        if (this.conf.isSelected) {
+            newConfigStatus = ConfigStatus.SELECTED
+        }
         if (this.conf.isFavourite) {
-            this.elem.classList.add('favourite')
-            this.elem.classList.remove('selected')
-        } else if (this.conf.isSelected) {
-            this.elem.classList.add('selected')
-            this.elem.classList.remove('favourite')
-        } else {
-            this.elem.classList.remove('selected')
-            this.elem.classList.remove('favourite')
+            newConfigStatus = ConfigStatus.FAVOURITE
         }
+        this.onTap(this.conf.key, newConfigStatus)
+    }
 
-        this.onTap(this.conf.key)
+    private updateButtons() {
+        if (this.conf.isSelected) {
+            this.selectToggle.classList.add('selected')
+        } else {
+            this.selectToggle.classList.remove('selected')
+        }
+        if (this.conf.isFavourite) {
+            this.favouriteToggle.classList.add('selected')
+        } else {
+            this.favouriteToggle.classList.remove('selected')
+        }
     }
 
     render($: WeyaElementFunction) {
@@ -152,9 +178,13 @@ export class ConfigItemView {
             return
         }
 
-        this.elem = $('div', {on: {click: () => {
-                    this.onTapHandler()
-                }}}, $ => {
+        this.elem = $('div',  $ => {
+            this.selectToggle = $('span', '.fas.fa-eye', {on: {click: () => {
+                this.onTapHandler(ConfigStatus.SELECTED)
+            }}})
+            this.favouriteToggle = $('span', '.fas.fa-star', {on: {click: () => {
+                this.onTapHandler(ConfigStatus.FAVOURITE)
+            }}})
             $('span.key', this.key)
             $('span.combined', $ => {
                 new ComputedValue({computed: this.conf.computed}).render($)
@@ -193,11 +223,7 @@ export class ConfigItemView {
             this.elem.classList.add(cls)
         }
 
-        if (this.conf.isFavourite && !this.isSummary) {
-            this.elem.classList.add('favourite')
-        } else if (this.conf.isSelected && !this.isSummary) {
-            this.elem.classList.add('selected')
-        }
+        this.updateButtons()
     }
 }
 
@@ -205,14 +231,14 @@ interface ConfigsOptions {
     configs: Config[]
     isSummary: boolean
     width: number
-    onTap?: (key: string) => void
+    onTap?: (key: string, configStatus: ConfigStatus) => void
 }
 
 export class Configs {
     configs: Config[]
     isSummary: boolean
     width: number
-    onTap?: (key: string)=>void
+    onTap?: (key: string, configStatus: ConfigStatus)=>void
 
     constructor(opt: ConfigsOptions) {
         this.configs = opt.configs
