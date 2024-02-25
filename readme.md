@@ -87,9 +87,10 @@ with experiment.record(name='sample', exp_conf=conf):
 ```python
 from labml import tracker, experiment
 
-experiment.create(uuid=experiment.generate_uuid(),
+uuid = experiment.generate_uuid() # make sure to sync this in every machine
+experiment.create(uuid=uuid,
                   name='distributed training sample',
-                  distributed_rank=1,
+                  distributed_rank=0,
                   distributed_world_size=8,
                   )
 with experiment.start():
@@ -126,25 +127,37 @@ with experiment.start():
     <img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" alt="Analytics"/>
 </div>
 
-## Tools
+[//]: # (## Tools)
 
-### [Training models on cloud](https://github.com/labmlai/labml/tree/master/remote)
+[//]: # ()
+[//]: # (### [Training models on cloud]&#40;https://github.com/labmlai/labml/tree/master/remote&#41;)
 
-```bash
-# Install the package
-pip install labml_remote
+[//]: # ()
+[//]: # (```bash)
 
-# Initialize the project
-labml_remote init
+[//]: # (# Install the package)
 
-# Add cloud server(s) to .remote/configs.yaml
+[//]: # (pip install labml_remote)
 
-# Prepare the remote server(s)
-labml_remote prepare
+[//]: # ()
+[//]: # (# Initialize the project)
 
-# Start a PyTorch distributed training job
-labml_remote helper-torch-launch --cmd 'train.py' --nproc-per-node 2 --env GLOO_SOCKET_IFNAME enp1s0
-```
+[//]: # (labml_remote init)
+
+[//]: # ()
+[//]: # (# Add cloud server&#40;s&#41; to .remote/configs.yaml)
+
+[//]: # ()
+[//]: # (# Prepare the remote server&#40;s&#41;)
+
+[//]: # (labml_remote prepare)
+
+[//]: # ()
+[//]: # (# Start a PyTorch distributed training job)
+
+[//]: # (labml_remote helper-torch-launch --cmd 'train.py' --nproc-per-node 2 --env GLOO_SOCKET_IFNAME enp1s0)
+
+[//]: # (```)
 
 ### [Monitoring hardware usage](https://github.com/labmlai/labml/blob/master/guides/hardware_monitoring.md)
 
@@ -156,11 +169,13 @@ pip install labml psutil py3nvml
 labml monitor
 ```
 
-## Other Guides
+[//]: # (## Other Guides)
 
-#### [Setting up a local Ubuntu workstation for deep learning](https://github.com/labmlai/labml/blob/master/guides/local-ubuntu.md)
+[//]: # ()
+[//]: # (#### [Setting up a local Ubuntu workstation for deep learning]&#40;https://github.com/labmlai/labml/blob/master/guides/local-ubuntu.md&#41;)
 
-#### [Setting up a cloud computer for deep learning](https://github.com/labmlai/labml/blob/master/guides/remote-python.md)
+[//]: # ()
+[//]: # (#### [Setting up a cloud computer for deep learning]&#40;https://github.com/labmlai/labml/blob/master/guides/remote-python.md&#41;)
 
 ## Citing
 
