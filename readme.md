@@ -12,19 +12,16 @@
 
 ### 🔥 Features
 
-* Monitor running experiments from [mobile phone](https://github.com/labmlai/labml/tree/master/app) (or laptop)
-* Monitor [hardware usage on any computer](https://github.com/labmlai/labml/blob/master/guides/hardware_monitoring.md)
+* Monitor running experiments from mobile phone or laptop
+* Monitor hardware usage on any computer
   with a single command
 * Integrate with just 2 lines of code (see examples below)
 * Keeps track of experiments including infomation like git commit, configurations and hyper-parameters
-* Keep Tensorboard logs organized
-* Save and load checkpoints
 * API for custom visualizations
   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/labmlai/labml/blob/master/samples/stocks/analysis.ipynb)
   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
 * Pretty logs of training progress
-* [Change hyper-parameters while the model is training](https://github.com/labmlai/labml/blob/master/guides/dynamic_hyperparameters.md)
-* Open source! we also have a small hosted server for the mobile web app
+* Open source!
 
 ### Installation
 
