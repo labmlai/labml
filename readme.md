@@ -28,7 +28,7 @@
 
 #### Prerequisites
 
-Ensure that `MongoDB` is installed before starting the server. To install `MongoDB`, refer to the official
+To install `MongoDB`, refer to the official
 documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
 
 Make sure you've installed the following package:
