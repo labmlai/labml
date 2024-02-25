@@ -58,7 +58,7 @@ by navigating to `http://{server-ip}:{port}`.
 
 #### Installation
 
-1. Install the package using PIP.
+1. Install the package using pip.
 
 ```bash
 pip install labml labml-app
