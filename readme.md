@@ -27,7 +27,7 @@
 
 #### Prerequisites
 
-1. To install `MongoDB`, refer to the official
+To install `MongoDB`, refer to the official
    documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
 
 #### Installation
