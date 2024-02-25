@@ -47,6 +47,23 @@ with experiment.record(name='sample', exp_conf=conf):
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 ```
 
+### Distributed Training Example
+```python
+from labml import tracker, experiment
+
+WORLD_SIZE = 8
+UUID = 'xxxx'
+experiment.create(uuid=UUID,
+                  name='Distributed Training Simulator',
+                  distributed_rank=1,
+                  distributed_world_size=WORLD_SIZE,
+                  )
+with experiment.start():
+    for i in range(50):
+      loss, accuracy = train()
+      tracker.save(i, {'loss': loss, 'accuracy': accuracy})
+```
+
 ### Hosting your own experiments server
 
 ```sh
