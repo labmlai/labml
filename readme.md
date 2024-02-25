@@ -28,11 +28,30 @@
 
 ### Installation
 
-You can install this package using PIP.
+You can install the packages using PIP.
 
 ```bash
-pip install labml
+pip install labml labml-app
 ```
+
+### Hosting the experiments server
+
+Ensure that `MongoDB` is installed before starting the server. To install `MongoDB`, refer to the official
+documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
+
+```sh
+# Start the server on the default port (5005)
+labml app-server
+
+# To start the server on a different port, use the following command
+labml app-server --port PORT
+```
+
+For a more comprehensive guide, please refer
+to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md).
+
+You can access the UI by visiting `http://localhost:{port}` or, if set up on a different machine,
+use `http://{server-ip}:{port}`.
 
 ### PyTorch example
 
@@ -47,7 +66,8 @@ with experiment.record(name='sample', exp_conf=conf):
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 ```
 
-### Distributed Training Example
+### Distributed training example
+
 ```python
 from labml import tracker, experiment
 
@@ -61,20 +81,6 @@ with experiment.start():
         loss, accuracy = train()
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 ```
-
-### Hosting the experiments server
-
-Ensure that `MongoDB` is installed before starting the server. To install `MongoDB`, refer to the official
-documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
-
-```sh
-# Install the package
-pip install labml-app -U
-
-# Start the server
-labml app-server
-```
-For a more comprehensive guide, please refer to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md).
 
 ### 📚 Documentation
 
