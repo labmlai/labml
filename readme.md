@@ -64,7 +64,10 @@ with experiment.start():
       tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 ```
 
-### Hosting your own experiments server
+### Hosting the experiments server
+
+Ensure that `MongoDB` is installed before starting the server. To install `MongoDB`, refer to the official
+documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
 
 ```sh
 # Install the package
@@ -74,7 +77,6 @@ pip install labml-app -U
 
 labml app-server
 ```
-
 For a more comprehensive guide, please refer to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md).
 
 ### 📚 Documentation
