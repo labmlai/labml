@@ -36,9 +36,11 @@ pip install labml labml-app
 
 ### Hosting the experiments server
 
+#### Prerequisites
 Ensure that `MongoDB` is installed before starting the server. To install `MongoDB`, refer to the official
 documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
 
+#### Starting the server
 ```sh
 # Start the server on the default port (5005)
 labml app-server

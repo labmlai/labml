@@ -1,47 +1,6 @@
 # Hosting Your Own Experiments Server
 
-## 1. Server set up
-
-### Installing MongoDB
-
-To install `MongoDB`, refer to the official
-documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
-
-Initiate `MongoDB` Service:
-
-```commandline
-sudo systemctl start mongod
-```
-
-Verify that `MongoDB` is running with the following command:
-
-```commandline
-sudo systemctl status mongod
-```
-
-### Installing the Packages
-
-```commandline
-pip install labml labml-app -U
-```
-
-### Starting the Server
-
-```commandline
- labml app-server
-```
-
-Please be aware that the above command utilizes port `5005` as the default. If you wish to use a different port, use the
-following command:
-
-```commandline
- labml app-server --port PORT
-```
-
-Please access the UI by visiting `http://localhost:{port}` or, if set up on a different machine,
-use `http://{server-ip}:{port}`.
-
-## 2. Monitor experiments
+## Monitor experiments
 
 Create a file named `.labml.yaml` at the top level of your project folder.
 
@@ -60,7 +19,7 @@ app_url: http://{server-ip}:{port}/api/v1/default
 
 Please refer to the [samples](https://github.com/labmlai/labml/tree/master/samples) to start pushing your data to the server.
 
-## 3. Nginx setup (optional)
+## Nginx setup (optional)
 
 ### Install Nginx
 
