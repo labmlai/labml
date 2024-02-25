@@ -114,7 +114,7 @@ namespace ChangeHandlers {
             } else if (plotIdx[this.idx] == 1) {
                 plotIdx[this.idx] = -1
             } else if (plotIdx[this.idx] == -1) {
-                plotIdx[this.idx] = 0
+                plotIdx[this.idx] = 1
             }
 
             if (this.isBase) {
