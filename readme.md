@@ -52,7 +52,7 @@ with experiment.record(name='sample', exp_conf=conf):
 from labml import tracker, experiment
 
 experiment.create(uuid=experiment.generate_uuid(),
-                  name='Distributed Training Sample',
+                  name='distributed training sample',
                   distributed_rank=1,
                   distributed_world_size=8,
                   )
