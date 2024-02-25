@@ -74,7 +74,6 @@ documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongod
 pip install labml-app -U
 
 # Start the server
-
 labml app-server
 ```
 For a more comprehensive guide, please refer to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md).
