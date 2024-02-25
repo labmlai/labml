@@ -187,108 +187,107 @@ export class LineChart {
 
     render($: WeyaElementFunction) {
         this.changeScale()
-        let filteredBaseSeriesLength = this.filteredBaseSeries.length
-        let filteredCurrentSeriesLength = this.filteredCurrentSeries.length
 
-        if (filteredBaseSeriesLength + filteredCurrentSeriesLength === 0) {
-            $('div', '')
-        } else {
-            $('div', $ => {
-                $('div', $ => {
-                        this.stepElement = $('h6', '.text-center.selected-step', '')
-                        this.svgElem = $('svg', '#chart',
-                            {
-                                height: LABEL_HEIGHT + 2 * this.margin + this.axisSize + this.chartHeight,
-                                width: 2 * this.margin + this.axisSize + this.chartWidth,
-                            }, $ => {
-                                new DropShadow().render($)
-                                new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
-                                $('g', {}, $ => {
-                                    this.stepElement = $('text', '.selected-step',
-                                        {transform: `translate(${(2 * this.margin + this.axisSize + this.chartWidth) / 2},${LABEL_HEIGHT})`})
-                                })
-                                $('g',
-                                    {
-                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
-                                    }, $ => {
-                                        if (this.filteredCurrentSeries.length < 3 && this.filteredBaseSeries.length == 0) {
-                                            this.filteredCurrentSeries.map((s, i) => {
-                                                new LineFill({
-                                                    series: this.currentSmoothedSeries[i],
-                                                    xScale: this.xScale,
-                                                    yScale: this.yScale,
-                                                    color: document.body.classList.contains("light")
-                                                        ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
-                                                        : this.chartColors.getColor(this.uniqueItems.get(s.name)),
-                                                    colorIdx: this.uniqueItems.get(s.name),
-                                                    chartId: this.chartId
-                                                }).render($)
-                                            })
-                                        }
-                                        this.filteredCurrentSeries.map((s, i) => {
-                                            let linePlot = new LinePlot({
-                                                series: s.series,
-                                                xScale: this.xScale,
-                                                yScale: this.yScale,
-                                                color: document.body.classList.contains("light")
-                                                        ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
-                                                        : this.chartColors.getColor(this.uniqueItems.get(s.name)),
-                                                renderHorizontalLine: true,
-                                                smoothFocused: this.focusSmoothed,
-                                                smoothedSeries: this.currentSmoothedSeries[i],
-                                            })
-                                            this.linePlots.push(linePlot)
-                                            linePlot.render($)
-                                        })
-
-                                        this.filteredBaseSeries.map((s, i) => {
-                                            let linePlot = new LinePlot({
-                                                series: s.series,
-                                                xScale: this.xScale,
-                                                yScale: this.yScale,
-                                                color: document.body.classList.contains("light")
-                                                        ? this.chartColors.getColor(this.uniqueItems.get(s.name))
-                                                        : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
-                                                isBase: true,
-                                                renderHorizontalLine: true,
-                                                smoothFocused: this.focusSmoothed,
-                                                smoothedSeries: this.baseSmoothedSeries[i],
-                                            })
-                                            this.linePlots.push(linePlot)
-                                            linePlot.render($)
-                                        })
-                                    })
-                                $('g.bottom-axis',
-                                    {
-                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight + LABEL_HEIGHT})`
-                                    }, $ => {
-                                        new BottomAxis({chartId: this.chartId, scale: this.xScale}).render($)
-                                    })
-                                $('g.right-axis',
-                                    {
-                                        transform: `translate(${this.margin + this.chartWidth}, ${this.margin + this.chartHeight})`
-                                    }, $ => {
-                                        new RightAxis({chartId: this.chartId, scale: this.yScale}).render($)
-                                    })
-                            })
-                    }
-                )
-            })
-
-            if (this.isCursorMoveOpt) {
-                this.svgElem.addEventListener('touchstart', this.onTouchStart)
-                this.svgElem.addEventListener('touchmove', this.onTouchMove)
-                this.svgElem.addEventListener('touchend', this.onTouchEnd)
-                this.svgElem.addEventListener('mouseup', this.onMouseUp)
-                this.svgElem.addEventListener('mousemove', this.onMouseMove)
-                this.svgElem.addEventListener('mousedown', this.onMouseDown)
+        $('div', $ => {
+            if (this.filteredBaseSeries.length + this.filteredCurrentSeries.length == 0) {
+                $('div', '.chart-overlay', $ => {
+                    $('span', '.text', 'No Metric Selected')
+                })
             }
+            $('div', $ => {
+                    this.stepElement = $('h6', '.text-center.selected-step', '')
+                    this.svgElem = $('svg', '#chart',
+                        {
+                            height: LABEL_HEIGHT + 2 * this.margin + this.axisSize + this.chartHeight,
+                            width: 2 * this.margin + this.axisSize + this.chartWidth,
+                        }, $ => {
+                            new DropShadow().render($)
+                            new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
+                            $('g', {}, $ => {
+                                this.stepElement = $('text', '.selected-step',
+                                    {transform: `translate(${(2 * this.margin + this.axisSize + this.chartWidth) / 2},${LABEL_HEIGHT})`})
+                            })
+                            $('g',
+                                {
+                                    transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
+                                }, $ => {
+                                    if (this.filteredCurrentSeries.length < 3 && this.filteredBaseSeries.length == 0) {
+                                        this.filteredCurrentSeries.map((s, i) => {
+                                            new LineFill({
+                                                series: this.currentSmoothedSeries[i],
+                                                xScale: this.xScale,
+                                                yScale: this.yScale,
+                                                color: document.body.classList.contains("light")
+                                                    ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
+                                                    : this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                                                colorIdx: this.uniqueItems.get(s.name),
+                                                chartId: this.chartId
+                                            }).render($)
+                                        })
+                                    }
+                                    this.filteredCurrentSeries.map((s, i) => {
+                                        let linePlot = new LinePlot({
+                                            series: s.series,
+                                            xScale: this.xScale,
+                                            yScale: this.yScale,
+                                            color: document.body.classList.contains("light")
+                                                    ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
+                                                    : this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                                            renderHorizontalLine: true,
+                                            smoothFocused: this.focusSmoothed,
+                                            smoothedSeries: this.currentSmoothedSeries[i],
+                                        })
+                                        this.linePlots.push(linePlot)
+                                        linePlot.render($)
+                                    })
 
-            this.svgBoundingClientRect = null
+                                    this.filteredBaseSeries.map((s, i) => {
+                                        let linePlot = new LinePlot({
+                                            series: s.series,
+                                            xScale: this.xScale,
+                                            yScale: this.yScale,
+                                            color: document.body.classList.contains("light")
+                                                    ? this.chartColors.getColor(this.uniqueItems.get(s.name))
+                                                    : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
+                                            isBase: true,
+                                            renderHorizontalLine: true,
+                                            smoothFocused: this.focusSmoothed,
+                                            smoothedSeries: this.baseSmoothedSeries[i],
+                                        })
+                                        this.linePlots.push(linePlot)
+                                        linePlot.render($)
+                                    })
+                                })
+                            $('g.bottom-axis',
+                                {
+                                    transform: `translate(${this.margin}, ${this.margin + this.chartHeight + LABEL_HEIGHT})`
+                                }, $ => {
+                                    new BottomAxis({chartId: this.chartId, scale: this.xScale}).render($)
+                                })
+                            $('g.right-axis',
+                                {
+                                    transform: `translate(${this.margin + this.chartWidth}, ${this.margin + this.chartHeight})`
+                                }, $ => {
+                                    new RightAxis({chartId: this.chartId, scale: this.yScale}).render($)
+                                })
+                        })
+                }
+            )
+        })
 
-            window.requestAnimationFrame(() => {
-                this.svgBoundingClientRect = this.svgElem.getBoundingClientRect()
-            })
+        if (this.isCursorMoveOpt) {
+            this.svgElem.addEventListener('touchstart', this.onTouchStart)
+            this.svgElem.addEventListener('touchmove', this.onTouchMove)
+            this.svgElem.addEventListener('touchend', this.onTouchEnd)
+            this.svgElem.addEventListener('mouseup', this.onMouseUp)
+            this.svgElem.addEventListener('mousemove', this.onMouseMove)
+            this.svgElem.addEventListener('mousedown', this.onMouseDown)
         }
+
+        this.svgBoundingClientRect = null
+
+        window.requestAnimationFrame(() => {
+            this.svgBoundingClientRect = this.svgElem.getBoundingClientRect()
+        })
     }
 }

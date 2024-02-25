@@ -1500,10 +1500,11 @@ a.generic-link {
     height: 100%;
     top: 0;
     left: 0;
-    background: rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(3.5px);
+    -webkit-backdrop-filter: blur(3.5px);
 
     .loading {
       padding: 20px;
@@ -1511,5 +1512,9 @@ a.generic-link {
       border-radius: 5px;
       font-size: 20px;
       color: black;
+  }
+
+  .text {
+    opacity: 0.6;
   }
 }
