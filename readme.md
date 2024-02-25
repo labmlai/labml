@@ -51,17 +51,15 @@ with experiment.record(name='sample', exp_conf=conf):
 ```python
 from labml import tracker, experiment
 
-WORLD_SIZE = 8
-UUID = 'xxxx'
-experiment.create(uuid=UUID,
-                  name='Distributed Training Simulator',
+experiment.create(uuid=experiment.generate_uuid(),
+                  name='Distributed Training Sample',
                   distributed_rank=1,
-                  distributed_world_size=WORLD_SIZE,
+                  distributed_world_size=8,
                   )
 with experiment.start():
     for i in range(50):
-      loss, accuracy = train()
-      tracker.save(i, {'loss': loss, 'accuracy': accuracy})
+        loss, accuracy = train()
+        tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 ```
 
 ### Hosting the experiments server
