@@ -30,7 +30,9 @@
 1. To install `MongoDB`, refer to the official
    documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
 
-2. Make sure you've installed the following package:
+#### Installation
+
+Install the package using pip:
 
 ```bash
 pip install labml-app
@@ -56,7 +58,7 @@ by navigating to `http://{server-ip}:{port}`.
 
 #### Installation
 
-1. You can install the package using PIP.
+1. Install the package using PIP.
 
 ```bash
 pip install labml labml-app
