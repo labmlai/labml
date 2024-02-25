@@ -23,13 +23,6 @@
 * Pretty logs of training progress
 * Open source!
 
-### Installation
-
-You can install this package using PIP.
-
-```bash
-pip install labml labml-app
-```
 
 ### Hosting the experiments server
 
@@ -61,6 +54,14 @@ You can access the user interface either by visiting `http://localhost:{port}` o
 by navigating to `http://{server-ip}:{port}`.
 
 ### Monitor Experiments
+
+#### Installation
+
+You can install this package using PIP.
+
+```bash
+pip install labml labml-app
+```
 
 Create a file named `.labml.yaml` at the top level of your project folder.
 
