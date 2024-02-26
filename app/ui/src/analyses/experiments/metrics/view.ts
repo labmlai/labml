@@ -109,7 +109,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
                             showRank: false,
                         })
                         this.runHeaderCard.render($).then()
-                        this.optionRowContainer = $('div.button-row')
+                        this.optionRowContainer = $('div')
                         $('h2', '.header.text-center', 'Metrics')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
