@@ -199,6 +199,14 @@ export function trimSteps(series: SeriesModel[], min: number, max: number) : Ser
     })
 }
 
+export function trimStepsOfPoints(series: PointValue[][], min: number, max: number) : PointValue[][] {
+    return series.map(s => {
+        return s.filter(p => {
+            return (p.step >= min || min == -1) && (p.step <= max || max == -1)
+        })
+    })
+}
+
 export function getSmoothWindow(currentSeries: SeriesModel[], baseSeries: SeriesModel[], smoothValue: number): number {
     let maxSeriesLength = Math.max(Math.max(...baseSeries.map(s=>s.series.length)),
         Math.max(...currentSeries.map(s=>s.series.length)))
