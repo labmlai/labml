@@ -168,7 +168,7 @@ export class ViewWrapper {
 
         this.stepRangeField = new NumericRangeField({
             min: this.dataStore.stepRange[0], max: this.dataStore.stepRange[1],
-            onClick: () => {
+            onChange: () => {
                 let changeHandler = new ChangeHandlers.StepChangeHandler(this)
                 changeHandler.change()
             },

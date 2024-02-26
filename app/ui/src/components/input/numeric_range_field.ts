@@ -16,11 +16,21 @@ class NumericEditableField extends EditableField {
                             placeholder: this.placeholder,
                             value: this.value,
                             type: this.type,
-                            autocomplete: this.autocomplete,
+                            autocomplete: this.autocomplete
                         }
                     )
                 this.inputElem.required = this.required
                 this.inputElem.disabled = this._disabled
+                this.inputElem.oninput = () => {
+                    if (this.onChange) {
+                        this.onChange(this.inputElem.value)
+                    }
+                }
+                this.inputElem.onchange = () => {
+                    if (this.onChange) {
+                        this.onChange(this.inputElem.value)
+                    }
+                }
             })
         })
     }
@@ -29,7 +39,7 @@ class NumericEditableField extends EditableField {
 interface NumericRangeFieldOptions {
     min: number
     max: number
-    onClick: () => void
+    onChange: () => void
     buttonLabel: string
 }
 
@@ -37,24 +47,27 @@ export class NumericRangeField {
 
     private readonly minField: NumericEditableField
     private readonly maxField: NumericEditableField
-    private readonly onClick: () => void
-    private readonly doneButton: CustomButton
+    private readonly onChange: () => void
     private elem: WeyaElement
     private min: number
     private max: number
 
     constructor(opt: NumericRangeFieldOptions) {
-        this.onClick = opt.onClick
+        this.onChange = opt.onChange
         this.min = opt.min
         this.max = opt.max
-        this.minField = new NumericEditableField({name: "", value: `${this.min}`, placeholder: "From"})
-        this.maxField = new NumericEditableField({name: "", value: `${this.max}`, placeholder: "To"})
-        this.doneButton = new CustomButton({
-            onButtonClick: () => {
-                let range: number[] = this.getRange()
-                this.onClick()
-            }, parent: this.constructor.name, text: opt.buttonLabel, noMargin: true
-        })
+        this.minField = new NumericEditableField({
+            name: "",
+            value: `${this.min}`,
+            placeholder: "From", onChange: () => {
+                this.onChange()
+            }})
+        this.maxField = new NumericEditableField({
+            name: "",
+            value: `${this.max}`,
+            placeholder: "To", onChange: () => {
+                this.onChange()
+            }})
     }
 
     public getRange(): [number, number] {
@@ -86,7 +99,6 @@ export class NumericRangeField {
         this.elem = $('div.range-field', $=> {
             this.minField.render($)
             this.maxField.render($)
-            this.doneButton.render($)
         })
     }
 }

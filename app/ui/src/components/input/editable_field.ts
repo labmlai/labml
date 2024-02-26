@@ -23,7 +23,7 @@ export default class EditableField {
     protected type: string
     protected readonly autocomplete?: string
     protected readonly required: boolean
-    private readonly onChange?: (value: string) => void
+    protected readonly onChange?: (value: string) => void
 
     constructor(opt: EditableFieldOptions) {
         this.name = opt.name

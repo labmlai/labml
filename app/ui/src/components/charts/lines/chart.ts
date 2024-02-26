@@ -213,6 +213,9 @@ export class LineChart {
                                 }, $ => {
                                     if (this.filteredCurrentSeries.length < 3 && this.filteredBaseSeries.length == 0) {
                                         this.filteredCurrentSeries.map((s, i) => {
+                                            if (this.currentSmoothedSeries[i].length == 0) {
+                                                return
+                                            }
                                             new LineFill({
                                                 series: this.currentSmoothedSeries[i],
                                                 xScale: this.xScale,
