@@ -152,7 +152,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                         })
                         this.loader.render($)
                         this.headerContainer = $('div', '.compare-header')
-                        this.optionRowContainer = $('div', '.button-row')
+                        this.optionRowContainer = $('div')
                         if (this.baseRun != null) {
                             $('h2', '.header.text-center', 'Comparison')
                         }

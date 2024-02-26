@@ -1,6 +1,6 @@
 @import "neumorphism";
 
-$mobile: 400px;
+$mobile: 800px;
 
 html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -1306,6 +1306,7 @@ a.generic-link {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .dropdown-button {
@@ -1377,16 +1378,8 @@ a.generic-link {
   align-items: flex-start;
   gap: 10px;
 
-  @media (min-width: $mobile) {
-    margin-left: auto;
-  }
-
   .input-container {
     flex: unset;
-    width: 4rem;
-    @media (min-width: $mobile) {
-      width: 6rem;
-    }
     margin: 4px;
 
     input {
@@ -1516,5 +1509,22 @@ a.generic-link {
 
   .text {
     opacity: 0.6;
+  }
+}
+
+.chart-options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.chart-options > * {
+  min-height: 40px;
+  padding: 5px;
+
+  .key {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-right: 20px;
   }
 }

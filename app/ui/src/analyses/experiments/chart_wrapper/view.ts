@@ -279,12 +279,21 @@ export class ViewWrapper {
 
     private renderOptionRow() {
         this.optionRowContainer.innerHTML = ''
+        this.optionRowContainer.classList.add('chart-options')
         $(this.optionRowContainer, $ => {
-            this.scaleButton.render($)
-            this.focusButton.render($)
-            this.stepRangeField.render($)
-            this.stepRangeField.setRange(this.dataStore.stepRange[0], this.dataStore.stepRange[1])
-            this.smoothSlider.render($)
+            $('div', '.button-row', $ => {
+                this.scaleButton.render($)
+                this.focusButton.render($)
+            })
+            $('div', '.button-row', $ => {
+                $('span.key', 'Step Filter:')
+                this.stepRangeField.render($)
+                this.stepRangeField.setRange(this.dataStore.stepRange[0], this.dataStore.stepRange[1])
+            })
+            $('div', '.button-row', $ => {
+                $('span.key', 'Smoothing:')
+                this.smoothSlider.render($)
+            })
         })
     }
 
