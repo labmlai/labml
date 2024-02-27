@@ -132,7 +132,8 @@ export class CardWrapper {
                 width: this.width,
                 isDivergent: true,
                 onlySelected: true,
-                smoothValue: this.smoothValue
+                smoothValue: this.smoothValue,
+                isMouseMoveOpt: false
             }).render($)
         })
     }

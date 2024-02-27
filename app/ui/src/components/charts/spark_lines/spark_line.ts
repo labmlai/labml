@@ -40,18 +40,21 @@ export class SparkLine {
 
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
+        this.smoothedValues = opt.smoothedValues
+
         if (opt.selected == -1) {
             this.series = [this.series[this.series.length - 1]]
+            this.smoothedValues = [this.smoothedValues[this.smoothedValues.length - 1]]
         }
         this.name = opt.name
         this.selected = opt.selected
         this.onClick = opt.onClick
         this.isMouseMoveOpt = opt.isMouseMoveOpt
-        this.color = this.selected >= 0 ? opt.color : getBaseColor()
+        this.color = opt.color
         this.chartWidth = Math.min(300, Math.round(opt.width * .60))
         this.titleWidth = (opt.width - this.chartWidth) / 2
         this.isBase = opt.isBase ?? false
-        this.smoothedValues = opt.smoothedValues
+
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
@@ -62,9 +65,7 @@ export class SparkLine {
 
         if (this.onClick != null && this.selected >= 1) {
              this.className = 'selected'
-         } else if (this.onClick != null && this.selected == -1) {
-             this.className = 'unselected'
-         }
+        }
 
         if (this.onClick != null) {
             this.className += '.list-group-item-action'
@@ -72,14 +73,14 @@ export class SparkLine {
     }
 
     changeCursorValue(cursorStep?: number | null) {
-        if (this.selected >= 0 || this.isMouseMoveOpt) {
+        if (this.selected >= 0 && this.isMouseMoveOpt) {
             this.linePlot.renderIndicators(cursorStep)
             this.renderValue(cursorStep)
         }
     }
 
     renderValue(cursorStep?: number | null) {
-        const index = this.selected >= 0 || this.isMouseMoveOpt ?
+        const index = this.selected >= 0 && this.isMouseMoveOpt ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1
         const last = this.series[index]
         const lastSmoothed = this.smoothedValues[index]
