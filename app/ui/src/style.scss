@@ -873,6 +873,12 @@ $keyFontSize: 0.8rem;
 }
 
 .info_list {
+  vertical-align: middle;
+
+  * {
+    vertical-align: middle;
+  }
+
   > span {
     display: inline-block;
     overflow: hidden;
@@ -884,7 +890,7 @@ $keyFontSize: 0.8rem;
     opacity: 0.7;
     white-space: nowrap;
     text-overflow: ellipsis;
-    vertical-align: top;
+    vertical-align: middle;
 
 
     & + span {
@@ -909,6 +915,15 @@ $keyFontSize: 0.8rem;
 
 .configs {
   font-size: $keyFontSize;
+
+  .toggle-button {
+    width: fit-content;
+    margin-right: 5px;
+  }
+
+  .nav-link {
+    width: fit-content;
+  }
 
   .ignored {
     display: none;
@@ -1458,22 +1473,11 @@ a.generic-link {
   }
 }
 
-.configs {
-  .selected {
-    background-color: rgba(14, 132, 181, 0.2);
-  }
-}
-
-.favourite {
-  background-color: rgba(153, 49, 251, 0.5);
-}
-
 .config {
   .combined {
     width: 330px;
     display: inline-block;
     overflow: hidden;
-    text-wrap: nowrap;
   }
 }
 
