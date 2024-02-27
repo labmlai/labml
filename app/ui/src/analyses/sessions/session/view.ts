@@ -232,10 +232,10 @@ export class SessionView extends ScreenView {
 
     renderOptions() {
         this.optionRow.innerHTML = ''
-        this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
-        $(this.optionRow, $ => {
-            this.stepRangeField.render($)
-        })
+        // this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
+        // $(this.optionRow, $ => {
+        //     this.stepRangeField.render($)
+        // })
     }
 
     toggleChart = (idx: number) => {
