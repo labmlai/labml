@@ -158,6 +158,9 @@ class Run(Model['Run']):
             self.computer_uuid = data.get('computer', '')
             computer.add_run(self.computer_uuid, self.run_uuid)
 
+        if 'main_rank' in data:
+            self.main_rank = data.get('main_rank', 0)
+
         if 'configs' in data:
             configs = data.get('configs', {})
             self.configs.update(configs)
@@ -280,7 +283,7 @@ class Run(Model['Run']):
         if self.world_size != 0 and other_rank_run_uuids and is_dist_run:
             run_uuid = other_rank_run_uuids[self.main_rank]
             run = get(run_uuid)
-            if run:
+            if run is not None:
                 stdout = run.stdout + run.stdout_unmerged
                 stderr = run.stderr + run.stderr_unmerged
                 run_logger = run.logger + run.logger_unmerged

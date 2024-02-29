@@ -188,22 +188,58 @@ export function getChartType(index: number): 'log' | 'linear' {
     return index === 0 ? 'linear' : 'log'
 }
 
-export function trimSteps(series: SeriesModel[], min: number, max: number) : SeriesModel[] {
-    return series.map(s => {
+export function trimSteps(series: SeriesModel[], min: number, max: number, smoothWindow: number = 0) : SeriesModel[] {
+    let extraWindow = ~~(smoothWindow / 2)
+    return  <SeriesModel[]>series.map(s => {
         let res = {...s}
-        res.series = s.series.filter(p => {
-            return (p.step >= min || min == -1) && (p.step <= max || max == -1)
-        })
+        res.series = []
+        let start = 1e9, end = -1
+        for (let i = 0; i < s.series.length; i++) {
+            let p = s.series[i]
+            if ((p.step >= min || min == -1) && (p.step <= max || max == -1)) {
+                start = Math.min(start, i)
+                end = Math.max(end, i)
+                res.series.push(p)
+            }
+        }
+
+        if (res.series.length >= extraWindow * 2) { // If can afford to remove the extra window
+            if (extraWindow >= 1 && smoothWindow > start) { // remove from the start
+                res.series = res.series.slice(extraWindow-start)
+            }
+            if (extraWindow >= 1 && smoothWindow > s.series.length - end) { // remove from the end
+                res.series = res.series.slice(0, -extraWindow + end)
+            }
+        }
 
         return res
     })
 }
 
-export function trimStepsOfPoints(series: PointValue[][], min: number, max: number) : PointValue[][] {
+export function trimStepsOfPoints(series: PointValue[][], min: number, max: number, smoothWindow: number = 0) : PointValue[][] {
+    let extraWindow = ~~(smoothWindow / 2)
     return series.map(s => {
-        return s.filter(p => {
-            return (p.step >= min || min == -1) && (p.step <= max || max == -1)
-        })
+        let res = []
+        let start = 1e9, end = -1
+        for (let i = 0; i < s.length; i++) {
+            let p = s[i]
+            if ((p.step >= min || min == -1) && (p.step <= max || max == -1)) {
+                start = Math.min(start, i)
+                end = Math.max(end, i)
+                res.push(p)
+            }
+        }
+
+        if (res.length >= extraWindow * 2) { // If can afford to remove the extra window
+            if (extraWindow >= 1 && smoothWindow > start) { // fremove from the start
+                res = res.slice(extraWindow-start)
+            }
+            if (extraWindow >= 1 && smoothWindow > s.length - end) { // remove from the end
+                res = res.slice(0, -extraWindow + end)
+            }
+        }
+
+        return res
     })
 }
 
