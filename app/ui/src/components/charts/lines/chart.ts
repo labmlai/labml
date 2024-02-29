@@ -91,11 +91,11 @@ export class LineChart {
           return smoothSeries(s.series, smoothWindow)
         })
 
-        this.filteredBaseSeries = trimSteps(this.filteredBaseSeries, opt.stepRange[0], opt.stepRange[1])
-        this.filteredCurrentSeries = trimSteps(this.filteredCurrentSeries, opt.stepRange[0], opt.stepRange[1])
+        this.filteredBaseSeries = trimSteps(this.filteredBaseSeries, opt.stepRange[0], opt.stepRange[1], smoothWindow)
+        this.filteredCurrentSeries = trimSteps(this.filteredCurrentSeries, opt.stepRange[0], opt.stepRange[1], smoothWindow)
 
-        this.currentSmoothedSeriesPoints = trimStepsOfPoints(this.currentSmoothedSeriesPoints, opt.stepRange[0], opt.stepRange[1])
-        this.baseSmoothedSeriesPoints = trimStepsOfPoints(this.baseSmoothedSeriesPoints, opt.stepRange[0], opt.stepRange[1])
+        this.currentSmoothedSeriesPoints = trimStepsOfPoints(this.currentSmoothedSeriesPoints, opt.stepRange[0], opt.stepRange[1], smoothWindow)
+        this.baseSmoothedSeriesPoints = trimStepsOfPoints(this.baseSmoothedSeriesPoints, opt.stepRange[0], opt.stepRange[1], smoothWindow)
 
         const stepExtent = getExtent(this.filteredBaseSeries.concat(this.filteredCurrentSeries).map(s => s.series), d => d.step, false, true)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
