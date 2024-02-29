@@ -204,10 +204,10 @@ export function trimSteps(series: SeriesModel[], min: number, max: number, smoot
         }
 
         if (res.series.length >= extraWindow * 2) { // If can afford to remove the extra window
-            if (extraWindow >= 1 && smoothWindow > start) { // remove from the start
+            if (extraWindow >= 1 && extraWindow > start) { // remove from the start
                 res.series = res.series.slice(extraWindow-start)
             }
-            if (extraWindow >= 1 && smoothWindow > s.series.length - end) { // remove from the end
+            if (extraWindow >= 1 && extraWindow > s.series.length - end) { // remove from the end
                 res.series = res.series.slice(0, -extraWindow + end)
             }
         }
