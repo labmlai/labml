@@ -208,7 +208,7 @@ export function trimSteps(series: SeriesModel[], min: number, max: number, smoot
                 res.series = res.series.slice(extraWindow-start)
             }
             if (extraWindow >= 1 && extraWindow > s.series.length - end) { // remove from the end
-                res.series = res.series.slice(0, -extraWindow + end)
+                res.series = res.series.slice(0, -(extraWindow - s.series.length + end))
             }
         }
 
