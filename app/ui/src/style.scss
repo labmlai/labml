@@ -718,10 +718,12 @@ button.sparkline-list-item {
   cursor: pointer;
   padding: .25rem 5px;
   text-align: center;
+  margin-left: 25px;
 
   .sparkline-content {
     display: inline-block;
     text-align: left;
+    position: relative;
 
     &.faded {
       > * {
@@ -758,6 +760,13 @@ button.sparkline-list-item {
       span {
         display: block;
       }
+    }
+
+    .icon{
+      top: 50%;
+      transform: translateY(-12%);
+      left: -2em;
+      font-size: 1.2em;
     }
   }
 }
@@ -1478,16 +1487,6 @@ a.generic-link {
     width: 330px;
     display: inline-block;
     overflow: hidden;
-  }
-}
-
-.sparkline-list {
-  .sparkline-list-item.list-group-item-action {
-    opacity: 0.4;
-
-    &.selected {
-      opacity: 1;
-    }
   }
 }
 

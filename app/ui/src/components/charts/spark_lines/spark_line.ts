@@ -50,7 +50,7 @@ export class SparkLine {
         this.selected = opt.selected
         this.onClick = opt.onClick
         this.isMouseMoveOpt = opt.isMouseMoveOpt
-        this.color = opt.color
+        this.color = this.selected >= 0 ? opt.color : getBaseColor()
         this.chartWidth = Math.min(300, Math.round(opt.width * .60))
         this.titleWidth = (opt.width - this.chartWidth) / 2
         this.isBase = opt.isBase ?? false
@@ -65,10 +65,6 @@ export class SparkLine {
 
         if (this.onClick != null && this.selected >= 1) {
              this.className = 'selected'
-        }
-
-        if (this.onClick != null) {
-            this.className += '.list-group-item-action'
         }
     }
 
@@ -96,6 +92,13 @@ export class SparkLine {
     render($: WeyaElementFunction) {
         $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
             $(`div.sparkline-content`, {style: {width: `${Math.min(this.titleWidth * 2 + this.chartWidth, 450)}px`}}, $ => {
+                if (this.onClick != null) {
+                    if (this.selected == 1) {
+                        $('span', '.fas.fa-eye.title.icon', '')
+                    } else {
+                        $('span', '.fas.fa-eye-slash.title.icon', '')
+                    }
+                }
                 $('span', '.title', this.name, {style: {color: this.color}})
                 $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth * 2}px`}, height: 36}, $ => {
                     $('g', {transform: `translate(${this.titleWidth}, 30)`}, $ => {
