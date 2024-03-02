@@ -50,7 +50,7 @@ export class SparkLine {
         this.selected = opt.selected
         this.onClick = opt.onClick
         this.isMouseMoveOpt = opt.isMouseMoveOpt
-        this.color = opt.color
+        this.color = this.selected >= 0 ? opt.color : getBaseColor()
         this.chartWidth = Math.min(300, Math.round(opt.width * .60))
         this.titleWidth = (opt.width - this.chartWidth) / 2
         this.isBase = opt.isBase ?? false
@@ -63,24 +63,24 @@ export class SparkLine {
             return d.step
         }).left
 
-        if (this.onClick != null && this.selected >= 1) {
+        if (this.isSelected) {
              this.className = 'selected'
-        }
-
-        if (this.onClick != null) {
-            this.className += '.list-group-item-action'
         }
     }
 
+    private get isSelected() {
+        return this.onClick != null && this.selected >= 1
+    }
+
     changeCursorValue(cursorStep?: number | null) {
-        if (this.selected >= 0 && this.isMouseMoveOpt) {
+        if (this.isSelected) {
             this.linePlot.renderIndicators(cursorStep)
             this.renderValue(cursorStep)
         }
     }
 
     renderValue(cursorStep?: number | null) {
-        const index = this.selected >= 0 && this.isMouseMoveOpt ?
+        const index = this.isSelected ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1
         const last = this.series[index]
         const lastSmoothed = this.smoothedValues[index]
@@ -96,8 +96,15 @@ export class SparkLine {
     render($: WeyaElementFunction) {
         $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
             $(`div.sparkline-content`, {style: {width: `${Math.min(this.titleWidth * 2 + this.chartWidth, 450)}px`}}, $ => {
-                $('span', '.title', this.name, {style: {color: this.color}})
-                $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth * 2}px`}, height: 36}, $ => {
+                if (this.onClick != null) {
+                    if (this.isSelected) {
+                        $('span', '.fas.fa-eye.title.icon', '', {style: {color: this.color}})
+                    } else {
+                        $('span', '.fas.fa-eye-slash.title.icon', '', {style: {color: this.color}})
+                    }
+                }
+                let title = $('span', '.title', this.name, {style: {color: this.color}})
+                let sparkline = $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth * 2}px`}, height: 36}, $ => {
                     $('g', {transform: `translate(${this.titleWidth}, 30)`}, $ => {
                         new LineFill({
                             series: this.series,
@@ -127,6 +134,10 @@ export class SparkLine {
                         })
                     })
                 })
+                if (this.isMouseMoveOpt) {
+                    title.style.opacity = `${this.isSelected ? 1 : 0.4}`
+                    sparkline.style.opacity = `${this.isSelected ? 1 : 0.4}`
+                }
             })
         })
 

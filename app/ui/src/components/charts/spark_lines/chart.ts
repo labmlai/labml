@@ -50,7 +50,7 @@ export class SparkLines {
         this.onlySelected = opt.onlySelected ?? false
 
         const margin = Math.floor(opt.width / 64)
-        this.rowWidth = Math.min(450, opt.width - 3 * margin)
+        this.rowWidth = Math.min(450, opt.width - Math.max(3 * margin, 60))
 
         let lastValues: number[] = []
         let idx = 0
