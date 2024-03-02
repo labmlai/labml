@@ -725,12 +725,6 @@ button.sparkline-list-item {
     text-align: left;
     position: relative;
 
-    &.faded {
-      > * {
-        opacity: 0.3;
-      }
-    }
-
     span {
       vertical-align: middle;
       font-weight: bold;
