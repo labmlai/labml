@@ -143,7 +143,6 @@ export class ConfigItemView {
         if (this.onTap == null) {
             return
         }
-        console.log("old config", this.conf.isSelected, this.conf.isFavourite)
         if (configStatus === ConfigStatus.FAVOURITE) {
             if (this.conf.isFavourite) {
                 this.conf.isFavourite = false
