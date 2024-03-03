@@ -244,8 +244,13 @@ export function trimStepsOfPoints(series: PointValue[][], min: number, max: numb
 }
 
 export function getSmoothWindow(currentSeries: SeriesModel[], baseSeries: SeriesModel[], smoothValue: number): number {
-    let maxSeriesLength = Math.max(Math.max(...baseSeries.map(s=>s.series.length)),
-        Math.max(...currentSeries.map(s=>s.series.length)))
+    let maxSeriesLength = Math.min(Math.min(...baseSeries.map(s=>!s.is_summary ? s.series.length : Number.MAX_SAFE_INTEGER)),
+        Math.min(...currentSeries.map(s=>!s.is_summary ? s.series.length : Number.MAX_SAFE_INTEGER)))
+
+
+    if (maxSeriesLength == Number.MAX_SAFE_INTEGER) {
+        return 1
+    }
     let smoothWindow = mapRange(smoothValue, 1, 100, 1, maxSeriesLength/10)
 
     if (smoothWindow<=0 || smoothWindow>=maxSeriesLength) {
