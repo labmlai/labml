@@ -159,8 +159,6 @@ export class ConfigItemView {
             }
         }
 
-        console.log("new config", this.conf.isSelected, this.conf.isFavourite)
-
         this.updateButtons()
 
         let newConfigStatus: ConfigStatus = ConfigStatus.NONE
@@ -174,7 +172,6 @@ export class ConfigItemView {
     }
 
     private updateButtons() {
-        console.log("button config", this.conf.isSelected, this.conf.isFavourite)
         this.selectToggle.toggle = this.conf.isSelected
         this.favouriteToggle.toggle = this.conf.isFavourite
     }
