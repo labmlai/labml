@@ -64,13 +64,13 @@ export class SparkLines {
 
         this.currentSmoothedValues = []
         this.baseSmoothedValues = []
-        let smoothWindow = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
+        let [smoothWindow, _] = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
         for (let i = 0; i < this.currentSeries.length; i++) {
-            let smoothedSeries = smoothSeries(this.currentSeries[i].series, smoothWindow)
+            let smoothedSeries = smoothSeries(this.currentSeries[i].series, smoothWindow[0][i])
             this.currentSmoothedValues.push(smoothedSeries.map(d => d.value))
         }
         for (let i = 0; i < this.baseSeries.length; i++) {
-            let smoothedSeries = smoothSeries(this.baseSeries[i].series, smoothWindow)
+            let smoothedSeries = smoothSeries(this.baseSeries[i].series, smoothWindow[0][1])
             this.baseSmoothedValues.push(smoothedSeries.map(d => d.value))
         }
 
