@@ -194,7 +194,7 @@ export class LineChart {
     render($: WeyaElementFunction) {
         this.changeScale()
 
-        $('div', $ => {
+        $('div.relative', $ => {
             if (this.filteredBaseSeries.length + this.filteredCurrentSeries.length == 0) {
                 $('div', '.chart-overlay', $ => {
                     $('span', '.text', 'No Metric Selected')
