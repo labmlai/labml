@@ -109,7 +109,8 @@ export class SparkLines {
                         ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
                         : this.chartColors.getColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt,
-                    smoothedValues: this.currentSmoothedValues[i]
+                    smoothedValues: this.currentSmoothedValues[i],
+                    isComparison: this.baseSeries.length > 0
                 })
                 this.sparkLines.push(sparkLine)
             })
@@ -135,6 +136,7 @@ export class SparkLines {
                         : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt,
                     isBase: true,
+                    isComparison: this.baseSeries.length > 0,
                     smoothedValues: this.baseSmoothedValues[i]
                 })
                 this.sparkLines.push(sparkLine)
