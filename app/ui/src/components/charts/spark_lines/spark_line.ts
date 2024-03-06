@@ -15,6 +15,7 @@ export interface SparkLineOptions {
     onClick?: () => void
     isMouseMoveOpt?: boolean
     color: string
+    isComparison?: boolean
     isBase?: boolean
     smoothedValues: number[]
 }
@@ -37,6 +38,7 @@ export class SparkLine {
     linePlot: LinePlot
     isBase: boolean
     smoothedValues: number[]
+    isComparison: boolean
 
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
@@ -54,6 +56,7 @@ export class SparkLine {
         this.chartWidth = Math.min(300, Math.round(opt.width * .60))
         this.titleWidth = (opt.width - this.chartWidth) / 2
         this.isBase = opt.isBase ?? false
+        this.isComparison = opt.isComparison ?? false
 
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
@@ -96,11 +99,14 @@ export class SparkLine {
     render($: WeyaElementFunction) {
         $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
             $(`div.sparkline-content`, {style: {width: `${Math.min(this.titleWidth * 2 + this.chartWidth, 450)}px`}}, $ => {
+                if (this.isComparison) {
+                    $('i', `.fa.fa-chart-line.title.icon.chart`, '', {style: {color: this.isBase ? getBaseColor() : '#E15759'}})
+                }
                 if (this.onClick != null) {
                     if (this.isSelected) {
-                        $('span', '.fas.fa-eye.title.icon', '', {style: {color: this.color}})
+                        $('span', '.fas.fa-eye.title.icon', '', {style: {color: getBaseColor()}})
                     } else {
-                        $('span', '.fas.fa-eye-slash.title.icon', '', {style: {color: this.color}})
+                        $('span', '.fas.fa-eye-slash.title.icon', '', {style: {color: getBaseColor()}})
                     }
                 }
                 let title = $('span', '.title', this.name, {style: {color: this.color}})

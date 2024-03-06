@@ -725,6 +725,11 @@ button.sparkline-list-item {
     text-align: left;
     position: relative;
 
+    .base-icon {
+      position: absolute;
+      left: -2em;
+    }
+
     span {
       vertical-align: middle;
       font-weight: bold;
@@ -758,9 +763,15 @@ button.sparkline-list-item {
 
     .icon{
       top: 50%;
-      transform: translateY(-12%);
+      transform: translateY(-15%);
       left: -2em;
-      font-size: 1.2em;
+      font-size: 1em;
+
+      &.chart {
+        left: -3.3rem;
+        font-size: 0.8em;
+        transform: translateY(-22%);
+      }
     }
   }
 }
@@ -1537,4 +1548,22 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+
+.sparkline-list {
+  .base-description {
+    font-size: 0.8rem;
+
+    span {
+      opacity: 0.3;
+    }
+
+    .fa {
+      opacity: 1;
+    }
+    span {
+      margin-left: 5px;
+    }
+  }
 }
