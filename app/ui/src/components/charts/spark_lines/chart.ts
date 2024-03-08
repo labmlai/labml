@@ -105,9 +105,7 @@ export class SparkLines {
                     stepExtent: this.stepExtent,
                     width: this.rowWidth,
                     onClick: onClick,
-                    color: document.body.classList.contains("light")
-                        ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
-                        : this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                    color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt,
                     smoothedValues: this.currentSmoothedValues[i],
                     isComparison: this.baseSeries.length > 0
@@ -131,9 +129,7 @@ export class SparkLines {
                     stepExtent: this.stepExtent,
                     width: this.rowWidth,
                     onClick: onClick,
-                    color: document.body.classList.contains("light")
-                        ? this.chartColors.getColor(this.uniqueItems.get(s.name))
-                        : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
+                    color: this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt,
                     isBase: true,
                     isComparison: this.baseSeries.length > 0,

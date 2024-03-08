@@ -2,9 +2,6 @@ import d3 from "../../d3"
 
 const LIGHT_SINGLE_HUE = d3.piecewise(d3.interpolateHsl, ["#004c6d", "#c1e7ff"])
 const DARK_SINGLE_HUE = d3.piecewise(d3.interpolateHsl, ["#c1e7ff", "#004c6d"])
-const DIVERGENT = d3.piecewise(d3.interpolateHcl, ["#ffa600", "#bc5090", "#003f5d"])
-const DARK_DIVERGENT = d3.piecewise(d3.interpolateHcl, ["#ffa600", "#f73790", "#0088ce"])
-const DIVERGENT_SECOND = d3.piecewise(d3.interpolateHcl, ["#965a01", "#6c0042", "#001d3b"])
 
 interface ChartColorsOptions {
     nColors: number
@@ -12,48 +9,55 @@ interface ChartColorsOptions {
     isDivergent?: boolean
 }
 
-export interface ChartColorsBase {
-    getColors(shade?: number): string[]
+const DIVERGENT = d3.piecewise(d3.interpolateHcl, ["#ffa600", "#bc5090", "#003f5d"])
+const DARK_DIVERGENT = d3.piecewise(d3.interpolateHcl, ["#FFCF75", "#DBA1C4", "#1DB7FF"])
+const DIVERGENT_SECOND = d3.piecewise(d3.interpolateHcl, ["#BFA08D", "#B790B8", "#216AB9"])
+const DARK_DIVERGENT_SECOND = d3.piecewise(d3.interpolateHcl, ["#FF7606", "#D03C7A", "#3C608C"])
 
-    getColor(n: number, m?: number): string
+export interface ChartColorsBase {
+    getColors(): string[]
+
+    getColor(n: number): string
 }
 
 export default class ChartColors implements ChartColorsBase {
-    nColors: number
-    secondNColors: number
-    isDivergent: boolean
-    colorScale: d3.ScaleLinear<number, string>
-    secondColorScale: d3.ScaleLinear<number, string>
-    colors: string[] = []
-    secondColors: string[] = []
+    private readonly colors: string[] = []
+    private readonly secondColors: string[] = []
 
     constructor(opt: ChartColorsOptions) {
-        this.nColors = opt.nColors
-        this.secondNColors = opt.secondNColors ?? 0
-        this.isDivergent = opt.isDivergent
+        let nColors = opt.nColors
+        let secondNColors = opt.secondNColors ?? 0
 
-        this.colorScale = DIVERGENT
-        if (document.body.classList.contains('dark')) {
-            this.colorScale = DARK_DIVERGENT
-        }
-        this.secondColorScale = DIVERGENT_SECOND
-        if (!this.isDivergent) {
-            if (document.body.classList.contains('light')) {
-                this.colorScale = LIGHT_SINGLE_HUE
+        let colorScale: d3.ScaleLinear<number, string>
+        let secondColorScale: d3.ScaleLinear<number, string>
+
+        if (opt.isDivergent) {
+            if (document.body.classList.contains('dark')) {
+                colorScale = DARK_DIVERGENT
+                secondColorScale = DARK_DIVERGENT_SECOND
             } else {
-                this.colorScale = DARK_SINGLE_HUE
+                colorScale = DIVERGENT
+                secondColorScale = DIVERGENT_SECOND
+            }
+        } else {
+            if (document.body.classList.contains('light')) {
+                colorScale = LIGHT_SINGLE_HUE
+                secondColorScale = LIGHT_SINGLE_HUE
+            } else {
+                colorScale = DARK_SINGLE_HUE
+                secondColorScale = DARK_SINGLE_HUE
             }
         }
 
-        for (let n = 0; n < this.nColors; ++n) {
-            this.colors.push(this.colorScale(n / (Math.max(1, this.nColors - 1))))
+        for (let n = 0; n < nColors; ++n) {
+            this.colors.push(colorScale(n / (Math.max(1, nColors - 1))))
         }
-        for (let n = 0; n < this.secondNColors; ++n) {
-            this.secondColors.push(this.secondColorScale(n / (Math.max(1, this.secondNColors - 1))))
+        for (let n = 0; n < secondNColors; ++n) {
+            this.secondColors.push(secondColorScale(n / (Math.max(1, secondNColors - 1))))
         }
     }
 
-    getColor(i: number, shade: number = 0): string {
+    getColor(i: number): string {
         return this.colors[i]
     }
 
@@ -61,7 +65,7 @@ export default class ChartColors implements ChartColorsBase {
         return this.secondColors[i]
     }
 
-    getColors(shade: number = 0) {
+    getColors() {
         return this.colors
     }
 

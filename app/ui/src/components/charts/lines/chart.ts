@@ -226,9 +226,7 @@ export class LineChart {
                                                 series: this.currentSmoothedSeriesPoints[i],
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: document.body.classList.contains("light")
-                                                    ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
-                                                    : this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                                                color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
                                                 colorIdx: this.uniqueItems.get(s.name),
                                                 chartId: this.chartId
                                             }).render($)
@@ -239,9 +237,7 @@ export class LineChart {
                                             series: s.series,
                                             xScale: this.xScale,
                                             yScale: this.yScale,
-                                            color: document.body.classList.contains("light")
-                                                    ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
-                                                    : this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                                            color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
                                             renderHorizontalLine: true,
                                             smoothFocused: this.focusSmoothed,
                                             smoothedSeries: this.currentSmoothedSeriesPoints[i],
@@ -255,9 +251,7 @@ export class LineChart {
                                             series: s.series,
                                             xScale: this.xScale,
                                             yScale: this.yScale,
-                                            color: document.body.classList.contains("light")
-                                                    ? this.chartColors.getColor(this.uniqueItems.get(s.name))
-                                                    : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
+                                            color: this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
                                             isBase: true,
                                             renderHorizontalLine: true,
                                             smoothFocused: this.focusSmoothed,
