@@ -64,6 +64,7 @@ class Run(Model['Run']):
     stderr_unmerged: str
     selected_configs: List['str']
     favourite_configs: List['str']
+    main_rank: int
 
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
