@@ -118,6 +118,11 @@ export class LinePlot {
     private renderLine(cursorStep: number | null) {
         if (cursorStep != null) {
             let idx = getSelectedIdx(this.smoothedSeries, this.bisect, cursorStep)
+
+            if (idx == -1) {
+                return
+            }
+
             this.lineElem.setAttribute("x1", `${this.xScale(this.xScale.domain()[0])}`)
             this.lineElem.setAttribute("x2", `${this.xScale(this.xScale.domain()[1])}`)
             this.lineElem.setAttribute("y1", `${this.yScale(this.smoothedSeries[idx].smoothed).toFixed(2)}`)

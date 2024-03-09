@@ -50,7 +50,7 @@ export class SparkLines {
         this.onlySelected = opt.onlySelected ?? false
 
         const margin = Math.floor(opt.width / 64)
-        this.rowWidth = Math.min(450, opt.width - 3 * margin)
+        this.rowWidth = Math.min(450, opt.width - Math.max(3 * margin, 60))
 
         let lastValues: number[] = []
         let idx = 0
@@ -64,13 +64,13 @@ export class SparkLines {
 
         this.currentSmoothedValues = []
         this.baseSmoothedValues = []
-        let smoothWindow = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
+        let [smoothWindow, _] = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
         for (let i = 0; i < this.currentSeries.length; i++) {
-            let smoothedSeries = smoothSeries(this.currentSeries[i].series, smoothWindow)
+            let smoothedSeries = smoothSeries(this.currentSeries[i].series, smoothWindow[0][i])
             this.currentSmoothedValues.push(smoothedSeries.map(d => d.value))
         }
         for (let i = 0; i < this.baseSeries.length; i++) {
-            let smoothedSeries = smoothSeries(this.baseSeries[i].series, smoothWindow)
+            let smoothedSeries = smoothSeries(this.baseSeries[i].series, smoothWindow[0][1])
             this.baseSmoothedValues.push(smoothedSeries.map(d => d.value))
         }
 
@@ -105,11 +105,10 @@ export class SparkLines {
                     stepExtent: this.stepExtent,
                     width: this.rowWidth,
                     onClick: onClick,
-                    color: document.body.classList.contains("light")
-                        ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name))
-                        : this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                    color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt,
-                    smoothedValues: this.currentSmoothedValues[i]
+                    smoothedValues: this.currentSmoothedValues[i],
+                    isComparison: this.baseSeries.length > 0
                 })
                 this.sparkLines.push(sparkLine)
             })
@@ -130,11 +129,10 @@ export class SparkLines {
                     stepExtent: this.stepExtent,
                     width: this.rowWidth,
                     onClick: onClick,
-                    color: document.body.classList.contains("light")
-                        ? this.chartColors.getColor(this.uniqueItems.get(s.name))
-                        : this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
+                    color: this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt,
                     isBase: true,
+                    isComparison: this.baseSeries.length > 0,
                     smoothedValues: this.baseSmoothedValues[i]
                 })
                 this.sparkLines.push(sparkLine)

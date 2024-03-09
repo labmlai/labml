@@ -718,15 +718,16 @@ button.sparkline-list-item {
   cursor: pointer;
   padding: .25rem 5px;
   text-align: center;
+  margin-left: 25px;
 
   .sparkline-content {
     display: inline-block;
     text-align: left;
+    position: relative;
 
-    &.faded {
-      > * {
-        opacity: 0.3;
-      }
+    .base-icon {
+      position: absolute;
+      left: -2em;
     }
 
     span {
@@ -757,6 +758,19 @@ button.sparkline-list-item {
 
       span {
         display: block;
+      }
+    }
+
+    .icon{
+      top: 50%;
+      transform: translateY(-15%);
+      left: -2em;
+      font-size: 1em;
+
+      &.chart {
+        left: -3.3rem;
+        font-size: 0.8em;
+        transform: translateY(-22%);
       }
     }
   }
@@ -873,6 +887,12 @@ $keyFontSize: 0.8rem;
 }
 
 .info_list {
+  vertical-align: middle;
+
+  * {
+    vertical-align: middle;
+  }
+
   > span {
     display: inline-block;
     overflow: hidden;
@@ -884,7 +904,7 @@ $keyFontSize: 0.8rem;
     opacity: 0.7;
     white-space: nowrap;
     text-overflow: ellipsis;
-    vertical-align: top;
+    vertical-align: middle;
 
 
     & + span {
@@ -909,6 +929,15 @@ $keyFontSize: 0.8rem;
 
 .configs {
   font-size: $keyFontSize;
+
+  .toggle-button {
+    width: fit-content;
+    margin-right: 5px;
+  }
+
+  .nav-link {
+    width: fit-content;
+  }
 
   .ignored {
     display: none;
@@ -1458,32 +1487,11 @@ a.generic-link {
   }
 }
 
-.configs {
-  .selected {
-    background-color: rgba(14, 132, 181, 0.2);
-  }
-}
-
-.favourite {
-  background-color: rgba(153, 49, 251, 0.5);
-}
-
 .config {
   .combined {
     width: 330px;
     display: inline-block;
     overflow: hidden;
-    text-wrap: nowrap;
-  }
-}
-
-.sparkline-list {
-  .sparkline-list-item.list-group-item-action {
-    opacity: 0.4;
-
-    &.selected {
-      opacity: 1;
-    }
   }
 }
 
@@ -1540,4 +1548,26 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+
+.sparkline-list {
+  .base-description {
+    font-size: 0.8rem;
+
+    span {
+      opacity: 0.3;
+    }
+
+    .fa {
+      opacity: 1;
+    }
+    span {
+      margin-left: 5px;
+    }
+  }
+}
+
+.relative {
+  position: relative;
 }

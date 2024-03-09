@@ -1,6 +1,7 @@
 import {FormattedValue} from "../../../utils/value"
 import {Config} from "../../../models/config"
 import {WeyaElement, WeyaElementFunction} from "../../../../../lib/weya/weya"
+import {ControlledToggleButton} from "../../../components/buttons";
 
 
 export const CONFIG_PRINT_LEN = 20
@@ -89,8 +90,8 @@ export class ConfigItemView {
     onTap?: (key: string, configStatus: ConfigStatus) => void
     isSummary: boolean
 
-    private selectToggle: HTMLElement
-    private favouriteToggle: HTMLElement
+    private selectToggle: ControlledToggleButton
+    private favouriteToggle: ControlledToggleButton
 
     constructor(opt: ConfigItemOptions) {
         this.conf = opt.config
@@ -121,13 +122,27 @@ export class ConfigItemView {
         if (opt.isSummary) {
             this.key = this.conf.key
         }
+
+        this.selectToggle = new ControlledToggleButton({
+            icon: ".fas.fa-eye", parent: this.constructor.name, text: "",
+            isToggled: this.conf.isSelected,
+            onButtonClick: () => {
+                this.onTapHandler(ConfigStatus.SELECTED)
+            }
+        })
+        this.favouriteToggle = new ControlledToggleButton({
+            icon: ".fas.fa-star", parent: this.constructor.name, text: "",
+            isToggled: this.conf.isFavourite,
+            onButtonClick: () => {
+                this.onTapHandler(ConfigStatus.FAVOURITE)
+            }
+        })
     }
 
     private onTapHandler(configStatus: ConfigStatus): void {
         if (this.onTap == null) {
             return
         }
-
         if (configStatus === ConfigStatus.FAVOURITE) {
             if (this.conf.isFavourite) {
                 this.conf.isFavourite = false
@@ -157,16 +172,8 @@ export class ConfigItemView {
     }
 
     private updateButtons() {
-        if (this.conf.isSelected) {
-            this.selectToggle.classList.add('selected')
-        } else {
-            this.selectToggle.classList.remove('selected')
-        }
-        if (this.conf.isFavourite) {
-            this.favouriteToggle.classList.add('selected')
-        } else {
-            this.favouriteToggle.classList.remove('selected')
-        }
+        this.selectToggle.toggle = this.conf.isSelected
+        this.favouriteToggle.toggle = this.conf.isFavourite
     }
 
     render($: WeyaElementFunction) {
@@ -179,12 +186,10 @@ export class ConfigItemView {
         }
 
         this.elem = $('div',  $ => {
-            this.selectToggle = $('span', '.fas.fa-eye', {on: {click: () => {
-                this.onTapHandler(ConfigStatus.SELECTED)
-            }}})
-            this.favouriteToggle = $('span', '.fas.fa-star', {on: {click: () => {
-                this.onTapHandler(ConfigStatus.FAVOURITE)
-            }}})
+            if (!this.isSummary) {
+                this.selectToggle.render($)
+                this.favouriteToggle.render($)
+            }
             $('span.key', this.key)
             $('span.combined', $ => {
                 new ComputedValue({computed: this.conf.computed}).render($)

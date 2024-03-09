@@ -15,6 +15,7 @@ export interface SparkLineOptions {
     onClick?: () => void
     isMouseMoveOpt?: boolean
     color: string
+    isComparison?: boolean
     isBase?: boolean
     smoothedValues: number[]
 }
@@ -37,11 +38,15 @@ export class SparkLine {
     linePlot: LinePlot
     isBase: boolean
     smoothedValues: number[]
+    isComparison: boolean
 
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
+        this.smoothedValues = opt.smoothedValues
+
         if (opt.selected == -1) {
             this.series = [this.series[this.series.length - 1]]
+            this.smoothedValues = [this.smoothedValues[this.smoothedValues.length - 1]]
         }
         this.name = opt.name
         this.selected = opt.selected
@@ -51,7 +56,8 @@ export class SparkLine {
         this.chartWidth = Math.min(300, Math.round(opt.width * .60))
         this.titleWidth = (opt.width - this.chartWidth) / 2
         this.isBase = opt.isBase ?? false
-        this.smoothedValues = opt.smoothedValues
+        this.isComparison = opt.isComparison ?? false
+
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
@@ -60,26 +66,24 @@ export class SparkLine {
             return d.step
         }).left
 
-        if (this.onClick != null && this.selected >= 1) {
+        if (this.isSelected) {
              this.className = 'selected'
-         } else if (this.onClick != null && this.selected == -1) {
-             this.className = 'unselected'
-         }
-
-        if (this.onClick != null) {
-            this.className += '.list-group-item-action'
         }
     }
 
+    private get isSelected() {
+        return this.onClick != null && this.selected >= 1
+    }
+
     changeCursorValue(cursorStep?: number | null) {
-        if (this.selected >= 0 || this.isMouseMoveOpt) {
+        if (this.isSelected) {
             this.linePlot.renderIndicators(cursorStep)
             this.renderValue(cursorStep)
         }
     }
 
     renderValue(cursorStep?: number | null) {
-        const index = this.selected >= 0 || this.isMouseMoveOpt ?
+        const index = this.isSelected ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1
         const last = this.series[index]
         const lastSmoothed = this.smoothedValues[index]
@@ -95,8 +99,18 @@ export class SparkLine {
     render($: WeyaElementFunction) {
         $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
             $(`div.sparkline-content`, {style: {width: `${Math.min(this.titleWidth * 2 + this.chartWidth, 450)}px`}}, $ => {
-                $('span', '.title', this.name, {style: {color: this.color}})
-                $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth * 2}px`}, height: 36}, $ => {
+                if (this.isComparison) {
+                    $('i', `.fa.fa-chart-line.title.icon.chart`, '', {style: {color: this.isBase ? getBaseColor() : '#E15759'}})
+                }
+                if (this.onClick != null) {
+                    if (this.isSelected) {
+                        $('span', '.fas.fa-eye.title.icon', '', {style: {color: getBaseColor()}})
+                    } else {
+                        $('span', '.fas.fa-eye-slash.title.icon', '', {style: {color: getBaseColor()}})
+                    }
+                }
+                let title = $('span', '.title', this.name, {style: {color: this.color}})
+                let sparkline = $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth * 2}px`}, height: 36}, $ => {
                     $('g', {transform: `translate(${this.titleWidth}, 30)`}, $ => {
                         new LineFill({
                             series: this.series,
@@ -126,6 +140,10 @@ export class SparkLine {
                         })
                     })
                 })
+                if (this.isMouseMoveOpt) {
+                    title.style.opacity = `${this.isSelected ? 1 : 0.4}`
+                    sparkline.style.opacity = `${this.isSelected ? 1 : 0.4}`
+                }
             })
         })
 

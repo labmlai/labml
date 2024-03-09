@@ -338,7 +338,8 @@ export class ViewWrapper {
                     changeHandler.change()
                 },
                 isDivergent: true,
-                smoothValue: this.dataStore.smoothValue
+                smoothValue: this.dataStore.smoothValue,
+                isMouseMoveOpt: true
             })
             this.sparkLines.render($)
         })

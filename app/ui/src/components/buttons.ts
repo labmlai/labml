@@ -366,6 +366,63 @@ export class ToggleButton extends Button {
     }
 }
 
+interface ControlledToggleButtonOptions extends ButtonOptions {
+    text: string
+    isToggled: boolean
+    icon?: string
+}
+
+export class ControlledToggleButton extends Button {
+    private readonly text: string
+    private isToggled: boolean
+    private readonly icon: string
+
+    constructor(opt: ControlledToggleButtonOptions) {
+        super(opt)
+
+        this.text = opt.text
+        this.isToggled = opt.isToggled
+        this.icon = opt.icon ? opt.icon : ''
+    }
+
+    set toggle(isToggle: boolean) {
+        this.isToggled = isToggle
+
+        this.renderToggleButton()
+    }
+
+    onClick = () => {
+        this.onButtonClick()
+    }
+
+    render($: WeyaElementFunction) {
+        this.elem = $('span.toggle-button', '',
+            {on: {click: this.onClick}}
+        )
+
+        this.renderToggleButton()
+    }
+
+    private renderToggleButton() {
+        if (this.elem == null) {
+            return
+        }
+
+        this.elem.innerHTML = ''
+
+        $(this.elem, $ => {
+            $('nav', `.nav-link.tab.toggle-button.${this.isToggled ? 'selected' : 'empty'}`,
+                $ => {
+                    if (this.icon) {
+                        $('span', this.icon, '')
+                    }
+                    $('span', this.text)
+                }
+            )
+        })
+    }
+}
+
 interface CustomButtonOptions extends ButtonOptions {
     text: string
     noMargin?: boolean
