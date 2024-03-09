@@ -42,7 +42,7 @@ class ProcessDetailView extends ScreenView {
     private sessionCache: SessionCache
     private session: Session
 
-    constructor(uuid: string, processId: string) {
+    constructor(uuid: string, processId: string) { // session uuid, process id
         super()
 
         this.uuid = uuid

@@ -2,7 +2,7 @@ from typing import Dict, Set, Any
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from labml_db import Model, Index
+from labml_db import Model, Index, Key
 from labml_db.serializer.pickle import PickleSerializer
 
 from labml_app.logger import logger
@@ -19,6 +19,44 @@ STATIC_NAMES = ['name', 'create_time', 'pid', 'ppid', 'dead', 'exe', 'cmdline']
 ALMOST_ZERO = 1.0E-2
 
 
+@Analysis.db_model(PickleSerializer, 'ExperimentProcess')
+class ExperimentProcess(Model['ExperimentProcessModel'], SeriesCollection):
+    run_uuid: str
+    process_id: str
+    name: str
+    create_time: float
+    cmdline: str
+    exe: str
+    pid: int
+    ppid: int
+    dead: bool
+
+    @classmethod
+    def defaults(cls):
+        return dict(
+            run_uuid='',
+            process_id='',
+            name='',
+            create_time=0,
+            cmdline='',
+            exe='',
+            pid=0,
+            ppid=0,
+            dead=False,
+        )
+
+    def load_data(self, data):
+        self.process_id = data.get('process_id', '')
+        self.name = data.get('name', '')
+        self.create_time = data.get('create_time', 0)
+        self.cmdline = data.get('cmdline', '')
+        self.exe = data.get('exe', '')
+        self.pid = data.get('pid', 0)
+        self.ppid = data.get('ppid', 0)
+        self.dead = data.get('dead', False)
+        self.run_uuid = data.get('run_uuid', '')
+
+
 @Analysis.db_model(PickleSerializer, 'Process')
 class ProcessModel(Model['ProcessModel'], SeriesCollection):
     names: Dict[str, str]
@@ -30,6 +68,7 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
     dead: Dict[str, bool]
     gpu_processes: Dict[str, Set[str]]
     zero_cpu_processes: Dict[str, Dict['str', Any]]
+    experiment_process_keys: Dict[str, Key['ExperimentProcess']]  # key: process_id
 
     @classmethod
     def defaults(cls):
@@ -43,6 +82,7 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
             dead={},
             gpu_processes={},
             zero_cpu_processes={},
+            experiment_process_keys={},
         )
 
 
@@ -67,6 +107,10 @@ class ProcessAnalysis(Analysis):
     def __init__(self, data):
         self.process = data
         self.process.max_buffer_length = 100
+
+    def add_experiment_process(self, process_id: str, process_key: Key['ExperimentProcess']):
+        self.process.experiment_process_keys[process_id] = process_key
+        self.process.save()
 
     def track(self, data: Dict[str, SeriesModel]):
         res: Dict[str, SeriesModel] = {}
@@ -117,6 +161,19 @@ class ProcessAnalysis(Analysis):
 
                 res[ind] = s
 
+        for process_id in self.process.pids.keys():
+            # check if there's an experiment process with a process id
+            if process_id not in self.process.experiment_process_keys:
+                continue
+            experiment_process_key = self.process.experiment_process_keys[process_id]
+            experiment_process: ExperimentProcess = experiment_process_key.load()
+            if experiment_process is None:
+                continue
+            # filter res to have only relevant series
+            experiment_process_res = {k: v for k, v in res.items() if k.startswith(process_id)}
+            if experiment_process is not None:
+                experiment_process.track(experiment_process_res, keep_last_24h=False)
+
         self.process.track(res, keep_last_24h=True)
         self.clean_dead_processes()
 
@@ -127,6 +184,22 @@ class ProcessAnalysis(Analysis):
 
         inds_to_remove = {}
         for process_id in process_ids_to_remove:
+            # clean out experiment processes
+            if process_id in self.process.experiment_process_keys:
+                experiment_process_key = self.process.experiment_process_keys[process_id]
+                experiment_process: ExperimentProcess = experiment_process_key.load()
+                if experiment_process is not None:
+                    run_uuid = experiment_process.run_uuid
+                    from ...db.run import get as get_run
+                    run = get_run(run_uuid)
+                    if run is not None:
+                        run.session_id = ''
+                        run.process_id = ''
+                        run.process_key = None
+                        run.save()
+                    experiment_process.delete()
+                self.process.experiment_process_keys.pop(process_id)
+
             for s in series_names:
                 ind = f'{process_id}.{s}'
                 inds_to_remove[ind] = process_id
@@ -221,7 +294,12 @@ class ProcessAnalysis(Analysis):
         for s_name in SERIES_NAMES:
             ind = process_id + f'.{s_name}'
 
-            track = self.process.tracking.get(ind, {})
+            if process_id in self.process.experiment_process_keys:
+                experiment_process = self.process.experiment_process_keys[process_id].load()
+                track = experiment_process.tracking.get(ind, {})
+            else:
+                track = self.process.tracking.get(ind, {})
+
             if track:
                 series: Dict[str, Any] = Series().load(track).detail
                 series['name'] = s_name

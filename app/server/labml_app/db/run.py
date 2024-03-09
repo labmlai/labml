@@ -12,6 +12,7 @@ from . import project
 from . import computer
 from . import status
 from .. import settings
+from ..analyses.computers.process import ProcessAnalysis, ExperimentProcess
 from ..analyses.experiments.metrics import MetricsAnalysis, MetricsPreferencesIndex, MetricsPreferencesModel
 from ..logger import logger
 from .. import analyses
@@ -47,6 +48,10 @@ class Run(Model['Run']):
     status: Key['status.Status']
     configs: Dict[str, any]
     computer_uuid: str
+    pid: int
+    process_id: str
+    process_key: Key['ExperimentProcess']
+    session_id: str
     size: float
     size_checkpoints: float
     size_tensorboard: float
@@ -101,6 +106,10 @@ class Run(Model['Run']):
                     errors=[],
                     selected_configs=[],
                     favourite_configs=[],
+                    pid=0,
+                    process_id='',
+                    process_key=None,
+                    session_id='',
                     main_rank=0,
                     )
 
@@ -157,6 +166,8 @@ class Run(Model['Run']):
         if not self.computer_uuid:
             self.computer_uuid = data.get('computer', '')
             computer.add_run(self.computer_uuid, self.run_uuid)
+        if self.pid == 0:
+            self.pid = data.get('pid', 0)
 
         if 'main_rank' in data:
             self.main_rank = data.get('main_rank', 0)
@@ -196,6 +207,35 @@ class Run(Model['Run']):
             self.indicators = data.get('indicators', {})
         if not self.wildcard_indicators:
             self.wildcard_indicators = data.get('wildcard_indicators', {})
+
+        if not self.process_id and self.computer_uuid and self.pid != 0:
+            # get sessions with the computer_uuid
+            sessions_keys = computer.get_or_create(self.computer_uuid).get_sessions()
+
+            for session_key in sessions_keys:
+                ans = ProcessAnalysis.get_or_create(session_key)
+                if ans:
+                    track_data, _ = ans.get_tracking()
+                    for track_item in track_data:
+                        if track_item['pid'] == self.pid:  # found the process
+                            ans = ProcessAnalysis.get_or_create(session_key)
+                            if not ans:
+                                continue
+                            data = ans.get_process(track_item['process_id'])
+                            experiment_process = ExperimentProcess()
+                            data['run_uuid'] = self.run_uuid
+                            experiment_process.load_data(data)
+                            experiment_process.save()
+
+                            # save experiment process on process model
+                            ans.add_experiment_process(track_item['process_id'], experiment_process.key)
+
+                            # save experiment process on run
+                            self.process_key = experiment_process.key
+                            self.process_id = data['process_id']
+                            self.session_id = session_key
+
+                            break
 
         self.save()
 
@@ -315,6 +355,8 @@ class Run(Model['Run']):
             'stderr': stderr,
             'favourite_configs': self.favourite_configs,
             'selected_configs': self.selected_configs,
+            'process_id': self.process_id,
+            'session_id': self.session_id
         }
 
     def get_summary(self) -> Dict[str, str]:
@@ -410,6 +452,10 @@ def delete(run_uuid: str) -> None:
 
     if r:
         s = r.status.load()
+
+        if r.process_key:
+            process = r.process_key.load()
+            process.delete()
 
         computer.remove_run(r.computer_uuid, run_uuid)
 
