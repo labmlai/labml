@@ -44,7 +44,7 @@ export class SessionCard extends Card {
         this.yExtend = yExtend
         this.subSeries = subSeries
         this.analysisCache = cache.getAnalysis(this.uuid)
-        this.preferenceCache = cache.getPreferences(this.uuid)
+        this.preferenceCache = <AnalysisPreferenceCache>cache.getPreferences(this.uuid)
         this.plotIndex = plotIndex
         this.loader = new DataLoader(async (force) => {
             if (isSummary) {

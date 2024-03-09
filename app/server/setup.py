@@ -22,6 +22,8 @@ setuptools.setup(
                       'fastapi',
                       'uvicorn',
                       'aiofiles',
+                      'labml_db',
+                      'pymongo',
                       ],
     packages=['labml_app'],
     include_package_data=True,

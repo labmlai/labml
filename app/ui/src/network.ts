@@ -18,59 +18,59 @@ class Network {
     }
 
     async getRun(runUUID: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/run/${runUUID}`)
+        return this.sendHttpRequest('GET', `/run/${runUUID}`)['promise']
     }
 
     async setRun(runUUID: string, data: object): Promise<any> {
-        return this.sendHttpRequest('POST', `/run/${runUUID}`, data)
+        return this.sendHttpRequest('POST', `/run/${runUUID}`, data)['promise']
     }
 
     async addRun(runUUID: string): Promise<any> {
-        return this.sendHttpRequest('PUT', `/run/${runUUID}/add`)
+        return this.sendHttpRequest('PUT', `/run/${runUUID}/add`)['promise']
     }
 
     async claimRun(runUUID: string): Promise<any> {
-        return this.sendHttpRequest('PUT', `/run/${runUUID}/claim`)
+        return this.sendHttpRequest('PUT', `/run/${runUUID}/claim`)['promise']
     }
 
     async getSession(sessionUUID: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/session/${sessionUUID}`)
+        return this.sendHttpRequest('GET', `/session/${sessionUUID}`)['promise']
     }
 
     async setSession(runUUID: string, data: object): Promise<any> {
-        return this.sendHttpRequest('POST', `/session/${runUUID}`, data)
+        return this.sendHttpRequest('POST', `/session/${runUUID}`, data)['promise']
     }
 
     async addSession(sessionUUID: string): Promise<any> {
-        return this.sendHttpRequest('PUT', `/session/${sessionUUID}/add`)
+        return this.sendHttpRequest('PUT', `/session/${sessionUUID}/add`)['promise']
     }
 
     async claimSession(sessionUUID: string): Promise<any> {
-        return this.sendHttpRequest('PUT', `/session/${sessionUUID}/claim`)
+        return this.sendHttpRequest('PUT', `/session/${sessionUUID}/claim`)['promise']
     }
 
     async getRunStatus(runUUID: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/run/status/${runUUID}`)
+        return this.sendHttpRequest('GET', `/run/status/${runUUID}`)['promise']
     }
 
     async getSessionStatus(sessionUUId: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/session/status/${sessionUUId}`)
+        return this.sendHttpRequest('GET', `/session/status/${sessionUUId}`)['promise']
     }
 
     async getRuns(labml_token: string | null): Promise<any> {
-        return this.sendHttpRequest('GET', `/runs/${labml_token}`)
+        return this.sendHttpRequest('GET', `/runs/${labml_token}`)['promise']
     }
 
     async getSessions(): Promise<any> {
-        return this.sendHttpRequest('GET', `/sessions/${null}`)
+        return this.sendHttpRequest('GET', `/sessions/${null}`)['promise']
     }
 
     async deleteRuns(runUUIDS: string[]): Promise<any> {
-        return this.sendHttpRequest('PUT', `/runs`, {'run_uuids': runUUIDS})
+        return this.sendHttpRequest('PUT', `/runs`, {'run_uuids': runUUIDS})['promise']
     }
 
     async deleteSessions(sessionUUIDS: string[]): Promise<any> {
-        return this.sendHttpRequest('PUT', `/sessions`, {'session_uuids': sessionUUIDS})
+        return this.sendHttpRequest('PUT', `/sessions`, {'session_uuids': sessionUUIDS})['promise']
     }
 
     async getUser(): Promise<any> {
@@ -87,7 +87,7 @@ class Network {
             },
             referrer: window.document.referrer,
 
-        }, false)
+        }, false)['promise']
         if (res != null && res.user != null && res.user.token != null) {
             setAppToken(res.user.token)
         }
@@ -95,32 +95,43 @@ class Network {
     }
 
     async setUser(user: User): Promise<any> {
-        return this.sendHttpRequest('POST', `/user`, {'user': user})
+        return this.sendHttpRequest('POST', `/user`, {'user': user})['promise']
     }
 
-    async getAnalysis(url: string, runUUID: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/${url}/${runUUID}`, {})
+    getAnalysis(url: string, runUUID: string, getAll: boolean = false, currentUUID: string = "",
+                      isExperiment: boolean): {promise: Promise<any>, xhr: XMLHttpRequest} {
+        let method = 'GET'
+        if (isExperiment) {
+            method = 'POST'
+        }
+
+        let data = {
+            'get_all': getAll
+        }
+
+        return this.sendHttpRequest(method,
+            `/${url}/${runUUID}?current=${currentUUID}`, data)
     }
 
     async getCustomAnalysis(url: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/${url}`, {})
+        return this.sendHttpRequest('GET', `/${url}`, {})['promise']
     }
 
     async setAnalysis(url: string, runUUID: string, data): Promise<any> {
-        return this.sendHttpRequest('POST', `/${url}/${runUUID}`, data)
+        return this.sendHttpRequest('POST', `/${url}/${runUUID}`, data)['promise']
     }
 
     async getPreferences(url: string, runUUID: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/${url}/preferences/${runUUID}`, {})
+        return this.sendHttpRequest('GET', `/${url}/preferences/${runUUID}`, {})['promise']
     }
 
     async updatePreferences(url: string, runUUID: string, data: object): Promise<any> {
-        return this.sendHttpRequest('POST', `/${url}/preferences/${runUUID}`, data)
+        return this.sendHttpRequest('POST', `/${url}/preferences/${runUUID}`, data)['promise']
     }
 
-    private sendHttpRequest = (method: string, url: string, data: object = {}, retryAuth: boolean = true): Promise<any> => {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest()
+    private sendHttpRequest = (method: string, url: string, data: object = {}, retryAuth: boolean = true): {promise: Promise<any>, xhr: XMLHttpRequest} => {
+        const xhr = new XMLHttpRequest()
+        let promise = new Promise((resolve, reject) => {
             xhr.withCredentials = true
             xhr.open(method, this.baseURL + url)
             xhr.responseType = 'json'
@@ -177,6 +188,8 @@ class Network {
 
             xhr.send(JSON.stringify(data))
         })
+
+        return {'promise': promise, 'xhr': xhr}
     }
 
     private updateSession(token?: string) {
@@ -189,11 +202,20 @@ export class NetworkError {
     url: string
     message?: string
     errorDescription?: string
+    stackTrace?: string
 
     constructor(statusCode: number, url: string, message?: string, description?: string) {
         this.statusCode = statusCode
         this.url = url
         this.message = message
+
+        try {
+            let jsonMessage = JSON.parse(message)
+            this.stackTrace = jsonMessage['trace']
+        } catch (e) {
+            // there's no stack strace.
+        }
+
         this.errorDescription = description
     }
 }

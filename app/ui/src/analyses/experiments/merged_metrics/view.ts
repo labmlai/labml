@@ -1,4 +1,4 @@
-import {SeriesModel} from "../../../models/run"
+import {Run, SeriesModel} from "../../../models/run"
 import CACHE, {AnalysisPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
@@ -7,7 +7,7 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
-import {toPointValues} from "../../../components/charts/utils"
+import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
@@ -15,45 +15,60 @@ import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
 import metricsCache from "./cache"
-import {DistributedViewContent, ViewContentData} from "../distributed_metrics/view"
+import {MetricDataStore, ViewWrapper} from "../chart_wrapper/view"
 
-class DistributedMetricsView extends ScreenView {
-    uuid: string
-
-    series: SeriesModel[]
-    preferenceData: AnalysisPreferenceModel
-    status: Status
-    private plotIdx: number[] = []
-    private currentChart: number
-    private focusSmoothed: boolean
-    private stepRange: number[]
+class DistributedMetricsView extends ScreenView implements MetricDataStore {
+    private readonly uuid: string
 
     private elem: HTMLDivElement
     private runHeaderCard: RunHeaderCard
     private lineChartContainer: HTMLDivElement
     private sparkLinesContainer: HTMLDivElement
     private saveButtonContainer: WeyaElement
-    private toggleButtonContainer: WeyaElement
-    private isUpdateDisable: boolean
+    private optionRowContainer: WeyaElement
     private actualWidth: number
     private refresh: AwesomeRefreshButton
 
     private loader: DataLoader
-    private content: DistributedViewContent
+    private content: ViewWrapper
+
     private preferenceCache: AnalysisPreferenceCache
+    private run: Run
+    private preferenceData: AnalysisPreferenceModel
+    private status: Status
+
+    series: SeriesModel[]
+    baseSeries?: SeriesModel[]
+    plotIdx: number[]
+    basePlotIdx?: number[]
+    chartType: number
+    focusSmoothed: boolean
+    stepRange: number[]
+    isUnsaved: boolean
+    smoothValue: number
 
     constructor(uuid: string) {
         super()
 
         this.uuid = uuid
-        this.currentChart = 0
-        this.preferenceCache = metricsCache.getPreferences(this.uuid)
+        this.chartType = 0
+        this.preferenceCache = <AnalysisPreferenceCache>metricsCache.getPreferences(this.uuid)
 
-        this.isUpdateDisable = true
+        this.isUnsaved = false
         this.loader = new DataLoader(async (force) => {
+            if (this.isUnsaved) {
+                return
+            }
+            this.run = await CACHE.getRun(this.uuid).get(force)
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
             this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
+
+            this.chartType = this.preferenceData.chart_type
+            this.stepRange = [...this.preferenceData.step_range]
+            this.focusSmoothed = this.preferenceData.focus_smoothed
+            this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
+            this.smoothValue = this.preferenceData.smooth_value
         })
 
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
@@ -94,7 +109,7 @@ class DistributedMetricsView extends ScreenView {
                             showRank: false,
                         })
                         this.runHeaderCard.render($).then()
-                        this.toggleButtonContainer = $('div.button-row')
+                        this.optionRowContainer = $('div')
                         $('h2', '.header.text-center', 'Distributed Metrics')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
@@ -108,19 +123,19 @@ class DistributedMetricsView extends ScreenView {
         try {
             await this.loader.load()
 
-            // setTitle({section: 'Metrics', item: this.run.name})
+            setTitle({section: 'Metrics', item: this.run.name})
 
-            this.content = new DistributedViewContent({
-                updatePreferences: this.updatePreferences,
+            this.content = new ViewWrapper({
+                dataStore: this,
                 lineChartContainer: this.lineChartContainer,
                 sparkLinesContainer: this.sparkLinesContainer,
                 saveButtonContainer: this.saveButtonContainer,
-                toggleButtonContainer: this.toggleButtonContainer,
+                optionRowContainer: this.optionRowContainer,
                 actualWidth: this.actualWidth,
-                isUpdateDisable: this.isUpdateDisable
+                requestMissingMetrics: this.requestMissingMetrics.bind(this),
+                savePreferences: this.savePreferences.bind(this),
+                preferenceChange: this.onPreferenceChange
             })
-
-            this.calcPreferences()
 
             this.content.render()
         } catch (e) {
@@ -149,7 +164,6 @@ class DistributedMetricsView extends ScreenView {
         try {
             await this.loader.load(true)
 
-            this.calcPreferences()
             this.content.render()
         } catch (e) {
 
@@ -165,46 +179,28 @@ class DistributedMetricsView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
-    private calcPreferences() {
-        if(this.isUpdateDisable) {
-            this.currentChart = this.preferenceData.chart_type
-            this.stepRange = this.preferenceData.step_range
-            this.focusSmoothed = this.preferenceData.focus_smoothed
-            let analysisPreferences = this.preferenceData.series_preferences
-            if (analysisPreferences && analysisPreferences.length > 0) {
-                this.plotIdx = [...analysisPreferences]
-            } else if (this.series) {
-                let res: number[] = []
-                for (let i = 0; i < this.series.length; i++) {
-                    res.push(i)
-                }
-                this.plotIdx = res
-            }
-
-            this.content.updateData({
-                series: this.series,
-                plotIdx: this.plotIdx,
-                currentChart: this.currentChart,
-                focusSmoothed: this.focusSmoothed,
-                stepRange: this.stepRange
-            })
-        }
+    private async requestMissingMetrics() {
+        this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series)
     }
 
-    updatePreferences = (data: ViewContentData) => {
-        this.plotIdx = data.plotIdx
-        this.currentChart = data.currentChart
-        this.focusSmoothed = data.focusSmoothed
-        this.stepRange = data.stepRange
+    private onPreferenceChange = () => {
+        this.refresh.pause()
+    }
 
-        this.preferenceData.series_preferences = this.plotIdx
-        this.preferenceData.chart_type = this.currentChart
-        this.preferenceData.step_range = this.stepRange
-        this.preferenceData.focus_smoothed = this.focusSmoothed
-        this.preferenceCache.setPreference(this.preferenceData).then()
+    private savePreferences = async () => {
+        let preferenceData: AnalysisPreferenceModel = {
+            series_preferences: this.plotIdx,
+            chart_type: this.chartType,
+            step_range: this.stepRange,
+            focus_smoothed: this.focusSmoothed,
+            sub_series_preferences: undefined,
+            series_names: this.series.map(s => s.name),
+            smooth_value: this.smoothValue
+        }
 
-        this.isUpdateDisable = true
-        this.content.renderSaveButton()
+        await this.preferenceCache.setPreference(preferenceData)
+        this.isUnsaved = false
+        this.refresh.resume()
     }
 }
 

@@ -55,8 +55,10 @@ class MetricsAnalysis(Analysis):
     def __init__(self, data):
         self.metrics = data
 
-    def track(self, data: Dict[str, SeriesModel]):
+    def track(self, data: Dict[str, SeriesModel], run_uuid: str = None):
         res = {}
+        current_indicators = list(self.metrics.indicators)
+        new_indicators = set()
         for ind, s in data.items():
             ind_split = ind.split('.')
             ind_type = ind_split[0]
@@ -64,9 +66,30 @@ class MetricsAnalysis(Analysis):
                 if ind not in self.metrics.indicators:
                     if len(self.metrics.indicators) >= INDICATOR_LIMIT:
                         continue
-                    self.metrics.indicators.add('.'.join(ind))
-
+                    self.metrics.indicators.add(ind)
+                    new_indicators.add(ind)
                 res[ind] = s
+        if len(new_indicators) > 0:  # update preferences
+            try:
+                preferences_key = MetricsPreferencesIndex.get(run_uuid)
+                mp: MetricsPreferencesModel = preferences_key.load()
+                series_preferences = mp.get_data()['series_preferences']
+
+                complete_indicators = current_indicators + list(new_indicators)
+                complete_indicators.sort()
+
+                if len(current_indicators) == 0:  # first time
+                    series_preferences = utils.get_default_series_preference(complete_indicators)
+                else:
+                    for i in range(len(complete_indicators)):
+                        if complete_indicators[i] in new_indicators:
+                            series_preferences.insert(i, -1)
+
+                mp.update_preferences({'series_preferences': series_preferences})
+                mp.save()
+            except Exception as e:
+                logger.error(f'Error updating preferences: {e}')
+                raise e
 
         self.metrics.track(res)
 
@@ -111,7 +134,7 @@ class MetricsAnalysis(Analysis):
         return MetricsAnalysis(metrics_key.load())
 
     @staticmethod
-    def get(run_uuid: str):
+    def get(run_uuid: str) -> Optional['MetricsAnalysis']:
         metrics_key = MetricsIndex.get(run_uuid)
 
         if not metrics_key:
@@ -135,27 +158,72 @@ class MetricsAnalysis(Analysis):
             mp.delete()
 
 
+def get_metrics_tracking_util(track_data: List[Dict[str, Any]], preference_data: List[int],
+                              get_all_data: bool):
+    filtered_track_data = []
+    for preference_item, track_item in zip(preference_data, track_data):
+        include_full_data = False
+
+        if get_all_data:
+            include_full_data = True
+        else:
+            include_full_data = preference_item != -1
+
+        filtered_track_data.append(track_item)
+        if include_full_data:
+            filtered_track_data[-1]['is_summary'] = False
+        else:
+            filtered_track_data[-1]['value'] = filtered_track_data[-1]['value'][-1:]
+            filtered_track_data[-1]['step'] = filtered_track_data[-1]['step'][-1:]
+            filtered_track_data[-1]['smoothed'] = filtered_track_data[-1]['smoothed'][-1:]
+            filtered_track_data[-1]['is_summary'] = True
+
+    return filtered_track_data
+
+
 # @utils.mix_panel.MixPanelEvent.time_this(None)
-@Analysis.route('GET', 'metrics/{run_uuid}')
+@Analysis.route('POST', 'metrics/{run_uuid}')
 async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     status_code = 404
+
+    get_all_data = (await request.json())['get_all']
 
     #  return merged metrics if applicable
     if len(run_uuid.split('_')) == 1:  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
-            return await get_merged_dist_metrics_tracking(request, run_uuid)
+            return get_merged_dist_metrics_tracking(run_uuid, get_all_data)
 
-    # TODO temporary change to used run_uuid as rank 0
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
-    ans = MetricsAnalysis.get_or_create(run_uuid)
-    if ans:
-        track_data = ans.get_tracking()
-        status_code = 200
+    track_data = MetricsAnalysis.get_or_create(run_uuid).get_tracking()
+    status_code = 200
 
-    response = JSONResponse({'series': track_data, 'insights': []})
+    preference_data = []
+    preferences_key = MetricsPreferencesIndex.get(run_uuid)
+    mp: MetricsPreferencesModel
+    if preferences_key:
+        mp = preferences_key.load()
+        preference_data = mp.get_data()['series_preferences']
+    else:
+        mp = MetricsPreferencesModel()
+        mp.save()
+        MetricsPreferencesIndex.set(run_uuid, mp.key)
+
+    # update preferences incase it doesn't match with the series
+    if len(preference_data) == 0:
+        preference_data = utils.get_default_series_preference([s['name'] for s in track_data])
+        mp.update_preferences({'series_preferences': preference_data})
+        mp.save()
+    elif len(preference_data) != len(track_data):
+        preference_data = utils.fill_preferences([s['name'] for s in track_data], preference_data)
+        mp.update_preferences({'series_preferences': preference_data})
+        mp.save()
+
+    filtered_track_data = get_metrics_tracking_util(track_data, preference_data, get_all_data)
+
+    response = JSONResponse({'series': filtered_track_data, 'insights': []})
     response.status_code = status_code
 
     return response
@@ -163,22 +231,23 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
 
 @Analysis.route('GET', 'metrics/preferences/{run_uuid}')
 async def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
-    preferences_data = {}
-
     #  return merged metrics if applicable
     if len(run_uuid.split('_')) == 1:  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
-            return await get_merged_metrics_preferences(request, run_uuid)
+            return await get_merged_metrics_preferences(run_uuid)
 
-    # TODO temporary change to used run_uuid as rank 0
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
-    if not preferences_key:
-        return preferences_data
+    mp: Optional['MetricsPreferencesModel'] = None
+    if preferences_key:
+        mp = preferences_key.load()
 
-    mp: MetricsPreferencesModel = preferences_key.load()
+    if mp is None:
+        mp = MetricsPreferencesModel()
+        mp.save()
+        MetricsPreferencesIndex.set(run_uuid, mp.key)
 
     return mp.get_data()
 
@@ -189,18 +258,30 @@ async def set_metrics_preferences(request: Request, run_uuid: str) -> Any:
     if len(run_uuid.split('_')) == 1:  # not a rank
         r = run.get(run_uuid)
         if r is not None and r.world_size > 0:  # distributed run
-            return await set_merged_metrics_preferences(request, run_uuid)
+            return await set_merged_metrics_preferences(run_uuid, await request.json())
 
-    # TODO temporary change to used run_uuid as rank 0
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
+    if preferences_key is not None:
+        mp = preferences_key.load()
+    else:
+        mp = MetricsPreferencesModel()
+        mp.save()
+        MetricsPreferencesIndex.set(run_uuid, mp.key)
 
-    if not preferences_key:
-        return {}
-
-    mp = preferences_key.load()
     json = await request.json()
+
+    app_preferences = json['series_preferences']
+    client_preferences = mp.get_data()['series_preferences']
+
+    if len(app_preferences) != len(client_preferences):
+        if 'series_names' not in json:
+            raise ValueError('series_names not found in the request')
+        series_names = [s['name'] for s in MetricsAnalysis.get_or_create(run_uuid).get_tracking()]
+        json['series_preferences'] = (
+            utils.update_series_preferences(app_preferences, json['series_names'], series_names))
+
     mp.update_preferences(json)
 
     logger.debug(f'update metrics preferences: {mp.key}')

@@ -9,6 +9,10 @@
       border: none;
       border-radius: 5px;
       margin-bottom: 10px;
+
+      &.unselected {
+        box-shadow: unset !important;
+      }
     }
   }
 

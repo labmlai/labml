@@ -6,7 +6,7 @@ import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {DataLoader} from "../../../components/loader"
 import {BackButton, SaveButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
-import {Configs} from "./components"
+import {Configs, ConfigStatus} from "./components"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
@@ -80,7 +80,7 @@ class RunConfigsView extends ScreenView {
                         this.runHeaderCard.render($).then()
                         $('h2', '.header.text-center', 'Configurations')
                         this.loader.render($)
-                        this.configsContainer = $('div', '.labml-card')
+                        this.configsContainer = $('div')
                     })
                 })
         })
@@ -140,7 +140,7 @@ class RunConfigsView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
-    protected onTap(key: string) {
+    protected onTap(key: string, configStatus: ConfigStatus) {
         this.configsChanged = true
         this.save.disabled = false
 
@@ -163,21 +163,10 @@ class RunConfigsView extends ScreenView {
             this.run.favourite_configs.splice(favouriteIndex, 1)
         }
 
-        if (isSelected && isFavourite) {
-            isSelected = false
-            isFavourite = false
-        } else if (isSelected) {
-            isFavourite = true
-            isSelected = true
-        } else {
-            isSelected = true
-            isFavourite = false
-        }
-
-        if (isSelected) {
+        if (configStatus == ConfigStatus.SELECTED || configStatus == ConfigStatus.FAVOURITE) {
             this.run.selected_configs.push(key)
         }
-        if (isFavourite) {
+        if (configStatus == ConfigStatus.FAVOURITE) {
             this.run.favourite_configs.push(key)
         }
 

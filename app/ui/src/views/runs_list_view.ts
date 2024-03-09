@@ -14,6 +14,7 @@ import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
+import {DefaultLineGradient} from "../components/charts/chart_gradients";
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -85,6 +86,9 @@ class RunsListView extends ScreenView {
                 $('div', '.runs-list', $ => {
                     new SearchView({onSearch: this.onSearch}).render($)
                     this.loader.render($)
+                    $('svg', {style: {height: `${1}px`}}, $ => {
+                        new DefaultLineGradient().render($)
+                    })
                     this.runsListContainer = $('div', '.list.runs-list.list-group', '')
                 })
             })

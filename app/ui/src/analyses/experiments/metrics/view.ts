@@ -1,79 +1,79 @@
 import {Run, SeriesModel} from "../../../models/run"
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunCache, RunStatusCache} from "../../../cache/cache"
+import CACHE, {AnalysisPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
-import {BackButton, SaveButton, ToggleButton} from "../../../components/buttons"
+import {BackButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
-import metricsCache from "./cache"
-import {LineChart} from "../../../components/charts/lines/chart"
-import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import {getChartType, toPointValues} from "../../../components/charts/utils"
+import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
-import {NumericRangeField} from "../../../components/input/numeric_range_field";
+import metricsCache from "./cache"
+import {MetricDataStore, ViewWrapper} from "../chart_wrapper/view"
 
-class MetricsView extends ScreenView {
-    elem: HTMLDivElement
-    uuid: string
-    status: Status
-    plotIdx: number[] = []
-    currentChart: number
-    statusCache: RunStatusCache
-    series: SeriesModel[]
-    preferenceData: AnalysisPreferenceModel
-    analysisCache: AnalysisDataCache
-    preferenceCache: AnalysisPreferenceCache
-    runHeaderCard: RunHeaderCard
-    sparkLines: SparkLines
-    lineChartContainer: HTMLDivElement
-    sparkLinesContainer: HTMLDivElement
-    saveButtonContainer: HTMLDivElement
-    toggleButtonContainer: WeyaElement
-    saveButton: SaveButton
-    isUpdateDisable: boolean
-    actualWidth: number
-    private loader: DataLoader;
-    private refresh: AwesomeRefreshButton;
-    private runCache: RunCache
+class MetricsView extends ScreenView implements MetricDataStore {
+    private readonly uuid: string
+
+    private elem: HTMLDivElement
+    private runHeaderCard: RunHeaderCard
+    private lineChartContainer: HTMLDivElement
+    private sparkLinesContainer: HTMLDivElement
+    private saveButtonContainer: WeyaElement
+    private optionRowContainer: WeyaElement
+    private actualWidth: number
+    private refresh: AwesomeRefreshButton
+
+    private loader: DataLoader
+    private content: ViewWrapper
+
+    private preferenceCache: AnalysisPreferenceCache
     private run: Run
-    private stepRange: number[]
-    private stepRangeField: NumericRangeField
-    private focusSmoothed: boolean
+    private preferenceData: AnalysisPreferenceModel
+    private status: Status
+
+    series: SeriesModel[]
+    baseSeries?: SeriesModel[]
+    plotIdx: number[]
+    basePlotIdx?: number[]
+    chartType: number
+    focusSmoothed: boolean
+    stepRange: number[]
+    smoothValue: number
+    isUnsaved: boolean
 
     constructor(uuid: string) {
         super()
 
         this.uuid = uuid
-        this.currentChart = 0
-        this.runCache = CACHE.getRun(this.uuid)
-        this.statusCache = CACHE.getRunStatus(this.uuid)
-        this.analysisCache = metricsCache.getAnalysis(this.uuid)
-        this.preferenceCache = metricsCache.getPreferences(this.uuid)
+        this.chartType = 0
+        this.preferenceCache = <AnalysisPreferenceCache>metricsCache.getPreferences(this.uuid)
 
-        this.isUpdateDisable = true
-        this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
-
+        this.isUnsaved = false
         this.loader = new DataLoader(async (force) => {
-            this.status = await this.statusCache.get(force)
-            this.run = await this.runCache.get()
-            this.series = toPointValues((await this.analysisCache.get(force)).series)
+            if (this.isUnsaved) {
+                return
+            }
+            this.status = await CACHE.getRunStatus(this.uuid).get(force)
+            this.run = await CACHE.getRun(this.uuid).get(force)
+            this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
+
+            this.chartType = this.preferenceData.chart_type
+            this.stepRange = [...this.preferenceData.step_range]
+            this.focusSmoothed = this.preferenceData.focus_smoothed
+            this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
+            this.smoothValue = this.preferenceData.smooth_value
         })
+
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
-        this.stepRangeField = new NumericRangeField({
-            max: 0, min: 0,
-            onClick: this.onChangeStepRange.bind(this),
-            buttonLabel: "Filter Steps"
-        })
     }
 
     get requiresAuth(): boolean {
@@ -88,16 +88,6 @@ class MetricsView extends ScreenView {
         if (this.elem) {
             this._render().then()
         }
-    }
-
-    private onChangeStepRange(min: number, max: number) {
-        this.isUpdateDisable = false
-
-        this.stepRange = [min, max]
-
-        this.renderLineChart()
-        this.renderSaveButton()
-        this.renderToggleButton()
     }
 
     async _render() {
@@ -115,10 +105,11 @@ class MetricsView extends ScreenView {
                         })
                         this.runHeaderCard = new RunHeaderCard({
                             uuid: this.uuid,
-                            width: this.actualWidth
+                            width: this.actualWidth,
+                            showRank: false,
                         })
                         this.runHeaderCard.render($).then()
-                        this.toggleButtonContainer = $('div.button-row')
+                        this.optionRowContainer = $('div')
                         $('h2', '.header.text-center', 'Metrics')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
@@ -133,12 +124,20 @@ class MetricsView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Metrics', item: this.run.name})
-            this.calcPreferences()
 
-            this.renderSparkLines()
-            this.renderLineChart()
-            this.renderSaveButton()
-            this.renderToggleButton()
+            this.content = new ViewWrapper({
+                dataStore: this,
+                lineChartContainer: this.lineChartContainer,
+                sparkLinesContainer: this.sparkLinesContainer,
+                saveButtonContainer: this.saveButtonContainer,
+                optionRowContainer: this.optionRowContainer,
+                actualWidth: this.actualWidth,
+                requestMissingMetrics: this.requestMissingMetrics.bind(this),
+                savePreferences: this.savePreferences.bind(this),
+                preferenceChange: this.onPreferenceChange
+            })
+
+            this.content.render()
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -165,9 +164,7 @@ class MetricsView extends ScreenView {
         try {
             await this.loader.load(true)
 
-            this.calcPreferences()
-            this.renderSparkLines()
-            this.renderLineChart()
+            this.content.render()
         } catch (e) {
 
         } finally {
@@ -182,133 +179,29 @@ class MetricsView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
-    renderSaveButton() {
-        this.saveButton.disabled = this.isUpdateDisable
-        this.saveButtonContainer.innerHTML = ''
-        $(this.saveButtonContainer, $ => {
-            this.saveButton.render($)
-        })
+    private async requestMissingMetrics() {
+        this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series)
     }
 
-    renderToggleButton() {
-        this.toggleButtonContainer.innerHTML = ''
-        $(this.toggleButtonContainer, $ => {
-            new ToggleButton({
-                onButtonClick: this.onChangeScale,
-                text: 'Log',
-                isToggled: this.currentChart > 0,
-                parent: this.constructor.name
-            }).render($)
-            new ToggleButton({
-                onButtonClick: this.onChangeSmoothFocus,
-                text: 'Focus Smoothed',
-                isToggled: this.focusSmoothed,
-                parent: this.constructor.name
-            })
-                .render($)
-            this.stepRangeField.render($)
-        })
+    private onPreferenceChange = () => {
+        this.refresh.pause()
     }
 
-    renderLineChart() {
-        this.lineChartContainer.innerHTML = ''
-        $(this.lineChartContainer, $ => {
-            new LineChart({
-                series: this.series,
-                width: this.actualWidth,
-                plotIdx: this.plotIdx,
-                chartType: getChartType(this.currentChart),
-                onCursorMove: [this.sparkLines.changeCursorValues],
-                isCursorMoveOpt: true,
-                isDivergent: true,
-                stepRange: this.stepRange,
-                focusSmoothed: this.focusSmoothed
-            }).render($)
-        })
-    }
-
-    renderSparkLines() {
-        this.sparkLinesContainer.innerHTML = ''
-        $(this.sparkLinesContainer, $ => {
-            this.sparkLines = new SparkLines({
-                series: this.series,
-                plotIdx: this.plotIdx,
-                width: this.actualWidth,
-                onSelect: this.toggleChart,
-                isDivergent: true
-            })
-            this.sparkLines.render($)
-        })
-    }
-
-    toggleChart = (idx: number) => {
-        this.isUpdateDisable = false
-
-        if (this.plotIdx[idx] >= 0) {
-            this.plotIdx[idx] = -1
-        } else {
-            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
+    private savePreferences = async () => {
+        let preferenceData: AnalysisPreferenceModel = {
+            series_preferences: this.plotIdx,
+            chart_type: this.chartType,
+            step_range: this.stepRange,
+            focus_smoothed: this.focusSmoothed,
+            sub_series_preferences: undefined,
+            series_names: this.series.map(s => s.name),
+            smooth_value: this.smoothValue
         }
 
-        if (this.plotIdx.length > 1) {
-            this.plotIdx = new Array<number>(...this.plotIdx)
-        }
+        await this.preferenceCache.setPreference(preferenceData)
 
-        this.renderSparkLines()
-        this.renderLineChart()
-        this.renderSaveButton()
-    }
-
-    private calcPreferences() {
-        if(this.isUpdateDisable) {
-            this.currentChart = this.preferenceData.chart_type
-            this.stepRange = this.preferenceData.step_range
-            this.focusSmoothed = this.preferenceData.focus_smoothed
-            this.stepRangeField.setRange(this.stepRange[0], this.stepRange[1])
-            let analysisPreferences = this.preferenceData.series_preferences
-            if (analysisPreferences && analysisPreferences.length > 0) {
-                this.plotIdx = [...analysisPreferences]
-            } else if (this.series) {
-                let res: number[] = []
-                for (let i = 0; i < this.series.length; i++) {
-                    res.push(i)
-                }
-                this.plotIdx = res
-            }
-        }
-    }
-
-    onChangeSmoothFocus = () => {
-        this.isUpdateDisable = false
-
-        this.focusSmoothed = !this.focusSmoothed;
-
-        this.renderLineChart()
-        this.renderSaveButton()
-    }
-
-    onChangeScale = () => {
-        this.isUpdateDisable = false
-
-        if (this.currentChart === 1) {
-            this.currentChart = 0
-        } else {
-            this.currentChart = this.currentChart + 1
-        }
-
-        this.renderLineChart()
-        this.renderSaveButton()
-    }
-
-    updatePreferences = () => {
-        this.preferenceData.series_preferences = this.plotIdx
-        this.preferenceData.chart_type = this.currentChart
-        this.preferenceData.step_range = this.stepRange
-        this.preferenceData.focus_smoothed = this.focusSmoothed
-        this.preferenceCache.setPreference(this.preferenceData).then()
-
-        this.isUpdateDisable = true
-        this.renderSaveButton()
+        this.isUnsaved = false
+        this.refresh.resume()
     }
 }
 

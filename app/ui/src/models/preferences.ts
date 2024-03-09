@@ -5,18 +5,17 @@ export interface AnalysisPreferenceBaseModel {
     chart_type: number
     step_range: number[]
     focus_smoothed: boolean
+    smooth_value: number
 }
 
 export interface AnalysisPreferenceModel extends AnalysisPreferenceBaseModel {
     series_preferences: number[]
-}
-
-export interface DistAnalysisPreferenceModel extends AnalysisPreferenceBaseModel {
-    series_preferences: number[][]
+    series_names?: string[]
 }
 
 export interface ComparisonPreferenceModel extends AnalysisPreferenceModel {
     base_series_preferences: number[]
     base_experiment: string
     is_base_distributed: boolean
+    base_series_names?: string[]
 }

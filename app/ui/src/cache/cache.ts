@@ -1,9 +1,9 @@
 import {AnalysisDataModel, Run} from "../models/run"
 import {Status} from "../models/status"
-import NETWORK, {NetworkError} from "../network"
-import {PasswordResetModel, SignInModel, SignUpModel, User} from "../models/user"
-import {RunsList} from '../models/run_list'
-import {AnalysisPreferenceModel, DistAnalysisPreferenceModel} from "../models/preferences"
+import NETWORK from "../network"
+import { User} from "../models/user"
+import {RunListItemModel, RunsList} from '../models/run_list'
+import {AnalysisPreferenceModel, ComparisonPreferenceModel} from "../models/preferences"
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
 
@@ -28,6 +28,14 @@ class BroadcastPromise<T> {
         this.isLoading = false
         this.resolvers = []
         this.rejectors = []
+    }
+
+    forceCreate(load: () => Promise<T>): Promise<T> {
+        if (this.isLoading) {
+            this.reject("")
+            this.isLoading = false
+        }
+        return this.create(load)
     }
 
     create(load: () => Promise<T>): Promise<T> {
@@ -298,18 +306,41 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
     private readonly uuid: string
     private readonly url: string
     private statusCache: StatusCache
+    private currentUUID: string
+    private readonly isExperiment: boolean
+    private currentXHR: XMLHttpRequest | null
 
-    constructor(uuid: string, url: string, statusCache: StatusCache) {
+    constructor(uuid: string, url: string, statusCache: StatusCache, isExperiment: boolean = false) {
         super()
         this.uuid = uuid
         this.statusCache = statusCache
         this.url = url
+        this.isExperiment = isExperiment
+        this.currentXHR = null
+    }
+
+    public setCurrentUUID(currentUUID: string) {
+        this.currentUUID = currentUUID
     }
 
     async load(): Promise<AnalysisDataModel> {
         return this.broadcastPromise.create(async () => {
-            return await NETWORK.getAnalysis(this.url, this.uuid)
+            let response = NETWORK.getAnalysis(this.url, this.uuid, false, this.currentUUID, this.isExperiment)
+            this.currentXHR = response.xhr
+            return await response.promise
         })
+    }
+
+    async getAllMetrics(): Promise<AnalysisDataModel> {
+        if (this.currentXHR != null) {
+            this.currentXHR.abort()
+        }
+        this.data = await this.broadcastPromise.forceCreate(async () => {
+            this.lastUpdated = (new Date()).getTime()
+            let response = NETWORK.getAnalysis(this.url, this.uuid, true, this.currentUUID, this.isExperiment)
+            return response.promise
+        })
+        return this.data
     }
 
     async get(isRefresh = false): Promise<AnalysisDataModel> {
@@ -325,10 +356,6 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
         }
 
         return this.data
-    }
-
-    async setAnalysis(data: {}): Promise<void> {
-        await NETWORK.setAnalysis(this.url, this.uuid, data)
     }
 }
 
@@ -349,11 +376,12 @@ export class AnalysisPreferenceCache extends CacheObject<AnalysisPreferenceModel
     }
 
     async setPreference(preference: AnalysisPreferenceModel): Promise<void> {
+        this.data = preference
         await NETWORK.updatePreferences(this.url, this.uuid, preference)
     }
 }
 
-export class DistAnalysisPreferenceCache extends CacheObject<DistAnalysisPreferenceModel> {
+export class ComparisonAnalysisPreferenceCache extends CacheObject<ComparisonPreferenceModel> {
     private readonly uuid: string
     private readonly url: string
 
@@ -363,14 +391,45 @@ export class DistAnalysisPreferenceCache extends CacheObject<DistAnalysisPrefere
         this.url = url
     }
 
-    async load(): Promise<DistAnalysisPreferenceModel> {
+    async load(): Promise<ComparisonPreferenceModel> {
         return this.broadcastPromise.create(async () => {
             return await NETWORK.getPreferences(this.url, this.uuid)
         })
     }
 
-    async setPreference(preference: DistAnalysisPreferenceModel): Promise<void> {
+    async setPreference(preference: ComparisonPreferenceModel): Promise<void> {
+        this.data = structuredClone(preference)
+
         await NETWORK.updatePreferences(this.url, this.uuid, preference)
+    }
+
+    deleteBaseExperiment(): ComparisonPreferenceModel {
+        if (this.data == null) {
+            return null
+        }
+
+        this.data.base_experiment = ''
+        this.data.base_series_preferences = []
+        this.data.base_series_names = []
+
+        NETWORK.updatePreferences(this.url, this.uuid, this.data).then()
+
+        return this.data
+    }
+
+    updateBaseExperiment(run: RunListItemModel): ComparisonPreferenceModel {
+        if (this.data == null) {
+            return null
+        }
+
+        this.data.base_experiment = run.run_uuid
+        this.data.base_series_preferences = []
+        this.data.base_series_names = []
+        this.data.is_base_distributed = run.world_size != 0
+
+        NETWORK.updatePreferences(this.url, this.uuid, this.data).then()
+
+        return this.data
     }
 }
 

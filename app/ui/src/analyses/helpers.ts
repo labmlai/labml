@@ -1,12 +1,18 @@
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache, SessionStatusCache} from "../cache/cache"
+import CACHE, {
+    AnalysisDataCache,
+    AnalysisPreferenceCache,
+    ComparisonAnalysisPreferenceCache,
+    RunStatusCache,
+    SessionStatusCache
+} from "../cache/cache"
 import {ContentType} from '../types'
 
-export class AnalysisCache<TA extends AnalysisDataCache, TAP extends AnalysisPreferenceCache> {
+export class AnalysisCache<TA extends AnalysisDataCache, TAP extends AnalysisPreferenceCache | ComparisonAnalysisPreferenceCache> {
     private readonly type: ContentType
     private readonly series: new (uuid: string, status: RunStatusCache | SessionStatusCache) => TA
     private readonly seriesCaches: { [uuid: string]: AnalysisDataCache }
     private readonly preferences: new (uuid: string) => TAP
-    private readonly preferencesCaches: { [uuid: string]: AnalysisPreferenceCache }
+    private readonly preferencesCaches: { [uuid: string]: AnalysisPreferenceCache | ComparisonAnalysisPreferenceCache }
 
     constructor(type: ContentType, series: new (uuid: string, status: RunStatusCache | SessionStatusCache) => TA, preferences: new (uuid: string) => TAP) {
         this.type = type

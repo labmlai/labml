@@ -3,6 +3,7 @@ import {Weya as $} from '../../../../lib/weya/weya'
 import mix_panel from "../../mix_panel"
 import {setTitle} from '../../utils/document'
 import {ScreenView} from '../../screen_view'
+import {NetworkError} from "../../network"
 
 function wrapEvent(eventName: string, func: Function) {
     function wrapper() {
@@ -18,8 +19,10 @@ function wrapEvent(eventName: string, func: Function) {
     return wrapper
 }
 
-class OtherErrorView extends ScreenView {
+export class OtherErrorView extends ScreenView {
     elem: HTMLDivElement
+    error?: NetworkError
+
     private events = {
         back: () => {
             if (ROUTER.canBack()) {
@@ -33,8 +36,9 @@ class OtherErrorView extends ScreenView {
         },
     }
 
-    constructor() {
+    constructor(error: NetworkError = null) {
         super()
+        this.error = error
         let events = []
         for (let k in this.events) {
             events.push(k)
@@ -56,8 +60,19 @@ class OtherErrorView extends ScreenView {
         setTitle({section: '500'})
         this.elem = $('div', '.error-container', $ => {
             $('h2', '.mt-5', 'Ooops! Something went wrong' + '')
-            $('h1', '500')
+            $('h1', `${this.error.statusCode}` ?? '500')
             $('p', 'Seems like we are having issues right now' + '')
+            if (this.error != null) {
+                $('div.code-sample.bg-dark.px-1.py-2.my-3', $ => {
+                    if (this.error?.errorDescription != null) {
+                    $('pre.text-white', this.error.errorDescription)
+                    }
+                    if (this.error?.stackTrace != null) {
+                        $('pre.text-white', this.error.stackTrace)
+                    }
+                })
+            }
+
             $('div', '.btn-container.mt-3', $ => {
                 $('button', '.btn.nav-link',
                     {on: {click: this.events.back}},
@@ -87,7 +102,7 @@ export class OtherErrorHandler {
         ROUTER.route('500', [OtherErrorHandler.handleOtherError])
     }
 
-    static handleOtherError = () => {
-        SCREEN.setView(new OtherErrorView())
+    static handleOtherError = (error: NetworkError = null) => {
+        SCREEN.setView(new OtherErrorView(error))
     }
 }

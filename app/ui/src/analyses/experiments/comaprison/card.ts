@@ -1,33 +1,35 @@
 import {Card, CardOptions} from "../../types"
 import {Weya as $, WeyaElementFunction} from "../../../../../lib/weya/weya"
-import {AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
+import {AnalysisDataCache, AnalysisPreferenceCache, ComparisonAnalysisPreferenceCache} from "../../../cache/cache"
 import comparisonCache from "./cache"
 import {DataLoader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {DEBUG} from "../../../env"
 import {clearChildElements} from "../../../utils/document"
-import {getChartType, toPointValues} from "../../../components/charts/utils"
+import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
 import {SeriesModel} from "../../../models/run"
-import {LineChart} from "../../../components/charts/compare_lines/chart"
-import {CompareSparkLines} from "../../../components/charts/compare_spark_lines/chart"
 import {ROUTER} from "../../../app"
 import {NetworkError} from "../../../network"
+import {CardWrapper} from "../chart_wrapper/card"
+import metricsCache from "./cache";
 
 export class ComparisonCard extends Card {
     private readonly  currentUUID: string
     private baseUUID: string
-    private width: number
+    private readonly width: number
     private baseAnalysisCache: AnalysisDataCache
     private baseSeries: SeriesModel[]
     private currentSeries: SeriesModel[]
     private currentAnalysisCache: AnalysisDataCache
-    private preferenceCache: AnalysisPreferenceCache
+    private preferenceCache: ComparisonAnalysisPreferenceCache
     private preferenceData: ComparisonPreferenceModel
     private loader: DataLoader
     private missingBaseExperiment: boolean
     private lineChartContainer: HTMLDivElement
-    private sparkLinesContainer: HTMLDivElement
+    private sparkLineContainer: HTMLDivElement
+    private insightsContainer: HTMLDivElement
     private elem: HTMLDivElement
+    private chartWrapper: CardWrapper
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -35,7 +37,8 @@ export class ComparisonCard extends Card {
         this.currentUUID = opt.uuid
         this.width = opt.width
         this.currentAnalysisCache = comparisonCache.getAnalysis(this.currentUUID)
-        this.preferenceCache = comparisonCache.getPreferences(this.currentUUID)
+        this.preferenceCache = <ComparisonAnalysisPreferenceCache>comparisonCache.getPreferences(this.currentUUID)
+        this.currentAnalysisCache.setCurrentUUID(this.currentUUID)
 
         this.loader = new DataLoader(async (force: boolean) => {
             this.preferenceData = <ComparisonPreferenceModel> await this.preferenceCache.get(force)
@@ -43,11 +46,15 @@ export class ComparisonCard extends Card {
 
             let currentAnalysisData = await this.currentAnalysisCache.get(force)
             this.currentSeries = toPointValues(currentAnalysisData.series)
+            this.preferenceData.series_preferences = fillPlotPreferences(this.currentSeries, this.preferenceData.series_preferences)
+
             if (!!this.baseUUID) {
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUUID)
+                this.baseAnalysisCache.setCurrentUUID(this.currentUUID)
                 try {
                     let baseAnalysisData = await this.baseAnalysisCache.get(force)
                     this.baseSeries = toPointValues(baseAnalysisData.series)
+                    this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)
                     this.missingBaseExperiment = false
                 } catch (e) {
                     if (e instanceof NetworkError && e.statusCode === 404) {
@@ -64,15 +71,15 @@ export class ComparisonCard extends Card {
     }
 
     getLastUpdated(): number {
-        return this.currentAnalysisCache.lastUpdated;
+        return this.currentAnalysisCache.lastUpdated
     }
 
     async refresh() {
         try {
              await this.loader.load(true)
              if (this.currentSeries.concat(this.baseSeries).length > 0) {
-                 this.renderLineChart()
-                 this.renderSparkLines()
+                this.chartWrapper?.updateData(this.currentSeries, this.baseSeries, [], this.preferenceData)
+                this.chartWrapper?.render()
              }
          } catch (e) {
          }
@@ -84,15 +91,27 @@ export class ComparisonCard extends Card {
             this.loader.render($)
 
             this.lineChartContainer = $('div', '')
-            this.sparkLinesContainer = $('div', '')
+            this.sparkLineContainer = $('div', '')
+            this.insightsContainer = $('div', '')
         })
 
         try {
             await this.loader.load()
 
+            this.chartWrapper = new CardWrapper({
+                elem: this.elem,
+                preferenceData: this.preferenceData,
+                insights: [],
+                series: this.currentSeries,
+                baseSeries: this.baseSeries,
+                insightsContainer: this.insightsContainer,
+                lineChartContainer: this.lineChartContainer,
+                sparkLinesContainer: this.sparkLineContainer,
+                width: this.width
+            })
+
             if (!this.missingBaseExperiment) {
-                this.renderLineChart()
-                this.renderSparkLines()
+                this.chartWrapper.render()
             } else {
                 this.renderEmptyChart()
             }
@@ -107,37 +126,6 @@ export class ComparisonCard extends Card {
         clearChildElements(this.lineChartContainer)
         $(this.lineChartContainer, $ => {
             $('div', '.empty-chart-message', `${screen.width < 500 ? "Tap" : "Click"} here to compare with another experiment`)
-        })
-    }
-
-    private renderLineChart() {
-        clearChildElements(this.lineChartContainer)
-        $(this.lineChartContainer, $ => {
-            new LineChart({
-                series: this.currentSeries,
-                baseSeries: this.baseSeries,
-                currentPlotIndex: [...(this.preferenceData.series_preferences ?? [])],
-                basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
-                width: this.width,
-                chartType: getChartType(this.preferenceData.chart_type),
-                isDivergent: true,
-                stepRange: this.preferenceData.step_range,
-                focusSmoothed: this.preferenceData.focus_smoothed
-            }).render($)
-        })
-    }
-
-    private renderSparkLines() {
-        clearChildElements(this.sparkLinesContainer)
-        $(this.sparkLinesContainer, $ => {
-            new CompareSparkLines({
-                series: this.currentSeries,
-                baseSeries: this.baseSeries,
-                currentPlotIdx: [...(this.preferenceData.series_preferences ?? [])],
-                basePlotIdx: [...(this.preferenceData.base_series_preferences ?? [])],
-                width: this.width,
-                isDivergent: true
-            }).render($)
         })
     }
 

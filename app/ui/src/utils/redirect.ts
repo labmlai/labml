@@ -14,7 +14,7 @@ export function handleNetworkError(error: Error | NetworkError) {
         } else if (error.statusCode === 401 || error.statusCode === 403) {
             ROUTER.navigate('/401')
         } else {
-            ROUTER.navigate('/500')
+            OtherErrorHandler.handleOtherError(error)
         }
     } else {
         ROUTER.navigate('/network_error')
@@ -33,7 +33,7 @@ export function handleNetworkErrorInplace(error: Error | NetworkError) {
         } else if (error.statusCode === 401 || error.statusCode === 403) {
             AuthErrorHandler.handleAuthError()
         } else {
-            OtherErrorHandler.handleOtherError()
+            OtherErrorHandler.handleOtherError(error)
         }
     } else {
         NetworkErrorHandler.handleNetworkError()

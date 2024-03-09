@@ -8,6 +8,7 @@ export class AwesomeRefreshButton {
     private refreshTimeout: number
     private lastVisibilityChange: number;
     private isActive: boolean
+    private isPaused: boolean
     private isRefreshing: boolean
     private refreshButton: HTMLElement;
     private refreshIcon: HTMLSpanElement
@@ -20,6 +21,7 @@ export class AwesomeRefreshButton {
         this.refreshTimeout = null
         this.isActive = false
         this.isDisabled = false
+        this.isPaused = false
     }
 
     set disabled(value: boolean) {
@@ -56,6 +58,7 @@ export class AwesomeRefreshButton {
         // Only reinitialize the timer if it's not a resize re-render
         if (!this.isActive) {
             this.remainingTime = AUTO_REFRESH_TIME
+            this._stop()
             this.refreshTimeout = window.setTimeout(this.procTimerUpdate.bind(this), 1000)
         }
         this.refreshButton.style.display = null
@@ -79,6 +82,24 @@ export class AwesomeRefreshButton {
         this._stop()
     }
 
+    pause() {
+        if (this.isActive) {
+            this._stop()
+            this.refreshButton.classList.add('disabled')
+            this.remainingTimeElem.innerText = ''
+            this.isPaused = true
+            this.isActive = false
+        }
+    }
+
+    resume() {
+        if (this.isPaused) {
+            this.refreshButton.classList.remove('disabled')
+            this.start()
+            this.isPaused = false
+        }
+    }
+
     changeVisibility(isVisible: boolean) {
         let currentTime = Date.now()
         if (!isVisible) {
@@ -92,6 +113,7 @@ export class AwesomeRefreshButton {
         }
 
         this.remainingTime = Math.floor(Math.max(0, (this.lastVisibilityChange + this.remainingTime * 1000) - currentTime) / 1000)
+        this._stop()
         this.refreshTimeout = window.setTimeout(this.procTimerUpdate.bind(this), 1000)
     }
 
@@ -101,7 +123,9 @@ export class AwesomeRefreshButton {
 
     private procTimerUpdate = async () => {
         if (this.remainingTime > 0) {
-            this.remainingTimeElem.innerText = String(this.remainingTime--)
+            if (!this.isPaused) {
+                this.remainingTimeElem.innerText = String(this.remainingTime--)
+            }
         } else {
             this.remainingTimeElem.innerText = ''
             if (!this.isRefreshing) {
@@ -114,7 +138,10 @@ export class AwesomeRefreshButton {
         if (this.handler) {
             this.handler()
         }
-        this.refreshTimeout = window.setTimeout(this.procTimerUpdate.bind(this), 1000)
+        if (!this.isPaused) {
+            this._stop()
+            this.refreshTimeout = window.setTimeout(this.procTimerUpdate.bind(this), 1000)
+        }
     }
 
     private refresh = async () => {
@@ -122,6 +149,8 @@ export class AwesomeRefreshButton {
         this.refreshButton.classList.add('disabled')
         await this._refresh()
         this.refreshIcon.classList.remove('spin')
-        this.refreshButton.classList.remove('disabled')
+        if (!this.isPaused) {
+            this.refreshButton.classList.remove('disabled')
+        }
     }
 }

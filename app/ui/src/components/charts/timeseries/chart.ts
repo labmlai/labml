@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toDate, trimSteps} from "../utils"
+import {fillPlotPreferences, getExtent, getLogScale, getScale, getTimeScale, toDate, trimSteps} from "../utils"
 import {BottomTimeAxis, RightAxis} from "../axis"
 import {TimeSeriesFill, TimeSeriesPlot} from './plot'
 import {formatDateTime} from '../../../utils/time'
@@ -82,7 +82,7 @@ export class TimeSeriesChart {
         }
 
         if (this.plotIdx.length === 0) {
-            this.plotIdx = defaultSeriesToPlot(this.series)
+            this.plotIdx = fillPlotPreferences(this.series)
         }
 
         for (let i = 0; i < this.plotIdx.length; i++) {

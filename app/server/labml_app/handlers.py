@@ -6,7 +6,7 @@ from typing import Callable, Dict, Any, Optional
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from .analyses.experiments import metrics
+from .analyses.experiments import metrics, distributed_metrics
 from .analyses.experiments.metrics import MetricsAnalysis
 from .logger import logger
 from . import settings
@@ -39,7 +39,7 @@ def _is_new_run_added(request: Request) -> bool:
 
 
 async def _update_run(request: Request, labml_token: str, labml_version: str, run_uuid: str, rank: int,
-                      world_size: int):
+                      world_size: int, main_rank: int):
     errors = []
 
     token = labml_token
@@ -77,7 +77,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     if world_size > 1 and rank > 0:
         run_uuid = f'{run_uuid}_{rank}'
 
-    r = run.get_or_create(request, run_uuid, rank, world_size, token)
+    r = run.get_or_create(request, run_uuid, rank, world_size, main_rank, token)
     s = r.status.load()
 
     json = await request.json()
@@ -100,9 +100,9 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
 
     run_uuid = r.url
     if len(run_uuid.split("_")) == 2:
-        run_uuid = run_uuid.split("_")[0] + f'/{rank}'
+        run_uuid = run_uuid.split("_")[0]
 
-    return {'errors': errors, 'url': f'{request.url.hostname}:{request.url.port}/{run_uuid}', 'dynamic': hp_values}
+    return {'errors': errors, 'url': f'{request.url.hostname}/{run_uuid}', 'dynamic': hp_values}
 
 
 async def update_run(request: Request) -> EndPointRes:
@@ -112,8 +112,9 @@ async def update_run(request: Request) -> EndPointRes:
     run_uuid = request.query_params.get('run_uuid', '')
     rank = int(request.query_params.get('rank', 0))
     world_size = int(request.query_params.get('world_size', 0))
+    main_rank = int(request.query_params.get('main_rank', 0))
 
-    res = await _update_run(request, labml_token, labml_version, run_uuid, rank, world_size)
+    res = await _update_run(request, labml_token, labml_version, run_uuid, rank, world_size, main_rank)
 
     await asyncio.sleep(3)
 
@@ -180,7 +181,7 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
     logger.debug(
         f'update_session, session_uuid: {session_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
-    return {'errors': errors, 'url': f'{request.url.hostname}:{request.url.port}/{c.url}'}
+    return {'errors': errors, 'url': f'{request.url.hostname}/{c.url}'}
 
 
 async def update_session(request: Request) -> EndPointRes:
@@ -204,18 +205,15 @@ async def claim_run(request: Request, run_uuid: str, token: Optional[str] = None
     default_project = u.default_project
 
     if r.run_uuid not in default_project.runs:
-        float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
+        # float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
 
-        if r.run_uuid in float_project.runs:
-            default_project.runs[r.run_uuid] = r.key
-            default_project.is_run_added = True
-            default_project.save()
-            r.is_claimed = True
-            r.owner = u.email
-            r.save()
-
-            utils.analytics.AnalyticsEvent.track(request, 'run_claimed', {'run_uuid': r.run_uuid})
-            utils.analytics.AnalyticsEvent.run_claimed_set(u.email)
+        # if r.run_uuid in float_project.runs:
+        default_project.runs[r.run_uuid] = r.key
+        default_project.is_run_added = True
+        default_project.save()
+        r.is_claimed = True
+        r.owner = u.email
+        r.save()
 
     return {'is_successful': True}
 
@@ -237,9 +235,6 @@ async def claim_session(request: Request, session_uuid: str, token: Optional[str
             c.owner = u.email
             c.save()
 
-            utils.analytics.AnalyticsEvent.track(request, 'session_claimed', {'session_uuid': c.session_uuid})
-            utils.analytics.AnalyticsEvent.computer_claimed_set(u.email)
-
     return {'is_successful': True}
 
 
@@ -248,11 +243,12 @@ async def get_run(request: Request, run_uuid: str) -> JSONResponse:
     status_code = 404
 
     # TODO temporary change to used run_uuid as rank 0
+    is_dist_run = len(run_uuid.split("_")) == 1
     run_uuid = utils.get_true_run_uuid(run_uuid)
 
     r = run.get(run_uuid)
     if r:
-        run_data = r.get_data(request)
+        run_data = r.get_data(request, is_dist_run)
         status_code = 200
 
     response = JSONResponse(run_data)
@@ -307,18 +303,36 @@ async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_data = {}
     status_code = 404
 
-    # TODO temporary change to used run_uuid as rank 0
-    run_uuid = utils.get_true_run_uuid(run_uuid)
+    if len(run_uuid.split('_')) == 1:  # distributed
+        r = run.get(run_uuid)
+        if r is not None:
+            uuids = [f'{run_uuid}_{i}' for i in range(1, r.world_size)]
+            uuids.append(run_uuid)
+            status_data = run.get_merged_status_data(uuids)
 
-    s = run.get_status(run_uuid)
-    if s:
-        status_data = s.get_data()
-        status_code = 200
+        if status_data is None or len(status_data.keys()) == 0:
+            status_data = {}
+            status_code = 404
+        else:
+            status_code = 200
 
-    response = JSONResponse(status_data)
-    response.status_code = status_code
+        response = JSONResponse(status_data)
+        response.status_code = status_code
 
-    return response
+        return response
+    else:
+        # TODO temporary change to used run_uuid as rank 0
+        run_uuid = utils.get_true_run_uuid(run_uuid)
+
+        s = run.get_status(run_uuid)
+        if s:
+            status_data = s.get_data()
+            status_code = 200
+
+        response = JSONResponse(status_data)
+        response.status_code = status_code
+
+        return response
 
 
 async def get_session_status(request: Request, session_uuid: str) -> JSONResponse:
@@ -348,43 +362,68 @@ async def get_runs(request: Request, labml_token: str, token: Optional[str] = No
         labml_token = default_project.labml_token
         runs_list = default_project.get_runs()
 
-    run_uuids = []
-    for r in runs_list:
-        run_uuids.append(r.run_uuid)
-
-    metric_data = metrics.mget(run_uuids)
-    metric_preferences_data = metrics.mget_preferences(run_uuids)
+    # run_uuids = [r.run_uuid for r in runs_list if r.world_size == 0]
+    #
+    # track_data_list = [MetricsAnalysis(m).get_tracking() for m in metrics.mget(run_uuids)]
+    # metric_preferences_data = metrics.mget_preferences(run_uuids)
+    #
+    # dist_metric_data = []
+    # dist_metric_preferences_data = distributed_metrics.mget_preferences(
+    #     [r.run_uuid for r in runs_list if r.world_size != 0])
+    #
+    # # get all rank run_uuids
+    # dist_rank_uuids = [r.get_rank_uuids() for r in runs_list if r.world_size != 0]
+    # # flatten it
+    # dist_rank_uuid_list = [run_uuid for rank_uuids in dist_rank_uuids for run_uuid in rank_uuids.values()]
+    # dist_metrics = metrics.mget(dist_rank_uuid_list)
+    #
+    # dist_metric_list = [metrics.MetricsAnalysis(m) if m else None for m in dist_metrics]
+    # # get metrics per each run as a 2d list
+    # dist_metrics = []
+    # lengths = [len(r.get_rank_uuids()) for r in runs_list if r.world_size != 0]
+    # start = 0
+    # for length in lengths:
+    #     dist_metrics.append(dist_metric_list[start:start + length])
+    #     start += length
+    # # get merged metrics
+    # for dist_metric in dist_metrics:
+    #     metric_list = [m for m in dist_metric if m is not None]
+    #     dist_track_data_list = [m.get_tracking() for m in metric_list]
+    #     merged_tracking = distributed_metrics.get_merged_metric_tracking_util(dist_track_data_list,
+    #                                                                           [-1] * len(dist_track_data_list), {})
+    #     dist_metric_data.append(merged_tracking)
+    #
+    # track_data_list.extend(dist_metric_data)
+    # metric_preferences_data.extend(dist_metric_preferences_data)
+    #
+    # # change runs list order (normal runs first, then distributed runs)
+    # runs_list = [r for r in runs_list if r.world_size == 0] + [r for r in runs_list if r.world_size != 0]
 
     res = []
-    for r, m, mp in zip(runs_list, metric_data, metric_preferences_data):
+    # for r, track_data, mp in zip(runs_list, track_data_list, metric_preferences_data):
+    for r in runs_list:
         s = run.get_status(r.run_uuid)
-        if r.run_uuid and r.rank == 0 and m is not None and mp is not None:
-            summary = r.get_summary()
-            preferences = mp.series_preferences
-            preview_series = {}
-            metric_values = []
-
-            track_data = MetricsAnalysis(m).get_tracking()
-            for (idx, series) in enumerate(track_data):
-                if len(preferences) > idx and preferences[idx] != -1:
-                    preview_series = series
-                    break
-            if not preview_series and len(track_data) > 0:
-                preview_series = track_data[0]
-
-            summary['preview_series'] = preview_series
-
-            for (idx, series) in enumerate(track_data):
-                if preview_series['name'] == series['name'] or len(preferences) <= idx or preferences[idx] == -1:
-                    continue
-                metric_values.append({
-                    'name': series['name'],
-                    'value': series['value'][-1]
-                })
-
-            summary['metric_values'] = metric_values
-
-            res.append({**summary, **s.get_data()})
+        # if r.run_uuid and r.rank == 0 and track_data is not None and mp is not None:
+        #     summary = r.get_summary()
+        #     preferences = mp.series_preferences
+        #     metric_values = []
+        #
+        #     summary['step'] = 0
+        #
+        #     for (idx, series) in enumerate(track_data):
+        #         if len(series['step']) != 0:
+        #             summary['step'] = max(summary['step'], series['step'][-1])
+        #         if len(preferences) <= idx or preferences[idx] == -1:
+        #             continue
+        #         metric_values.append({
+        #             'name': series['name'],
+        #             'value': series['value'][-1]
+        #         })
+        #
+        #     summary['metric_values'] = metric_values
+        #
+        #     res.append({**summary, **s.get_data()})
+        res.append({**r.get_summary(), **s.get_data()})
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
 

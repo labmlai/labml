@@ -2,8 +2,6 @@ import {WeyaElementFunction} from '../../../lib/weya/weya'
 import {RunListItem} from '../models/run_list'
 import {StatusView} from './status'
 import {formatTime} from '../utils/time'
-import {StandaloneSparkLine} from "./charts/spark_lines/spark_line";
-import {getExtent, toPointValue} from "./charts/utils";
 import {ConfigItemView} from "../analyses/experiments/configs/components";
 
 export interface RunsListItemOptions {
@@ -28,20 +26,6 @@ export class RunsListItemView {
         }
     }
 
-    private renderSparkLine($: WeyaElementFunction) {
-        if (this.item.preview_series == null || this.item.preview_series.value == null) {
-            return
-        }
-        $('div', $ => {
-            new StandaloneSparkLine({
-                name: this.item.preview_series.name,
-                series: toPointValue(this.item.preview_series),
-                width: 280,
-                stepExtent: getExtent([toPointValue(this.item.preview_series)], d => d.step)
-            }).render($)
-        })
-    }
-
     render($: WeyaElementFunction) {
         this.elem = $('a', '.list-item.list-group-item.list-group-item-action',
             {href: `/run/${this.item.run_uuid}`, on: {click: this.onClick}},
@@ -53,21 +37,47 @@ export class RunsListItemView {
                         $('h5', this.item.name)
                         $('h6', this.item.comment)
                     })
-                    $('div', '.preview-series.label', $ => {
-                        this.renderSparkLine($)
+                    $('div', $ => {
+                        $('div.info_list.config.custom.label', $ => {
+                            if (this.item.step != null) {
+                                $('span',  `${this.item.step} Steps`)
+                            }
+                        })
                     })
                 })
-                if (this.item.favorite_configs != null) {
-                    this.item.favorite_configs.map((c) => {
-                        new ConfigItemView({
-                            config: c,
-                            configs: this.item.favorite_configs,
-                            width: this.width-20,
-                            onTap: undefined,
-                            isSummary: true
-                        }).render($)
+                $('div', '.spaced-row', $ => {
+
+                        if (this.item.metric_values != null && this.item.metric_values.length != 0) {
+                            $('div', $ => {
+                                $('span', 'Metrics: ')
+                                this.item.metric_values.slice(0, RunsListItemView.METRIC_LIMIT).map((m, idx) => {
+                                    $('div.info_list.config.custom', $ => {
+                                        $('span.key', m.name)
+                                        $('span', `${m.value.toExponential(4)}`)
+                                    })
+                                })
+                                if (this.item.metric_values.length > RunsListItemView.METRIC_LIMIT) {
+                                    $('div.break.text-secondary', `+${this.item.metric_values.length - RunsListItemView.METRIC_LIMIT} more`)
+                                }
+                            })
+                        }
+
+
+                    $('div', $ => {
+                        if (this.item.favorite_configs != null && this.item.favorite_configs.length != 0) {
+                            $('span', 'Configs: ')
+                            this.item.favorite_configs.map((c) => {
+                                new ConfigItemView({
+                                    config: c,
+                                    configs: this.item.favorite_configs,
+                                    width: this.width-20,
+                                    onTap: undefined,
+                                    isSummary: true
+                                }).render($)
+                            })
+                        }
                     })
-                }
+                })
             })
     }
 }
