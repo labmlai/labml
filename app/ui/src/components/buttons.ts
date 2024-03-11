@@ -79,12 +79,18 @@ export class BackButton extends Button {
             this.navigatePath = this.currentPath.replace(/\/run\/(.+)\/.+/, '/run/$1')
         } else if (/\/session\/.+\/.+/.test(this.currentPath)) {
             this.text = 'Computer'
+            if (window.location.search.includes('run')) {
+                this.text = 'Run'
+            }
             this.navigatePath = this.currentPath.replace(/\/session\/(.+)\/.+/, '/session/$1')
         } else if (this.currentPath.includes('run')) {
             this.text = 'Runs'
             this.navigatePath = 'runs'
         } else if (this.currentPath.includes('session')) {
             this.text = 'Computers'
+            if (window.location.search.includes("run")) {
+                this.text = "Run"
+            }
             this.navigatePath = 'computers'
         } else if (this.currentPath.includes(runHeaderAnalysis.route)) {
             this.text = 'Run'
@@ -288,6 +294,7 @@ export class NavButton extends Button {
     icon: string
     link?: string
     target?: string
+    isDisabled: boolean
 
     constructor(opt: NavButtonOptions) {
         super(opt)
@@ -295,6 +302,7 @@ export class NavButton extends Button {
         this.text = opt.text
         this.link = opt.link
         this.target = opt.target
+        this.isDisabled = opt.isDisabled ?? false
     }
 
     render($: WeyaElementFunction) {
@@ -304,6 +312,9 @@ export class NavButton extends Button {
                 $('span', this.icon, '')
                 $('span', '', this.text)
             })
+        if (this.isDisabled) {
+            this.elem.classList.add("disabled")
+        }
     }
 
     onClick = (e: Event) => {
