@@ -44,10 +44,6 @@ export interface SeriesModel {
     smoothed: number[]
     mean: number
     series: PointValue[]
-    dynamic_type: string
-    range: [number, number]
-    is_editable: boolean
-    sub: SeriesModel
     is_summary: boolean
 }
 
