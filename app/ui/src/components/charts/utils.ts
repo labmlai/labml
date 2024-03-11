@@ -109,11 +109,11 @@ export function smoothSeries(series: PointValue[], windowSize: number): PointVal
     for (let i = 0; i < series.length + extraWindow; i++) {
         let j = i - extraWindow
         if (i < series.length) {
-            total += series[i].smoothed
+            total += series[i].value
             count++
         }
         if (j - extraWindow - 1 >= 0) {
-            total -= series[j - extraWindow - 1].smoothed
+            total -= series[j - extraWindow - 1].value
             count--
         }
         if (j>=0) {
