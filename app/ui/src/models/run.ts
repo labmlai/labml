@@ -47,15 +47,10 @@ export interface SeriesModel {
     is_summary: boolean
 }
 
-export interface InsightModel {
-    message: string
-    type: string
-    time: number
 }
 
 export interface AnalysisDataModel {
     series: any[]
-    insights: InsightModel[]
     summary: any[]
 }
 

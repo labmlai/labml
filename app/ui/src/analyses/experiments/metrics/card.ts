@@ -1,5 +1,5 @@
 import {WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {InsightModel, SeriesModel} from "../../../models/run"
+import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
 import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
@@ -13,7 +13,6 @@ export class MetricsCard extends Card {
     private readonly uuid: string
     private readonly width: number
     private series: SeriesModel[]
-    private insights: InsightModel[]
     private preferenceData: AnalysisPreferenceModel
     private elem: HTMLDivElement
     private lineChartContainer: WeyaElement
@@ -30,7 +29,6 @@ export class MetricsCard extends Card {
         this.loader = new DataLoader(async (force) => {
             let analysisData = await  metricsCache.getAnalysis(this.uuid).get(force)
             this.series = toPointValues(analysisData.series)
-            this.insights = analysisData.insights
             this.preferenceData = await metricsCache.getPreferences(this.uuid).get(force)
 
             this.preferenceData.series_preferences = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
@@ -56,9 +54,7 @@ export class MetricsCard extends Card {
             this.chartWrapper = new CardWrapper({
                 elem: this.elem,
                 preferenceData: this.preferenceData,
-                insights: this.insights,
                 series: this.series,
-                insightsContainer: this.insightsContainer,
                 lineChartContainer: this.lineChartContainer,
                 sparkLinesContainer: this.sparkLineContainer,
                 width: this.width
@@ -72,7 +68,7 @@ export class MetricsCard extends Card {
     async refresh() {
         try {
             await this.loader.load(true)
-            this.chartWrapper?.updateData(this.series, null, this.insights, this.preferenceData)
+            this.chartWrapper?.updateData(this.series, null, this.preferenceData)
             this.chartWrapper?.render()
         } catch (e) {
         }

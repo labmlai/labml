@@ -1,5 +1,5 @@
 import {Weya as $, WeyaElement} from '../../../../../lib/weya/weya'
-import {InsightModel, SeriesModel} from "../../../models/run"
+import {Indicator} from "../../../models/run"
 import {
     AnalysisPreferenceBaseModel, AnalysisPreferenceModel, ComparisonPreferenceModel,
 } from "../../../models/preferences"
@@ -11,12 +11,9 @@ import InsightsList from "../../../components/insights_list"
 interface CardWrapperOptions {
     width: number
     series: SeriesModel[]
-    insights: InsightModel[]
-    baseSeries?: SeriesModel[]
 
     lineChartContainer: WeyaElement
     sparkLinesContainer?: WeyaElement
-    insightsContainer: WeyaElement
     elem: WeyaElement
 
     preferenceData: AnalysisPreferenceModel | ComparisonPreferenceModel
@@ -28,11 +25,9 @@ export class CardWrapper {
     private width: number
     private series: SeriesModel[]
     private baseSeries: SeriesModel[]
-    private insights: InsightModel[]
 
     private readonly lineChartContainer: WeyaElement
     private readonly sparkLinesContainer?: WeyaElement
-    private readonly insightsContainer: WeyaElement
     private readonly elem: WeyaElement
 
     private plotIdx: number[] = []
@@ -49,17 +44,14 @@ export class CardWrapper {
         this.width = opt.width
         this.lineChartContainer = opt.lineChartContainer
         this.sparkLinesContainer = opt.sparkLinesContainer
-        this.insightsContainer = opt.insightsContainer
         this.title = opt.title
 
-        this.updateData(opt.series, opt.baseSeries, opt.insights, opt.preferenceData)
+        this.updateData(opt.series, opt.baseSeries,  opt.preferenceData)
     }
 
     public updateData(series: SeriesModel[], baseSeries: SeriesModel[],
-                      insights: InsightModel[],preferenceData: AnalysisPreferenceModel | ComparisonPreferenceModel) {
         this.series = series
         this.baseSeries = baseSeries ?? []
-        this.insights = insights
 
         let analysisPreferences = preferenceData.series_preferences
         if (analysisPreferences.length > 0) {
@@ -88,7 +80,6 @@ export class CardWrapper {
             this.elem.classList.remove('hide')
             this.renderLineChart()
             this.renderSparkLines()
-            this.renderInsights()
         } else {
             this.elem.classList.add('hide')
         }
@@ -135,13 +126,6 @@ export class CardWrapper {
                 smoothValue: this.smoothValue,
                 isMouseMoveOpt: false
             }).render($)
-        })
-    }
-
-    private renderInsights() {
-        this.insightsContainer.innerHTML = ''
-        $(this.insightsContainer, $ => {
-            new InsightsList({insightList: this.insights}).render($)
         })
     }
 }

@@ -27,7 +27,6 @@ export class ComparisonCard extends Card {
     private missingBaseExperiment: boolean
     private lineChartContainer: HTMLDivElement
     private sparkLineContainer: HTMLDivElement
-    private insightsContainer: HTMLDivElement
     private elem: HTMLDivElement
     private chartWrapper: CardWrapper
 
@@ -78,7 +77,7 @@ export class ComparisonCard extends Card {
         try {
              await this.loader.load(true)
              if (this.currentSeries.concat(this.baseSeries).length > 0) {
-                this.chartWrapper?.updateData(this.currentSeries, this.baseSeries, [], this.preferenceData)
+                this.chartWrapper?.updateData(this.currentSeries, this.baseSeries, this.preferenceData)
                 this.chartWrapper?.render()
              }
          } catch (e) {
@@ -92,7 +91,6 @@ export class ComparisonCard extends Card {
 
             this.lineChartContainer = $('div', '')
             this.sparkLineContainer = $('div', '')
-            this.insightsContainer = $('div', '')
         })
 
         try {
@@ -101,10 +99,8 @@ export class ComparisonCard extends Card {
             this.chartWrapper = new CardWrapper({
                 elem: this.elem,
                 preferenceData: this.preferenceData,
-                insights: [],
                 series: this.currentSeries,
                 baseSeries: this.baseSeries,
-                insightsContainer: this.insightsContainer,
                 lineChartContainer: this.lineChartContainer,
                 sparkLinesContainer: this.sparkLineContainer,
                 width: this.width
