@@ -4,7 +4,7 @@ import {User} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import {BackButton, CustomButton, ExpandButton, ShareButton} from "../components/buttons"
+import {BackButton, CustomButton, ExpandButton, NavButton, ShareButton} from "../components/buttons"
 import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {distributedAnalyses, experimentAnalyses, rankAnalysis} from "../analyses/analyses"
@@ -109,7 +109,7 @@ class RunView extends ScreenView {
                         this.loader.render($)
                         this.runHeaderCard.render($)
                         this.rankContainer = $('div.list.runs-list.list-group')
-                        this.processContainer = $('div.fit-content')
+                        this.processContainer = $('div.fit-content.button-row.process-row')
                         this.cardContainer = $('div')
                     })
                 })
@@ -136,7 +136,7 @@ class RunView extends ScreenView {
     }
 
     renderProcess() {
-        if (this.run == null || this.run.process_id == "" || this.run.session_id == "") {
+        if (this.run == null) {
             return
         }
 
@@ -147,7 +147,18 @@ class RunView extends ScreenView {
                 },
                 text: 'Process',
                 title: 'Running process for the experiment',
-                parent: this.constructor.name
+                parent: this.constructor.name,
+                isDisabled: this.run.process_id == ''
+            }).render($)
+
+            new CustomButton({
+                onButtonClick: () => {
+                    ROUTER.navigate(`session/${this.run.session_id}?from=run`)
+                },
+                text: 'Computer',
+                title: 'Running computer for the experiment',
+                parent: this.constructor.name,
+                isDisabled: this.run.session_id == ''
             }).render($)
         })
     }
