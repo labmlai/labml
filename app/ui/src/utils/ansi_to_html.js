@@ -122,12 +122,15 @@ function toColorHexString(ref) {
 function generateOutput(stack, token, data, options) {
     let result;
 
+
     if (token === 'text') {
         result = pushText(data, options);
     } else if (token === 'display') {
         result = handleDisplay(stack, data, options);
-    } else if (token === 'xterm256') {
+    } else if (token === 'xterm256Foreground') {
         result = pushForegroundColor(stack, options.colors[data]);
+    } else if (token === 'xterm256Background') {
+        result = pushBackgroundColor(stack, options.colors[data]);
     } else if (token === 'rgb') {
         result = handleRgb(stack, data);
     }
@@ -345,8 +348,13 @@ function tokenize(text, options, callback) {
         return '';
     }
 
-    function removeXterm256(m, g1) {
-        callback('xterm256', g1);
+    function removeXterm256Foreground(m, g1) {
+        callback('xterm256Foreground', g1);
+        return '';
+    }
+
+    function removeXterm256Background(m, g1) {
+        callback('xterm256Background', g1);
         return '';
     }
 
@@ -402,12 +410,18 @@ function tokenize(text, options, callback) {
         sub: rgb
     }, {
         pattern: /^\x1b\[38;5;(\d+)m/,
-        sub: removeXterm256
+        sub: removeXterm256Foreground
+    }, {
+        pattern: /^\x1b\[48;5;(\d+)m/,
+        sub: removeXterm256Background
     }, {
         pattern: /^\n/,
         sub: newline
     }, {
         pattern: /^\r+\n/,
+        sub: newline
+    }, {
+        pattern: /^\r/,
         sub: newline
     }, {
         pattern: /^\x1b\[((?:\d{1,3};?)+|)m/,
