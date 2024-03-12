@@ -538,6 +538,10 @@ class Filter {
      * @returns {string}
      */
     toHtml(input) {
+        // to escape html like chars
+        input = input.replace(/</g, '&lt;');
+        input = input.replace(/>/g, '&gt;');
+
         input = typeof input === 'string' ? [input] : input;
         const {stack, options} = this;
         const buf = [];

@@ -129,11 +129,6 @@ class StdOutView extends ScreenView {
     }
 
     renderOutput() {
-        // escape to avoid rendering html like chars
-        this.run.stdout = this.run.stdout.replace(/</g, '&lt;');
-        this.run.stdout = this.run.stdout.replace(/>/g, '&gt;');
-        // this.run.stdout = this.run.stdout.replace(/&/g, '&amp;');
-
         this.outputContainer.innerHTML = ''
         $(this.outputContainer, $ => {
             let output = $('pre', '')
