@@ -1,8 +1,8 @@
 import NETWORK from "../../../network"
 import CACHE, {CacheObject, isReloadTimeout, SessionStatusCache, StatusCache} from "../../../cache/cache"
-import {ProcessDetailsModel} from "./types"
+import {ProcessDetails} from "./types"
 
-export class DetailsDataCache extends CacheObject<ProcessDetailsModel> {
+export class DetailsDataCache extends CacheObject<ProcessDetails> {
     private readonly uuid: string
     private readonly processId: string
     private statusCache: StatusCache
@@ -14,13 +14,14 @@ export class DetailsDataCache extends CacheObject<ProcessDetailsModel> {
         this.statusCache = statusCache
     }
 
-    async load(): Promise<ProcessDetailsModel> {
+    async load(): Promise<ProcessDetails> {
         return this.broadcastPromise.create(async () => {
-            return await NETWORK.getCustomAnalysis(`process/${this.uuid}/details/${this.processId}`)
+            return new ProcessDetails(
+                await NETWORK.getCustomAnalysis(`process/${this.uuid}/details/${this.processId}`))
         })
     }
 
-    async get(isRefresh = false): Promise<ProcessDetailsModel> {
+    async get(isRefresh = false): Promise<ProcessDetails> {
         let status = await this.statusCache.get()
 
         if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {

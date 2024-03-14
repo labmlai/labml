@@ -1,7 +1,7 @@
 import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
-import {PointValue, SeriesModel} from "../../../models/run"
+import {PointValue, Indicator} from "../../../models/run"
 import {
     getExtent,
     getLogScale,
@@ -20,7 +20,7 @@ import {getWindowDimensions} from '../../../utils/window_dimentions'
 const LABEL_HEIGHT = 10
 
 interface LineChartOptions extends ChartOptions {
-    baseSeries?: SeriesModel[]
+    baseSeries?: Indicator[]
     basePlotIdx?: number[]
     // series is defined in chart options - used as current series
     plotIndex: number[]
@@ -35,12 +35,12 @@ interface LineChartOptions extends ChartOptions {
 }
 
 export class LineChart {
-    private readonly currentSeries: SeriesModel[]
+    private readonly currentSeries: Indicator[]
     private readonly currentPlotIndex: number[]
-    private readonly baseSeries: SeriesModel[]
+    private readonly baseSeries: Indicator[]
     private readonly basePlotIndex: number[]
-    private readonly filteredBaseSeries: SeriesModel[]
-    private readonly filteredCurrentSeries: SeriesModel[]
+    private readonly filteredBaseSeries: Indicator[]
+    private readonly filteredCurrentSeries: Indicator[]
     private readonly chartType: string
     private readonly chartWidth: number
     private readonly chartHeight: number

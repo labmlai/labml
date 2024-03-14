@@ -1,22 +1,21 @@
 import {WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
-import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
+import {fillPlotPreferences} from "../../../components/charts/utils"
 import {ROUTER} from '../../../app'
 import {DataLoader} from '../../../components/loader'
 import {CardWrapper} from "../chart_wrapper/card"
 import metricsCache from "./cache"
+import {Indicator} from "../../../models/run";
 
 
 export class DistributedMetricsCard extends Card {
     private readonly uuid: string
     private readonly width: number
-    private series: SeriesModel[]
+    private series: Indicator[]
     private preferenceData: AnalysisPreferenceModel
     private elem: HTMLDivElement
     private lineChartContainer: WeyaElement
-    private insightsContainer: WeyaElement
     private loader: DataLoader
     private chartWrapper: CardWrapper
     private sparkLineContainer: WeyaElement
@@ -28,7 +27,7 @@ export class DistributedMetricsCard extends Card {
         this.width = opt.width
         this.loader = new DataLoader(async (force) => {
             let analysisData = await  metricsCache.getAnalysis(this.uuid).get(force)
-            this.series = toPointValues(analysisData.series)
+            this.series = analysisData.series
             this.preferenceData = await metricsCache.getPreferences(this.uuid).get(force)
 
             this.preferenceData.series_preferences = fillPlotPreferences(this.series, this.preferenceData.series_preferences)

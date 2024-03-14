@@ -1,8 +1,6 @@
 import {Weya as $, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {SeriesModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
 import {AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
-import {toPointValues} from "../../../components/charts/utils"
 import {DataLoader} from "../../../components/loader"
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {Labels} from "../../../components/charts/labels"
@@ -10,11 +8,12 @@ import {ROUTER} from '../../../app'
 import {AnalysisCache} from "../../helpers"
 import {getSeriesData} from "../gpu/utils"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
+import {Indicator} from "../../../models/run"
 
 export class SessionCard extends Card {
     uuid: string
     width: number
-    series: SeriesModel[]
+    series: Indicator[]
     analysisCache: AnalysisDataCache
     preferenceCache: AnalysisPreferenceCache
     preferenceData: AnalysisPreferenceModel
@@ -48,18 +47,16 @@ export class SessionCard extends Card {
         this.plotIndex = plotIndex
         this.loader = new DataLoader(async (force) => {
             if (isSummary) {
-                let data: any[] = (await this.analysisCache.get(force)).summary
-                this.series = toPointValues(data)
+                this.series = (await this.analysisCache.get(force)).summary
             } else {
                 if (this.subSeries) {
                     this.series = getSeriesData((await this.analysisCache.get(force)).series, this.subSeries)
                 } else {
-                    let data: any[] = (await this.analysisCache.get(force)).series
-                    this.series = toPointValues(data)
+                    this.series = (await this.analysisCache.get(force)).series
                 }
             }
             this.preferenceData = await this.preferenceCache.get(force)
-            if (this.subSeries) { // show all plots of sub series
+            if (this.subSeries) { // show all plots of subseries
                 this.plotIndex = []
                 let i = 0
                 for (let _ of this.series) {

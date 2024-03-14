@@ -1,11 +1,9 @@
-import {SeriesModel} from "../../../models/run"
 import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, SessionCache, SessionStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
 import {BackButton, SaveButton} from "../../../components/buttons"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
-import {toPointValues} from "../../../components/charts/utils"
 import {SessionHeaderCard} from '../session_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
@@ -18,6 +16,7 @@ import {ScreenView} from '../../../screen_view'
 import {AnalysisCache} from "../../helpers"
 import {getSeriesData} from "../gpu/utils"
 import {DateRangeField} from "../../../components/input/date_range_field"
+import {Indicator} from "../../../models/run";
 
 export class SessionView extends ScreenView {
     elem: HTMLDivElement
@@ -25,7 +24,7 @@ export class SessionView extends ScreenView {
     status: Status
     plotIdx: number[] = []
     statusCache: SessionStatusCache
-    series: SeriesModel[]
+    series: Indicator[]
     preferenceData: AnalysisPreferenceModel
     analysisCache: AnalysisDataCache
     preferenceCache: AnalysisPreferenceCache
@@ -68,7 +67,7 @@ export class SessionView extends ScreenView {
             if (this.subSeries) {
                 this.series = getSeriesData((await this.analysisCache.get(force)).series, this.subSeries)
             } else {
-                this.series = toPointValues((await this.analysisCache.get(force)).series)
+                this.series = (await this.analysisCache.get(force)).series
             }
             this.preferenceData = await this.preferenceCache.get(force)
 

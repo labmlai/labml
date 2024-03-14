@@ -1,13 +1,13 @@
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
-import {SeriesModel} from "../../../models/run"
 import {getExtent, getSmoothWindow, smoothSeries} from "../utils"
 import {SparkLine} from "./spark_line"
 import ChartColors from "../chart_colors"
 import {DefaultLineGradient} from "../chart_gradients"
+import {Indicator} from "../../../models/run";
 
 interface CompareSparkLinesOptions extends ChartOptions {
-    baseSeries?: SeriesModel[]
+    baseSeries?: Indicator[]
     plotIdx: number[]
     basePlotIdx?: number[]
     onSelect?: (i: number) => void
@@ -19,8 +19,8 @@ interface CompareSparkLinesOptions extends ChartOptions {
 }
 
 export class SparkLines {
-    currentSeries: SeriesModel[]
-    baseSeries: SeriesModel[]
+    currentSeries: Indicator[]
+    baseSeries: Indicator[]
     currentPlotIdx: number[]
     basePlotIdx: number[]
     isEditable: boolean

@@ -1,7 +1,6 @@
 import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
-import {SeriesModel} from "../../../models/run"
 import {fillPlotPreferences, getExtent, getScale, getTimeScale, toDate} from "../utils"
 import {TimeSeriesFill, TimeSeriesPlot} from './plot'
 import {BottomTimeAxis, RightAxis} from "../axis"
@@ -9,6 +8,7 @@ import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients
 import ChartColors from "../chart_colors"
 import {getWindowDimensions} from '../../../utils/window_dimentions'
 import {formatDateTime} from "../../../utils/time"
+import {Indicator} from "../../../models/run";
 
 const LABEL_HEIGHT = 10
 
@@ -21,9 +21,9 @@ interface LineChartOptions extends ChartOptions {
 }
 
 export class SingleScaleLineChart {
-    series: SeriesModel[]
+    series: Indicator[]
     plotIdx: number[]
-    plot: SeriesModel[] = []
+    plot: Indicator[] = []
     filteredPlotIdx: number[] = []
     chartWidth: number
     chartHeight: number

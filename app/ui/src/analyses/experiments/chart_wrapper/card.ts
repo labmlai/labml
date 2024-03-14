@@ -1,16 +1,16 @@
 import {Weya as $, WeyaElement} from '../../../../../lib/weya/weya'
 import {Indicator} from "../../../models/run"
 import {
-    AnalysisPreferenceBaseModel, AnalysisPreferenceModel, ComparisonPreferenceModel,
+    AnalysisPreferenceModel, ComparisonPreferenceModel,
 } from "../../../models/preferences"
 import {getChartType} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import InsightsList from "../../../components/insights_list"
 
 interface CardWrapperOptions {
     width: number
-    series: SeriesModel[]
+    series: Indicator[]
+    baseSeries?: Indicator[]
 
     lineChartContainer: WeyaElement
     sparkLinesContainer?: WeyaElement
@@ -23,8 +23,8 @@ interface CardWrapperOptions {
 
 export class CardWrapper {
     private width: number
-    private series: SeriesModel[]
-    private baseSeries: SeriesModel[]
+    private series: Indicator[]
+    private baseSeries: Indicator[]
 
     private readonly lineChartContainer: WeyaElement
     private readonly sparkLinesContainer?: WeyaElement
@@ -49,7 +49,7 @@ export class CardWrapper {
         this.updateData(opt.series, opt.baseSeries,  opt.preferenceData)
     }
 
-    public updateData(series: SeriesModel[], baseSeries: SeriesModel[],
+    public updateData(series: Indicator[], baseSeries: Indicator[], preferenceData: AnalysisPreferenceModel | ComparisonPreferenceModel) {
         this.series = series
         this.baseSeries = baseSeries ?? []
 

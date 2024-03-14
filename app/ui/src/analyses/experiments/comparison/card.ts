@@ -1,25 +1,24 @@
 import {Card, CardOptions} from "../../types"
 import {Weya as $, WeyaElementFunction} from "../../../../../lib/weya/weya"
-import {AnalysisDataCache, AnalysisPreferenceCache, ComparisonAnalysisPreferenceCache} from "../../../cache/cache"
+import {AnalysisDataCache, ComparisonAnalysisPreferenceCache} from "../../../cache/cache"
 import comparisonCache from "./cache"
 import {DataLoader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {DEBUG} from "../../../env"
 import {clearChildElements} from "../../../utils/document"
-import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
-import {SeriesModel} from "../../../models/run"
+import {fillPlotPreferences} from "../../../components/charts/utils"
+import {AnalysisData, AnalysisDataModel, Indicator} from "../../../models/run"
 import {ROUTER} from "../../../app"
 import {NetworkError} from "../../../network"
 import {CardWrapper} from "../chart_wrapper/card"
-import metricsCache from "./cache";
 
 export class ComparisonCard extends Card {
     private readonly  currentUUID: string
     private baseUUID: string
     private readonly width: number
     private baseAnalysisCache: AnalysisDataCache
-    private baseSeries: SeriesModel[]
-    private currentSeries: SeriesModel[]
+    private baseSeries: Indicator[]
+    private currentSeries: Indicator[]
     private currentAnalysisCache: AnalysisDataCache
     private preferenceCache: ComparisonAnalysisPreferenceCache
     private preferenceData: ComparisonPreferenceModel
@@ -43,8 +42,8 @@ export class ComparisonCard extends Card {
             this.preferenceData = <ComparisonPreferenceModel> await this.preferenceCache.get(force)
             this.baseUUID = this.preferenceData.base_experiment
 
-            let currentAnalysisData = await this.currentAnalysisCache.get(force)
-            this.currentSeries = toPointValues(currentAnalysisData.series)
+            let currentAnalysisData: AnalysisData = await this.currentAnalysisCache.get(force)
+            this.currentSeries = currentAnalysisData.series
             this.preferenceData.series_preferences = fillPlotPreferences(this.currentSeries, this.preferenceData.series_preferences)
 
             if (!!this.baseUUID) {
@@ -52,7 +51,7 @@ export class ComparisonCard extends Card {
                 this.baseAnalysisCache.setCurrentUUID(this.currentUUID)
                 try {
                     let baseAnalysisData = await this.baseAnalysisCache.get(force)
-                    this.baseSeries = toPointValues(baseAnalysisData.series)
+                    this.baseSeries = baseAnalysisData.series
                     this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)
                     this.missingBaseExperiment = false
                 } catch (e) {

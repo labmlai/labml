@@ -1,15 +1,14 @@
-import {SeriesModel} from "../../../models/run"
-import {toPointValues} from "../../../components/charts/utils"
+import {Indicator} from "../../../models/run"
 
-export function getSeriesData(series: SeriesModel[], analysis: string, isMean: boolean = false) {
-    let res = []
+export function getSeriesData(series: Indicator[], analysis: string, isMean: boolean = false): Indicator[]{
+    let res: Indicator[] = []
     for (let r of series) {
         let s = {...r}
         if (s.name.includes(analysis)) {
             if (s.name.includes('mean')) {
                 if (isMean) {
                     s.name = 'mean'
-                    return toPointValues([s])
+                    return [s]
                 } else {
                     continue
                 }
@@ -19,5 +18,5 @@ export function getSeriesData(series: SeriesModel[], analysis: string, isMean: b
         }
     }
 
-    return toPointValues(res)
+    return res
 }

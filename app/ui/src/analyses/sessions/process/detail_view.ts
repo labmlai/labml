@@ -1,5 +1,5 @@
-import {ProcessDetailsModel} from "./types"
-import CACHE, {SessionCache, SessionStatusCache} from "../../../cache/cache"
+import {ProcessDetails} from "./types"
+import CACHE, {SessionStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
@@ -10,16 +10,14 @@ import {SessionHeaderCard} from '../session_header/card'
 import mix_panel from "../../../mix_panel"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
-import {Session} from '../../../models/session'
 import {setTitle} from '../../../utils/document'
 import {DetailsDataCache} from "./cache_helper"
 import EditableField from "../../../components/input/editable_field"
 import {formatTime} from "../../../utils/time"
 import {SingleScaleLineChart} from "../../../components/charts/timeseries/single_scale_lines"
-import {SeriesModel} from "../../../models/run"
-import {toPointValues} from "../../../components/charts/utils"
 import {SparkTimeLines} from "../../../components/charts/spark_time_lines/chart"
 import {ScreenView} from '../../../screen_view'
+import {Indicator} from "../../../models/run"
 
 class ProcessDetailView extends ScreenView {
     elem: HTMLDivElement
@@ -28,8 +26,8 @@ class ProcessDetailView extends ScreenView {
     processId: string
     status: Status
     statusCache: SessionStatusCache
-    processData: ProcessDetailsModel
-    series: SeriesModel[]
+    processData: ProcessDetails
+    series: Indicator[]
     plotIdx: number[] = []
     analysisCache: DetailsDataCache
     sessionHeaderCard: SessionHeaderCard
@@ -39,24 +37,20 @@ class ProcessDetailView extends ScreenView {
     private sparkLinesContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
-    private sessionCache: SessionCache
-    private session: Session
 
     constructor(uuid: string, processId: string) { // session uuid, process id
         super()
 
         this.uuid = uuid
         this.processId = processId
-        this.sessionCache = CACHE.getSession(this.uuid)
         this.statusCache = CACHE.getSessionStatus(this.uuid)
         this.analysisCache = processDetailsCache.getAnalysis(this.uuid, this.processId)
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
-            this.session = await this.sessionCache.get()
             this.processData = (await this.analysisCache.get(force))
 
-            this.series = toPointValues(this.processData.series)
+            this.series = this.processData.series
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 

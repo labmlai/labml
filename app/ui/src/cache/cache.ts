@@ -1,4 +1,4 @@
-import {AnalysisDataModel, Run} from "../models/run"
+import {AnalysisData, Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK from "../network"
 import { User} from "../models/user"
@@ -6,6 +6,7 @@ import {RunListItemModel, RunsList} from '../models/run_list'
 import {AnalysisPreferenceModel, ComparisonPreferenceModel} from "../models/preferences"
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
+import {ProcessData} from "../analyses/sessions/process/types";
 
 const RELOAD_TIMEOUT = 60 * 1000
 const FORCE_RELOAD_TIMEOUT = 5 * 1000
@@ -302,13 +303,13 @@ export class UserCache extends CacheObject<User> {
     }
 }
 
-export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
-    private readonly uuid: string
-    private readonly url: string
-    private statusCache: StatusCache
-    private currentUUID: string
-    private readonly isExperiment: boolean
-    private currentXHR: XMLHttpRequest | null
+export abstract class BaseDataCache<T> extends CacheObject<T> {
+    protected readonly uuid: string
+    protected readonly url: string
+    protected statusCache: StatusCache
+    protected currentUUID: string
+    protected readonly isExperiment: boolean
+    protected currentXHR: XMLHttpRequest | null
 
     constructor(uuid: string, url: string, statusCache: StatusCache, isExperiment: boolean = false) {
         super()
@@ -323,27 +324,27 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
         this.currentUUID = currentUUID
     }
 
-    async load(): Promise<AnalysisDataModel> {
+    async load(): Promise<T> {
         return this.broadcastPromise.create(async () => {
             let response = NETWORK.getAnalysis(this.url, this.uuid, false, this.currentUUID, this.isExperiment)
             this.currentXHR = response.xhr
-            return await response.promise
+            return this.createInstance(await response.promise)
         })
     }
 
-    async getAllMetrics(): Promise<AnalysisDataModel> {
+    async getAllMetrics(): Promise<T> {
         if (this.currentXHR != null) {
             this.currentXHR.abort()
         }
         this.data = await this.broadcastPromise.forceCreate(async () => {
             this.lastUpdated = (new Date()).getTime()
             let response = NETWORK.getAnalysis(this.url, this.uuid, true, this.currentUUID, this.isExperiment)
-            return response.promise
+            return this.createInstance(await response.promise)
         })
         return this.data
     }
 
-    async get(isRefresh = false): Promise<AnalysisDataModel> {
+    async get(isRefresh = false): Promise<T> {
         let status = await this.statusCache.get()
 
         if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || (isRefresh && isForceReloadTimeout(this.lastUpdated))) {
@@ -356,6 +357,20 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
         }
 
         return this.data
+    }
+
+    protected abstract createInstance(data: any): T;
+}
+
+export class AnalysisDataCache extends BaseDataCache<AnalysisData> {
+    protected createInstance(data: any): AnalysisData {
+        return new AnalysisData(data);
+    }
+}
+
+export class ProcessDataCache extends BaseDataCache<ProcessData> {
+    protected createInstance(data: any): ProcessData {
+        return new ProcessData(data);
     }
 }
 

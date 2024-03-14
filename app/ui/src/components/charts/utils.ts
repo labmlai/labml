@@ -1,6 +1,6 @@
 import d3 from "../../d3"
 
-import {PointValue, SeriesModel} from "../../models/run"
+import {PointValue, Indicator, IndicatorModel} from "../../models/run"
 import {OUTLIER_MARGIN} from "./constants"
 
 export function getExtentWithoutOutliers(series: PointValue[], func: (d: PointValue) => number): [number, number] {
@@ -123,7 +123,7 @@ export function smoothSeries(series: PointValue[], windowSize: number): PointVal
     return result
 }
 
-export function fillPlotPreferences(series: SeriesModel[], currentPlotIdx: number[] = []) {
+export function fillPlotPreferences(series: Indicator[], currentPlotIdx: number[] = []) {
     if (currentPlotIdx.length != 0) {
         if (currentPlotIdx.length == series.length) {
             return currentPlotIdx
@@ -147,22 +147,13 @@ export function fillPlotPreferences(series: SeriesModel[], currentPlotIdx: numbe
     return plotIdx
 }
 
-export function toPointValue(s: SeriesModel) {
+export function toPointValue(s: IndicatorModel) {
     let res: PointValue[] = []
     for (let i = 0; i < s.step.length; ++i) {
         res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
     }
 
     return res
-}
-
-export function toPointValues(track: SeriesModel[]) {
-    let series: SeriesModel[] = [...track]
-    for (let s of series) {
-        s.series = toPointValue(s)
-    }
-
-    return series
 }
 
 export function getSelectedIdx(series: any[], bisect: typeof d3.bisect, currentX?: any | null, stepKey: string = 'step') {
@@ -188,9 +179,9 @@ export function getChartType(index: number): 'log' | 'linear' {
     return index === 0 ? 'linear' : 'log'
 }
 
-export function trimSteps(series: SeriesModel[], min: number, max: number, smoothRange: number = 0) : SeriesModel[] {
+export function trimSteps(series: Indicator[], min: number, max: number, smoothRange: number = 0) : Indicator[] {
     smoothRange /= 2 // remove half from each end
-    return  <SeriesModel[]>series.map(s => {
+    return  <Indicator[]>series.map(s => {
         let res = {...s}
         res.series = []
 
@@ -259,13 +250,13 @@ export function trimStepsOfPoints(series: PointValue[][], min: number, max: numb
  * Calculates the smooth window size for each series in the current and base series.
  * The smooth window size is determined based on the minimum range of steps in the series and the provided smooth value.
  *
- * @param {SeriesModel[]} currentSeries - The current series of data.
- * @param {SeriesModel[]} baseSeries - The base series of data for comparison.
+ * @param {Indicator[]} currentSeries - The current series of data.
+ * @param {Indicator[]} baseSeries - The base series of data for comparison.
  * @param {number} smoothValue - The value to be used for smoothing the data.
  * @returns {[number[][], number]} - Returns an array of smooth window sizes for each series. and the smooth window size in steps.
  * (ret[0] = smooth window for current series, ret[1] = smooth window for base series
  */
-export function getSmoothWindow(currentSeries: SeriesModel[], baseSeries: SeriesModel[], smoothValue: number): [number[][], number] {
+export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicator[], smoothValue: number): [number[][], number] {
     let minRange: number = Number.MAX_SAFE_INTEGER
     for (let s of currentSeries) {
         if (s.series.length > 0 && !s.is_summary) {
