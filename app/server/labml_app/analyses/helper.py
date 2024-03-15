@@ -49,5 +49,6 @@ def get_mean_series(res: List[Dict[str, Any]]) -> Dict[str, Any]:
     mean_value = [sum(x) / len(x) for x in zip(*[s['value'] for s in res])]
     mean_smoothed = [sum(x) / len(x) for x in zip(*[s['smoothed'] for s in res])]
     step = res[0]['step']
+    last_step = res[0]['last_step']
 
-    return {'step': step, 'value': mean_value, 'smoothed': mean_smoothed, 'name': 'mean'}
+    return {'step': step, 'value': mean_value, 'smoothed': mean_smoothed, 'name': 'mean', 'last_step': last_step}

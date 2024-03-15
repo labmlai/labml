@@ -87,6 +87,7 @@ class Series:
             'value': self.value.tolist(),
             'smoothed': self.smoothed,
             'mean': np.mean(self.value),
+            'last_step': self.last_step.tolist(),
         }
 
     @property

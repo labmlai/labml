@@ -1,7 +1,16 @@
 import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
-import {fillPlotPreferences, getExtent, getLogScale, getScale, getTimeScale, toDate, trimSteps} from "../utils"
+import {
+    fillPlotPreferences,
+    getExtent,
+    getLogScale,
+    getScale,
+    getTimeScale,
+    smooth45,
+    toDate,
+    trimSteps
+} from "../utils"
 import {BottomTimeAxis, RightAxis} from "../axis"
 import {TimeSeriesFill, TimeSeriesPlot} from './plot'
 import {formatDateTime} from '../../../utils/time'
@@ -59,6 +68,11 @@ export class TimeSeriesChart {
         this.numTicks = opt.numTicks
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
+
+        this.series = this.series.map(series => {
+            series.series = smooth45(series.series)
+            return series
+        })
 
         if (opt.stepRange != null) {
             this.series = trimSteps(this.series, opt.stepRange[0], opt.stepRange[1])

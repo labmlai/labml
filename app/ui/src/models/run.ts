@@ -36,6 +36,7 @@ export interface PointValue {
     step: number
     value: number
     smoothed: number
+    lastStep: number
 }
 
 export interface IndicatorModel {
