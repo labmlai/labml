@@ -255,7 +255,7 @@ class ProcessAnalysis(Analysis):
 
             ret.append(v)
 
-        ret.sort(key=lambda s: s['cpu']['smoothed'][-1], reverse=True)
+        ret.sort(key=lambda s: s['cpu']['value'][-1], reverse=True)
 
         summary = []
         for v in ret[:5]:
@@ -275,7 +275,7 @@ class ProcessAnalysis(Analysis):
 
             ret.append(v)
 
-        ret.sort(key=lambda s: s['cpu']['smoothed'][-1], reverse=True)
+        ret.sort(key=lambda s: s['cpu']['value'][-1], reverse=True)
 
         return ret
 

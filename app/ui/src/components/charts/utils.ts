@@ -149,7 +149,7 @@ export function fillPlotPreferences(series: Indicator[], currentPlotIdx: number[
 export function toPointValue(s: IndicatorModel) {
     let res: PointValue[] = []
     for (let i = 0; i < s.step.length; ++i) {
-        res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed != null ? s.smoothed[i] : s.value[i], lastStep: s.last_step[i]})
+        res.push({step: s.step[i], value: s.value[i], smoothed: s.value[i], lastStep: s.last_step[i]})
     }
 
     return res

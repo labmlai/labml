@@ -103,14 +103,7 @@ class MetricsAnalysis(Analysis):
             series: Dict[str, Any] = s.detail
             series['name'] = '.'.join(name)
 
-            if s.is_smoothed_updated:
-                self.metrics.tracking[ind] = s.to_data()
-                is_series_updated = True
-
             res.append(series)
-
-        if is_series_updated:
-            self.metrics.save()
 
         res.sort(key=lambda s: s['name'])
 
@@ -175,7 +168,6 @@ def get_metrics_tracking_util(track_data: List[Dict[str, Any]], preference_data:
         else:
             filtered_track_data[-1]['value'] = filtered_track_data[-1]['value'][-1:]
             filtered_track_data[-1]['step'] = filtered_track_data[-1]['step'][-1:]
-            filtered_track_data[-1]['smoothed'] = filtered_track_data[-1]['smoothed'][-1:]
             filtered_track_data[-1]['is_summary'] = True
 
     return filtered_track_data
