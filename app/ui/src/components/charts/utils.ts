@@ -117,7 +117,7 @@ export function smoothSeries(series: PointValue[], windowSize: number): PointVal
             count--
         }
         if (j>=0) {
-            result.push({step: series[j].step, value: total / count, smoothed: total / count})
+            result.push({step: series[j].step, value: series[j].value, smoothed: total / count})
         }
     }
     return result
@@ -150,7 +150,7 @@ export function fillPlotPreferences(series: Indicator[], currentPlotIdx: number[
 export function toPointValue(s: IndicatorModel) {
     let res: PointValue[] = []
     for (let i = 0; i < s.step.length; ++i) {
-        res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
+        res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed != null ? s.smoothed[i] : s.value[i]})
     }
 
     return res
@@ -304,3 +304,48 @@ export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicato
 
     return [stepRange, smoothRange]
 }
+
+// Default smoothing function from backend
+// function meanAngle(smoothed: PointValue[], aspectRatio: number) {
+//     let xRange = smoothed[smoothed.length - 1].lastStep - smoothed[0].lastStep
+//     let yExtent = getExtent([smoothed], d => d.value)
+//     let yRange = yExtent[1] - yExtent[0]
+//
+//     if (xRange < 1e-9 || yRange < 1e-9) {
+//         return 0
+//     }
+//
+//     let angles = []
+//     for (let i = 1; i < smoothed.length; i++) {
+//         let dx = (smoothed[i].lastStep - smoothed[i - 1].lastStep) / xRange
+//         let dy = (smoothed[i].value - smoothed[i - 1].value) / yRange
+//         angles.push(Math.atan2(Math.abs(dy) * aspectRatio, Math.abs(dx)))
+//     }
+//
+//     let angleSum = 0
+//     for (let a of angles) {
+//         angleSum += a
+//     }
+//     return angleSum / angles.length
+// }
+//
+// function smooth45(series: PointValue[]) {
+//     const MIN_SMOOTH_POINTS = 1
+//     let fortyFive = Math.PI / 4
+//     let hi = Math.max(1, series.length) / MIN_SMOOTH_POINTS
+//     let lo = 1
+//
+//     while (lo < hi) {
+//         let m = (lo + hi) / 2
+//         m = ~m
+//         let smoothed = smoothSeries(series, m)
+//         let angle = meanAngle(smoothed, 0.5)
+//         if (angle > fortyFive) {
+//             lo = m + 1
+//         } else {
+//             hi = m
+//         }
+//     }
+//
+//     return hi
+// }

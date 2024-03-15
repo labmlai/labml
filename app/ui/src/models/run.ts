@@ -42,9 +42,10 @@ export interface IndicatorModel {
     name: string
     step: number[]
     value: number[]
-    smoothed: number[]
+    smoothed?: number[]
     mean: number
     is_summary: boolean
+    last_step: number[]
 }
 
 export class Indicator {
