@@ -49,18 +49,16 @@ export class SparkLines {
         this.uniqueItems = new Map<string, number>()
         this.onlySelected = opt.onlySelected ?? false
 
-        const margin = Math.floor(opt.width / 64)
-        this.rowWidth = Math.min(450, opt.width - Math.max(3 * margin, 60))
-
-        let lastValues: number[] = []
         let idx = 0
         for (let s of this.currentSeries.concat(this.baseSeries)) {
             let series = s.series
-            lastValues.push(series[series.length - 1].value)
             if (!this.uniqueItems.has(s.name)) {
                 this.uniqueItems.set(s.name, idx++)
             }
         }
+
+        const margin = Math.floor(opt.width / 64)
+        this.rowWidth = Math.min(450, opt.width - Math.max(3 * margin, 60))
 
         this.currentSmoothedValues = []
         this.baseSmoothedValues = []
