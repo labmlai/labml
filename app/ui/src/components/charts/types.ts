@@ -1,8 +1,8 @@
 import d3 from "../../d3"
-import {SeriesModel} from "../../models/run"
+import {Indicator} from "../../models/run"
 
 export interface ChartOptions {
-    series: SeriesModel[]
+    series: Indicator[]
     width: number
 }
 

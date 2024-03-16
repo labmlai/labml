@@ -1,4 +1,4 @@
-import {Run, SeriesModel} from "../../../models/run"
+import {Indicator, Run} from "../../../models/run"
 import CACHE, {
     AnalysisDataCache,
     ComparisonAnalysisPreferenceCache
@@ -10,7 +10,7 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, DeleteButton, EditButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
-import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
+import {fillPlotPreferences} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
@@ -30,8 +30,8 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     private preferenceData: ComparisonPreferenceModel
     private status: Status
 
-    series: SeriesModel[]
-    baseSeries?: SeriesModel[]
+    series: Indicator[]
+    baseSeries?: Indicator[]
     plotIdx: number[]
     basePlotIdx?: number[]
     chartType: number
@@ -83,7 +83,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             this.run = await CACHE.getRun(this.uuid).get(force)
 
             metricsCache.getAnalysis(this.uuid).setCurrentUUID(this.uuid)
-            this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
+            this.series = (await metricsCache.getAnalysis(this.uuid).get(force)).series
 
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
             this.baseUuid = this.preferenceData.base_experiment
@@ -346,7 +346,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.baseAnalysisCache.setCurrentUUID(this.uuid)
         this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
         try {
-            this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
+            this.baseSeries = (await this.baseAnalysisCache.get(force)).series
             this.preferenceData.base_series_preferences = [...fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)]
             this.missingBaseExperiment = false
         } catch (e) {
@@ -361,10 +361,10 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     }
 
     private async requestMissingMetrics() {
-        this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series)
+        this.series = (await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series
 
         if (this.baseUuid !== '') {
-            this.baseSeries = toPointValues((await metricsCache.getAnalysis(this.baseUuid).getAllMetrics()).series)
+            this.baseSeries = (await metricsCache.getAnalysis(this.baseUuid).getAllMetrics()).series
         }
     }
 }

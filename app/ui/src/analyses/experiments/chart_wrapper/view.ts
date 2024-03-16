@@ -1,4 +1,4 @@
-import {SeriesModel} from "../../../models/run"
+import {Indicator} from "../../../models/run"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {SaveButton, ToggleButton} from "../../../components/buttons"
 import {LineChart} from "../../../components/charts/lines/chart"
@@ -21,8 +21,8 @@ interface ViewWrapperOpt {
 }
 
 export interface MetricDataStore {
-    series: SeriesModel[]
-    baseSeries?: SeriesModel[]
+    series: Indicator[]
+    baseSeries?: Indicator[]
     plotIdx: number[]
     basePlotIdx?: number[]
     chartType: number

@@ -1,5 +1,4 @@
 import {RunStatus} from "./status"
-import {SeriesModel} from "./run"
 import {Config, ConfigModel} from "./config"
 
 export interface MetricValue {

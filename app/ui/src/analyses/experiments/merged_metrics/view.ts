@@ -1,4 +1,4 @@
-import {Run, SeriesModel} from "../../../models/run"
+import {Indicator, Run} from "../../../models/run"
 import CACHE, {AnalysisPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
@@ -7,7 +7,7 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
-import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
+import {fillPlotPreferences} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
@@ -37,8 +37,8 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
     private preferenceData: AnalysisPreferenceModel
     private status: Status
 
-    series: SeriesModel[]
-    baseSeries?: SeriesModel[]
+    series: Indicator[]
+    baseSeries?: Indicator[]
     plotIdx: number[]
     basePlotIdx?: number[]
     chartType: number
@@ -61,7 +61,7 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
             }
             this.run = await CACHE.getRun(this.uuid).get(force)
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
-            this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).get(force)).series)
+            this.series = (await metricsCache.getAnalysis(this.uuid).get(force)).series
             this.preferenceData = await this.preferenceCache.get(force)
 
             this.chartType = this.preferenceData.chart_type
@@ -180,7 +180,7 @@ class DistributedMetricsView extends ScreenView implements MetricDataStore {
     }
 
     private async requestMissingMetrics() {
-        this.series = toPointValues((await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series)
+        this.series = (await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series
     }
 
     private onPreferenceChange = () => {

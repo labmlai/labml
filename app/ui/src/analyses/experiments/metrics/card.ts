@@ -1,23 +1,21 @@
 import {WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {InsightModel, SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
-import {fillPlotPreferences, toPointValues} from "../../../components/charts/utils"
+import {fillPlotPreferences} from "../../../components/charts/utils"
 import {ROUTER} from '../../../app'
 import {DataLoader} from '../../../components/loader'
 import {CardWrapper} from "../chart_wrapper/card"
 import metricsCache from "./cache"
+import {Indicator} from "../../../models/run"
 
 
 export class MetricsCard extends Card {
     private readonly uuid: string
     private readonly width: number
-    private series: SeriesModel[]
-    private insights: InsightModel[]
+    private series: Indicator[]
     private preferenceData: AnalysisPreferenceModel
     private elem: HTMLDivElement
     private lineChartContainer: WeyaElement
-    private insightsContainer: WeyaElement
     private loader: DataLoader
     private chartWrapper: CardWrapper
     private sparkLineContainer: WeyaElement
@@ -29,8 +27,7 @@ export class MetricsCard extends Card {
         this.width = opt.width
         this.loader = new DataLoader(async (force) => {
             let analysisData = await  metricsCache.getAnalysis(this.uuid).get(force)
-            this.series = toPointValues(analysisData.series)
-            this.insights = analysisData.insights
+            this.series = analysisData.series
             this.preferenceData = await metricsCache.getPreferences(this.uuid).get(force)
 
             this.preferenceData.series_preferences = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
@@ -47,7 +44,6 @@ export class MetricsCard extends Card {
             this.loader.render($)
             this.lineChartContainer = $('div', '')
             this.sparkLineContainer = $('div', '')
-            this.insightsContainer = $('div', '')
         })
 
         try {
@@ -56,9 +52,7 @@ export class MetricsCard extends Card {
             this.chartWrapper = new CardWrapper({
                 elem: this.elem,
                 preferenceData: this.preferenceData,
-                insights: this.insights,
                 series: this.series,
-                insightsContainer: this.insightsContainer,
                 lineChartContainer: this.lineChartContainer,
                 sparkLinesContainer: this.sparkLineContainer,
                 width: this.width
@@ -72,7 +66,7 @@ export class MetricsCard extends Card {
     async refresh() {
         try {
             await this.loader.load(true)
-            this.chartWrapper?.updateData(this.series, null, this.insights, this.preferenceData)
+            this.chartWrapper?.updateData(this.series, null, this.preferenceData)
             this.chartWrapper?.render()
         } catch (e) {
         }

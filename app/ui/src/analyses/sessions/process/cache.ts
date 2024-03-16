@@ -1,8 +1,11 @@
-import {AnalysisDataCache, AnalysisPreferenceCache, SessionStatusCache} from "../../../cache/cache"
+import {
+    AnalysisPreferenceCache,
+    ProcessDataCache,
+    SessionStatusCache
+} from "../../../cache/cache"
 import {AnalysisCache} from "../../helpers"
 import {DetailsCache, DetailsDataCache} from "./cache_helper"
-
-class ProcessAnalysisCache extends AnalysisDataCache {
+class ProcessAnalysisCache extends ProcessDataCache {
     constructor(uuid: string, statusCache: SessionStatusCache) {
         super(uuid, 'process', statusCache)
     }

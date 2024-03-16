@@ -125,7 +125,6 @@ export class SparkLine {
                             yScale: this.yScale,
                             color: '#7f8c8d',
                             isBase: this.isBase,
-                            smoothedSeries: this.series
                         })
                         this.linePlot.render($)
                     })
