@@ -76,6 +76,13 @@ export class LineChart {
 
         let [smoothWindow, smoothRange ] = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
 
+        let idx: number = 0
+        for (let s of this.currentSeries.concat(this.baseSeries)) {
+            if (!this.uniqueItems.has(s.name)) {
+                this.uniqueItems.set(s.name, idx++)
+            }
+        }
+
         this.baseSeries = this.baseSeries.filter((_, i) => this.basePlotIndex[i] == 1)
         this.currentSeries = this.currentSeries.filter((_, i) => this.currentPlotIndex[i] == 1)
 
@@ -96,13 +103,6 @@ export class LineChart {
 
         const stepExtent = getExtent(this.baseSeries.concat(this.currentSeries).map(s => s.series), d => d.step, false, true)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
-
-        let idx: number = 0
-        for (let s of this.currentSeries.concat(this.baseSeries)) {
-            if (!this.uniqueItems.has(s.name)) {
-                this.uniqueItems.set(s.name, idx++)
-            }
-        }
 
         this.chartColors = new ChartColors({
             nColors: this.uniqueItems.size,
