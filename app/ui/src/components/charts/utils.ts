@@ -307,7 +307,7 @@ export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicato
 // Default smoothing function from backend
 function meanAngle(smoothed: PointValue[], aspectRatio: number) {
     let xRange = smoothed[smoothed.length - 1].lastStep - smoothed[0].lastStep
-    let yExtent = getExtent([smoothed], d => d.value)
+    let yExtent = getExtent([smoothed], d => d.smoothed)
     let yRange = yExtent[1] - yExtent[0]
 
     if (xRange < 1e-9 || yRange < 1e-9) {
@@ -317,7 +317,7 @@ function meanAngle(smoothed: PointValue[], aspectRatio: number) {
     let angles = []
     for (let i = 1; i < smoothed.length; i++) {
         let dx = (smoothed[i].lastStep - smoothed[i - 1].lastStep) / xRange
-        let dy = (smoothed[i].value - smoothed[i - 1].value) / yRange
+        let dy = (smoothed[i].smoothed - smoothed[i - 1].smoothed) / yRange
         angles.push(Math.atan2(Math.abs(dy) * aspectRatio, Math.abs(dx)))
     }
 
