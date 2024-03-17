@@ -1,14 +1,14 @@
 import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
-import {SeriesModel} from "../../../models/run"
-import {fillPlotPreferences, getExtent, getScale, getTimeScale, toDate} from "../utils"
+import {fillPlotPreferences, getExtent, getScale, getTimeScale, smooth45, toDate} from "../utils"
 import {TimeSeriesFill, TimeSeriesPlot} from './plot'
 import {BottomTimeAxis, RightAxis} from "../axis"
 import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 import {getWindowDimensions} from '../../../utils/window_dimentions'
 import {formatDateTime} from "../../../utils/time"
+import {Indicator} from "../../../models/run";
 
 const LABEL_HEIGHT = 10
 
@@ -21,9 +21,9 @@ interface LineChartOptions extends ChartOptions {
 }
 
 export class SingleScaleLineChart {
-    series: SeriesModel[]
+    series: Indicator[]
     plotIdx: number[]
-    plot: SeriesModel[] = []
+    plot: Indicator[] = []
     filteredPlotIdx: number[] = []
     chartWidth: number
     chartHeight: number
@@ -53,6 +53,11 @@ export class SingleScaleLineChart {
         this.margin = Math.floor(windowWidth / 64)
         this.chartWidth = windowWidth - 2 * this.margin - this.axisSize
         this.chartHeight = Math.round(Math.min(this.chartWidth, windowHeight) / 2)
+
+        this.series = this.series.map(s => {
+            s.series = smooth45(s.series)
+            return s
+        })
 
         if (this.plotIdx.length === 0) {
             this.plotIdx = fillPlotPreferences(this.series)

@@ -1,6 +1,6 @@
 import {Weya as $, WeyaElementFunction} from "../../../../../lib/weya/weya"
-import {PointValue, SeriesModel} from "../../../models/run"
-import {ProcessModel} from "./types"
+import {Indicator, PointValue} from "../../../models/run"
+import {Process} from "./types"
 import {getExtent, getScale, getTimeScale, toDate, toPointValue} from "../../../components/charts/utils"
 import d3 from "../../../d3"
 import {DefaultLineGradient} from "../../../components/charts/chart_gradients"
@@ -84,7 +84,7 @@ class ProcessSparkLine {
 }
 
 export interface ProcessListItemOptions {
-    item: ProcessModel
+    item: Process
     stepExtent: [Date, Date]
     cpuBarExtent: [number, number]
     rssBarExtent: [number, number]
@@ -93,7 +93,7 @@ export interface ProcessListItemOptions {
 }
 
 class ProcessListItem {
-    item: ProcessModel
+    item: Process
     width: number
     elem: HTMLAnchorElement
     stepExtent: [Date, Date]
@@ -151,7 +151,7 @@ class ProcessListItem {
 
 export interface ProcessListOptions {
     uuid: string
-    items: ProcessModel[]
+    items: Process[]
     width: number
 }
 
@@ -163,24 +163,22 @@ export class ProcessList {
     rssBarExtent: [number, number]
     searchQuery: string
     processListContainer: HTMLDivElement
-    items: ProcessModel[]
-    currentProcessList: ProcessModel[]
+    items: Process[]
+    currentProcessList: Process[]
 
     constructor(opt: ProcessListOptions) {
         this.uuid = opt.uuid
         this.items = opt.items
         this.width = opt.width
 
-        let rss: SeriesModel[] = []
-        let cpu: SeriesModel[] = []
+        let rss: Indicator[] = []
+        let cpu: Indicator[] = []
         for (let item of this.items) {
-            item.cpu.series = toPointValue(item.cpu)
             cpu.push(item.cpu)
-            item.rss.series = toPointValue(item.rss)
             rss.push(item.rss)
         }
 
-        let series: SeriesModel[] = cpu.concat(rss)
+        let series: Indicator[] = cpu.concat(rss)
         this.stepExtent = getExtent(series.map(s => s.series), d => d.step)
 
         this.cpuBarExtent = getExtent(cpu.map(s => s.series), d => d.value, true)
@@ -210,7 +208,7 @@ export class ProcessList {
         this.renderList()
     }
 
-    processFilter = (process: ProcessModel, query: RegExp) => {
+    processFilter = (process: Process, query: RegExp) => {
         let name = process.name.toLowerCase()
         let pid = process.pid.toString()
 

@@ -1,5 +1,5 @@
-import {ProcessModel} from "./types"
-import CACHE, {AnalysisDataCache, SessionCache, SessionStatusCache} from "../../../cache/cache"
+import {Process} from "./types"
+import CACHE, {ProcessDataCache, SessionCache, SessionStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
@@ -21,8 +21,8 @@ class ProcessView extends ScreenView {
     status: Status
     actualWidth: number
     statusCache: SessionStatusCache
-    series: ProcessModel[]
-    analysisCache: AnalysisDataCache
+    series: Process[]
+    analysisCache: ProcessDataCache
     sessionHeaderCard: SessionHeaderCard
     processListContainer: HTMLDivElement
     private loader: DataLoader

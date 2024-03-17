@@ -27,14 +27,7 @@ class SeriesCollection:
             series: Dict[str, Any] = s.detail
             series['name'] = '.'.join(name[1:])
 
-            if s.is_smoothed_updated:
-                self.tracking[ind] = s.to_data()
-                is_series_updated = True
-
             res.append(series)
-
-        if is_series_updated:
-            self.save()
 
         return res
 

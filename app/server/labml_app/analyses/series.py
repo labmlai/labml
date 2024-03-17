@@ -5,8 +5,6 @@ from datetime import datetime, timedelta
 import numpy as np
 
 MAX_BUFFER_LENGTH = 1024
-SMOOTH_POINTS = 50
-MIN_SMOOTH_POINTS = 1
 OUTLIER_MARGIN = 0.04
 
 SeriesModel = Dict[str, Union[np.ndarray, List[float], float]]
@@ -37,8 +35,6 @@ class Series:
     step: np.ndarray
     last_step: np.ndarray
     value: np.ndarray
-    smoothed: List[float]
-    is_smoothed_updated: bool
     step_gap: float
     max_buffer_length: int
     keep_last_24h: bool
@@ -47,8 +43,6 @@ class Series:
         self.step = np.array([])
         self.last_step = np.array([])
         self.value = np.array([])
-        self.smoothed = []
-        self.is_smoothed_updated = False
         self.step_gap = 0
         self.keep_last_24h = keep_last_24h
         if max_buffer_length:
@@ -75,18 +69,12 @@ class Series:
             return 1.
 
     @property
-    def detail(self) -> Dict[str, List[float]]:
-        if not self.smoothed or len(self.smoothed) != len(self.step):
-            self.smoothed = self.smooth_45()
-            self.is_smoothed_updated = True
-        else:
-            self.is_smoothed_updated = False
-
+    def detail(self) -> SeriesModel:
         return {
             'step': self.last_step.tolist(),
             'value': self.value.tolist(),
-            'smoothed': self.smoothed,
             'mean': np.mean(self.value),
+            'last_step': self.last_step.tolist(),
         }
 
     @property
@@ -100,8 +88,6 @@ class Series:
             'step': self.step,
             'value': self.value,
             'last_step': self.last_step,
-            'smoothed': self.smoothed,
-            'is_smoothed_updated': self.is_smoothed_updated,
             'step_gap': self.step_gap
         }
 
@@ -220,67 +206,9 @@ class Series:
 
         return [values[start], values[end]]
 
-    def smooth_45(self) -> List[float]:
-        forty_five = math.pi / 4
-        hi = max(1, len(self.value) // MIN_SMOOTH_POINTS)
-        lo = 1
-
-        while lo < hi:
-            m = (lo + hi) // 2
-            smoothed = self.smooth_value(m)
-            angle = self.mean_angle(smoothed, 0.5)
-            if angle > forty_five:
-                lo = m + 1
-            else:
-                hi = m
-
-        return self.smooth_value(hi)
-
-    def mean_angle(self, smoothed: List[float], aspect_ratio: float) -> Union[np.ndarray, float]:
-        x_range = max(self.last_step) - min(self.last_step)
-        y_extent = self.get_extent(True)
-        y_range = y_extent[1] - y_extent[0]
-
-        if x_range < 1e-9 or y_range < 1e-9:
-            return 0
-
-        angles = []
-        for i in range(len(smoothed) - 1):
-            dx = (self.last_step[i + 1] - self.last_step[i]) / x_range
-            dy = (smoothed[i + 1] - smoothed[i]) / y_range
-            angles.append(math.atan2(abs(dy) * aspect_ratio, abs(dx)))
-
-        return np.mean(angles)
-
-    def smooth_value(self, span: Optional[int] = None) -> List[float]:
-        if span is None:
-            span = len(self.value) // SMOOTH_POINTS
-        span_extra = span // 2
-
-        n = 0
-        total = 0
-        smoothed = []
-        for i in range(len(self.value) + span_extra):
-            j = i - span_extra
-            if i < len(self.value):
-                total += self.value[i]
-                n += 1
-            if j - span_extra - 1 >= 0:
-                total -= self.value[j - span_extra - 1]
-                n -= 1
-            if j >= 0:
-                smoothed.append(total / n)
-
-        return smoothed
-
     def load(self, data):
         self.step = data['step'].copy()
         self.last_step = data['last_step'].copy()
         self.value = data['value'].copy()
-
-        if 'smoothed' in data:
-            self.smoothed = data['smoothed'].copy()
-        else:
-            self.smoothed = []
 
         return self

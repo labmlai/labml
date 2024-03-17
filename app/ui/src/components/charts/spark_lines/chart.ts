@@ -1,13 +1,13 @@
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
-import {SeriesModel} from "../../../models/run"
 import {getExtent, getSmoothWindow, smoothSeries} from "../utils"
 import {SparkLine} from "./spark_line"
 import ChartColors from "../chart_colors"
 import {DefaultLineGradient} from "../chart_gradients"
+import {Indicator} from "../../../models/run";
 
 interface CompareSparkLinesOptions extends ChartOptions {
-    baseSeries?: SeriesModel[]
+    baseSeries?: Indicator[]
     plotIdx: number[]
     basePlotIdx?: number[]
     onSelect?: (i: number) => void
@@ -19,8 +19,8 @@ interface CompareSparkLinesOptions extends ChartOptions {
 }
 
 export class SparkLines {
-    currentSeries: SeriesModel[]
-    baseSeries: SeriesModel[]
+    currentSeries: Indicator[]
+    baseSeries: Indicator[]
     currentPlotIdx: number[]
     basePlotIdx: number[]
     isEditable: boolean
@@ -49,18 +49,16 @@ export class SparkLines {
         this.uniqueItems = new Map<string, number>()
         this.onlySelected = opt.onlySelected ?? false
 
-        const margin = Math.floor(opt.width / 64)
-        this.rowWidth = Math.min(450, opt.width - Math.max(3 * margin, 60))
-
-        let lastValues: number[] = []
         let idx = 0
         for (let s of this.currentSeries.concat(this.baseSeries)) {
             let series = s.series
-            lastValues.push(series[series.length - 1].value)
             if (!this.uniqueItems.has(s.name)) {
                 this.uniqueItems.set(s.name, idx++)
             }
         }
+
+        const margin = Math.floor(opt.width / 64)
+        this.rowWidth = Math.min(450, opt.width - Math.max(3 * margin, 60))
 
         this.currentSmoothedValues = []
         this.baseSmoothedValues = []

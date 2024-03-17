@@ -1,14 +1,14 @@
 import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
-import {PointValue, SeriesModel} from "../../../models/run"
+import {Indicator} from "../../../models/run"
 import {
     getExtent,
     getLogScale,
     getScale,
     getSmoothWindow,
     smoothSeries,
-    trimSteps, trimStepsOfPoints
+    trimSteps
 } from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
@@ -20,7 +20,7 @@ import {getWindowDimensions} from '../../../utils/window_dimentions'
 const LABEL_HEIGHT = 10
 
 interface LineChartOptions extends ChartOptions {
-    baseSeries?: SeriesModel[]
+    baseSeries?: Indicator[]
     basePlotIdx?: number[]
     // series is defined in chart options - used as current series
     plotIndex: number[]
@@ -35,12 +35,10 @@ interface LineChartOptions extends ChartOptions {
 }
 
 export class LineChart {
-    private readonly currentSeries: SeriesModel[]
     private readonly currentPlotIndex: number[]
-    private readonly baseSeries: SeriesModel[]
     private readonly basePlotIndex: number[]
-    private readonly filteredBaseSeries: SeriesModel[]
-    private readonly filteredCurrentSeries: SeriesModel[]
+    private readonly baseSeries: Indicator[]
+    private readonly currentSeries: Indicator[]
     private readonly chartType: string
     private readonly chartWidth: number
     private readonly chartHeight: number
@@ -57,9 +55,6 @@ export class LineChart {
     private svgBoundingClientRect: DOMRect
     private readonly  uniqueItems: Map<string, number>
     private readonly focusSmoothed: boolean
-
-    private readonly currentSmoothedSeriesPoints: PointValue[][]
-    private readonly baseSmoothedSeriesPoints: PointValue[][]
 
     constructor(opt: LineChartOptions) {
         this.currentSeries = opt.series
@@ -81,34 +76,33 @@ export class LineChart {
 
         let [smoothWindow, smoothRange ] = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
 
-        this.filteredBaseSeries = this.baseSeries.filter((_, i) => this.basePlotIndex[i] == 1)
-        this.filteredCurrentSeries = this.currentSeries.filter((_, i) => this.currentPlotIndex[i] == 1)
-
-        smoothWindow[0] = smoothWindow[0].filter((_, i) => this.currentPlotIndex[i] == 1)
-        smoothWindow[1] = smoothWindow[1].filter((_, i) => this.basePlotIndex[i] == 1)
-
-        this.currentSmoothedSeriesPoints = this.filteredCurrentSeries.map((s, i) => {
-          return smoothSeries(s.series, smoothWindow[0][i])
-        })
-        this.baseSmoothedSeriesPoints = this.filteredBaseSeries.map((s, i) => {
-          return smoothSeries(s.series, smoothWindow[1][i])
-        })
-
-        this.filteredBaseSeries = trimSteps(this.filteredBaseSeries, opt.stepRange[0], opt.stepRange[1], smoothRange)
-        this.filteredCurrentSeries = trimSteps(this.filteredCurrentSeries, opt.stepRange[0], opt.stepRange[1], smoothRange)
-
-        this.currentSmoothedSeriesPoints = trimStepsOfPoints(this.currentSmoothedSeriesPoints, opt.stepRange[0], opt.stepRange[1], smoothRange)
-        this.baseSmoothedSeriesPoints = trimStepsOfPoints(this.baseSmoothedSeriesPoints, opt.stepRange[0], opt.stepRange[1], smoothRange)
-
-        const stepExtent = getExtent(this.filteredBaseSeries.concat(this.filteredCurrentSeries).map(s => s.series), d => d.step, false, true)
-        this.xScale = getScale(stepExtent, this.chartWidth, false)
-
         let idx: number = 0
         for (let s of this.currentSeries.concat(this.baseSeries)) {
             if (!this.uniqueItems.has(s.name)) {
                 this.uniqueItems.set(s.name, idx++)
             }
         }
+
+        this.baseSeries = this.baseSeries.filter((_, i) => this.basePlotIndex[i] == 1)
+        this.currentSeries = this.currentSeries.filter((_, i) => this.currentPlotIndex[i] == 1)
+
+        smoothWindow[0] = smoothWindow[0].filter((_, i) => this.currentPlotIndex[i] == 1)
+        smoothWindow[1] = smoothWindow[1].filter((_, i) => this.basePlotIndex[i] == 1)
+
+        this.currentSeries = this.currentSeries.map((s, i) => {
+            s.series = smoothSeries(s.series, smoothWindow[0][i])
+            return s
+        })
+        this.baseSeries = this.baseSeries.map((s, i) => {
+            s.series = smoothSeries(s.series, smoothWindow[1][i])
+            return s
+        })
+
+        this.baseSeries = trimSteps(this.baseSeries, opt.stepRange[0], opt.stepRange[1], smoothRange)
+        this.currentSeries = trimSteps(this.currentSeries, opt.stepRange[0], opt.stepRange[1], smoothRange)
+
+        const stepExtent = getExtent(this.baseSeries.concat(this.currentSeries).map(s => s.series), d => d.step, false, true)
+        this.xScale = getScale(stepExtent, this.chartWidth, false)
 
         this.chartColors = new ChartColors({
             nColors: this.uniqueItems.size,
@@ -119,7 +113,7 @@ export class LineChart {
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     changeScale() {
-        let plotSeries = this.filteredBaseSeries.concat(this.filteredCurrentSeries).map(s => s.series)
+        let plotSeries = this.baseSeries.concat(this.currentSeries).map(s => s.series)
         if (plotSeries.length == 0) {
             this.yScale = d3.scaleLinear()
                 .domain([0, 0])
@@ -195,7 +189,7 @@ export class LineChart {
         this.changeScale()
 
         $('div.relative', $ => {
-            if (this.filteredBaseSeries.length + this.filteredCurrentSeries.length == 0) {
+            if (this.baseSeries.length + this.currentSeries.length == 0) {
                 $('div', '.chart-overlay', $ => {
                     $('span', '.text', 'No Metric Selected')
                 })
@@ -217,13 +211,13 @@ export class LineChart {
                                 {
                                     transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                 }, $ => {
-                                    if (this.filteredCurrentSeries.length < 3 && this.filteredBaseSeries.length == 0) {
-                                        this.filteredCurrentSeries.map((s, i) => {
-                                            if (this.currentSmoothedSeriesPoints[i].length == 0) {
+                                    if (this.currentSeries.length < 3 && this.baseSeries.length == 0) {
+                                        this.currentSeries.map((s, i) => {
+                                            if (this.currentSeries[i].series.length == 0) {
                                                 return
                                             }
                                             new LineFill({
-                                                series: this.currentSmoothedSeriesPoints[i],
+                                                series: this.currentSeries[i].series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
                                                 color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
@@ -232,7 +226,7 @@ export class LineChart {
                                             }).render($)
                                         })
                                     }
-                                    this.filteredCurrentSeries.map((s, i) => {
+                                    this.currentSeries.map((s, i) => {
                                         let linePlot = new LinePlot({
                                             series: s.series,
                                             xScale: this.xScale,
@@ -240,13 +234,12 @@ export class LineChart {
                                             color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
                                             renderHorizontalLine: true,
                                             smoothFocused: this.focusSmoothed,
-                                            smoothedSeries: this.currentSmoothedSeriesPoints[i],
                                         })
                                         this.linePlots.push(linePlot)
                                         linePlot.render($)
                                     })
 
-                                    this.filteredBaseSeries.map((s, i) => {
+                                    this.baseSeries.map((s, i) => {
                                         let linePlot = new LinePlot({
                                             series: s.series,
                                             xScale: this.xScale,
@@ -254,8 +247,7 @@ export class LineChart {
                                             color: this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
                                             isBase: true,
                                             renderHorizontalLine: true,
-                                            smoothFocused: this.focusSmoothed,
-                                            smoothedSeries: this.baseSmoothedSeriesPoints[i],
+                                            smoothFocused: this.focusSmoothed
                                         })
                                         this.linePlots.push(linePlot)
                                         linePlot.render($)

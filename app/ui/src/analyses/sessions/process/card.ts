@@ -1,18 +1,17 @@
 import {Weya as $, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {SeriesModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
-import {AnalysisDataCache} from "../../../cache/cache"
-import {toPointValues} from "../../../components/charts/utils"
+import {ProcessDataCache} from "../../../cache/cache"
 import {DataLoader} from "../../../components/loader"
 import {processCache} from './cache'
 import {ROUTER} from '../../../app'
 import {SparkTimeLines} from "../../../components/charts/spark_time_lines/chart"
+import {Indicator} from "../../../models/run";
 
 export class ProcessCard extends Card {
     uuid: string
     width: number
-    series: SeriesModel[]
-    analysisCache: AnalysisDataCache
+    series: Indicator[]
+    analysisCache: ProcessDataCache
     sparkLinesContainer: HTMLDivElement
     sparkTimeLines: SparkTimeLines
     elem: HTMLDivElement
@@ -25,7 +24,7 @@ export class ProcessCard extends Card {
         this.width = opt.width
         this.analysisCache = processCache.getAnalysis(this.uuid)
         this.loader = new DataLoader(async (force) => {
-            this.series = toPointValues((await this.analysisCache.get(force)).summary)
+            this.series = (await this.analysisCache.get(force)).summary
         })
     }
 

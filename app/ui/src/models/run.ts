@@ -1,4 +1,5 @@
 import {Config, ConfigModel} from "./config"
+import {toPointValue} from "../components/charts/utils"
 
 export interface RunModel {
     run_uuid: string
@@ -35,32 +36,51 @@ export interface PointValue {
     step: number
     value: number
     smoothed: number
+    lastStep: number
 }
 
-export interface SeriesModel {
+export interface IndicatorModel {
     name: string
     step: number[]
     value: number[]
-    smoothed: number[]
     mean: number
-    series: PointValue[]
-    dynamic_type: string
-    range: [number, number]
-    is_editable: boolean
-    sub: SeriesModel
     is_summary: boolean
+    last_step: number[]
 }
 
-export interface InsightModel {
-    message: string
-    type: string
-    time: number
+export class Indicator {
+    name : string
+    series: PointValue[]
+    is_summary: boolean
+
+    constructor(indicator: IndicatorModel) {
+        this.name = indicator.name
+        this.series = toPointValue(indicator)
+        this.is_summary = indicator.is_summary
+    }
 }
 
 export interface AnalysisDataModel {
-    series: any[]
-    insights: InsightModel[]
-    summary: any[]
+    series: IndicatorModel[]
+    summary: IndicatorModel[]
+}
+
+export class AnalysisData {
+    series: Indicator[]
+    summary: Indicator[]
+
+    constructor(data: AnalysisDataModel) {
+        this.series = []
+        for (let s of data.series) {
+            this.series.push(new Indicator(s))
+        }
+        this.summary = []
+        if (data.summary != null) {
+            for (let s of data.summary) {
+                this.summary.push(new Indicator(s))
+            }
+        }
+    }
 }
 
 export class Run {
