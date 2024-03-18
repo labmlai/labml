@@ -88,12 +88,6 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
             this.baseUuid = this.preferenceData.base_experiment
 
-            if (!!this.baseUuid) {
-                await this.updateBaseRun(force)
-            } else {
-                this.missingBaseExperiment = true
-            }
-
             this.chartType = this.preferenceData.chart_type
             this.stepRange = [...this.preferenceData.step_range]
             this.focusSmoothed = this.preferenceData.focus_smoothed
@@ -104,6 +98,12 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                 this.basePlotIdx = [...this.preferenceData.base_series_preferences]
             }
             this.smoothValue = this.preferenceData.smooth_value
+
+            if (!!this.baseUuid) {
+                await this.updateBaseRun(force)
+            } else {
+                this.missingBaseExperiment = true
+            }
         })
 
         this.runHeaderCard = new RunHeaderCard({
@@ -169,29 +169,42 @@ class ComparisonView extends ScreenView implements MetricDataStore {
 
             setTitle({section: 'Comparison', item: this.run.name})
 
-            this.content = new ViewWrapper({
-                dataStore: this,
-                lineChartContainer: this.lineChartContainer,
-                sparkLinesContainer: this.sparkLinesContainer,
-                saveButtonContainer: this.saveButtonContainer,
-                optionRowContainer: this.optionRowContainer,
-                actualWidth: this.actualWidth,
-                requestMissingMetrics: this.requestMissingMetrics.bind(this),
-                savePreferences: this.savePreferences.bind(this),
-                preferenceChange: this.onPreferenceChange
-            })
-
-            this.renderHeaders()
-            this.content.render(this.missingBaseExperiment)
-            this.renderButtons()
+            this.renderContent()
         } catch (e) {
-            handleNetworkErrorInplace(e)
+            if (e.statusCode == 404) {
+                this.missingBaseExperiment = true
+                this.loader.removeErrorMessage()
+                this.renderContent()
+                let message = 'It appears the base run is missing or deleted. Please select another run to continue.'
+                let errorMessage = $('h6', '.error', message)
+                this.headerContainer.appendChild(errorMessage)
+            } else {
+                handleNetworkErrorInplace(e)
+            }
         } finally {
             if (this.status && this.status.isRunning) {
                 this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
                 this.refresh.start()
             }
         }
+    }
+
+    renderContent() {
+        this.content = new ViewWrapper({
+            dataStore: this,
+            lineChartContainer: this.lineChartContainer,
+            sparkLinesContainer: this.sparkLinesContainer,
+            saveButtonContainer: this.saveButtonContainer,
+            optionRowContainer: this.optionRowContainer,
+            actualWidth: this.actualWidth,
+            requestMissingMetrics: this.requestMissingMetrics.bind(this),
+            savePreferences: this.savePreferences.bind(this),
+            preferenceChange: this.onPreferenceChange
+        })
+
+        this.renderHeaders()
+        this.content.render(this.missingBaseExperiment)
+        this.renderButtons()
     }
 
     render(): WeyaElement {

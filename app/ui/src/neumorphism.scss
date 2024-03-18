@@ -90,6 +90,10 @@ body.light {
         color: $light-header;
       }
     }
+
+    .error{
+      color: $light-danger;
+    }
   }
 
   .fullscreen-cover {
@@ -415,6 +419,10 @@ body.dark {
       .sub {
         color: $dark-header;
       }
+    }
+
+     .error{
+      color: $dark-danger;
     }
   }
 
