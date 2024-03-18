@@ -83,4 +83,8 @@ export class DataLoader {
             this.loader.remove()
         }
     }
+
+    public removeErrorMessage() {
+        this.errorMessage.remove()
+    }
 }
