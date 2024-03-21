@@ -12,31 +12,68 @@
 
 ### 🔥 Features
 
-* Monitor running experiments from [mobile phone](https://github.com/labmlai/labml/tree/master/app) (or laptop)
-* Monitor [hardware usage on any computer](https://github.com/labmlai/labml/blob/master/guides/hardware_monitoring.md) with a single command
+* Monitor running experiments from mobile phone or laptop
+* Monitor hardware usage on any computer
+  with a single command
 * Integrate with just 2 lines of code (see examples below)
 * Keeps track of experiments including infomation like git commit, configurations and hyper-parameters
-* Keep Tensorboard logs organized
-* Save and load checkpoints
 * API for custom visualizations
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/labmlai/labml/blob/master/samples/stocks/analysis.ipynb)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/labmlai/labml/blob/master/samples/stocks/analysis.ipynb)
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vpj/poker/blob/master/kuhn_cfr/kuhn_cfr.ipynb)
 * Pretty logs of training progress
-* [Change hyper-parameters while the model is training](https://github.com/labmlai/labml/blob/master/guides/dynamic_hyperparameters.md)
-* Open source! we also have a small hosted server for the mobile web app
+* Open source!
 
+### Hosting the experiments server
 
-### Installation
+#### Prerequisites
 
-You can install this package using PIP.
+To install `MongoDB`, refer to the official
+   documentation [here](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/).
+
+#### Installation
+
+Install the package using pip:
 
 ```bash
-pip install labml
+pip install labml-app
 ```
 
-### PyTorch example
+#### Starting the server
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing) [![Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone)
+```sh
+# Start the server on the default port (5005)
+labml app-server
+
+# To start the server on a different port, use the following command
+labml app-server --port PORT
+```
+
+***Optional: to setup and configure Nginx in your server, please refer
+to [this](https://github.com/labmlai/labml/blob/master/guides/server-setup.md).***
+
+You can access the user interface either by visiting `http://localhost:{port}` or, if configured on a separate machine,
+by navigating to `http://{server-ip}:{port}`.
+
+### Monitor Experiments
+
+#### Installation
+
+1. Install the package using pip.
+
+```bash
+pip install labml labml-app
+```
+
+2. Create a file named `.labml.yaml` at the top level of your project folder, and add the following line to the file:
+
+```yaml
+app_url: http://localhost:{port}/api/v1/default
+
+# If you are setting up the project on a different machine, include the following line instead,
+app_url: http://{server-ip}:{port}/api/v1/default
+```
+
+#### PyTorch example
 
 ```python
 from labml import tracker, experiment
@@ -47,35 +84,21 @@ with experiment.record(name='sample', exp_conf=conf):
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 ```
 
-### PyTorch Lightning example
-
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15aSPDwbKihDu_c3aFHNPGG5POjVlM2KO?usp=sharing) [![Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/hnipun/pytorch-lightning)
+#### Distributed training example
 
 ```python
-from labml import experiment
-from labml.utils.lightening import LabMLLighteningLogger
+from labml import tracker, experiment
 
-trainer = pl.Trainer(gpus=1, max_epochs=5, progress_bar_refresh_rate=20, logger=LabMLLighteningLogger())
-
-with experiment.record(name='sample', exp_conf=conf, disable_screen=True):
-        trainer.fit(model, data_loader)
-
-```
-
-
-### TensorFlow 2.X Keras example
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1lx1dUG3MGaIDnq47HVFlzJ2lytjSa9Zy?usp=sharing) [![Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/hnipun/monitor-keras-model-training-on-your-mobile-phone)
-
-```python
-from labml import experiment
-from labml.utils.keras import LabMLKerasCallback
-
-with experiment.record(name='sample', exp_conf=conf):
+uuid = experiment.generate_uuid() # make sure to sync this in every machine
+experiment.create(uuid=uuid,
+                  name='distributed training sample',
+                  distributed_rank=0,
+                  distributed_world_size=8,
+                  )
+with experiment.start():
     for i in range(50):
-        model.fit(x_train, y_train, epochs=conf['epochs'], validation_data=(x_test, y_test),
-                  callbacks=[LabMLKerasCallback()], verbose=None)
+        loss, accuracy = train()
+        tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 ```
 
 ### 📚 Documentation
@@ -106,37 +129,37 @@ with experiment.record(name='sample', exp_conf=conf):
     <img src="https://raw.githubusercontent.com/vpj/lab/master/images/analytics.png" alt="Analytics"/>
 </div>
 
-## Tools
+[//]: # (## Tools)
 
-### [Hosting your own experiments server](https://docs.labml.ai/cli/labml.html#cmdoption-labml-arg-app-server)
+[//]: # ()
+[//]: # (### [Training models on cloud]&#40;https://github.com/labmlai/labml/tree/master/remote&#41;)
 
-```sh
-# Install the package
-pip install labml-app -U
+[//]: # ()
+[//]: # (```bash)
 
-# Start the server
+[//]: # (# Install the package)
 
-labml app-server
-```
+[//]: # (pip install labml_remote)
 
+[//]: # ()
+[//]: # (# Initialize the project)
 
-### [Training models on cloud](https://github.com/labmlai/labml/tree/master/remote)
+[//]: # (labml_remote init)
 
-```bash
-# Install the package
-pip install labml_remote
+[//]: # ()
+[//]: # (# Add cloud server&#40;s&#41; to .remote/configs.yaml)
 
-# Initialize the project
-labml_remote init
+[//]: # ()
+[//]: # (# Prepare the remote server&#40;s&#41;)
 
-# Add cloud server(s) to .remote/configs.yaml
+[//]: # (labml_remote prepare)
 
-# Prepare the remote server(s)
-labml_remote prepare
+[//]: # ()
+[//]: # (# Start a PyTorch distributed training job)
 
-# Start a PyTorch distributed training job
-labml_remote helper-torch-launch --cmd 'train.py' --nproc-per-node 2 --env GLOO_SOCKET_IFNAME enp1s0
-```
+[//]: # (labml_remote helper-torch-launch --cmd 'train.py' --nproc-per-node 2 --env GLOO_SOCKET_IFNAME enp1s0)
+
+[//]: # (```)
 
 ### [Monitoring hardware usage](https://github.com/labmlai/labml/blob/master/guides/hardware_monitoring.md)
 
@@ -148,16 +171,17 @@ pip install labml psutil py3nvml
 labml monitor
 ```
 
-## Other Guides
+[//]: # (## Other Guides)
 
-#### [Setting up a local Ubuntu workstation for deep learning](https://github.com/labmlai/labml/blob/master/guides/local-ubuntu.md)
+[//]: # ()
+[//]: # (#### [Setting up a local Ubuntu workstation for deep learning]&#40;https://github.com/labmlai/labml/blob/master/guides/local-ubuntu.md&#41;)
 
-#### [Setting up a cloud computer for deep learning](https://github.com/labmlai/labml/blob/master/guides/remote-python.md)
+[//]: # ()
+[//]: # (#### [Setting up a cloud computer for deep learning]&#40;https://github.com/labmlai/labml/blob/master/guides/remote-python.md&#41;)
 
 ## Citing
 
 If you use LabML for academic research, please cite the library using the following BibTeX entry.
-
 
 ```bibtext
 @misc{labml,
