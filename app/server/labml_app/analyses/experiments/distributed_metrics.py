@@ -1,5 +1,7 @@
+import base64
 from typing import Any, Optional, Dict, List
 
+import numpy as np
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from labml_db import Model, Index, load_keys

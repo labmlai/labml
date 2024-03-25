@@ -52,19 +52,24 @@ class CPUAnalysis(Analysis):
     def get_tracking(self):
         res = []
         summary = []
+        series_list = []
         for ind, track in self.cpu.tracking.items():
             name = ind.split('.')
 
             if any(x in ['freq', 'system', 'idle', 'user'] for x in name):
                 continue
 
-            series: Dict[str, Any] = Series().load(track).detail
-            series['name'] = ''.join(name[-1])
+            series = Series().load(track)
+            series_list.append(series.to_data())
+            series_data: Dict[str, Any] = series.detail
+            series_data['name'] = ''.join(name[-1])
 
-            res.append(series)
+            res.append(series_data)
 
-        if res:
-            summary = [get_mean_series(res)]
+        if series_list:
+            mean_series = Series().load(get_mean_series(series_list)).detail
+            mean_series['name'] = 'mean'
+            summary = [mean_series]
 
         if len(res) > 1:
             res.sort(key=lambda s: int(s['name']))

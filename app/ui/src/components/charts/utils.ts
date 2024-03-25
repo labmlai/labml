@@ -1,6 +1,6 @@
 import d3 from "../../d3"
 
-import {PointValue, Indicator, IndicatorModel} from "../../models/run"
+import {Indicator, IndicatorModel, PointValue} from "../../models/run"
 import {OUTLIER_MARGIN} from "./constants"
 
 export function getExtentWithoutOutliers(series: PointValue[], func: (d: PointValue) => number): [number, number] {
@@ -148,8 +148,11 @@ export function fillPlotPreferences(series: Indicator[], currentPlotIdx: number[
 
 export function toPointValue(s: IndicatorModel) {
     let res: PointValue[] = []
-    for (let i = 0; i < s.step.length; ++i) {
-        res.push({step: s.step[i], value: s.value[i], smoothed: s.value[i], lastStep: s.last_step[i]})
+    let step = getListFromBinary(s.step)
+    let value = getListFromBinary(s.value)
+    let lastStep = getListFromBinary(s.last_step)
+    for (let i = 0; i < step.length; ++i) {
+        res.push({step: step[i], value: value[i], smoothed: value[i], lastStep: lastStep[i]})
     }
 
     return res
@@ -348,4 +351,23 @@ export function smooth45(series: PointValue[]): PointValue[] {
     }
 
     return smoothSeries(series, hi)
+}
+
+function getListFromBinary(binaryString: string): Float32Array {
+    let b64 = atob(binaryString)
+    const uint8Array = new Uint8Array(b64.length);
+    for (let i = 0; i < b64.length; i++) {
+      uint8Array[i] = b64.charCodeAt(i);
+    }
+    try {
+        let dataView = new DataView(uint8Array.buffer)
+        let floatArray = new Float32Array(dataView.byteLength / 4)
+        for (let i = 0; i < floatArray.length; i++) {
+            floatArray[i] = dataView.getFloat32(i * 4, true)
+        }
+        return floatArray
+    } catch (e) {
+        console.error("Error parsing binary data", e)
+        return  new Float32Array(0);
+    }
 }

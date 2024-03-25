@@ -1,4 +1,4 @@
-import math
+import base64
 from typing import Dict, List, Optional, Union
 from datetime import datetime, timedelta
 
@@ -68,13 +68,21 @@ class Series:
         else:
             return 1.
 
+    def _data_to_binary(self):
+        values = base64.b64encode(np.array(self.value, dtype=np.float32).tobytes()).decode('utf-8')
+        steps = base64.b64encode(np.array(self.step, dtype=np.float32).tobytes()).decode('utf-8')
+        last_steps = base64.b64encode(np.array(self.last_step, dtype=np.float32).tobytes()).decode('utf-8')
+
+        return values, steps, last_steps
+
     @property
     def detail(self) -> SeriesModel:
+        values, steps, last_steps = self._data_to_binary()
         return {
-            'step': self.last_step.tolist(),
-            'value': self.value.tolist(),
+            'step': steps,
+            'value': values,
             'mean': np.mean(self.value),
-            'last_step': self.last_step.tolist(),
+            'last_step': last_steps,
         }
 
     @property
@@ -88,7 +96,8 @@ class Series:
             'step': self.step,
             'value': self.value,
             'last_step': self.last_step,
-            'step_gap': self.step_gap
+            'step_gap': self.step_gap,
+            'mean': np.mean(self.value),
         }
 
     def __len__(self):
