@@ -41,11 +41,11 @@ export interface PointValue {
 
 export interface IndicatorModel {
     name: string
-    step: number[]
-    value: number[]
+    step: string
+    value: string
     mean: number
     is_summary: boolean
-    last_step: number[]
+    last_step: string
 }
 
 export class Indicator {
