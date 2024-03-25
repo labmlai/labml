@@ -131,15 +131,8 @@ def get_merged_metric_tracking_util(track_data_list, preference_data, get_all_da
             value_list = series_list[series_name]['value']
 
             for i in range(len(step_list)):
-                step_arr_bytes = \
-                    np.array([np.frombuffer(base64.b64decode(step_list[i]), dtype=np.float32)[-1]],
-                             dtype=np.float32).tobytes()
-                step_list[i] = base64.b64encode(step_arr_bytes).decode('utf-8')
-
-                value_arr_bytes = \
-                    np.array([np.frombuffer(base64.b64decode(value_list[i]), dtype=np.float32)[-1]],
-                             dtype=np.float32).tobytes()
-                value_list[i] = base64.b64encode(value_arr_bytes).decode('utf-8')
+                step_list[i] = step_list[i][-1:]
+                value_list[i] = value_list[i][-1:]
 
             s = _dist_series_merge(step_list, value_list)
             s['name'] = series_name

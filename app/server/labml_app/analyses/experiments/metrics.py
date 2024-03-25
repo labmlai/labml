@@ -102,7 +102,7 @@ class MetricsAnalysis(Analysis):
             name = ind.split('.')
 
             s = Series().load(track)
-            series: Dict[str, Any] = s.detail
+            series: Dict[str, Any] = s.to_data()
             series['name'] = '.'.join(name)
 
             res.append(series)
@@ -168,16 +168,17 @@ def get_metrics_tracking_util(track_data: List[Dict[str, Any]], preference_data:
         if include_full_data:
             filtered_track_data[-1]['is_summary'] = False
         else:
-            step_arr_bytes = \
-                np.array([np.frombuffer(base64.b64decode(filtered_track_data[-1]['step']), dtype=np.float32)[-1]],
-                         dtype=np.float32).tobytes()
-            filtered_track_data[-1]['step'] = base64.b64encode(step_arr_bytes).decode('utf-8')
-
-            value_arr_bytes = \
-                np.array([np.frombuffer(base64.b64decode(filtered_track_data[-1]['value']), dtype=np.float32)[-1]],
-                         dtype=np.float32).tobytes()
-            filtered_track_data[-1]['value'] = base64.b64encode(value_arr_bytes).decode('utf-8')
+            filtered_track_data[-1]['value'] = filtered_track_data[-1]['value'][-1:]
+            filtered_track_data[-1]['step'] = filtered_track_data[-1]['step'][-1:]
             filtered_track_data[-1]['is_summary'] = True
+
+        s = Series()
+        s.update(list(filtered_track_data[-1]['step']), filtered_track_data[-1]['value'])
+        details = s.detail
+        details['is_summary'] = filtered_track_data[-1]['is_summary']
+        details['name'] = filtered_track_data[-1]['name']
+
+        filtered_track_data[-1] = details
 
     return filtered_track_data
 
