@@ -96,7 +96,8 @@ class Series:
             'step': self.step,
             'value': self.value,
             'last_step': self.last_step,
-            'step_gap': self.step_gap
+            'step_gap': self.step_gap,
+            'mean': np.mean(self.value),
         }
 
     def __len__(self):
