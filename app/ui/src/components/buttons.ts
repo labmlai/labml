@@ -360,7 +360,7 @@ export class ToggleButton extends Button {
         this.elem = $('div', '.d-flex',
             {on: {click: this.onClick}}
         )
-
+        this.defaultClass = this.isToggled ? 'selected' : 'empty'
         this.renderToggleButton()
     }
 

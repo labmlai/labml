@@ -15,7 +15,7 @@ export class Slider {
     private readonly min: number
     private readonly max: number
     private readonly step: number
-    private value: number
+    value: number
 
     constructor(opt: SliderOptions) {
         this.onChange = opt.onChange

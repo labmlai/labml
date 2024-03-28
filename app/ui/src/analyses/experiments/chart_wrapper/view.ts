@@ -278,6 +278,10 @@ export class ViewWrapper {
     }
 
     private renderOptionRow() {
+        this.scaleButton.isToggled = this.dataStore.chartType > 0
+        this.focusButton.isToggled = this.dataStore.focusSmoothed
+        this.smoothSlider.value = this.dataStore.smoothValue
+
         this.optionRowContainer.innerHTML = ''
         this.optionRowContainer.classList.add('chart-options')
         $(this.optionRowContainer, $ => {
