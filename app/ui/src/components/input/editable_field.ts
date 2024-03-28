@@ -52,6 +52,10 @@ export default class EditableField {
         this.valueElem.textContent = value
     }
 
+    updateInput(value: string) {
+        this.inputElem.value = value
+    }
+
     render($: WeyaElementFunction) {
         $(`li`, $ => {
             $('span.item-key', this.name)

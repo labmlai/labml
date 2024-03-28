@@ -303,15 +303,19 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                     this.basePlotIdx = []
                     this.plotIdx = []
                     this.stepRange = [-1, -1]
+                    this.focusSmoothed = true
+                    this.smoothValue = 50
+                    this.chartType = 0
+
+                    await this.savePreferences()
 
                     this.isUnsaved = false
                     this.refresh.resume()
 
                     await this.updateBaseRun(true)
 
-                    this.plotIdx = fillPlotPreferences(this.series, this.preferenceData.series_preferences)
+                    this.plotIdx = fillPlotPreferences(this.series, [])
                     this.basePlotIdx = fillPlotPreferences(this.baseSeries, [])
-
 
                     this.renderHeaders()
                     this.content.render(this.missingBaseExperiment)

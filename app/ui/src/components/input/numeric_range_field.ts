@@ -83,13 +83,11 @@ export class NumericRangeField {
     public setRange(min: number, max: number) {
         this.min = min
         this.max = max
-
-        if (this.elem == null || !this.minField.valueElem) { //element is not yet rendered or destroyed
+        if (this.elem == null) { //element is not yet rendered or destroyed
             return
         }
-
-        this.minField.updateValue(min == -1 ? '' : `${min}`)
-        this.maxField.updateValue(max == -1 ? '' : `${max}`)
+        this.minField.updateInput(min == -1 ? '' : `${min}`)
+        this.maxField.updateInput(max == -1 ? '' : `${max}`)
     }
 
     render($: WeyaElementFunction) {
