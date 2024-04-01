@@ -167,3 +167,59 @@ export class Run {
     }
 }
 
+
+export interface CustomMetricModel {
+    metric_id: string
+    name: string
+    description: string
+    created_time: number
+}
+
+export class CustomMetric {
+    metricId: string
+    name: string
+    description: string
+    createdTime: number
+
+    constructor(metric: CustomMetricModel) {
+        this.metricId = metric.metric_id
+        this.name = metric.name
+        this.description = metric.description
+        this.createdTime = metric.created_time
+    }
+}
+
+export interface CustomMetricListModel {
+    metrics: CustomMetricModel[]
+}
+
+export class CustomMetricList {
+    private readonly metrics: Record<string, CustomMetric>
+
+    constructor(metricList: CustomMetricListModel) {
+        this.metrics = {}
+        for (let item of metricList.metrics) {
+            this.metrics[item.metric_id] =  new CustomMetric(item)
+        }
+    }
+
+    public getMetric(metricId: string): CustomMetric {
+        return this.metrics[metricId]
+    }
+
+    public getMetrics(): CustomMetric[] {
+        return Object.values(this.metrics).sort((a, b) => b.createdTime - a.createdTime);
+    }
+
+    public addMetric(metric: CustomMetric) {
+        this.metrics[metric.metricId] = metric
+    }
+
+    public removeMetric(metricId: string) {
+        delete this.metrics[metricId]
+    }
+
+    public updateMetric(metric: CustomMetric) {
+        this.metrics[metric.metricId] = metric
+    }
+}
