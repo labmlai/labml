@@ -61,7 +61,7 @@ by navigating to `http://{server-ip}:{port}`.
 1. Install the package using pip.
 
 ```bash
-pip install labml labml-app
+pip install labml
 ```
 
 2. Create a file named `.labml.yaml` at the top level of your project folder, and add the following line to the file:
