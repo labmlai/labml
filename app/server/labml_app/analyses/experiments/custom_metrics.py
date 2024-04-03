@@ -41,7 +41,8 @@ class CustomMetricModel(Model['CustomMetricModel']):
             'id': self.metric_id,
             'name': self.name,
             'description': self.description,
-            'preferences': mp.get_data()
+            'preferences': mp.get_data(),
+            'created_time': self.created_time,
         }
 
 

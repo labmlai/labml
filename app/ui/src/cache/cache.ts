@@ -1,4 +1,4 @@
-import {AnalysisData, Run} from "../models/run"
+import {AnalysisData, CustomMetric, CustomMetricList, CustomMetricModel, Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK from "../network"
 import { User} from "../models/user"
@@ -445,6 +445,48 @@ export class ComparisonAnalysisPreferenceCache extends CacheObject<ComparisonPre
         NETWORK.updatePreferences(this.url, this.uuid, this.data).then()
 
         return this.data
+    }
+}
+
+export class CustomMetricCache extends CacheObject<CustomMetricList> {
+    private readonly uuid: string
+
+    constructor(uuid: string) {
+        super()
+        this.uuid = uuid
+    }
+
+    async load(): Promise<CustomMetricList> {
+        return this.broadcastPromise.create(async () => {
+            return new CustomMetricList(await NETWORK.getCustomMetrics(this.uuid))
+        })
+    }
+
+    async createMetric(data: object): Promise<void> {
+        let customMetricModel = await NETWORK.createCustomMetric(this.uuid, data)
+        let customMetric = new CustomMetric(customMetricModel)
+
+        if (this.data == null) {
+            this.data = new CustomMetricList({metrics: [customMetricModel]})
+        }
+
+        this.data.addMetric(customMetric)
+    }
+
+    async deleteMetric(metricUUID: string): Promise<void> {
+        await NETWORK.deleteCustomMetric(this.uuid, metricUUID)
+
+        if (this.data != null) {
+            this.data.removeMetric(metricUUID)
+        }
+    }
+    
+    async updateMetric(metricUUID: string, data: object): Promise<void> {
+        await NETWORK.updateCustomMetric(this.uuid, data)
+
+        if (this.data != null) {
+            this.data.updateMetric(new CustomMetric(<CustomMetricModel>data))
+        }
     }
 }
 
