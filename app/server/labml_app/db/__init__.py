@@ -6,7 +6,9 @@ from labml_db.model import ModelDict
 from labml_db import Model, Index
 from labml_db.driver.mongo import MongoDbDriver
 from labml_db.index_driver.mongo import MongoIndexDbDriver
+
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
 
 from .. import settings
 from . import project
@@ -83,6 +85,13 @@ def init_mongo_db(mongo_address: str = ''):
             mongo_address = 'localhost'
 
     mongo_client = MongoClient(host=mongo_address, port=27017, connect=False)
+
+    try:
+        mongo_client.admin.command('ismaster')
+    except ConnectionFailure:
+        raise Exception('MongoDB is not installed or not started. Please follow the tutorial here for more info, '
+                        'https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/')
+
     db = mongo_client['labml']
 
     Model.set_db_drivers([MongoPickleDbDriver(m, db) for m in models])
