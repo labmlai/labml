@@ -5,7 +5,6 @@ import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
 import {CancelButton} from '../components/buttons'
-import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
@@ -51,7 +50,6 @@ export class RunsPickerView extends ScreenView {
 
         this.searchQuery = ''
 
-        mix_panel.track('Runs Picker View')
     }
 
     onResize(width: number) {

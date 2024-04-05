@@ -10,7 +10,6 @@ import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {distributedAnalyses, experimentAnalyses, rankAnalysis} from "../analyses/analyses"
 import {Card} from "../analyses/types"
 import CACHE, {RunCache, RunsListCache, RunStatusCache, UserCache} from "../cache/cache"
-import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
@@ -64,7 +63,6 @@ class RunView extends ScreenView {
             parent: this.constructor.name
         })
 
-        mix_panel.track('Run View', {uuid: this.uuid})
     }
 
     private get isRank(): boolean {

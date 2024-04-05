@@ -5,7 +5,6 @@ import CACHE, {UserCache} from "../cache/cache"
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import {User} from '../models/user'
 import EditableField from '../components/input/editable_field'
-import mix_panel from "../mix_panel"
 import {handleNetworkError} from '../utils/redirect'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
@@ -30,7 +29,6 @@ class SettingsView extends ScreenView {
         this.userCache = CACHE.getUser()
         this.loader = new Loader(true)
 
-        mix_panel.track('Settings View')
     }
 
     onResize(width: number) {
