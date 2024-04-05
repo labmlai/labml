@@ -7,7 +7,6 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {DataLoader} from "../../../components/loader"
-import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
@@ -42,7 +41,6 @@ class StdErrorView extends ScreenView {
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
-        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {

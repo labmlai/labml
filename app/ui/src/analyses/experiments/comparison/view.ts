@@ -11,7 +11,6 @@ import {BackButton, DeleteButton, EditButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {fillPlotPreferences} from "../../../components/charts/utils"
-import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
@@ -115,7 +114,6 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
 
-        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {

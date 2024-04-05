@@ -1,5 +1,3 @@
-import {Integrations, Sentry} from './sentry'
-
 import {ROUTER} from './app'
 import {RunHandler} from './views/run_view'
 import {PageNotFoundHandler} from './views/errors/page_not_found_view'
@@ -12,7 +10,6 @@ import {ProcessDetailsHandler} from "./analyses/sessions/process/detail_view"
 import {RunHeaderHandler} from "./analyses/experiments/run_header/view"
 import {SessionHeaderHandler} from "./analyses/sessions/session_header/view"
 import {SessionHandler} from './views/session_view'
-import {SENTRY_DSN} from './env'
 import {AuthErrorHandler} from './views/errors/auth_error_view'
 import {OtherErrorHandler} from './views/errors/other_error_view'
 import {NetworkErrorHandler} from './views/errors/network_error_view'
@@ -72,16 +69,6 @@ if (
 // Ref: https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/AdjustingtheTextSize/AdjustingtheTextSize.html
 document.addEventListener("touchstart", () => {
 }, true);
-
-if (SENTRY_DSN) {
-    Sentry.init({
-        dsn: SENTRY_DSN,
-        integrations: [
-            new Integrations.BrowserTracing(),
-        ],
-        tracesSampleRate: 1.0,
-    })
-}
 
 (window as any).handleOpenURL = function (url) {
     window.location.hash = `#${url.split('#')[1]}`

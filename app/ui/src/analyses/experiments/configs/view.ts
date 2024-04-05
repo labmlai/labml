@@ -7,7 +7,6 @@ import {DataLoader} from "../../../components/loader"
 import {BackButton, SaveButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {Configs, ConfigStatus} from "./components"
-import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
@@ -44,7 +43,6 @@ class RunConfigsView extends ScreenView {
         this.save = new SaveButton({onButtonClick: this.onSave.bind(this), parent: this.constructor.name, isDisabled: true})
         this.configsChanged = false
 
-        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {

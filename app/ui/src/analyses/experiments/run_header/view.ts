@@ -15,7 +15,6 @@ import {formatTime, getTimeDiff} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
 import {BadgeView} from "../../../components/badge"
 import {StatusView} from "../../../components/status"
-import mix_panel from "../../../mix_panel"
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {formatFixed} from "../../../utils/value"
@@ -66,8 +65,6 @@ class RunHeaderView extends ScreenView {
             this.run = await this.runCache.get(force)
             this.user = await this.userCache.get(force)
         })
-
-        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
 
         this.editStatus = EditStatus.NOCHANGE
     }

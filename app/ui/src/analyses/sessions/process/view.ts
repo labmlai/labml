@@ -7,7 +7,6 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton} from "../../../components/buttons"
 import {processCache} from "./cache"
 import {SessionHeaderCard} from '../session_header/card'
-import mix_panel from "../../../mix_panel"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {ProcessList} from "./process_list"
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
@@ -45,7 +44,6 @@ class ProcessView extends ScreenView {
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
-        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {

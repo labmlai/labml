@@ -7,7 +7,6 @@ import {CancelButton, DeleteButton, EditButton} from '../components/buttons'
 import {SessionsListItemModel} from '../models/session_list'
 import {SessionsListItemView} from '../components/sessions_list_item'
 import {HamburgerMenuView} from '../components/hamburger_menu'
-import mix_panel from "../mix_panel"
 import EmptySessionsList from "./empty_sessions_list"
 import {UserMessages} from "../components/user_messages"
 import {AwesomeRefreshButton} from '../components/refresh_button'
@@ -52,7 +51,6 @@ class SessionsListView extends ScreenView {
         this.isEditMode = false
         this.sessionsDeleteSet = new Set<string>()
 
-        mix_panel.track('Computers List View')
     }
 
     async _render() {
