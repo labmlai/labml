@@ -5,7 +5,7 @@ import CACHE, {
 } from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import {DataLoader} from "../../../components/loader"
+import {DataLoader, Loader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, DeleteButton, EditButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
@@ -49,6 +49,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     private runPickerElem: HTMLDivElement
     private headerContainer: HTMLDivElement
     private saveButtonContainer: HTMLDivElement
+    private loaderContainer: HTMLDivElement
 
     private actualWidth: number
     private refresh: AwesomeRefreshButton
@@ -62,7 +63,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     private baseAnalysisCache: AnalysisDataCache
     private missingBaseExperiment: boolean
     private deleteButton: DeleteButton
-
+    private editButton: EditButton
 
     constructor(uuid: string) {
         super()
@@ -70,7 +71,6 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.uuid = uuid
         this.chartType = 0
         this.preferenceCache = <ComparisonAnalysisPreferenceCache>comparisonCache.getPreferences(this.uuid)
-
         this.isUnsaved = false
 
         this.loader = new DataLoader(async (force) => {
@@ -113,7 +113,10 @@ class ComparisonView extends ScreenView implements MetricDataStore {
 
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
-
+        this.editButton = new EditButton({
+            onButtonClick: this.onEditClick,
+            parent: this.constructor.name
+        })
     }
 
     get requiresAuth(): boolean {
@@ -150,6 +153,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                         })
                         this.loader.render($)
                         this.headerContainer = $('div', '.compare-header')
+                        this.loaderContainer = $('div')
                         this.optionRowContainer = $('div')
                         if (this.baseRun != null) {
                             $('h2', '.header.text-center', 'Comparison')
@@ -203,6 +207,21 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.renderHeaders()
         this.content.render(this.missingBaseExperiment)
         this.renderButtons()
+    }
+
+    private setBaseLoading(value: boolean) {
+        this.loaderContainer.innerHTML = ''
+        if (value) {
+            $(this.loaderContainer, $ => {
+                new Loader().render($)
+            })
+            this.editButton.disabled = true
+            this.deleteButton.disabled = true
+            this.content.clear()
+        } else {
+            this.editButton.disabled = false
+            this.deleteButton.disabled = false
+        }
     }
 
     render(): WeyaElement {
@@ -309,7 +328,6 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             onPicked: async run => {
                 if (this.preferenceData.base_experiment !== run.run_uuid) {
                     this.preferenceData = this.preferenceCache.updateBaseExperiment(run)
-
                     this.baseUuid = run.run_uuid
                     this.basePlotIdx = []
                     this.plotIdx = []
@@ -318,19 +336,21 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                     this.smoothValue = 50
                     this.chartType = 0
 
-                    await this.savePreferences()
+                    this.setBaseLoading(true)
+                    this.updateBaseRun(true).then(async () => {
+                        this.isUnsaved = false
+                        this.refresh.resume()
 
-                    this.isUnsaved = false
-                    this.refresh.resume()
+                        await this.savePreferences()
+                        this.plotIdx = fillPlotPreferences(this.series, [])
+                        this.basePlotIdx = fillPlotPreferences(this.baseSeries, [])
 
-                    await this.updateBaseRun(true)
+                        this.renderHeaders()
+                        this.content.render(this.missingBaseExperiment)
+                        this.renderButtons()
 
-                    this.plotIdx = fillPlotPreferences(this.series, [])
-                    this.basePlotIdx = fillPlotPreferences(this.baseSeries, [])
-
-                    this.renderHeaders()
-                    this.content.render(this.missingBaseExperiment)
-                    this.renderButtons()
+                        this.setBaseLoading(false)
+                    })
                 }
                 this.runPickerElem.classList.remove("fullscreen-cover")
                 document.body.classList.remove("stop-scroll")
@@ -349,10 +369,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         this.deleteButton.disabled = !this.baseUuid
         $(this.buttonContainer, $ => {
             this.deleteButton.render($)
-            new EditButton({
-                onButtonClick: this.onEditClick,
-                parent: this.constructor.name
-            }).render($)
+            this.editButton.render($)
         })
     }
 

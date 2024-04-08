@@ -208,11 +208,15 @@ export class ViewWrapper {
         })
     }
 
+    public clear() {
+        this.lineChartContainer.innerHTML = ''
+        this.sparkLinesContainer.innerHTML = ''
+        this.optionRowContainer.innerHTML = ''
+    }
+
     public render(missingBaseExperiment: boolean = false) {
         if (missingBaseExperiment) {
-            this.lineChartContainer.innerHTML = ''
-            this.sparkLinesContainer.innerHTML = ''
-            this.optionRowContainer.innerHTML = ''
+            this.clear()
             return
         }
         this.renderCharts()
