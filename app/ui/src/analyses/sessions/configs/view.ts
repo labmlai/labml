@@ -7,7 +7,6 @@ import {DataLoader} from "../../../components/loader"
 import {BackButton} from "../../../components/buttons"
 import {SessionHeaderCard} from "../session_header/card"
 import {Configs} from "./components"
-import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
@@ -40,7 +39,6 @@ class SessionConfigsView extends ScreenView {
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
-        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {

@@ -7,7 +7,6 @@ import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {SessionHeaderCard} from '../session_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
-import mix_panel from "../../../mix_panel"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
@@ -90,7 +89,6 @@ export class SessionView extends ScreenView {
             buttonLabel: "Filter Steps"
         })
 
-        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {

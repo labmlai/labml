@@ -9,7 +9,6 @@ import {Session} from '../models/session'
 import {SessionHeaderCard} from '../analyses/sessions/session_header/card'
 import {sessionAnalyses} from '../analyses/analyses'
 import {UserMessages} from "../components/user_messages"
-import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
@@ -58,7 +57,6 @@ class SessionView extends ScreenView {
             parent: this.constructor.name
         })
 
-        mix_panel.track('Computer View', {uuid: this.uuid})
     }
 
     get requiresAuth(): boolean {
@@ -138,7 +136,6 @@ class SessionView extends ScreenView {
 
     async onSessionAction(isSessionClaim: boolean) {
         if (!this.user.is_complete) {
-            mix_panel.track('Claim Button Click', {uuid: this.uuid, analysis: this.constructor.name})
             ROUTER.navigate(`/login?return_url=${window.location.pathname}`)
         } else {
             try {

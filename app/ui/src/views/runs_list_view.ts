@@ -7,7 +7,6 @@ import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
 import {CancelButton, DeleteButton, EditButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
-import mix_panel from "../mix_panel"
 import EmptyRunsList from './empty_runs_list'
 import {UserMessages} from '../components/user_messages'
 import {AwesomeRefreshButton} from '../components/refresh_button'
@@ -59,7 +58,6 @@ class RunsListView extends ScreenView {
         this.selectedRunsSet = new Set<RunListItemModel>()
         this.isTBProcessing = false
 
-        mix_panel.track('Runs List View')
     }
 
     onResize(width: number) {
