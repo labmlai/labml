@@ -1,6 +1,5 @@
 import {ROUTER, SCREEN} from '../../app'
 import {Weya as $} from '../../../../lib/weya/weya'
-import mix_panel from "../../mix_panel"
 import {setTitle} from '../../utils/document'
 import {ScreenView} from '../../screen_view'
 
@@ -48,7 +47,6 @@ class AuthErrorView extends ScreenView {
             this.events[k] = wrapEvent(k, func)
         }
 
-        mix_panel.track('401 View')
     }
 
     get requiresAuth(): boolean {

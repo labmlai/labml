@@ -8,7 +8,6 @@ import EditableField from "../../../components/input/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
 import {StatusView} from "../../../components/status"
-import mix_panel from "../../../mix_panel"
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {Session} from "../../../models/session"
 import {getPath, setTitle} from '../../../utils/document'
@@ -59,7 +58,6 @@ class SessionHeaderView extends ScreenView {
             }
         })
 
-        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {

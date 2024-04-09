@@ -1,7 +1,6 @@
 import {Weya as $, WeyaElement, WeyaElementFunction} from "../../../lib/weya/weya"
 import {ROUTER} from '../app'
 import runHeaderAnalysis from '../analyses/experiments/run_header'
-import mix_panel from "../mix_panel"
 
 export interface ButtonOptions {
     onButtonClick?: () => void
@@ -36,8 +35,6 @@ export abstract class Button {
     }
 
     onClick = (e: Event) => {
-        mix_panel.track(`${this.constructor.name} Clicked`, {parent: this.parent})
-
         e.preventDefault()
         if (!this.isDisabled) {
             this.onButtonClick()
