@@ -185,13 +185,18 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
     smoothRange /= 2 // remove half from each end
     return  <Indicator[]>series.map(s => {
         let res = {...s}
-        res.series = []
 
-        if (s.series.length == 0) {
+        if (s.series.length <= 2) {
             return res
         }
 
-        let start = 1e9, end = -1
+        let trimStepCount = smoothRange / (s.series[1].step - s.series[0].step)
+        if (trimStepCount < 1) {
+            return res
+        }
+
+        res.series = []
+
         let localMin = min
         let localMax = max
 
@@ -207,9 +212,7 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
 
         for (let i = 0; i < s.series.length; i++) {
             let p = s.series[i]
-            if ((p.step >= localMin || localMin == -1) && (p.step <= localMax || localMax == -1)) {
-                start = Math.min(start, i)
-                end = Math.max(end, i)
+            if (p.step >= localMin && p.step <= localMax) {
                 res.series.push(p)
             }
         }
