@@ -187,12 +187,12 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
         let res = {...s}
 
         if (s.series.length <= 2) {
-            return res
-        }
-
-        let trimStepCount = smoothRange / (s.series[1].step - s.series[0].step)
-        if (trimStepCount < 1) {
-            return res
+            smoothRange = 0
+        } else {
+            let trimStepCount = smoothRange / (s.series[1].step - s.series[0].step)
+            if (trimStepCount < 1) {
+                smoothRange = 0
+            }
         }
 
         res.series = []
@@ -285,7 +285,7 @@ export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicato
         return [stepRange, 0]
     }
 
-    let smoothRange = mapRange(smoothValue, 1, 100, 1, minRange/10)
+    let smoothRange = mapRange(smoothValue, 1, 100, 1, Math.max(minRange/10, 1))
 
     let stepRange = [[],[]]
     for (let s of currentSeries) {
