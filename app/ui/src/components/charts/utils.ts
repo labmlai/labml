@@ -262,19 +262,18 @@ export function trimStepsOfPoints(series: PointValue[][], min: number, max: numb
  * (ret[0] = smooth window for current series, ret[1] = smooth window for base series
  */
 export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicator[], smoothValue: number): [number[][], number] {
-    let minRange: number = Number.MAX_SAFE_INTEGER
+    let maxRange: number = Number.MIN_SAFE_INTEGER
     for (let s of currentSeries) {
-        if (s.series.length > 0 && !s.is_summary) {
-            minRange = Math.min(minRange, s.series[s.series.length - 1].step - s.series[0].step)
+        if (s.series.length > 1 && !s.is_summary) {
+            maxRange = Math.max(maxRange, s.series[s.series.length - 1].step - s.series[0].step)
         }
     }
     for (let s of baseSeries) {
-        if (s.series.length > 0 && !s.is_summary) {
-            minRange = Math.min(minRange, s.series[s.series.length - 1].step - s.series[0].step)
+        if (s.series.length > 1 && !s.is_summary) {
+            maxRange = Math.max(maxRange, s.series[s.series.length - 1].step - s.series[0].step)
         }
     }
-
-    if (minRange == Number.MAX_SAFE_INTEGER) {
+    if (maxRange == Number.MIN_SAFE_INTEGER) {
         let stepRange = [[],[]]
         for (let s of currentSeries) {
             stepRange[0].push(1)
@@ -285,7 +284,7 @@ export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicato
         return [stepRange, 0]
     }
 
-    let smoothRange = mapRange(smoothValue, 1, 100, 1, Math.max(minRange/10, 1))
+    let smoothRange = mapRange(smoothValue, 1, 100, 1, Math.max(maxRange/10, 1))
 
     let stepRange = [[],[]]
     for (let s of currentSeries) {
