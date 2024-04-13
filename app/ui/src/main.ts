@@ -13,7 +13,6 @@ import {SessionHandler} from './views/session_view'
 import {AuthErrorHandler} from './views/errors/auth_error_view'
 import {OtherErrorHandler} from './views/errors/other_error_view'
 import {NetworkErrorHandler} from './views/errors/network_error_view'
-import {MergedDistributedMetricsHandler} from "./analyses/experiments/merged_metrics/view"
 
 ROUTER.route(/^(.*)$/g, [() => {
     ROUTER.navigate('/404')
@@ -29,7 +28,6 @@ new SessionHandler()
 new RunsListHandler()
 new SessionsListHandler()
 new SettingsHandler()
-new MergedDistributedMetricsHandler()
 
 new RunHeaderHandler()
 new SessionHeaderHandler()
