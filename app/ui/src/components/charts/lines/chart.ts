@@ -211,21 +211,6 @@ export class LineChart {
                                 {
                                     transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                 }, $ => {
-                                    if (this.currentSeries.length < 3 && this.baseSeries.length == 0) {
-                                        this.currentSeries.map((s, i) => {
-                                            if (this.currentSeries[i].series.length == 0) {
-                                                return
-                                            }
-                                            new LineFill({
-                                                series: this.currentSeries[i].series,
-                                                xScale: this.xScale,
-                                                yScale: this.yScale,
-                                                color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
-                                                colorIdx: this.uniqueItems.get(s.name),
-                                                chartId: this.chartId
-                                            }).render($)
-                                        })
-                                    }
                                     this.currentSeries.map((s, i) => {
                                         let linePlot = new LinePlot({
                                             series: s.series,
