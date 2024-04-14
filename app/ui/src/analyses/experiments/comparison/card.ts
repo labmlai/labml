@@ -7,7 +7,7 @@ import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {DEBUG} from "../../../env"
 import {clearChildElements} from "../../../utils/document"
 import {fillPlotPreferences} from "../../../components/charts/utils"
-import {AnalysisData, AnalysisDataModel, Indicator} from "../../../models/run"
+import {AnalysisData, Indicator} from "../../../models/run"
 import {ROUTER} from "../../../app"
 import {NetworkError} from "../../../network"
 import {CardWrapper} from "../chart_wrapper/card"
@@ -77,7 +77,11 @@ export class ComparisonCard extends Card {
              await this.loader.load(true)
              if (this.currentSeries.concat(this.baseSeries).length > 0) {
                 this.chartWrapper?.updateData(this.currentSeries, this.baseSeries, this.preferenceData)
-                this.chartWrapper?.render()
+                if (!this.missingBaseExperiment) {
+                    this.chartWrapper?.render()
+                } else {
+                    this.renderEmptyChart()
+                }
              }
          } catch (e) {
          }

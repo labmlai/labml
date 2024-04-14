@@ -44,7 +44,7 @@ def get_true_run_uuid(run_uuid: str) -> str:
 
 def get_default_series_preference(series_names: List[str]) -> List[int]:
     series_pref = [1 if 'loss' == s.lower().split('.')[0] else -1 for s in series_names]
-    if all(p == -1 for p in series_pref):
+    if all(p == -1 for p in series_pref) and len(series_pref) > 0:
         series_pref[0] = 1
     return series_pref
 
