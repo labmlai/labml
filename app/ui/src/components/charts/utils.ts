@@ -185,13 +185,18 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
     smoothRange /= 2 // remove half from each end
     return  <Indicator[]>series.map(s => {
         let res = {...s}
-        res.series = []
 
-        if (s.series.length == 0) {
-            return res
+        if (s.series.length <= 2) {
+            smoothRange = 0
+        } else {
+            let trimStepCount = smoothRange / (s.series[1].step - s.series[0].step)
+            if (trimStepCount < 1) {
+                smoothRange = 0
+            }
         }
 
-        let start = 1e9, end = -1
+        res.series = []
+
         let localMin = min
         let localMax = max
 
@@ -207,9 +212,7 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
 
         for (let i = 0; i < s.series.length; i++) {
             let p = s.series[i]
-            if ((p.step >= localMin || localMin == -1) && (p.step <= localMax || localMax == -1)) {
-                start = Math.min(start, i)
-                end = Math.max(end, i)
+            if (p.step >= localMin && p.step <= localMax) {
                 res.series.push(p)
             }
         }
@@ -259,19 +262,18 @@ export function trimStepsOfPoints(series: PointValue[][], min: number, max: numb
  * (ret[0] = smooth window for current series, ret[1] = smooth window for base series
  */
 export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicator[], smoothValue: number): [number[][], number] {
-    let minRange: number = Number.MAX_SAFE_INTEGER
+    let maxRange: number = Number.MIN_SAFE_INTEGER
     for (let s of currentSeries) {
-        if (s.series.length > 0 && !s.is_summary) {
-            minRange = Math.min(minRange, s.series[s.series.length - 1].step - s.series[0].step)
+        if (s.series.length > 1 && !s.is_summary) {
+            maxRange = Math.max(maxRange, s.series[s.series.length - 1].step - s.series[0].step)
         }
     }
     for (let s of baseSeries) {
-        if (s.series.length > 0 && !s.is_summary) {
-            minRange = Math.min(minRange, s.series[s.series.length - 1].step - s.series[0].step)
+        if (s.series.length > 1 && !s.is_summary) {
+            maxRange = Math.max(maxRange, s.series[s.series.length - 1].step - s.series[0].step)
         }
     }
-
-    if (minRange == Number.MAX_SAFE_INTEGER) {
+    if (maxRange == Number.MIN_SAFE_INTEGER) {
         let stepRange = [[],[]]
         for (let s of currentSeries) {
             stepRange[0].push(1)
@@ -282,7 +284,7 @@ export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicato
         return [stepRange, 0]
     }
 
-    let smoothRange = mapRange(smoothValue, 1, 100, 1, minRange/10)
+    let smoothRange = mapRange(smoothValue, 1, 100, 1, Math.max(maxRange/10, 1))
 
     let stepRange = [[],[]]
     for (let s of currentSeries) {
