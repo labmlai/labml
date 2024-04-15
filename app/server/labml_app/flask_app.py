@@ -15,7 +15,7 @@ from starlette.responses import JSONResponse
 from labml_app import db
 from labml_app import handlers
 from labml_app.logger import logger
-from labml_app.settings import WEB_URL, IS_LOCAL_SETUP
+from labml_app.settings import WEB_URL, IS_LOCAL_SETUP, IS_DEBUG
 
 
 def get_static_path():
@@ -120,6 +120,8 @@ async def error_handling_middleware(request: Request, call_next):
         response = await call_next(request)
         return response
     except Exception as e:
+        if IS_DEBUG:
+            raise e
         return JSONResponse(
             status_code=500,
             content={"error": str(e), "trace": str(e.__traceback__)},
