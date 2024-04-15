@@ -458,7 +458,8 @@ export class CustomMetricCache extends CacheObject<CustomMetricList> {
 
     async load(): Promise<CustomMetricList> {
         return this.broadcastPromise.create(async () => {
-            return new CustomMetricList(await NETWORK.getCustomMetrics(this.uuid))
+            let data = await NETWORK.getCustomMetrics(this.uuid)
+            return new CustomMetricList(data)
         })
     }
 
@@ -492,6 +493,7 @@ export class CustomMetricCache extends CacheObject<CustomMetricList> {
 
 class Cache {
     private runs: { [uuid: string]: RunCache }
+    private customMetrics: { [uuid: string]: CustomMetricCache }
     private sessions: { [uuid: string]: SessionCache }
     private runStatuses: { [uuid: string]: RunStatusCache }
     private sessionStatuses: { [uuid: string]: SessionStatusCache }
@@ -505,9 +507,18 @@ class Cache {
         this.sessions = {}
         this.runStatuses = {}
         this.sessionStatuses = {}
+        this.customMetrics = {}
         this.user = null
         this.runsList = null
         this.sessionsList = null
+    }
+
+    getCustomMetrics(uuid: string) {
+        if (this.customMetrics[uuid] == null) {
+            this.customMetrics[uuid] = new CustomMetricCache(uuid)
+        }
+
+        return this.customMetrics[uuid]
     }
 
     getRun(uuid: string) {

@@ -1,11 +1,11 @@
 import time
-from typing import List, Tuple
+from typing import List, Tuple, Any
 from uuid import UUID
 
 from labml_db import Model, Key, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
-from requests import Request
+from fastapi import Request
 
 from labml_app.analyses.analysis import Analysis
 from labml_app.analyses.experiments.metrics import MetricsPreferencesModel
@@ -55,11 +55,10 @@ class CustomMetricsListIndex(Index['CustomMetricsListIndex']):
 class CustomMetricsListModel(Model['CustomMetricsListModel']):
     metrics: List[Tuple[str, Key[CustomMetricModel]]]
 
-    def __init__(self, run_uuid: str, **kwargs):
-        super().__init__(**kwargs)
-        self.metrics = []
-        self.save()
-        CustomMetricsListIndex.set(run_uuid, self.key)
+    @classmethod
+    def defaults(cls):
+        return dict(metrics=[]
+                    )
 
     def create_custom_metric(self, data: dict):
         cm = CustomMetricModel(data)
@@ -85,11 +84,13 @@ class CustomMetricsListModel(Model['CustomMetricsListModel']):
 
 
 @Analysis.route('GET', 'custom_metrics/{run_uuid}')
-def get_custom_metrics(request: Request, run_uuid: str):
+async def get_custom_metrics(request: Request, run_uuid: str) -> Any:
     list_key = CustomMetricsListIndex.get(run_uuid)
 
     if list_key is None:
-        r = CustomMetricsListModel(run_uuid)
+        r = CustomMetricsListModel()
+        r.save()
+        CustomMetricsListIndex.set(run_uuid, r.key)
     else:
         r = list_key.load()
 
@@ -97,7 +98,7 @@ def get_custom_metrics(request: Request, run_uuid: str):
 
 
 @Analysis.route('POST', 'custom_metrics/{run_uuid}')
-def update_custom_metric(request: Request, run_uuid: str):
+async def update_custom_metric(request: Request, run_uuid: str) -> Any:
     data = request.json()
     list_key = CustomMetricsListIndex.get(run_uuid)
 
@@ -112,7 +113,7 @@ def update_custom_metric(request: Request, run_uuid: str):
 
 
 @Analysis.route('POST', 'custom_metrics/{run_uuid}/create')
-def create_custom_metric(request: Request, run_uuid: str):
+async def create_custom_metric(request: Request, run_uuid: str) -> Any:
     data = request.json()
     list_key = CustomMetricsListIndex.get(run_uuid)
 
@@ -127,7 +128,7 @@ def create_custom_metric(request: Request, run_uuid: str):
 
 
 @Analysis.route('POST', 'custom_metrics/{run_uuid}/delete')
-def delete_custom_metric(request: Request, run_uuid: str):
+async def delete_custom_metric(request: Request, run_uuid: str) -> Any:
     data = request.json()
     list_key = CustomMetricsListIndex.get(run_uuid)
 
