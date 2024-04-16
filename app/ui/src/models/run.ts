@@ -170,7 +170,7 @@ export class Run {
 
 
 export interface CustomMetricModel {
-    metric_id: string
+    id: string
     name: string
     description: string
     created_time: number
@@ -178,14 +178,14 @@ export interface CustomMetricModel {
 }
 
 export class CustomMetric {
-    metricId: string
+    id: string
     name: string
     description: string
     createdTime: number
     preferences: AnalysisPreferenceModel
 
     constructor(metric: CustomMetricModel) {
-        this.metricId = metric.metric_id
+        this.id = metric.id
         this.name = metric.name
         this.description = metric.description
         this.createdTime = metric.created_time
@@ -203,7 +203,7 @@ export class CustomMetricList {
     constructor(metricList: CustomMetricListModel) {
         this.metrics = {}
         for (let item of metricList.metrics) {
-            this.metrics[item.metric_id] =  new CustomMetric(item)
+            this.metrics[item.id] =  new CustomMetric(item)
         }
     }
 
@@ -216,7 +216,7 @@ export class CustomMetricList {
     }
 
     public addMetric(metric: CustomMetric) {
-        this.metrics[metric.metricId] = metric
+        this.metrics[metric.id] = metric
     }
 
     public removeMetric(metricId: string) {
@@ -224,6 +224,6 @@ export class CustomMetricList {
     }
 
     public updateMetric(metric: CustomMetric) {
-        this.metrics[metric.metricId] = metric
+        this.metrics[metric.id] = metric
     }
 }

@@ -46,7 +46,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
     smoothValue: number
     isUnsaved: boolean
 
-    constructor(uuid: string) {
+    constructor(uuid: string, metricUuid?: string) {
         super()
 
         this.uuid = uuid
@@ -207,9 +207,14 @@ export class MetricsHandler extends ViewHandler {
     constructor() {
         super()
         ROUTER.route('run/:uuid/metrics', [this.handleMetrics])
+        ROUTER.route('run/:uuid/metrics/:metricUuid', [this.handleCustomMetrics])
     }
 
     handleMetrics = (uuid: string) => {
         SCREEN.setView(new MetricsView(uuid))
+    }
+
+    handleCustomMetrics = (uuid: string, metricUuid: string) => {
+        SCREEN.setView(new MetricsView(uuid, metricUuid))
     }
 }

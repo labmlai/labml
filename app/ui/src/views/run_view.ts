@@ -4,12 +4,12 @@ import {User} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import {BackButton, CustomButton, ExpandButton, NavButton, ShareButton} from "../components/buttons"
+import {AddButton, BackButton, CustomButton, ExpandButton, NavButton, ShareButton} from "../components/buttons"
 import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {distributedAnalyses, experimentAnalyses, rankAnalysis} from "../analyses/analyses"
 import {Card} from "../analyses/types"
-import CACHE, {CustomMetricCache, RunCache, RunsListCache, RunStatusCache, UserCache} from "../cache/cache"
+import CACHE, {RunCache, RunsListCache, RunStatusCache, UserCache} from "../cache/cache"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
@@ -38,6 +38,7 @@ class RunView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private userMessages: UserMessages
     private share: ShareButton
+    private addCustomMetricButton: AddButton
     private isRankExpanded: boolean
     private rankElems: WeyaElement
     private processContainer: WeyaElement
@@ -65,7 +66,13 @@ class RunView extends ScreenView {
             text: 'run',
             parent: this.constructor.name
         })
-
+        this.addCustomMetricButton = new AddButton({
+            onButtonClick: () => {
+                this.createCustomMetric().then()
+            },
+            title: 'Add custom metric',
+            parent: this.constructor.name
+        })
     }
 
     private get isRank(): boolean {
@@ -182,6 +189,7 @@ class RunView extends ScreenView {
                     parent: this.constructor.name
                 }).render($)
             }
+            this.addCustomMetricButton.render($)
         })
     }
 
@@ -189,6 +197,16 @@ class RunView extends ScreenView {
         if (!this.run.is_claimed && !this.isRank) {
             this.userMessages.warning('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
         }
+    }
+
+    async createCustomMetric() {
+        this.addCustomMetricButton.loading = true
+        let customMetric = await CACHE.getCustomMetrics(this.uuid).createMetric({
+            name: 'New Chart',
+            description: ''
+        })
+        this.addCustomMetricButton.loading = false
+        ROUTER.navigate(`/run/${this.uuid}/metrics/${customMetric.id}`)
     }
 
     async onRunAction(isRunClaim: boolean) {
@@ -266,7 +284,7 @@ class RunView extends ScreenView {
             if (this.customMetrics != null && this.run != null) {
                 this.customMetrics.getMetrics().map((metric, i) => {
                     let card = new metricsAnalysis.card({uuid: this.uuid, width: this.actualWidth, params: {
-                            custom_metric: metric.metricId
+                            custom_metric: metric.id
                         }})
                     this.cards.push(card)
                     card.render($)
