@@ -160,6 +160,34 @@ export class SaveButton extends Button {
     }
 }
 
+export class AddButton extends Button {
+
+    constructor(opt: ButtonOptions) {
+        super(opt)
+    }
+
+    set loading(value: boolean) {
+        this.elem.innerHTML = ''
+        if (value) {
+            $(this.elem, $ => {
+                $('span', '.fa.fa-spinner.fa-spin', '')
+            })
+        } else {
+            $(this.elem, $ => {
+                $('span', '.fas.fa-plus', '')
+            })
+        }
+    }
+
+    render($: WeyaElementFunction) {
+        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
+            {on: {click: this.onClick}},
+            $ => {
+                $('span', '.fas.fa-plus', '')
+            })
+    }
+}
+
 export class ExpandButton extends Button {
     private isExpanded: Boolean
     private iconContainer: WeyaElement
