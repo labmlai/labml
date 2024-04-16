@@ -463,7 +463,7 @@ export class CustomMetricCache extends CacheObject<CustomMetricList> {
         })
     }
 
-    async createMetric(data: object): Promise<void> {
+    async createMetric(data: object): Promise<CustomMetric> {
         let customMetricModel = await NETWORK.createCustomMetric(this.uuid, data)
         let customMetric = new CustomMetric(customMetricModel)
 
@@ -472,6 +472,8 @@ export class CustomMetricCache extends CacheObject<CustomMetricList> {
         }
 
         this.data.addMetric(customMetric)
+
+        return customMetric
     }
 
     async deleteMetric(metricUUID: string): Promise<void> {

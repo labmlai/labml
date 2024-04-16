@@ -1,4 +1,5 @@
 import time
+import uuid
 from typing import List, Tuple, Any
 from uuid import UUID
 
@@ -19,16 +20,14 @@ class CustomMetricModel(Model['CustomMetricModel']):
     created_time: float
     metric_id: str
 
-    def __init__(self, data: dict, **kwargs):
-        super().__init__(**kwargs)
-        self.name = data['name']
-        self.description = data.get('description', '')
-        self.metric_id = UUID().hex
-        self.created_time = time.time()
-
-        mp = MetricsPreferencesModel()
-        mp.save()
-        self.preference_key = mp.key
+    @classmethod
+    def defaults(cls):
+        return dict(preference_key=None,
+                    name='',
+                    description='',
+                    created_time=0,
+                    metric_id=''
+                    )
 
     def update_preferences(self, data: dict):
         mp = self.preference_key.load()
@@ -61,7 +60,16 @@ class CustomMetricsListModel(Model['CustomMetricsListModel']):
                     )
 
     def create_custom_metric(self, data: dict):
-        cm = CustomMetricModel(data)
+        cm = CustomMetricModel()
+        cm.name = data['name']
+        cm.description = data.get('description', '')
+        cm.metric_id = uuid.uuid4().hex
+        cm.created_time = time.time()
+
+        mp = MetricsPreferencesModel()
+        mp.save()
+        cm.preference_key = mp.key
+
         cm.save()
         self.metrics.append((cm.metric_id, cm.key))
         self.save()
@@ -99,7 +107,7 @@ async def get_custom_metrics(request: Request, run_uuid: str) -> Any:
 
 @Analysis.route('POST', 'custom_metrics/{run_uuid}')
 async def update_custom_metric(request: Request, run_uuid: str) -> Any:
-    data = request.json()
+    data = await request.json()
     list_key = CustomMetricsListIndex.get(run_uuid)
 
     if list_key is None:
@@ -114,11 +122,13 @@ async def update_custom_metric(request: Request, run_uuid: str) -> Any:
 
 @Analysis.route('POST', 'custom_metrics/{run_uuid}/create')
 async def create_custom_metric(request: Request, run_uuid: str) -> Any:
-    data = request.json()
+    data = await request.json()
     list_key = CustomMetricsListIndex.get(run_uuid)
 
     if list_key is None:
-        r = CustomMetricsListModel(run_uuid)
+        r = CustomMetricsListModel()
+        r.save()
+        CustomMetricsListIndex.set(run_uuid, r.key)
     else:
         r = list_key.load()
 
@@ -129,7 +139,7 @@ async def create_custom_metric(request: Request, run_uuid: str) -> Any:
 
 @Analysis.route('POST', 'custom_metrics/{run_uuid}/delete')
 async def delete_custom_metric(request: Request, run_uuid: str) -> Any:
-    data = request.json()
+    data = await request.json()
     list_key = CustomMetricsListIndex.get(run_uuid)
 
     if list_key is None:
