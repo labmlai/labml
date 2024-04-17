@@ -191,6 +191,16 @@ export class CustomMetric {
         this.createdTime = metric.created_time
         this.preferences = metric.preferences
     }
+
+    public toData(): CustomMetricModel {
+        return {
+            id: this.id,
+            name: this.name,
+            description: this.description,
+            created_time: this.createdTime,
+            preferences: this.preferences
+        }
+    }
 }
 
 export interface CustomMetricListModel {

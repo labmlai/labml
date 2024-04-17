@@ -1,4 +1,4 @@
-import {Indicator, Run} from "../../../models/run"
+import {CustomMetric, Indicator, Run} from "../../../models/run"
 import CACHE, {AnalysisPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
@@ -18,6 +18,7 @@ import {MetricDataStore, ViewWrapper} from "../chart_wrapper/view"
 
 class MetricsView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
+    private readonly metricUuid?: string
 
     private elem: HTMLDivElement
     private runHeaderCard: RunHeaderCard
@@ -35,6 +36,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
     private run: Run
     private preferenceData: AnalysisPreferenceModel
     private status: Status
+    private customMetric?: CustomMetric
 
     series: Indicator[]
     baseSeries?: Indicator[]
@@ -50,6 +52,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
         super()
 
         this.uuid = uuid
+        this.metricUuid = metricUuid
         this.chartType = 0
         this.preferenceCache = <AnalysisPreferenceCache>metricsCache.getPreferences(this.uuid)
 
@@ -61,7 +64,14 @@ class MetricsView extends ScreenView implements MetricDataStore {
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
             this.run = await CACHE.getRun(this.uuid).get(force)
             this.series = (await metricsCache.getAnalysis(this.uuid).get(force)).series
-            this.preferenceData = await this.preferenceCache.get(force)
+
+            if (this.metricUuid != null) {
+                let customMetricList = await CACHE.getCustomMetrics(this.uuid).get(force)
+                this.preferenceData = customMetricList.getMetric(this.metricUuid).preferences
+                this.customMetric = customMetricList.getMetric(this.metricUuid)
+            } else {
+                this.preferenceData = await this.preferenceCache.get(force)
+            }
 
             this.chartType = this.preferenceData.chart_type
             this.stepRange = [...this.preferenceData.step_range]
@@ -196,7 +206,12 @@ class MetricsView extends ScreenView implements MetricDataStore {
             smooth_value: this.smoothValue
         }
 
-        await this.preferenceCache.setPreference(preferenceData)
+        if (this.metricUuid == null) {
+            await this.preferenceCache.setPreference(preferenceData)
+        } else {
+            this.customMetric.preferences = preferenceData
+            await CACHE.getCustomMetrics(this.uuid).updateMetric(this.metricUuid, this.customMetric.toData())
+        }
 
         this.isUnsaved = false
         this.refresh.resume()

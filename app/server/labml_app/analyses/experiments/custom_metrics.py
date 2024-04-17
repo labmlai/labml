@@ -29,10 +29,17 @@ class CustomMetricModel(Model['CustomMetricModel']):
                     metric_id=''
                     )
 
-    def update_preferences(self, data: dict):
-        mp = self.preference_key.load()
-        mp.update_preferences(data)
-        mp.save()
+    def update(self, data: dict):
+        if 'preferences' in data:
+            mp = self.preference_key.load()
+            mp.update_preferences(data['preferences'])
+            mp.save()
+
+        if 'name' in data:
+            self.name = data['name']
+        if 'description' in data:
+            self.description = data['description']
+        self.save()
 
     def get_data(self):
         mp = self.preference_key.load()
@@ -87,7 +94,7 @@ class CustomMetricsListModel(Model['CustomMetricsListModel']):
     def update(self, data: dict):
         for (metric_id, key) in self.metrics:
             if metric_id == data['id']:
-                key.load().update_preferences(data)
+                key.load().update(data)
                 break
 
 
@@ -111,7 +118,9 @@ async def update_custom_metric(request: Request, run_uuid: str) -> Any:
     list_key = CustomMetricsListIndex.get(run_uuid)
 
     if list_key is None:
-        r = CustomMetricsListModel(run_uuid)
+        r = CustomMetricsListModel()
+        r.save()
+        CustomMetricsListIndex.set(run_uuid, r.key)
     else:
         r = list_key.load()
 
