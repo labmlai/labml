@@ -60,7 +60,7 @@ export class LinePlot {
 
     render($: WeyaElementFunction) {
         $('g', $ => {
-            $(`path.smoothed-line.dropshadow${this.isBase ? '.base': '.current'}`,
+            $(`path.smoothed-line${this.isBase ? '.base': '.current'}`,
                 {
                     fill: 'none',
                     stroke: this.color,
