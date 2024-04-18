@@ -15,7 +15,6 @@ import processAnalysis from './sessions/process'
 import batteryAnalysis from './sessions/battery'
 import sessionConfigsAnalysis from "./sessions/configs"
 import comparisonAnalysis from './experiments/comparison'
-import mergedMetricsAnalysis from "./experiments/merged_metrics"
 
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
@@ -27,8 +26,7 @@ let experimentAnalyses: Analysis[] = [
 ]
 
 let distributedAnalyses: Analysis[] = [
-    mergedMetricsAnalysis,
-    // metricAnalysis,
+    metricAnalysis,
     comparisonAnalysis,
     stdOutAnalysis,
     stderrAnalysis,

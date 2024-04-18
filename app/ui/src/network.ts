@@ -129,6 +129,22 @@ class Network {
         return this.sendHttpRequest('POST', `/${url}/preferences/${runUUID}`, data)['promise']
     }
 
+    async createCustomMetric(runUUID: string, data: object): Promise<any> {
+        return this.sendHttpRequest('POST', `/custom_metrics/${runUUID}/create`, data)['promise']
+    }
+
+    async getCustomMetrics(runUUID: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/custom_metrics/${runUUID}`, {})['promise']
+    }
+
+    async deleteCustomMetric(runUUID: string, metricUUID: string): Promise<any> {
+        return this.sendHttpRequest('POST', `/custom_metrics/${runUUID}/delete`, {key: metricUUID})['promise']
+    }
+
+    async updateCustomMetric(runUUID: string, data: object): Promise<any> {
+        return this.sendHttpRequest('POST', `/custom_metrics/${runUUID}`, data)['promise']
+    }
+
     private sendHttpRequest = (method: string, url: string, data: object = {}, retryAuth: boolean = true): {promise: Promise<any>, xhr: XMLHttpRequest} => {
         const xhr = new XMLHttpRequest()
         let promise = new Promise((resolve, reject) => {

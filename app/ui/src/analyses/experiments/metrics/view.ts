@@ -1,4 +1,4 @@
-import {Indicator, Run} from "../../../models/run"
+import {CustomMetric, Indicator, Run} from "../../../models/run"
 import CACHE, {AnalysisPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
@@ -15,9 +15,12 @@ import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
 import metricsCache from "./cache"
 import {MetricDataStore, ViewWrapper} from "../chart_wrapper/view"
+import EditableField from "../../../components/input/editable_field"
+import {formatTime} from "../../../utils/time"
 
 class MetricsView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
+    private readonly metricUuid?: string
 
     private elem: HTMLDivElement
     private runHeaderCard: RunHeaderCard
@@ -28,6 +31,11 @@ class MetricsView extends ScreenView implements MetricDataStore {
     private actualWidth: number
     private refresh: AwesomeRefreshButton
 
+    private nameField: EditableField
+    private descriptionField: EditableField
+    private createdAtField: EditableField
+    private detailsContainer: WeyaElement
+
     private loader: DataLoader
     private content: ViewWrapper
 
@@ -35,6 +43,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
     private run: Run
     private preferenceData: AnalysisPreferenceModel
     private status: Status
+    private customMetric?: CustomMetric
 
     series: Indicator[]
     baseSeries?: Indicator[]
@@ -46,10 +55,11 @@ class MetricsView extends ScreenView implements MetricDataStore {
     smoothValue: number
     isUnsaved: boolean
 
-    constructor(uuid: string) {
+    constructor(uuid: string, metricUuid?: string) {
         super()
 
         this.uuid = uuid
+        this.metricUuid = metricUuid
         this.chartType = 0
         this.preferenceCache = <AnalysisPreferenceCache>metricsCache.getPreferences(this.uuid)
 
@@ -61,7 +71,14 @@ class MetricsView extends ScreenView implements MetricDataStore {
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
             this.run = await CACHE.getRun(this.uuid).get(force)
             this.series = (await metricsCache.getAnalysis(this.uuid).get(force)).series
-            this.preferenceData = await this.preferenceCache.get(force)
+
+            if (this.metricUuid != null) {
+                let customMetricList = await CACHE.getCustomMetrics(this.uuid).get(force)
+                this.preferenceData = customMetricList.getMetric(this.metricUuid).preferences
+                this.customMetric = customMetricList.getMetric(this.metricUuid)
+            } else {
+                this.preferenceData = await this.preferenceCache.get(force)
+            }
 
             this.chartType = this.preferenceData.chart_type
             this.stepRange = [...this.preferenceData.step_range]
@@ -107,6 +124,9 @@ class MetricsView extends ScreenView implements MetricDataStore {
                             showRank: false,
                         })
                         this.runHeaderCard.render($).then()
+                        this.detailsContainer = $('div', '.input-list-container', $ => {
+                        })
+
                         this.optionRowContainer = $('div')
                         $('h2', '.header.text-center', 'Metrics')
                         this.loader.render($)
@@ -136,6 +156,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
             })
 
             this.content.render()
+            this.renderDetails()
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -177,6 +198,46 @@ class MetricsView extends ScreenView implements MetricDataStore {
         this.refresh.changeVisibility(!document.hidden)
     }
 
+    private onDetailChange = (text: string) => {
+        this.content.onNonChartChange()
+    }
+
+    private renderDetails() {
+        if (this.customMetric == null) {
+            return
+        }
+
+        this.nameField = new EditableField({
+            name: 'Name',
+            value: this.customMetric.name,
+            isEditable: true,
+            onChange: this.onDetailChange
+        })
+        this.descriptionField = new EditableField({
+            name: 'Description',
+            value: this.customMetric.description,
+            isEditable: true,
+            numEditRows: 3,
+            onChange: this.onDetailChange
+        })
+        this.createdAtField = new EditableField({
+            name: 'Created at',
+            value: formatTime(this.customMetric.createdTime),
+            isEditable: false,
+            onChange: this.onDetailChange
+        })
+
+        this.detailsContainer.innerHTML =  ''
+        $(this.detailsContainer, $ => {
+            $('ul', $ => {
+                this.nameField.render($)
+                this.descriptionField.render($)
+                this.createdAtField.render($)
+            })
+        })
+
+    }
+
     private async requestMissingMetrics() {
         this.series = (await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series
     }
@@ -196,7 +257,16 @@ class MetricsView extends ScreenView implements MetricDataStore {
             smooth_value: this.smoothValue
         }
 
-        await this.preferenceCache.setPreference(preferenceData)
+        if (this.metricUuid == null) {
+            await this.preferenceCache.setPreference(preferenceData)
+        } else {
+            this.customMetric.preferences = preferenceData
+
+            this.customMetric.name = this.nameField.getInput()
+            this.customMetric.description = this.descriptionField.getInput()
+
+            await CACHE.getCustomMetrics(this.uuid).updateMetric(this.metricUuid, this.customMetric.toData())
+        }
 
         this.isUnsaved = false
         this.refresh.resume()
@@ -207,9 +277,14 @@ export class MetricsHandler extends ViewHandler {
     constructor() {
         super()
         ROUTER.route('run/:uuid/metrics', [this.handleMetrics])
+        ROUTER.route('run/:uuid/metrics/:metricUuid', [this.handleCustomMetrics])
     }
 
     handleMetrics = (uuid: string) => {
         SCREEN.setView(new MetricsView(uuid))
+    }
+
+    handleCustomMetrics = (uuid: string, metricUuid: string) => {
+        SCREEN.setView(new MetricsView(uuid, metricUuid))
     }
 }

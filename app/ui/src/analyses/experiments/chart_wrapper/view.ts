@@ -224,6 +224,12 @@ export class ViewWrapper {
         this.renderOptionRow()
     }
 
+    // for changes that are not from metrics
+    public onNonChartChange() {
+        this.dataStore.isUnsaved = true
+        this.saveButton.disabled = false
+    }
+
     public onChange() {
         if (!this.isLoading) {
             this.dataStore.isUnsaved = true

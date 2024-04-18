@@ -1,4 +1,4 @@
-import {AnalysisData, Run} from "../models/run"
+import {AnalysisData, CustomMetric, CustomMetricList, CustomMetricModel, Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK from "../network"
 import { User} from "../models/user"
@@ -448,8 +448,54 @@ export class ComparisonAnalysisPreferenceCache extends CacheObject<ComparisonPre
     }
 }
 
+export class CustomMetricCache extends CacheObject<CustomMetricList> {
+    private readonly uuid: string
+
+    constructor(uuid: string) {
+        super()
+        this.uuid = uuid
+    }
+
+    async load(): Promise<CustomMetricList> {
+        return this.broadcastPromise.create(async () => {
+            let data = await NETWORK.getCustomMetrics(this.uuid)
+            return new CustomMetricList(data)
+        })
+    }
+
+    async createMetric(data: object): Promise<CustomMetric> {
+        let customMetricModel = await NETWORK.createCustomMetric(this.uuid, data)
+        let customMetric = new CustomMetric(customMetricModel)
+
+        if (this.data == null) {
+            this.data = new CustomMetricList({metrics: [customMetricModel]})
+        }
+
+        this.data.addMetric(customMetric)
+
+        return customMetric
+    }
+
+    async deleteMetric(metricUUID: string): Promise<void> {
+        await NETWORK.deleteCustomMetric(this.uuid, metricUUID)
+
+        if (this.data != null) {
+            this.data.removeMetric(metricUUID)
+        }
+    }
+    
+    async updateMetric(metricUUID: string, data: object): Promise<void> {
+        await NETWORK.updateCustomMetric(this.uuid, data)
+
+        if (this.data != null) {
+            this.data.updateMetric(new CustomMetric(<CustomMetricModel>data))
+        }
+    }
+}
+
 class Cache {
     private runs: { [uuid: string]: RunCache }
+    private customMetrics: { [uuid: string]: CustomMetricCache }
     private sessions: { [uuid: string]: SessionCache }
     private runStatuses: { [uuid: string]: RunStatusCache }
     private sessionStatuses: { [uuid: string]: SessionStatusCache }
@@ -463,9 +509,18 @@ class Cache {
         this.sessions = {}
         this.runStatuses = {}
         this.sessionStatuses = {}
+        this.customMetrics = {}
         this.user = null
         this.runsList = null
         this.sessionsList = null
+    }
+
+    getCustomMetrics(uuid: string) {
+        if (this.customMetrics[uuid] == null) {
+            this.customMetrics[uuid] = new CustomMetricCache(uuid)
+        }
+
+        return this.customMetrics[uuid]
     }
 
     getRun(uuid: string) {

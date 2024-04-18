@@ -1,5 +1,5 @@
 from .analyses.experiments.metrics import MetricsAnalysis
-
+from .analyses.experiments.custom_metrics import CustomMetricModel
 from .analyses.experiments import comparison
 from .analyses.experiments import distributed_metrics
 

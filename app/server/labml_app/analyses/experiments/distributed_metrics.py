@@ -15,7 +15,7 @@ from ..preferences import Preferences
 from ..series import Series
 from ...logger import logger
 from ...db import run
-from ...utils import get_default_series_preference, fill_preferences
+from ...utils import get_default_series_preference, fill_preferences, merge_preferences
 
 
 @Analysis.db_model(PickleSerializer, 'merged_metrics_preferences')
@@ -186,6 +186,7 @@ def get_merged_dist_metrics_tracking(run_uuid: str, get_all_data: bool) -> JSONR
             mp.update_preferences({'series_preferences': preference_data})
             mp.save()
 
+        preference_data = merge_preferences(run_uuid, preference_data)
         merged_tracking = get_merged_metric_tracking_util(track_data_list, preference_data, get_all_data)
 
         response = JSONResponse({'series': merged_tracking, 'insights': []})

@@ -13,6 +13,7 @@ from .metrics import MetricsAnalysis, get_metrics_tracking_util, mget
 from ..analysis import Analysis
 from .. import preferences
 from ...db import run
+from ...utils import merge_preferences
 
 
 class ComparisonPreferences(preferences.Preferences):
@@ -156,6 +157,7 @@ async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
             cp.update_preferences({'base_series_preferences' if is_base else 'series_preferences': preference_data})
             cp.save()
 
+        preference_data = merge_preferences(run_uuid, preference_data)
         merged_tracking = get_merged_metric_tracking_util(track_data_list, preference_data, get_all_data)
 
         response = JSONResponse({'series': merged_tracking, 'insights': []})

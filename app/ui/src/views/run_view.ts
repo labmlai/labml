@@ -1,10 +1,10 @@
-import {Run} from '../models/run'
+import {CustomMetricList, Run} from '../models/run'
 import {Status} from "../models/status"
 import {User} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import {BackButton, CustomButton, ExpandButton, NavButton, ShareButton} from "../components/buttons"
+import {AddButton, BackButton, CustomButton, ExpandButton, NavButton, ShareButton} from "../components/buttons"
 import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {distributedAnalyses, experimentAnalyses, rankAnalysis} from "../analyses/analyses"
@@ -14,6 +14,7 @@ import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
+import metricsAnalysis from "../analyses/experiments/metrics"
 
 class RunView extends ScreenView {
     uuid: string
@@ -37,9 +38,11 @@ class RunView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private userMessages: UserMessages
     private share: ShareButton
+    private addCustomMetricButton: AddButton
     private isRankExpanded: boolean
     private rankElems: WeyaElement
     private processContainer: WeyaElement
+    private customMetrics: CustomMetricList
 
     constructor(uuid: string, rank?: string) {
         super()
@@ -56,13 +59,20 @@ class RunView extends ScreenView {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
             this.user = await this.userCache.get(force)
+            this.customMetrics = await CACHE.getCustomMetrics(this.uuid).get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.share = new ShareButton({
             text: 'run',
             parent: this.constructor.name
         })
-
+        this.addCustomMetricButton = new AddButton({
+            onButtonClick: () => {
+                this.createCustomMetric().then()
+            },
+            title: 'Add custom metric',
+            parent: this.constructor.name
+        })
     }
 
     private get isRank(): boolean {
@@ -179,6 +189,7 @@ class RunView extends ScreenView {
                     parent: this.constructor.name
                 }).render($)
             }
+            this.addCustomMetricButton.render($)
         })
     }
 
@@ -186,6 +197,16 @@ class RunView extends ScreenView {
         if (!this.run.is_claimed && !this.isRank) {
             this.userMessages.warning('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
         }
+    }
+
+    async createCustomMetric() {
+        this.addCustomMetricButton.loading = true
+        let customMetric = await CACHE.getCustomMetrics(this.uuid).createMetric({
+            name: 'New Chart',
+            description: ''
+        })
+        this.addCustomMetricButton.loading = false
+        ROUTER.navigate(`/run/${this.uuid}/metrics/${customMetric.id}`)
     }
 
     async onRunAction(isRunClaim: boolean) {
@@ -260,6 +281,15 @@ class RunView extends ScreenView {
                 this.cards.push(card)
                 card.render($)
             })
+            if (this.customMetrics != null && this.run != null) {
+                this.customMetrics.getMetrics().map((metric, i) => {
+                    let card = new metricsAnalysis.card({uuid: this.uuid, width: this.actualWidth, params: {
+                            custom_metric: metric.id
+                        }})
+                    this.cards.push(card)
+                    card.render($)
+                })
+            }
         })
     }
 

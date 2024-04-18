@@ -1,5 +1,6 @@
 import {Config, ConfigModel} from "./config"
 import {toPointValue} from "../components/charts/utils"
+import {AnalysisPreferenceModel} from "./preferences";
 
 export interface RunModel {
     run_uuid: string
@@ -167,3 +168,72 @@ export class Run {
     }
 }
 
+
+export interface CustomMetricModel {
+    id: string
+    name: string
+    description: string
+    created_time: number
+    preferences: AnalysisPreferenceModel
+}
+
+export class CustomMetric {
+    id: string
+    name: string
+    description: string
+    createdTime: number
+    preferences: AnalysisPreferenceModel
+
+    constructor(metric: CustomMetricModel) {
+        this.id = metric.id
+        this.name = metric.name
+        this.description = metric.description
+        this.createdTime = metric.created_time
+        this.preferences = metric.preferences
+    }
+
+    public toData(): CustomMetricModel {
+        return {
+            id: this.id,
+            name: this.name,
+            description: this.description,
+            created_time: this.createdTime,
+            preferences: this.preferences
+        }
+    }
+}
+
+export interface CustomMetricListModel {
+    metrics: CustomMetricModel[]
+}
+
+export class CustomMetricList {
+    private readonly metrics: Record<string, CustomMetric>
+
+    constructor(metricList: CustomMetricListModel) {
+        this.metrics = {}
+        for (let item of metricList.metrics) {
+            this.metrics[item.id] =  new CustomMetric(item)
+        }
+    }
+
+    public getMetric(metricId: string): CustomMetric {
+        return this.metrics[metricId]
+    }
+
+    public getMetrics(): CustomMetric[] {
+        return Object.values(this.metrics).sort((a, b) => b.createdTime - a.createdTime);
+    }
+
+    public addMetric(metric: CustomMetric) {
+        this.metrics[metric.id] = metric
+    }
+
+    public removeMetric(metricId: string) {
+        delete this.metrics[metricId]
+    }
+
+    public updateMetric(metric: CustomMetric) {
+        this.metrics[metric.id] = metric
+    }
+}

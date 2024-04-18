@@ -3,6 +3,7 @@ import {WeyaElementFunction} from "../../../lib/weya/weya"
 export interface CardOptions {
     uuid: string
     width: number
+    params?: Record<string, string>
 }
 
 export abstract class Card {
