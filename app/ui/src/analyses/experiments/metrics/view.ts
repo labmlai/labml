@@ -15,6 +15,8 @@ import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
 import metricsCache from "./cache"
 import {MetricDataStore, ViewWrapper} from "../chart_wrapper/view"
+import EditableField from "../../../components/input/editable_field"
+import {formatTime} from "../../../utils/time"
 
 class MetricsView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
@@ -28,6 +30,11 @@ class MetricsView extends ScreenView implements MetricDataStore {
     private optionRowContainer: WeyaElement
     private actualWidth: number
     private refresh: AwesomeRefreshButton
+
+    private nameField: EditableField
+    private descriptionField: EditableField
+    private createdAtField: EditableField
+    private detailsContainer: WeyaElement
 
     private loader: DataLoader
     private content: ViewWrapper
@@ -117,6 +124,9 @@ class MetricsView extends ScreenView implements MetricDataStore {
                             showRank: false,
                         })
                         this.runHeaderCard.render($).then()
+                        this.detailsContainer = $('div', '.input-list-container', $ => {
+                        })
+
                         this.optionRowContainer = $('div')
                         $('h2', '.header.text-center', 'Metrics')
                         this.loader.render($)
@@ -146,6 +156,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
             })
 
             this.content.render()
+            this.renderDetails()
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -187,6 +198,46 @@ class MetricsView extends ScreenView implements MetricDataStore {
         this.refresh.changeVisibility(!document.hidden)
     }
 
+    private onDetailChange = (text: string) => {
+        this.content.onNonChartChange()
+    }
+
+    private renderDetails() {
+        if (this.customMetric == null) {
+            return
+        }
+
+        this.nameField = new EditableField({
+            name: 'Name',
+            value: this.customMetric.name,
+            isEditable: true,
+            onChange: this.onDetailChange
+        })
+        this.descriptionField = new EditableField({
+            name: 'Description',
+            value: this.customMetric.description,
+            isEditable: true,
+            numEditRows: 3,
+            onChange: this.onDetailChange
+        })
+        this.createdAtField = new EditableField({
+            name: 'Created at',
+            value: formatTime(this.customMetric.createdTime),
+            isEditable: false,
+            onChange: this.onDetailChange
+        })
+
+        this.detailsContainer.innerHTML =  ''
+        $(this.detailsContainer, $ => {
+            $('ul', $ => {
+                this.nameField.render($)
+                this.descriptionField.render($)
+                this.createdAtField.render($)
+            })
+        })
+
+    }
+
     private async requestMissingMetrics() {
         this.series = (await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series
     }
@@ -210,6 +261,10 @@ class MetricsView extends ScreenView implements MetricDataStore {
             await this.preferenceCache.setPreference(preferenceData)
         } else {
             this.customMetric.preferences = preferenceData
+
+            this.customMetric.name = this.nameField.getInput()
+            this.customMetric.description = this.descriptionField.getInput()
+
             await CACHE.getCustomMetrics(this.uuid).updateMetric(this.metricUuid, this.customMetric.toData())
         }
 
