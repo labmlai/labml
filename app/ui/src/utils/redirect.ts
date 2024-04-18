@@ -33,6 +33,6 @@ export function handleNetworkErrorInplace(error: Error | NetworkError) {
             OtherErrorHandler.handleOtherError(error)
         }
     } else {
-        NetworkErrorHandler.handleNetworkError()
+        NetworkErrorHandler.handleNetworkError(error)
     }
 }
