@@ -19,6 +19,7 @@ from ..series_collection import SeriesCollection
 from ..preferences import Preferences
 from labml_app.settings import INDICATOR_LIMIT
 from ...db import run
+from ...utils import merge_preferences
 
 
 @Analysis.db_model(PickleSerializer, 'metrics')
@@ -223,6 +224,7 @@ async def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
         mp.update_preferences({'series_preferences': preference_data})
         mp.save()
 
+    preference_data = merge_preferences(run_uuid, preference_data)
     filtered_track_data = get_metrics_tracking_util(track_data, preference_data, get_all_data)
 
     response = JSONResponse({'series': filtered_track_data, 'insights': []})

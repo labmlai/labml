@@ -70,3 +70,39 @@ def update_series_preferences(preferences: List[int], series: List[int], client_
             new_preferences.append(-1)
 
     return new_preferences
+
+
+def merge_preferences(run_uuid: str, current_preferences: List[int]) -> List[int]:
+    """
+        get a merged preferences for the custom metrics and normal metrics
+        used to send metrics for the frontend. If an indicator is set to one in any of the
+        custom metrics or normal metric it is sent.
+
+        Args:
+            current_preferences: series preferences from the normal metrics
+            run_uuid: uuid of the run. used to get custom metrics
+
+        Returns:
+            list: merged series preference list
+        """
+    from labml_app.analyses.experiments.custom_metrics import CustomMetricsListIndex
+    preferences_key = CustomMetricsListIndex.get(run_uuid)
+
+    if preferences_key is None:
+        return current_preferences
+    else:
+        r = preferences_key.load()
+
+    custom_metric_list = r.get_data()
+
+    for custom_metric in custom_metric_list:
+        mp = custom_metric['preferences']
+        series_pref = mp['series_preferences']
+
+        while len(series_pref) < len(current_preferences):
+            series_pref.append(-1)
+
+        for i in range(len(current_preferences)):
+            current_preferences[i] = max(current_preferences[i], series_pref[i])
+
+    return current_preferences
