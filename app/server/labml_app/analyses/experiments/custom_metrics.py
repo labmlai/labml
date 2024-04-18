@@ -83,10 +83,13 @@ class CustomMetricsListModel(Model['CustomMetricsListModel']):
 
         return cm.get_data()
 
-    def delete_custom_metric(self, key: Key[CustomMetricModel]):
-        self.metrics = [k for k in self.metrics if k != key]
+    def delete_custom_metric(self, metric_id: str):
+        for (m_id, key) in self.metrics:
+            if metric_id == m_id:
+                key.delete()
+                break
+        self.metrics = [(m_id, key) for (m_id, key) in self.metrics if m_id != metric_id]
         self.save()
-        key.delete()
 
     def get_data(self):
         return [k[1].load().get_data() for k in self.metrics]
@@ -155,6 +158,6 @@ async def delete_custom_metric(request: Request, run_uuid: str) -> Any:
         return {'status': 'error', 'message': 'No custom metrics found'}
 
     r = list_key.load()
-    r.delete_custom_metric(data['key'])
+    r.delete_custom_metric(data['id'])
 
     return {'status': 'success'}

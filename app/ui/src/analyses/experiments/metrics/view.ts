@@ -152,7 +152,8 @@ class MetricsView extends ScreenView implements MetricDataStore {
                 actualWidth: this.actualWidth,
                 requestMissingMetrics: this.requestMissingMetrics.bind(this),
                 savePreferences: this.savePreferences.bind(this),
-                preferenceChange: this.onPreferenceChange
+                preferenceChange: this.onPreferenceChange,
+                deleteChart: this.customMetric == null ? null : this.onDelete
             })
 
             this.content.render()
@@ -196,6 +197,15 @@ class MetricsView extends ScreenView implements MetricDataStore {
 
     onVisibilityChange() {
         this.refresh.changeVisibility(!document.hidden)
+    }
+
+    private onDelete = () => {
+        // get confirmation from an alert
+        if (confirm('Are you sure you want to delete this chart?')) {
+            CACHE.getCustomMetrics(this.uuid).deleteMetric(this.metricUuid).then(() => {
+                ROUTER.navigate(`/run/${this.uuid}`)
+            })
+        }
     }
 
     private onDetailChange = (text: string) => {

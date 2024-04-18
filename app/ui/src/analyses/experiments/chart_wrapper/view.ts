@@ -1,6 +1,6 @@
 import {Indicator} from "../../../models/run"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
-import {SaveButton, ToggleButton} from "../../../components/buttons"
+import {DeleteButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType} from "../../../components/charts/utils"
@@ -13,6 +13,7 @@ interface ViewWrapperOpt {
     savePreferences: () => Promise<void>
     requestMissingMetrics: () => Promise<void>
     preferenceChange: () => void
+    deleteChart?: () => void
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: WeyaElement
@@ -134,7 +135,7 @@ namespace ChangeHandlers {
 export class ViewWrapper {
     private readonly lineChartContainer: HTMLDivElement
     private readonly sparkLinesContainer: HTMLDivElement
-    private readonly saveButtonContainer: WeyaElement
+    private readonly topButtonContainer: WeyaElement
     private readonly optionRowContainer: WeyaElement
 
     private readonly actualWidth: number
@@ -144,6 +145,7 @@ export class ViewWrapper {
     private readonly scaleButton: ToggleButton
     private readonly focusButton: ToggleButton
     private readonly smoothSlider: Slider
+    private readonly deleteButton: DeleteButton
     private sparkLines: SparkLines
 
     public dataStore: MetricDataStore
@@ -153,18 +155,20 @@ export class ViewWrapper {
     private readonly onRequestMissingMetrics: () => Promise<void>
     private readonly savePreferences: () => Promise<void>
     private readonly preferenceChange: () => void
+    private readonly onDelete?: () => void
 
     constructor(opt: ViewWrapperOpt) {
         this.dataStore = opt.dataStore
         this.isLoading = false
         this.lineChartContainer = opt.lineChartContainer
         this.sparkLinesContainer = opt.sparkLinesContainer
-        this.saveButtonContainer = opt.saveButtonContainer
+        this.topButtonContainer = opt.saveButtonContainer
         this.optionRowContainer = opt.optionRowContainer
         this.actualWidth = opt.actualWidth
         this.onRequestMissingMetrics = opt.requestMissingMetrics
         this.savePreferences = opt.savePreferences
         this.preferenceChange = opt.preferenceChange
+        this.onDelete = opt.deleteChart
 
         this.stepRangeField = new NumericRangeField({
             min: this.dataStore.stepRange[0], max: this.dataStore.stepRange[1],
@@ -206,6 +210,10 @@ export class ViewWrapper {
                 changeHandler.change()
             }
         })
+        this.deleteButton = new DeleteButton({
+            parent: this.constructor.name,
+            onButtonClick: this.onDelete
+        })
     }
 
     public clear() {
@@ -220,7 +228,7 @@ export class ViewWrapper {
             return
         }
         this.renderCharts()
-        this.renderSaveButton()
+        this.renderTopButtons()
         this.renderOptionRow()
     }
 
@@ -274,10 +282,13 @@ export class ViewWrapper {
         this.isLoading = isLoading
     }
 
-    private renderSaveButton() {
+    private renderTopButtons() {
         this.saveButton.disabled = !this.dataStore.isUnsaved
-        this.saveButtonContainer.innerHTML = ''
-        $(this.saveButtonContainer, $ => {
+        this.topButtonContainer.innerHTML = ''
+        $(this.topButtonContainer, $ => {
+            if (this.onDelete != null) {
+                this.deleteButton.render($)
+            }
             this.saveButton.render($)
         })
     }
