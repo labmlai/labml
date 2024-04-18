@@ -17,6 +17,7 @@ import metricsCache from "./cache"
 import {MetricDataStore, ViewWrapper} from "../chart_wrapper/view"
 import EditableField from "../../../components/input/editable_field"
 import {formatTime} from "../../../utils/time"
+import {NetworkError} from "../../../network";
 
 class MetricsView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
@@ -74,6 +75,10 @@ class MetricsView extends ScreenView implements MetricDataStore {
 
             if (this.metricUuid != null) {
                 let customMetricList = await CACHE.getCustomMetrics(this.uuid).get(force)
+                if (customMetricList == null || customMetricList.getMetric(this.metricUuid) == null) {
+                    throw new NetworkError(404, "")
+                }
+
                 this.preferenceData = customMetricList.getMetric(this.metricUuid).preferences
                 this.customMetric = customMetricList.getMetric(this.metricUuid)
             } else {
