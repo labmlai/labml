@@ -138,7 +138,7 @@ class Network {
     }
 
     async deleteCustomMetric(runUUID: string, metricUUID: string): Promise<any> {
-        return this.sendHttpRequest('POST', `/custom_metrics/${runUUID}/delete`, {key: metricUUID})['promise']
+        return this.sendHttpRequest('POST', `/custom_metrics/${runUUID}/delete`, {id: metricUUID})['promise']
     }
 
     async updateCustomMetric(runUUID: string, data: object): Promise<any> {

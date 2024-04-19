@@ -17,6 +17,7 @@ import metricsCache from "./cache"
 import {MetricDataStore, ViewWrapper} from "../chart_wrapper/view"
 import EditableField from "../../../components/input/editable_field"
 import {formatTime} from "../../../utils/time"
+import {NetworkError} from "../../../network";
 
 class MetricsView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
@@ -74,6 +75,10 @@ class MetricsView extends ScreenView implements MetricDataStore {
 
             if (this.metricUuid != null) {
                 let customMetricList = await CACHE.getCustomMetrics(this.uuid).get(force)
+                if (customMetricList == null || customMetricList.getMetric(this.metricUuid) == null) {
+                    throw new NetworkError(404, "")
+                }
+
                 this.preferenceData = customMetricList.getMetric(this.metricUuid).preferences
                 this.customMetric = customMetricList.getMetric(this.metricUuid)
             } else {
@@ -152,7 +157,8 @@ class MetricsView extends ScreenView implements MetricDataStore {
                 actualWidth: this.actualWidth,
                 requestMissingMetrics: this.requestMissingMetrics.bind(this),
                 savePreferences: this.savePreferences.bind(this),
-                preferenceChange: this.onPreferenceChange
+                preferenceChange: this.onPreferenceChange,
+                deleteChart: this.customMetric == null ? null : this.onDelete
             })
 
             this.content.render()
@@ -196,6 +202,15 @@ class MetricsView extends ScreenView implements MetricDataStore {
 
     onVisibilityChange() {
         this.refresh.changeVisibility(!document.hidden)
+    }
+
+    private onDelete = () => {
+        // get confirmation from an alert
+        if (confirm('Are you sure you want to delete this chart?')) {
+            CACHE.getCustomMetrics(this.uuid).deleteMetric(this.metricUuid).then(() => {
+                ROUTER.navigate(`/run/${this.uuid}`)
+            })
+        }
     }
 
     private onDetailChange = (text: string) => {
