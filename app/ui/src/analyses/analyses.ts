@@ -1,6 +1,5 @@
 import {Analysis} from "./types"
 
-import metricAnalysis from "./experiments/metrics"
 import stdOutAnalysis from "./experiments/stdout"
 import stderrAnalysis from "./experiments/stderror"
 import loggerAnalysis from "./experiments/logger"
@@ -14,28 +13,15 @@ import networkAnalysis from './sessions/network'
 import processAnalysis from './sessions/process'
 import batteryAnalysis from './sessions/battery'
 import sessionConfigsAnalysis from "./sessions/configs"
-import comparisonAnalysis from './experiments/comparison'
+import metricsAnalysis from "./experiments/metrics";
+import comparisonAnalysis from "./experiments/comparison";
+
+let metricAnalyses: Analysis[] = [
+    metricsAnalysis,
+    comparisonAnalysis
+]
 
 let experimentAnalyses: Analysis[] = [
-    metricAnalysis,
-    comparisonAnalysis,
-    stdOutAnalysis,
-    stderrAnalysis,
-    runConfigsAnalysis,
-    loggerAnalysis
-]
-
-let distributedAnalyses: Analysis[] = [
-    metricAnalysis,
-    comparisonAnalysis,
-    stdOutAnalysis,
-    stderrAnalysis,
-    runConfigsAnalysis,
-    loggerAnalysis
-]
-
-let rankAnalysis: Analysis[] = [
-    metricAnalysis,
     stdOutAnalysis,
     stderrAnalysis,
     runConfigsAnalysis,
@@ -59,6 +45,5 @@ let sessionAnalyses: Analysis[] = [
 export {
     experimentAnalyses,
     sessionAnalyses,
-    distributedAnalyses,
-    rankAnalysis
+    metricAnalyses
 }

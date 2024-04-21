@@ -7,7 +7,7 @@ import {DataLoader} from "../components/loader"
 import {AddButton, BackButton, CustomButton, ExpandButton, NavButton, ShareButton} from "../components/buttons"
 import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
-import {distributedAnalyses, experimentAnalyses, rankAnalysis} from "../analyses/analyses"
+import {experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
 import CACHE, {RunCache, RunsListCache, RunStatusCache, UserCache} from "../cache/cache"
 import {handleNetworkErrorInplace} from '../utils/redirect'
@@ -15,6 +15,7 @@ import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
 import metricsAnalysis from "../analyses/experiments/metrics"
+import comparisonAnalysis from "../analyses/experiments/comparison";
 
 class RunView extends ScreenView {
     uuid: string
@@ -274,8 +275,7 @@ class RunView extends ScreenView {
     private renderCards() {
         $(this.cardContainer, $ => {
             let analyses = this.isRank ?
-                rankAnalysis :
-                this.run?.world_size == 0 ? experimentAnalyses : distributedAnalyses
+                [metricsAnalysis] : [metricsAnalysis, comparisonAnalysis]
             analyses.map((analysis, i) => {
                 let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
                 this.cards.push(card)
@@ -290,6 +290,13 @@ class RunView extends ScreenView {
                     card.render($)
                 })
             }
+
+            analyses = experimentAnalyses
+            analyses.map((analysis, i) => {
+                let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
+                this.cards.push(card)
+                card.render($)
+            })
         })
     }
 
