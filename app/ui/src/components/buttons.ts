@@ -70,6 +70,7 @@ export class BackButton extends Button {
 
         this.text = opt.text
         this.currentPath = window.location.pathname
+        this.navigatePath = null
 
         if (/\/run\/.+\/.+/.test(this.currentPath)) {
             this.text = 'Run'
@@ -96,7 +97,7 @@ export class BackButton extends Button {
     }
 
     onClick = () => {
-        if (ROUTER.canBack()) {
+        if (ROUTER.canBack() && this.navigatePath == null) {
             ROUTER.back()
             return
         }

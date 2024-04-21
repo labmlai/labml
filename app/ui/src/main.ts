@@ -5,7 +5,7 @@ import {RunsListHandler} from './views/runs_list_view'
 import {SessionsListHandler} from './views/sessions_list_view'
 import {SettingsHandler} from './views/settings_view'
 
-import {experimentAnalyses, sessionAnalyses} from "./analyses/analyses"
+import {experimentAnalyses, metricAnalyses, sessionAnalyses} from "./analyses/analyses"
 import {ProcessDetailsHandler} from "./analyses/sessions/process/detail_view"
 import {RunHeaderHandler} from "./analyses/experiments/run_header/view"
 import {SessionHeaderHandler} from "./analyses/sessions/session_header/view"
@@ -43,6 +43,10 @@ ROUTER.route('cordova', [() => {
     window.localStorage.setItem('platform', 'cordova')
     ROUTER.navigate('/runs')
 }])
+
+metricAnalyses.map((analysis, i) => {
+    new analysis.viewHandler()
+})
 
 experimentAnalyses.map((analysis, i) => {
     new analysis.viewHandler()
