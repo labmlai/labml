@@ -51,7 +51,6 @@ export class SparkLines {
 
         let idx = 0
         for (let s of this.currentSeries.concat(this.baseSeries)) {
-            let series = s.series
             if (!this.uniqueItems.has(s.name)) {
                 this.uniqueItems.set(s.name, idx++)
             }
@@ -65,11 +64,11 @@ export class SparkLines {
         let [smoothWindow, _] = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
         for (let i = 0; i < this.currentSeries.length; i++) {
             let smoothedSeries = smoothSeries(this.currentSeries[i].series, smoothWindow[0][i])
-            this.currentSmoothedValues.push(smoothedSeries.map(d => d.value))
+            this.currentSmoothedValues.push(smoothedSeries.map(d => d.smoothed))
         }
         for (let i = 0; i < this.baseSeries.length; i++) {
             let smoothedSeries = smoothSeries(this.baseSeries[i].series, smoothWindow[0][1])
-            this.baseSmoothedValues.push(smoothedSeries.map(d => d.value))
+            this.baseSmoothedValues.push(smoothedSeries.map(d => d.smoothed))
         }
 
         this.stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
