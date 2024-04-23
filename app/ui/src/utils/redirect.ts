@@ -2,7 +2,7 @@ import {NetworkError} from '../network';
 import {ROUTER} from '../app';
 import {PageNotFoundHandler} from '../views/errors/page_not_found_view'
 import {AuthErrorHandler} from '../views/errors/auth_error_view'
-import {OtherErrorHandler} from '../views/errors/other_error_view'
+import {MiscErrorHandler} from '../views/errors/other_error_view'
 import {NetworkErrorHandler} from '../views/errors/network_error_view'
 import {DEBUG} from '../env'
 
@@ -13,10 +13,10 @@ export function handleNetworkError(error: Error | NetworkError) {
         } else if (error.statusCode === 401 || error.statusCode === 403) {
             ROUTER.navigate('/401')
         } else {
-            OtherErrorHandler.handleOtherError(error)
+            MiscErrorHandler.handleMiscError(error)
         }
     } else {
-        ROUTER.navigate('/network_error')
+        MiscErrorHandler.handleMiscError(error)
     }
 }
 
@@ -30,7 +30,7 @@ export function handleNetworkErrorInplace(error: Error | NetworkError) {
         } else if (error.statusCode === 401 || error.statusCode === 403) {
             AuthErrorHandler.handleAuthError()
         } else {
-            OtherErrorHandler.handleOtherError(error)
+            MiscErrorHandler.handleMiscError(error)
         }
     } else {
         NetworkErrorHandler.handleNetworkError(error)
