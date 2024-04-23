@@ -277,7 +277,7 @@ class RunHeaderView extends ScreenView {
         }
     }
 
-    updateRun = () => {
+    updateRun = async () => {
         this.editStatus = EditStatus.SAVING
         if (this.nameField.getInput()) {
             this.run.name = this.nameField.getInput()
@@ -291,10 +291,9 @@ class RunHeaderView extends ScreenView {
             this.run.note = this.noteField.getInput()
         }
         try {
-            this.runCache.setRun(this.run).then(async () => {
-                await this._render()
-                this.editStatus = EditStatus.NOCHANGE
-            })
+            await this.runCache.setRun(this.run)
+            await this._render()
+            this.editStatus = EditStatus.NOCHANGE
         } catch (e) {
             this.editStatus = EditStatus.CHANGE
             this.userMessages.networkError(e, "Failed to save run")
