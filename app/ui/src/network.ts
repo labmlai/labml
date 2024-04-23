@@ -190,9 +190,7 @@ class Network {
                             errorMessage = xhr.response.data.error
                         }
                     }
-                    if (xhr.status != 403) {
-                        reject(new NetworkError(xhr.status, url, JSON.stringify(xhr.response), errorMessage))
-                    }
+                    reject(new NetworkError(xhr.status, url, JSON.stringify(xhr.response), errorMessage))
                 } else {
                     resolve(xhr.response)
                 }

@@ -11,7 +11,7 @@ import {RunHeaderHandler} from "./analyses/experiments/run_header/view"
 import {SessionHeaderHandler} from "./analyses/sessions/session_header/view"
 import {SessionHandler} from './views/session_view'
 import {AuthErrorHandler} from './views/errors/auth_error_view'
-import {OtherErrorHandler} from './views/errors/other_error_view'
+import {MiscErrorHandler} from './views/errors/other_error_view'
 import {NetworkErrorHandler} from './views/errors/network_error_view'
 
 ROUTER.route(/^(.*)$/g, [() => {
@@ -20,7 +20,7 @@ ROUTER.route(/^(.*)$/g, [() => {
 
 new PageNotFoundHandler()
 new AuthErrorHandler()
-new OtherErrorHandler()
+new MiscErrorHandler()
 new NetworkErrorHandler()
 
 new RunHandler()

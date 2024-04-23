@@ -15,6 +15,7 @@ import {SessionsListItemModel} from "../../../models/session_list"
 import {SessionsListItemView} from "../../../components/sessions_list_item"
 import {ScreenView} from '../../../screen_view'
 import {User} from '../../../models/user'
+import {UserMessages} from "../../../components/user_messages"
 
 class SessionHeaderView extends ScreenView {
     elem: HTMLDivElement
@@ -35,6 +36,7 @@ class SessionHeaderView extends ScreenView {
     private fieldContainer: HTMLDivElement
     private deleteButton: DeleteButton
     private loader: DataLoader
+    private userMessages: UserMessages
 
     constructor(uuid: string) {
         super()
@@ -57,7 +59,7 @@ class SessionHeaderView extends ScreenView {
                 this.sessionsList = sessionsList.filter(session => this.sessionsFilter(session))
             }
         })
-
+        this.userMessages = new UserMessages()
     }
 
     get requiresAuth(): boolean {
@@ -86,6 +88,7 @@ class SessionHeaderView extends ScreenView {
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
                     $('div', $ => {
+                        this.userMessages.render($)
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                             if (this.isEditMode) {
@@ -219,11 +222,11 @@ class SessionHeaderView extends ScreenView {
         if (confirm("Are you sure?")) {
             try {
                 await CACHE.getSessionsList().deleteSessions(new Set<string>([this.uuid]))
+                ROUTER.navigate('/computers')
             } catch (e) {
-                handleNetworkError(e)
+                this.userMessages.networkError(e, "Failed to delete session")
                 return
             }
-            ROUTER.navigate('/computers')
         }
     }
 

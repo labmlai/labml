@@ -6,7 +6,7 @@ import {RunListItemModel, RunsList} from '../models/run_list'
 import {AnalysisPreferenceModel, ComparisonPreferenceModel} from "../models/preferences"
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
-import {ProcessData} from "../analyses/sessions/process/types";
+import {ProcessData} from "../analyses/sessions/process/types"
 
 const RELOAD_TIMEOUT = 60 * 1000
 const FORCE_RELOAD_TIMEOUT = 5 * 1000
@@ -137,6 +137,7 @@ export class RunsListCache extends CacheObject<RunsList> {
     }
 
     async deleteRuns(runUUIDS: Array<string>): Promise<void> {
+        await NETWORK.deleteRuns(runUUIDS)
         let runs = []
         // Only updating the cache manually, if the cache exists
         if (this.data) {
@@ -149,7 +150,6 @@ export class RunsListCache extends CacheObject<RunsList> {
 
             this.data.runs = runs
         }
-        await NETWORK.deleteRuns(runUUIDS)
     }
 
     async addRun(run: Run): Promise<void> {
@@ -418,7 +418,7 @@ export class ComparisonAnalysisPreferenceCache extends CacheObject<ComparisonPre
         await NETWORK.updatePreferences(this.url, this.uuid, preference)
     }
 
-    deleteBaseExperiment(): ComparisonPreferenceModel {
+    async deleteBaseExperiment(): Promise<ComparisonPreferenceModel> {
         if (this.data == null) {
             return null
         }
@@ -427,12 +427,12 @@ export class ComparisonAnalysisPreferenceCache extends CacheObject<ComparisonPre
         this.data.base_series_preferences = []
         this.data.base_series_names = []
 
-        NETWORK.updatePreferences(this.url, this.uuid, this.data).then()
+        await NETWORK.updatePreferences(this.url, this.uuid, this.data)
 
         return this.data
     }
 
-    updateBaseExperiment(run: RunListItemModel): ComparisonPreferenceModel {
+    async updateBaseExperiment(run: RunListItemModel): Promise<ComparisonPreferenceModel> {
         if (this.data == null) {
             return null
         }
@@ -442,7 +442,7 @@ export class ComparisonAnalysisPreferenceCache extends CacheObject<ComparisonPre
         this.data.base_series_names = []
         this.data.is_base_distributed = run.world_size != 0
 
-        NETWORK.updatePreferences(this.url, this.uuid, this.data).then()
+        await NETWORK.updatePreferences(this.url, this.uuid, this.data)
 
         return this.data
     }

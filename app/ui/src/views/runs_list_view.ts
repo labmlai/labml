@@ -182,7 +182,7 @@ class RunsListView extends ScreenView {
             await this.renderList()
             this.refresh.disabled = false
         } catch (e) {
-            this.userMessages.networkError()
+            this.userMessages.networkError(e, 'Failed to delete runs')
         }
     }
 

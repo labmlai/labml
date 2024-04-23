@@ -6,7 +6,9 @@ import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType} from "../../../components/charts/utils"
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
 import {Loader} from "../../../components/loader"
-import {Slider} from "../../../components/input/slider";
+import {Slider} from "../../../components/input/slider"
+import {UserMessages} from "../../../components/user_messages"
+import {NetworkError} from "../../../network"
 
 interface ViewWrapperOpt {
     dataStore: MetricDataStore
@@ -18,6 +20,7 @@ interface ViewWrapperOpt {
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: WeyaElement
     optionRowContainer: WeyaElement
+    messageContainer: WeyaElement
     actualWidth: number
 }
 
@@ -137,6 +140,7 @@ export class ViewWrapper {
     private readonly sparkLinesContainer: HTMLDivElement
     private readonly topButtonContainer: WeyaElement
     private readonly optionRowContainer: WeyaElement
+    private readonly messageContainer: WeyaElement
 
     private readonly actualWidth: number
 
@@ -157,6 +161,8 @@ export class ViewWrapper {
     private readonly preferenceChange: () => void
     private readonly onDelete?: () => void
 
+    private userMessage: UserMessages
+
     constructor(opt: ViewWrapperOpt) {
         this.dataStore = opt.dataStore
         this.isLoading = false
@@ -164,11 +170,14 @@ export class ViewWrapper {
         this.sparkLinesContainer = opt.sparkLinesContainer
         this.topButtonContainer = opt.saveButtonContainer
         this.optionRowContainer = opt.optionRowContainer
+        this.messageContainer = opt.messageContainer
         this.actualWidth = opt.actualWidth
         this.onRequestMissingMetrics = opt.requestMissingMetrics
         this.savePreferences = opt.savePreferences
         this.preferenceChange = opt.preferenceChange
         this.onDelete = opt.deleteChart
+
+        this.userMessage = new UserMessages()
 
         this.stepRangeField = new NumericRangeField({
             min: this.dataStore.stepRange[0], max: this.dataStore.stepRange[1],
@@ -222,7 +231,14 @@ export class ViewWrapper {
         this.optionRowContainer.innerHTML = ''
     }
 
+    public renderError(error: Error | NetworkError, message: string) {
+        this.userMessage.networkError(error, message)
+    }
+
     public render(missingBaseExperiment: boolean = false) {
+        $(this.messageContainer, $ => {
+            this.userMessage.render($)
+        })
         if (missingBaseExperiment) {
             this.clear()
             return
@@ -250,22 +266,35 @@ export class ViewWrapper {
         this.preferenceChange()
     }
 
-    public requestMissingMetrics() {
+    public async requestMissingMetrics() {
         this.setLoading(true)
         this.saveButton.disabled = true
-        this.onRequestMissingMetrics().then(() => {
+        try {
+            await this.onRequestMissingMetrics()
+
             this.renderCharts()
+        } catch (e) {
+            this.userMessage.networkError(e, "Failed to load metrics")
+        } finally {
             this.setLoading(false)
             this.saveButton.disabled = false
-        })
+        }
+
     }
 
     private onSave = async () => {
         this.saveButton.loading = true
         this.saveButton.disabled = true
-        await this.savePreferences()
-        this.saveButton.loading = false
-        this.dataStore.isUnsaved = false
+        try {
+            await this.savePreferences()
+            this.dataStore.isUnsaved = false
+        } catch (e) {
+            this.userMessage.networkError(e, "Failed to save preferences")
+            return
+        } finally {
+            this.saveButton.loading = false
+            this.dataStore.isUnsaved = false
+        }
     }
 
     private setLoading(isLoading: boolean) {
