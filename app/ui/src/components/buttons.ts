@@ -246,6 +246,19 @@ export class DeleteButton extends Button {
         super(opt)
     }
 
+    set loading(value: boolean) {
+        this.elem.innerHTML = ''
+        if (value) {
+            $(this.elem, $ => {
+                $('span', '.fa.fa-spinner.fa-spin', '')
+            })
+        } else {
+            $(this.elem, $ => {
+                $('span', '.fas.fa-trash', '')
+            })
+        }
+    }
+
     render($: WeyaElementFunction) {
         this.elem = $('nav', `.nav-link.tab.float-right.danger${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
