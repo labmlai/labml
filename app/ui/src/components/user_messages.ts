@@ -1,4 +1,5 @@
 import {WeyaElementFunction, Weya as $,} from '../../../lib/weya/weya'
+import {NetworkError} from "../network";
 
 export class UserMessages {
     message: string
@@ -19,8 +20,8 @@ export class UserMessages {
         }
     }
 
-    networkError() {
-        this.message = 'An unexpected network error occurred. Please try again later'
+    error(message: string = 'An unexpected network error occurred. Please try again later') {
+        this.message = message
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.message.alert', $ => {
@@ -32,6 +33,16 @@ export class UserMessages {
             })
         })
         this.hide(false)
+    }
+
+    networkError(error: NetworkError | Error, message: String = 'An unexpected network error occurred. Please try again later') {
+        let description = ''
+        if (error instanceof NetworkError) {
+            description = error.errorDescription
+        } else if (error instanceof Error) {
+            description = error.message
+        }
+        this.error(message + (description ? `: ${description}` : ''))
     }
 
     success(message: string) {
