@@ -12,7 +12,7 @@ export class SearchView {
     constructor(opt: SearchOptions) {
         this.onSearch = () => {
             clearTimeout(this.inputTimeout)
-            this.inputTimeout = window.setTimeout(() => {
+            this.inputTimeout = setTimeout(() => {
                 opt.onSearch(this.textbox.value)
             }, 250)
         }
