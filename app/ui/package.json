@@ -13,6 +13,7 @@
     "watchify": "^4.0.0"
   },
   "dependencies": {
+    "@types/node": "^20.12.7",
     "d3": "^5.16.0"
   },
   "scripts": {
