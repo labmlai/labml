@@ -38,7 +38,7 @@ export class UserMessages {
     networkError(error: NetworkError | Error, message: String = 'An unexpected network error occurred. Please try again later') {
         let description = ''
         if (error instanceof NetworkError) {
-            description = error.errorDescription
+            description = `(${error.statusCode})` + (error.errorDescription != null ? " " + error.errorDescription : "")
         } else if (error instanceof Error) {
             description = error.message
         }
