@@ -202,12 +202,17 @@ class RunView extends ScreenView {
 
     async createCustomMetric() {
         this.addCustomMetricButton.loading = true
-        let customMetric = await CACHE.getCustomMetrics(this.uuid).createMetric({
-            name: 'New Chart',
-            description: ''
-        })
-        this.addCustomMetricButton.loading = false
-        ROUTER.navigate(`/run/${this.uuid}/metrics/${customMetric.id}`)
+        try {
+            let customMetric = await CACHE.getCustomMetrics(this.uuid).createMetric({
+                name: 'New Chart',
+                description: ''
+            })
+            ROUTER.navigate(`/run/${this.uuid}/metrics/${customMetric.id}`)
+        } catch (e) {
+            this.userMessages.networkError(e, 'Failed to create custom metric')
+        } finally {
+            this.addCustomMetricButton.loading = false
+        }
     }
 
     async onRunAction(isRunClaim: boolean) {
@@ -226,7 +231,7 @@ class RunView extends ScreenView {
                 this.run.is_project_run = true
                 this.renderButtons()
             } catch (e) {
-                this.userMessages.networkError()
+                this.userMessages.networkError(e, "Failed to claim the run")
                 return
             }
         }

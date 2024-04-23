@@ -46,6 +46,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     private sparkLinesContainer: HTMLDivElement
     private buttonContainer: HTMLDivElement
     private optionRowContainer: HTMLDivElement
+    private messageContainer: HTMLDivElement
     private runPickerElem: HTMLDivElement
     private headerContainer: HTMLDivElement
     private saveButtonContainer: HTMLDivElement
@@ -142,6 +143,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
                     $('div', $ => {
+                        this.messageContainer = $('div')
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
 
@@ -198,6 +200,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             sparkLinesContainer: this.sparkLinesContainer,
             saveButtonContainer: this.saveButtonContainer,
             optionRowContainer: this.optionRowContainer,
+            messageContainer: this.messageContainer,
             actualWidth: this.actualWidth,
             requestMissingMetrics: this.requestMissingMetrics.bind(this),
             savePreferences: this.savePreferences.bind(this),
@@ -302,20 +305,29 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         })
     }
 
-    private onDelete = () => {
-        this.preferenceData = this.preferenceCache.deleteBaseExperiment()
+    private onDelete = async () => {
+        this.deleteButton.disabled = true
+        this.deleteButton.loading = true
+        try {
+            this.preferenceData = await this.preferenceCache.deleteBaseExperiment()
 
-        this.baseSeries = undefined
-        this.basePlotIdx = []
-        this.baseUuid = ''
-        this.baseRun = undefined
+            this.baseSeries = undefined
+            this.basePlotIdx = []
+            this.baseUuid = ''
+            this.baseRun = undefined
 
-        this.missingBaseExperiment = true
-        this.isUnsaved = false
-        this.refresh.resume()
-        this.renderHeaders()
-        this.content.render(this.missingBaseExperiment)
-        this.renderButtons()
+            this.missingBaseExperiment = true
+            this.isUnsaved = false
+            this.refresh.resume()
+            this.renderHeaders()
+            this.content.render(this.missingBaseExperiment)
+            this.renderButtons()
+        } catch (e) {
+            this.content.renderError(e, "Failed to delete comparison")
+            this.deleteButton.disabled = false
+        } finally {
+            this.deleteButton.loading = false
+        }
     }
 
     private onEditClick = () => {
@@ -326,35 +338,42 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             title: 'Select run for comparison',
             excludedRuns: new Set<string>([this.run.run_uuid]),
             onPicked: async run => {
-                if (this.preferenceData.base_experiment !== run.run_uuid) {
-                    this.preferenceData = this.preferenceCache.updateBaseExperiment(run)
-                    this.baseUuid = run.run_uuid
-                    this.basePlotIdx = []
-                    this.plotIdx = []
-                    this.stepRange = [-1, -1]
-                    this.focusSmoothed = true
-                    this.smoothValue = 50
-                    this.chartType = 0
+                try {
+                    if (this.preferenceData.base_experiment !== run.run_uuid) {
+                        this.preferenceData = await this.preferenceCache.updateBaseExperiment(run)
+                        this.baseUuid = run.run_uuid
+                        this.basePlotIdx = []
+                        this.plotIdx = []
+                        this.stepRange = [-1, -1]
+                        this.focusSmoothed = true
+                        this.smoothValue = 50
+                        this.chartType = 0
 
-                    this.setBaseLoading(true)
-                    this.updateBaseRun(true).then(async () => {
-                        this.isUnsaved = false
-                        this.refresh.resume()
+                        this.setBaseLoading(true)
+                        this.updateBaseRun(true).then(async () => {
+                            this.isUnsaved = false
+                            this.refresh.resume()
 
-                        await this.savePreferences()
-                        this.plotIdx = fillPlotPreferences(this.series, [])
-                        this.basePlotIdx = fillPlotPreferences(this.baseSeries, [])
+                            await this.savePreferences()
+                            this.plotIdx = fillPlotPreferences(this.series, [])
+                            this.basePlotIdx = fillPlotPreferences(this.baseSeries, [])
 
-                        this.renderHeaders()
-                        this.content.render(this.missingBaseExperiment)
-                        this.renderButtons()
+                            this.renderHeaders()
+                            this.content.render(this.missingBaseExperiment)
+                            this.renderButtons()
 
-                        this.setBaseLoading(false)
-                    })
+                            this.setBaseLoading(false)
+                        })
+                    }
+                } catch (e) {
+                    this.content.renderError(e, "Failed to update comparison")
+                    this.setBaseLoading(false)
+                } finally {
+                    this.runPickerElem.classList.remove("fullscreen-cover")
+                    document.body.classList.remove("stop-scroll")
+                    clearChildElements(this.runPickerElem)
                 }
-                this.runPickerElem.classList.remove("fullscreen-cover")
-                document.body.classList.remove("stop-scroll")
-                clearChildElements(this.runPickerElem)
+
             }, onCancel: () => {
                 this.runPickerElem.classList.remove("fullscreen-cover")
                 document.body.classList.remove("stop-scroll")

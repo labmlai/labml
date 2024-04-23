@@ -12,6 +12,7 @@ import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
+import {UserMessages} from "../../../components/user_messages"
 
 class RunConfigsView extends ScreenView {
     elem: HTMLDivElement
@@ -27,6 +28,7 @@ class RunConfigsView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private save: SaveButton
     private configsChanged: boolean
+    private userMessage: UserMessages
 
     constructor(uuid: string) {
         super()
@@ -42,7 +44,7 @@ class RunConfigsView extends ScreenView {
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.save = new SaveButton({onButtonClick: this.onSave.bind(this), parent: this.constructor.name, isDisabled: true})
         this.configsChanged = false
-
+        this.userMessage = new UserMessages()
     }
 
     get requiresAuth(): boolean {
@@ -65,6 +67,7 @@ class RunConfigsView extends ScreenView {
         $(this.elem, $ => {
             $('div', '.page',
                 {style: {width: `${this.actualWidth}px`}}, $ => {
+                this.userMessage.render($)
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
@@ -110,14 +113,22 @@ class RunConfigsView extends ScreenView {
         this.refresh.stop()
     }
 
-    onSave() {
+    async onSave() {
         if (!this.configsChanged) {
             return
         }
-
-        CACHE.getRun(this.uuid).setRun(this.run).then()
-        this.save.disabled = true
-        this.configsChanged = false
+        try {
+            this.save.disabled = true
+            this.save.loading = true
+            this.configsChanged = false
+            await CACHE.getRun(this.uuid).setRun(this.run)
+        } catch (e) {
+            this.userMessage.networkError(e, "Failed to save configurations")
+            this.save.disabled = false
+            this.configsChanged = true
+        } finally {
+            this.save.loading = false
+        }
     }
 
     async onRefresh() {
@@ -125,7 +136,7 @@ class RunConfigsView extends ScreenView {
             await this.loader.load(true)
             this.renderConfigsView()
         } catch (e) {
-
+            this.userMessage.networkError(e, "Refresh failed")
         } finally {
             if (this.status && !this.status.isRunning) {
                 this.refresh.stop()

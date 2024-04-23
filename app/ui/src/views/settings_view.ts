@@ -8,6 +8,7 @@ import EditableField from '../components/input/editable_field'
 import {handleNetworkError} from '../utils/redirect'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
+import {UserMessages} from "../components/user_messages"
 
 const DEFAULT_IMAGE = '/images/user.png'
 const LIGHT = 'light'
@@ -22,13 +23,14 @@ class SettingsView extends ScreenView {
     actualWidth: number
     radioLight: HTMLInputElement
     radioDark: HTMLInputElement
+    userMessage: UserMessages
 
     constructor() {
         super()
 
         this.userCache = CACHE.getUser()
         this.loader = new Loader(true)
-
+        this.userMessage = new UserMessages()
     }
 
     onResize(width: number) {
@@ -37,6 +39,7 @@ class SettingsView extends ScreenView {
 
     render() {
         this.elem = $('div', '.page', $ => {
+            this.userMessage.render($)
             new HamburgerMenuView({title: 'Settings'}).render($)
             this.settingsContainer = $('div', '.auto-margin', {style: {width: `${this.actualWidth}px`}})
             this.loader.render($)
@@ -102,10 +105,15 @@ class SettingsView extends ScreenView {
     }
 
     onThemeUpdate = async () => {
-        this.user.theme = this.radioDark.checked ? DARK : LIGHT
-        this.userCache.setUser(this.user).then()
         this.updateRadio()
-        await SCREEN.updateTheme()
+        try {
+            await this.userCache.setUser(this.user)
+            this.user.theme = this.radioDark.checked ? DARK : LIGHT
+            await SCREEN.updateTheme()
+        } catch (e) {
+            this.userMessage.networkError(e, "Failed to save")
+            this.updateRadio()
+        }
     }
 
     updateRadio = () => {

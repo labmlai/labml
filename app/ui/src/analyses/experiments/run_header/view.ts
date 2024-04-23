@@ -20,6 +20,7 @@ import {setTitle} from '../../../utils/document'
 import {formatFixed} from "../../../utils/value"
 import {ScreenView} from '../../../screen_view'
 import {User} from '../../../models/user'
+import {UserMessages} from "../../../components/user_messages"
 
 enum EditStatus {
     NOCHANGE,
@@ -50,6 +51,7 @@ class RunHeaderView extends ScreenView {
     private deleteButton: DeleteButton
     private saveButton: SaveButton
     private loader: DataLoader
+    private userMessages: UserMessages
 
     constructor(uuid: string) {
         super()
@@ -67,6 +69,7 @@ class RunHeaderView extends ScreenView {
         })
 
         this.editStatus = EditStatus.NOCHANGE
+        this.userMessages = new UserMessages()
     }
 
     get requiresAuth(): boolean {
@@ -106,6 +109,7 @@ class RunHeaderView extends ScreenView {
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
                     $('div', $ => {
+                        this.userMessages.render($)
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                             this.saveButton = new SaveButton({onButtonClick: this.updateRun, parent: this.constructor.name, isDisabled: true})
@@ -265,11 +269,11 @@ class RunHeaderView extends ScreenView {
         if (confirm("Are you sure?")) {
             try {
                 await CACHE.getRunsList().deleteRuns([this.uuid])
+                ROUTER.navigate('/runs')
             } catch (e) {
-                handleNetworkError(e)
+                this.userMessages.networkError(e, "Failed to delete run")
                 return
             }
-            ROUTER.navigate('/runs')
         }
     }
 
@@ -286,11 +290,17 @@ class RunHeaderView extends ScreenView {
         if (this.noteField.getInput()) {
             this.run.note = this.noteField.getInput()
         }
+        try {
+            this.runCache.setRun(this.run).then(async () => {
+                await this._render()
+                this.editStatus = EditStatus.NOCHANGE
+            })
+        } catch (e) {
+            this.editStatus = EditStatus.CHANGE
+            this.userMessages.networkError(e, "Failed to save run")
+        }
 
-        this.runCache.setRun(this.run).then(async () => {
-            await this._render()
-            this.editStatus = EditStatus.NOCHANGE
-        })
+
     }
 }
 

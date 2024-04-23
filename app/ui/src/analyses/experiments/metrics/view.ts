@@ -29,6 +29,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
     private sparkLinesContainer: HTMLDivElement
     private saveButtonContainer: WeyaElement
     private optionRowContainer: WeyaElement
+    private messageContainer: WeyaElement
     private actualWidth: number
     private refresh: AwesomeRefreshButton
 
@@ -118,6 +119,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
                     $('div', $ => {
+                        this.messageContainer = $('div')
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                             this.saveButtonContainer = $('div')
@@ -154,8 +156,9 @@ class MetricsView extends ScreenView implements MetricDataStore {
                 sparkLinesContainer: this.sparkLinesContainer,
                 saveButtonContainer: this.saveButtonContainer,
                 optionRowContainer: this.optionRowContainer,
+                messageContainer: this.messageContainer,
                 actualWidth: this.actualWidth,
-                requestMissingMetrics: this.requestMissingMetrics.bind(this),
+                requestMissingMetrics: this.requestMissingMetrics,
                 savePreferences: this.savePreferences.bind(this),
                 preferenceChange: this.onPreferenceChange,
                 deleteChart: this.customMetric == null ? null : this.onDelete
@@ -204,12 +207,15 @@ class MetricsView extends ScreenView implements MetricDataStore {
         this.refresh.changeVisibility(!document.hidden)
     }
 
-    private onDelete = () => {
+    private onDelete = async () => {
         // get confirmation from an alert
         if (confirm('Are you sure you want to delete this chart?')) {
-            CACHE.getCustomMetrics(this.uuid).deleteMetric(this.metricUuid).then(() => {
+            try {
+                await CACHE.getCustomMetrics(this.uuid).deleteMetric(this.metricUuid)
                 ROUTER.navigate(`/run/${this.uuid}`)
-            })
+            } catch (e) {
+                this.content.renderError(e, "Failed to delete chart")
+            }
         }
     }
 
@@ -253,7 +259,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
 
     }
 
-    private async requestMissingMetrics() {
+    private requestMissingMetrics = async () => {
         this.series = (await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series
     }
 
