@@ -7,6 +7,7 @@ import {AnalysisPreferenceModel, ComparisonPreferenceModel} from "../models/pref
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
 import {ProcessData} from "../analyses/sessions/process/types"
+import {Config} from "../models/config"
 
 const RELOAD_TIMEOUT = 60 * 1000
 const FORCE_RELOAD_TIMEOUT = 5 * 1000
@@ -161,6 +162,25 @@ export class RunsListCache extends CacheObject<RunsList> {
         await NETWORK.claimRun(run.run_uuid)
         this.invalidate_cache()
     }
+
+    async localUpdateRun(run: Run) {
+        if (this.data == null) {
+            return
+        }
+
+        for (let runItem of this.data.runs) {
+            if (runItem.run_uuid == run.run_uuid) {
+                runItem.name = run.name
+                runItem.comment = run.comment
+                runItem.favorite_configs = []
+                for (let c of run.configs) {
+                    if (run.favourite_configs.includes(c.name)) {
+                        runItem.favorite_configs.push(new Config(c))
+                    }
+                }
+            }
+        }
+    }
 }
 
 export class SessionsListCache extends CacheObject<SessionsList> {
@@ -230,8 +250,8 @@ export class RunCache extends CacheObject<Run> {
         return this.data
     }
 
-    async setRun(run: Run): Promise<void> {
-        await NETWORK.setRun(this.uuid, run)
+    async updateRunData(data: Record<string, any>): Promise<void> {
+        await NETWORK.updateRunData(this.uuid, data)
     }
 }
 

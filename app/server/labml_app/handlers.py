@@ -285,7 +285,7 @@ async def edit_run(request: Request, run_uuid: str, token: Optional[str] = None)
         data = await request.json()
         r.edit_run(data)
     else:
-        errors.append({'edit_run': 'invalid run uuid'})
+        raise Exception("Invalid Run UUID")
 
     return {'errors': errors}
 
