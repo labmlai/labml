@@ -188,16 +188,6 @@ class Run(Model['Run']):
                 if hp_analysis is not None:
                     hp_analysis.set_default_values(defaults)
 
-        if 'stdout' in data and data['stdout']:
-            stdout_processed, self.stdout_unmerged = self.merge_output(self.stdout_unmerged, data['stdout'])
-            self.stdout += stdout_processed
-        if 'logger' in data and data['logger']:
-            logger_processed, self.logger_unmerged = self.merge_output(self.logger_unmerged, data['logger'])
-            self.logger += logger_processed
-        if 'stderr' in data and data['stderr']:
-            stderr_processed, self.stderr_unmerged = self.merge_output(self.stderr_unmerged, data['stderr'])
-            self.stderr += stderr_processed
-
         if 'favorite_configs' in data:
             self.favourite_configs = data.get('favorite_configs', [])
         if 'selected_configs' in data:
@@ -238,32 +228,6 @@ class Run(Model['Run']):
                             break
 
         self.save()
-
-    def merge_output(self, unmerged: str, new: str) -> (str, str):
-        unmerged += new
-        processed = ''
-        if len(new) > 1:
-            processed, unmerged = self.format_output(unmerged)
-
-        return processed, unmerged
-
-    @staticmethod
-    def format_output(output: str) -> (str, str):
-        res = []
-        temp = ''
-        for i, c in enumerate(output):
-            if c == '\n':
-                temp += '\n'
-                res.append(temp)
-                temp = ''
-            elif c == '\r' and len(output) > i + 1 and output[i + 1] == '\n':
-                pass
-            elif c == '\r':
-                temp = ''
-            else:
-                temp += c
-
-        return ''.join(res), temp
 
     @staticmethod
     def format_remote_repo(urls: str) -> str:
@@ -315,19 +279,6 @@ class Run(Model['Run']):
 
         other_rank_run_uuids = self.get_rank_uuids()
 
-        # get the std out and std error from main rank
-        stdout = self.stdout + self.stdout_unmerged
-        stderr = self.stderr + self.stderr_unmerged
-        run_logger = self.logger + self.logger_unmerged
-
-        if self.world_size != 0 and other_rank_run_uuids and is_dist_run:
-            run_uuid = other_rank_run_uuids[self.main_rank]
-            run = get(run_uuid)
-            if run is not None:
-                stdout = run.stdout + run.stdout_unmerged
-                stderr = run.stderr + run.stderr_unmerged
-                run_logger = run.logger + run.logger_unmerged
-
         return {
             'run_uuid': self.run_uuid,
             'rank': self.rank,
@@ -350,9 +301,6 @@ class Run(Model['Run']):
             'size_tensorboard': self.size_tensorboard,
             'computer_uuid': self.computer_uuid,
             'configs': configs,
-            'stdout': stdout,
-            'logger': run_logger,
-            'stderr': stderr,
             'favourite_configs': self.favourite_configs,
             'selected_configs': self.selected_configs,
             'process_id': self.process_id,
