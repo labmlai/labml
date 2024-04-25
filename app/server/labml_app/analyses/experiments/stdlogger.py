@@ -39,17 +39,15 @@ async def get_std_logger(_: Request, run_uuid: str) -> Any:
     return std_logger.get_data()
 
 
-@Analysis.route('POST', 'logs/std_logger/{run_uuid}')
-async def update_std_logger(request: Request, run_uuid: str) -> JSONResponse:
-    data = await request.json()
+def update_std_logger(run_uuid: str, content: str):
     key = StdLoggerIndex.get(run_uuid)
     std_logger: StdLoggerModel
 
     if key is None:
-        return JSONResponse({'error': 'No logs found'}, status_code=404)
+        std_logger = StdLoggerModel()
+        std_logger.save()
+        StdLoggerIndex.set(run_uuid, std_logger.key)
     else:
         std_logger = key.load()
 
-    std_logger.update(data['logs'])
-
-    return JSONResponse(std_logger.get_data())
+    std_logger.update_logs(content)

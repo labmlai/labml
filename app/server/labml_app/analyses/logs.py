@@ -9,7 +9,7 @@ class Logs:
     def defaults(cls):
         return dict()
 
-    def update(self, new_logs):
+    def update_logs(self, new_logs):
         unmerged = self.logs_unmerged + new_logs
         processed = ''
         if len(new_logs) > 1:

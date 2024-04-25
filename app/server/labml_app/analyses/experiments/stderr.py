@@ -39,17 +39,15 @@ async def get_std_err(_: Request, run_uuid: str) -> Any:
     return std_err.get_data()
 
 
-@Analysis.route('POST', 'logs/stderr/{run_uuid}')
-async def update_stderr(request: Request, run_uuid: str) -> JSONResponse:
-    data = await request.json()
+def update_stderr(run_uuid: str, content: str):
     key = StdErrIndex.get(run_uuid)
     std_err: StdErrModel
 
     if key is None:
-        return JSONResponse({'error': 'No logs found'}, status_code=404)
+        std_err = StdErrModel()
+        std_err.save()
+        StdErrIndex.set(run_uuid, std_err.key)
     else:
         std_err = key.load()
 
-    std_err.update(data['logs'])
-
-    return JSONResponse(std_err.get_data())
+    std_err.update_logs(content)

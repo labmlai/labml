@@ -39,17 +39,15 @@ async def get_stdout(_: Request, run_uuid: str) -> Any:
     return std_out.get_data()
 
 
-@Analysis.route('POST', 'logs/stdout/{run_uuid}')
-async def update_stdout(request: Request, run_uuid: str) -> JSONResponse:
-    data = await request.json()
+def update_stdout(run_uuid: str, content: str):
     key = StdOutIndex.get(run_uuid)
     std_out: StdOutModel
 
     if key is None:
-        return JSONResponse({'error': 'No logs found'}, status_code=404)
+        std_out = StdOutModel()
+        std_out.save()
+        StdOutIndex.set(run_uuid, std_out.key)
     else:
         std_out = key.load()
 
-    std_out.update(data['logs'])
-
-    return JSONResponse(std_out.get_data())
+    std_out.update_logs(content)

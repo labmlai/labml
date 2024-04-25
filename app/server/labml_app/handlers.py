@@ -6,8 +6,7 @@ from typing import Callable, Dict, Any, Optional
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from .analyses.experiments import metrics, distributed_metrics
-from .analyses.experiments.metrics import MetricsAnalysis
+from .analyses.experiments import stdout, stderr, stdlogger
 from .logger import logger
 from . import settings
 from . import auth
@@ -91,6 +90,13 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
         s.update_time_status(d)
         if 'track' in d:
             analyses.AnalysisManager.track(run_uuid, d['track'])
+
+        if 'stdout' in d and d['stdout']:
+            stdout.update_stdout(run_uuid, d['stdout'])
+        if 'stderr' in d and d['stderr']:
+            stderr.update_stderr(run_uuid, d['stderr'])
+        if 'logger' in d and d['logger']:
+            stdlogger.update_std_logger(run_uuid, d['logger'])
 
     hp_values = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', run_uuid)
     if hp_values is not None:
