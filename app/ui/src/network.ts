@@ -21,7 +21,7 @@ class Network {
         return this.sendHttpRequest('GET', `/run/${runUUID}`)['promise']
     }
 
-    async setRun(runUUID: string, data: object): Promise<any> {
+    async updateRunData(runUUID: string, data: object): Promise<any> {
         return this.sendHttpRequest('POST', `/run/${runUUID}`, data)['promise']
     }
 

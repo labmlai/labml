@@ -121,7 +121,14 @@ class RunConfigsView extends ScreenView {
             this.save.disabled = true
             this.save.loading = true
             this.configsChanged = false
-            await CACHE.getRun(this.uuid).setRun(this.run)
+
+            let data = {
+                'favourite_configs': this.run.favourite_configs,
+                'selected_configs': this.run.selected_configs
+            }
+
+            await CACHE.getRun(this.uuid).updateRunData(data)
+            await CACHE.getRunsList().localUpdateRun(this.run)
         } catch (e) {
             this.userMessage.networkError(e, "Failed to save configurations")
             this.save.disabled = false

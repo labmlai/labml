@@ -290,8 +290,16 @@ class RunHeaderView extends ScreenView {
         if (this.noteField.getInput()) {
             this.run.note = this.noteField.getInput()
         }
+
+        let data = {
+            'name': this.run.name,
+            'comment': this.run.comment,
+            'note': this.run.note
+        }
+
         try {
-            await this.runCache.setRun(this.run)
+            await this.runCache.updateRunData(data)
+            await CACHE.getRunsList().localUpdateRun(this.run)
             await this._render()
             this.editStatus = EditStatus.NOCHANGE
         } catch (e) {
