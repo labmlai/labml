@@ -10,6 +10,10 @@ from .analyses.computers.network import NetworkAnalysis
 from .analyses.computers.disk import DiskAnalysis
 from .analyses.computers.process import ProcessAnalysis
 
+from .analyses.experiments.stdout import StdOutModel
+from .analyses.experiments.stderr import StdErrModel
+from .analyses.experiments.stdlogger import StdLoggerModel
+
 experiment_analyses = [MetricsAnalysis]
 
 computer_analyses = [CPUAnalysis,

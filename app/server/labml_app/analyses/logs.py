@@ -7,7 +7,7 @@ class Logs:
 
     @classmethod
     def defaults(cls):
-        return dict()
+        return dict(logs='', logs_unmerged='')
 
     def update_logs(self, new_logs):
         unmerged = self.logs_unmerged + new_logs

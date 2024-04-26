@@ -1,4 +1,4 @@
-import {AnalysisData, CustomMetric, CustomMetricList, CustomMetricModel, Run} from "../models/run"
+import {AnalysisData, CustomMetric, CustomMetricList, CustomMetricModel, Logs, Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK from "../network"
 import { User} from "../models/user"
@@ -513,6 +513,25 @@ export class CustomMetricCache extends CacheObject<CustomMetricList> {
     }
 }
 
+export class LogCache extends CacheObject<Logs> {
+    private readonly url: string
+    private readonly uuid: string
+
+    constructor(uuid: string, url: string) {
+        super();
+
+        this.url = url
+        this.uuid = uuid
+    }
+
+    load(args: any): Promise<Logs> {
+        return this.broadcastPromise.create(async () => {
+            let data = await NETWORK.getLogs(this.uuid, this.url)
+            return new Logs(data)
+        })
+    }
+}
+
 class Cache {
     private runs: { [uuid: string]: RunCache }
     private customMetrics: { [uuid: string]: CustomMetricCache }
@@ -604,6 +623,7 @@ class Cache {
         this.sessions = {}
         this.runStatuses = {}
         this.sessionStatuses = {}
+        this.customMetrics = {}
         if (this.user != null) {
             this.user.invalidate_cache()
         }

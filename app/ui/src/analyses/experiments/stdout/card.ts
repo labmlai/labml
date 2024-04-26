@@ -1,35 +1,33 @@
 import {Weya as $, WeyaElementFunction} from '../../../../../lib/weya/weya'
-import {Run} from "../../../models/run"
-import CACHE, {RunCache} from "../../../cache/cache"
 import {Card, CardOptions} from "../../types"
 import Filter from "../../../utils/ansi_to_html"
 import {DataLoader} from "../../../components/loader"
 import {ROUTER} from '../../../app'
+import stdOutCache from "./cache";
+import {Logs} from "../../../models/run"
 
 export class StdOutCard extends Card {
-    run: Run
     uuid: string
-    runCache: RunCache
     outputContainer: HTMLPreElement
     elem: HTMLDivElement
     filter: Filter
     private loader: DataLoader
+    private stdOut?: Logs
 
     constructor(opt: CardOptions) {
         super(opt)
 
         this.uuid = opt.uuid
-        this.runCache = CACHE.getRun(this.uuid)
         this.filter = new Filter({})
         this.loader = new DataLoader(async (force) => {
-            this.run = await this.runCache.get(force)
+            this.stdOut = await stdOutCache.getLogCache(this.uuid).get(force)
         })
     }
 
     getLastTenLines(inputStr: string) {
         let split = inputStr.split("\n")
 
-        let last10Lines
+        let last10Lines: string[]
         if (split.length > 10) {
             last10Lines = split.slice(Math.max(split.length - 10, 1))
         } else {
@@ -40,7 +38,7 @@ export class StdOutCard extends Card {
     }
 
     getLastUpdated(): number {
-        return this.runCache.lastUpdated
+        return stdOutCache.getLogCache(this.uuid).lastUpdated
     }
 
     async render($: WeyaElementFunction) {
@@ -55,7 +53,7 @@ export class StdOutCard extends Card {
         try {
             await this.loader.load()
 
-            if (this.run.stdout) {
+            if (this.stdOut?.logs) {
                 this.renderOutput()
             } else {
                 this.elem.classList.add('hide')
@@ -69,14 +67,14 @@ export class StdOutCard extends Card {
         this.outputContainer.innerHTML = ''
         $(this.outputContainer, $ => {
             let output = $('div', '')
-            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.stdout))
+            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.stdOut.logs))
         })
     }
 
     async refresh() {
         try {
             await this.loader.load(true)
-            if (this.run.stdout) {
+            if (this.stdOut?.logs) {
                 this.renderOutput()
                 this.elem.classList.remove('hide')
             }

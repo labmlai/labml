@@ -1,4 +1,4 @@
-import {Run} from "../../../models/run"
+import {Logs, Run} from "../../../models/run"
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import Filter from "../../../utils/ansi_to_html"
@@ -12,11 +12,13 @@ import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
+import stdLoggerCache from "./cache"
 
 class LoggerView extends ScreenView {
     elem: HTMLDivElement
     uuid: string
     run: Run
+    stdLogger: Logs
     status: Status
     statusCache: RunStatusCache
     runCache: RunCache
@@ -38,6 +40,7 @@ class LoggerView extends ScreenView {
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
+            this.stdLogger = await stdLoggerCache.getLogCache(this.uuid).get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -130,7 +133,9 @@ class LoggerView extends ScreenView {
         this.outputContainer.innerHTML = ''
         $(this.outputContainer, $ => {
             let output = $('pre', '')
-            output.innerHTML = this.filter.toHtml(this.run.logger)
+            if (this.stdLogger) {
+                output.innerHTML = this.filter.toHtml(this.stdLogger.logs)
+            }
         })
     }
 }

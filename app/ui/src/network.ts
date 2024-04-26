@@ -145,6 +145,10 @@ class Network {
         return this.sendHttpRequest('POST', `/custom_metrics/${runUUID}`, data)['promise']
     }
 
+    async getLogs(runUUID: string, url: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/logs/${url}/${runUUID}`, {})['promise']
+    }
+
     private sendHttpRequest = (method: string, url: string, data: object = {}, retryAuth: boolean = true): {promise: Promise<any>, xhr: XMLHttpRequest} => {
         const xhr = new XMLHttpRequest()
         let promise = new Promise((resolve, reject) => {

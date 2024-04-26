@@ -24,9 +24,6 @@ export interface RunModel {
     size_tensorboard: number
     computer_uuid: string
     configs: ConfigModel[]
-    stdout: string
-    logger: string
-    stderr: string
     selected_configs: string[]
     favourite_configs: string[]
     session_id: string
@@ -107,9 +104,6 @@ export class Run {
     computer_uuid: string
     configs: Config[]
     dynamic: object
-    stdout: string
-    logger: string
-    stderr: string
     selected_configs: string[]
     favourite_configs: string[]
     session_id: string
@@ -142,9 +136,6 @@ export class Run {
         for (let c of run.configs) {
             this.configs.push(new Config(c,this.selected_configs.includes(c.key), this.favourite_configs.includes(c.key)))
         }
-        this.stdout = run.stdout
-        this.logger = run.logger
-        this.stderr = run.stderr
         this.session_id = run.session_id
         this.process_id = run.process_id
     }
@@ -235,5 +226,17 @@ export class CustomMetricList {
 
     public updateMetric(metric: CustomMetric) {
         this.metrics[metric.id] = metric
+    }
+}
+
+export interface LogModel {
+    logs: string
+}
+
+export class Logs {
+    logs: string
+
+    constructor(logs: LogModel) {
+        this.logs = logs.logs
     }
 }

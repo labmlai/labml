@@ -1,13 +1,14 @@
 import {Weya as $, WeyaElementFunction} from '../../../../../lib/weya/weya'
-import {Run} from "../../../models/run"
+import {Logs, Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
 import {Card, CardOptions} from "../../types"
 import Filter from "../../../utils/ansi_to_html"
 import {DataLoader} from "../../../components/loader"
-import {ROUTER} from '../../../app';
+import {ROUTER} from '../../../app'
+import stdErrCache from "./cache"
 
 export class StdErrorCard extends Card {
-    run: Run
+    stdErr: Logs
     uuid: string
     runCache: RunCache
     outputContainer: HTMLPreElement
@@ -22,14 +23,14 @@ export class StdErrorCard extends Card {
         this.runCache = CACHE.getRun(this.uuid)
         this.filter = new Filter({})
         this.loader = new DataLoader(async (force) => {
-            this.run = await this.runCache.get(force)
+            this.stdErr = await stdErrCache.getLogCache(this.uuid).get(force)
         })
     }
 
     getLastTenLines(inputStr: string) {
         let split = inputStr.split("\n")
 
-        let last10Lines
+        let last10Lines: string[]
         if (split.length > 10) {
             last10Lines = split.slice(Math.max(split.length - 10, 1))
         } else {
@@ -55,7 +56,7 @@ export class StdErrorCard extends Card {
         try {
             await this.loader.load()
 
-            if (this.run.stderr) {
+            if (this.stdErr?.logs) {
                 this.renderOutput()
             } else {
                 this.elem.classList.add('hide')
@@ -69,14 +70,14 @@ export class StdErrorCard extends Card {
         this.outputContainer.innerHTML = ''
         $(this.outputContainer, $ => {
             let output = $('div', '')
-            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.stderr))
+            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.stdErr.logs))
         })
     }
 
     async refresh() {
         try {
             await this.loader.load(true)
-            if (this.run.stderr) {
+            if (this.stdErr?.logs) {
                 this.renderOutput()
                 this.elem.classList.remove('hide')
             }

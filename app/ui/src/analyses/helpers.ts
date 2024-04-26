@@ -1,6 +1,6 @@
 import CACHE, {
     AnalysisPreferenceCache, BaseDataCache,
-    ComparisonAnalysisPreferenceCache,
+    ComparisonAnalysisPreferenceCache, LogCache,
     RunStatusCache,
     SessionStatusCache
 } from "../cache/cache"
@@ -45,5 +45,23 @@ export class AnalysisCache<TA extends BaseDataCache<any>, TAP extends AnalysisPr
         }
 
         return null
+    }
+}
+
+export class LogAnalysisCache<TA extends LogCache> {
+    private readonly logCaches: { [uuid: string]: TA }
+    private readonly logs: new (uuid: string) => TA
+
+    constructor(logs: new (uuid: string) => TA){
+        this.logCaches = {}
+        this.logs = logs
+    }
+
+    getLogCache(uuid: string) {
+        if (this.logCaches[uuid] == null) {
+            this.logCaches[uuid] = new this.logs(uuid)
+        }
+
+        return this.logCaches[uuid]
     }
 }
