@@ -50,3 +50,4 @@ def update_std_logger(run_uuid: str, content: str):
         std_logger = key.load()
 
     std_logger.update_logs(content)
+    std_logger.save()

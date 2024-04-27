@@ -50,3 +50,4 @@ def update_stdout(run_uuid: str, content: str):
         std_out = key.load()
 
     std_out.update_logs(content)
+    std_out.save()

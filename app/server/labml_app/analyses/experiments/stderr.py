@@ -50,3 +50,4 @@ def update_stderr(run_uuid: str, content: str):
         std_err = key.load()
 
     std_err.update_logs(content)
+    std_err.save()
