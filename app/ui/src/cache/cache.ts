@@ -91,7 +91,7 @@ export abstract class CacheObject<T> {
     public lastUpdated: number
     protected data!: T
     protected broadcastPromise = new BroadcastPromise<T>()
-    private lastUsed: number
+    protected lastUsed: number
 
     constructor() {
         this.lastUsed = 0
@@ -524,11 +524,44 @@ export class LogCache extends CacheObject<Logs> {
         this.uuid = uuid
     }
 
-    load(args: any): Promise<Logs> {
+    load(...args: any[]): Promise<Logs> {
         return this.broadcastPromise.create(async () => {
-            let data = await NETWORK.getLogs(this.uuid, this.url)
+            let data = await NETWORK.getLogs(this.uuid, this.url, args[0])
             return new Logs(data)
         })
+    }
+
+    async getAll(): Promise<Logs> {
+        await this.get(false)
+        let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -2))
+        this.data.mergeLogs(data)
+        return data
+    }
+
+    async getLast(): Promise<Logs> {
+        await this.get(false)
+        let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -1))
+        this.data.mergeLogs(data)
+        return data
+    }
+
+    async getPage(pageNo: number): Promise<Logs> {
+        await this.get(false)
+        let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, pageNo))
+        this.data.mergeLogs(data)
+        return data
+    }
+
+    async get(isRefresh = false, ...args: any[]): Promise<Logs> {
+        if (this.data == null || (isRefresh && isForceReloadTimeout(this.lastUpdated)) || isReloadTimeout(this.lastUpdated)) {
+            this.data = await this.load(-1)
+
+            this.lastUpdated = (new Date()).getTime()
+        }
+
+        this.lastUsed = new Date().getTime()
+
+        return this.data
     }
 }
 

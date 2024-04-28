@@ -65,19 +65,22 @@ class Logs:
         )
 
     def get_data(self, page_no: int = -1):
-        logs: str = ''
-        if len(self.log_pages) < page_no:
-            logs = ''
-        elif page_no == -1:
+        page_dict: Dict[str, str] = {}
+
+        if page_no == -2:
             pages: List['LogPage'] = [page.load() for page in self.log_pages]
-            for p in pages:
-                logs += p.logs
-            logs += pages[-1].logs_unmerged if len(pages) != 0 else ''
-        else:
+            for i, p in enumerate(pages):
+                page_dict[str(i)] = p.logs + p.logs_unmerged
+        elif page_no == -1 and len(self.log_pages) > 0:
+            page = self.log_pages[-1].load()
+            page_dict[str(len(self.log_pages) - 1)] = page.logs + page.logs_unmerged
+        elif len(self.log_pages) > page_no:
             page = self.log_pages[page_no].load()
-            logs = page.logs + page.logs_unmerged
+            page_dict[str(page_no)] = page.logs + page.logs_unmerged
+
         return {
-            'logs': logs
+            'pages': page_dict,
+            'page_length': len(self.log_pages)
         }
 
     def update_logs(self, content: str):
