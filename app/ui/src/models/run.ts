@@ -230,13 +230,40 @@ export class CustomMetricList {
 }
 
 export interface LogModel {
-    logs: string
+    pages: Record<string, string>
+    page_length: number
+}
+
+export interface LogUpdateFeedback {
+    lowerIndexes: string[]
+    higherIndexes: string[]
 }
 
 export class Logs {
-    logs: string
+    pages: Record<string, string>
+    pageLength: number
 
     constructor(logs: LogModel) {
-        this.logs = logs.logs
+        this.pages = logs.pages
+        this.pageLength = logs.page_length
+    }
+
+    public getPage(index: number): string | null {
+        return this.pages[index]
+    }
+
+    public getPageAsLog(index: number): Logs {
+        let pages = {}
+        pages[index] = this.getPage(index)
+        return new Logs({pages: pages, page_length: this.pageLength})
+    }
+
+    public hasPage(index: number): Boolean {
+        return this.pages.hasOwnProperty(index)
+    }
+
+    public mergeLogs(logs: Logs) {
+        this.pages = {...this.pages, ...logs.pages}
+        this.pageLength = logs.pageLength
     }
 }

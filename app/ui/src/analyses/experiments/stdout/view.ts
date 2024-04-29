@@ -41,12 +41,12 @@ class StdOutView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
-            this.stdOut = await stdOutCache.getLogCache(this.uuid).getLast()
+            this.stdOut = await stdOutCache.getLogCache(this.uuid).getLast(force)
             this.run = await this.runCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.logView = new LogView(new Logs(<LogModel>{pages: {}, page_length: 0}), async (currentPage): Promise<Logs> => {
-            return await stdOutCache.getLogCache(this.uuid).getPage(currentPage)
+            return await stdOutCache.getLogCache(this.uuid).getPage(currentPage, false)
         })
     }
 

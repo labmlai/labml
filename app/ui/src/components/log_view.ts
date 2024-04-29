@@ -1,15 +1,19 @@
 import {Weya as $, WeyaElementFunction} from "../../../lib/weya/weya"
 import {Logs} from "../models/run";
 import Filter from "../utils/ansi_to_html"
+import {CustomButton} from "./buttons"
 
 export class LogView {
     private logs: Logs
     private readonly filter: Filter
     private elem: HTMLDivElement
-    private logElems: Record<string, HTMLPreElement>
+    private readonly logElems: Record<string, HTMLPreElement>
     private logElemLength: number
 
     private readonly loadPage:  (currentPage: number) => Promise<Logs>
+    private readonly loadMoreButton: CustomButton
+    private readonly loadAllButton: CustomButton
+    private toLoadPage: number = -1
 
     constructor(logs: Logs, loadPage: (currentPage: number) => Promise<Logs>) {
         this.logs = logs
@@ -17,14 +21,28 @@ export class LogView {
         this.logElemLength = 0
         this.filter = new Filter({})
 
-        this.loadBelow.bind(this)
-        this.loadAbove.bind(this)
-
         this.loadPage = loadPage
+
+        this.loadMoreButton = new CustomButton({
+            parent: this.constructor.name,
+            text: "Load More",
+            onButtonClick: this.onLoadMoreClick
+        })
+        this.loadAllButton = new CustomButton({
+            parent: this.constructor.name,
+            text: "Load All",
+            onButtonClick: this.onLoadAllClick
+        })
     }
 
     render($: WeyaElementFunction) {
-        this.elem = $('div')
+        this.logElemLength = 0
+        this.elem = $('div', $ => {
+            this.loadAllButton
+                .render($)
+            this.loadMoreButton
+                .render($)
+        })
         this.renderLogs()
     }
 
@@ -33,15 +51,15 @@ export class LogView {
         this.renderLogs()
     }
 
-    private loadAbove(currentPage: number) {
-        this.loadPage(currentPage).then((logs) => {
+    private onLoadMoreClick = () => {
+        this.loadPage(this.toLoadPage).then((logs) => {
             this.logs.mergeLogs(logs)
             this.renderLogs()
         })
     }
 
-    private loadBelow(currentPage: number) {
-        this.loadPage(currentPage).then((logs) => {
+    private onLoadAllClick = () => {
+        this.loadPage(-2).then((logs) => {
             this.logs.mergeLogs(logs)
             this.renderLogs()
         })
@@ -55,36 +73,28 @@ export class LogView {
             })
         }
 
-        let lastPage = -2
-        for (let i = 0; i < this.logs.pageLength; i++) {
-            let content = this.logs.getPage(i)
-            if (content != null) {
-                if (lastPage != i-1 && i != 0) {
-                    this.logElems[i-1].innerHTML = 'Load more above...'
-                    this.logElems[i-1].removeEventListener('click', () => this.loadBelow(i-1))
-                    this.logElems[i-1].addEventListener('click', () => this.loadAbove(i-1))
-                }
-
-                // if (this.logElems[i].innerHTML != "") { // already rendered
-                //     continue
-                // }
-
-                this.logElems[i].innerHTML = this.filter.toHtml(this.logs.getPage(i))
-
-                // remove listeners
-                this.logElems[i].removeEventListener('click', () => this.loadBelow(i))
-                this.logElems[i].removeEventListener('click', () => this.loadAbove(i))
-
-                lastPage = i
-            } else if (lastPage == i-1) {
-                this.logElems[i].innerHTML = 'Load more below...'
-                this.logElems[i].removeEventListener('click', () => this.loadAbove(i))
-                this.logElems[i].addEventListener('click', () => this.loadBelow(i))
-            } else {
-                this.logElems[i].innerHTML = ''
-                this.logElems[i].removeEventListener('click', () => this.loadBelow(i))
-                this.logElems[i].removeEventListener('click', () => this.loadAbove(i))
+        let index: number
+        for (index = this.logs.pageLength - 1; index >= 0; index--) {
+            if (!this.logs.hasPage(index)) {
+                this.toLoadPage = index
+                this.loadMoreButton.hide(false)
+                break
             }
+
+            this.logElems[index].innerHTML = this.filter.toHtml(this.logs.getPage(index))
+            this.logElems[index].classList.remove("hidden")
+        }
+
+        if (index == -1) { // all loaded
+            this.loadMoreButton.hide(true)
+            this.loadAllButton.hide(true)
+        } else {
+            this.loadAllButton.hide(false)
+            this.loadMoreButton.hide(false)
+        }
+
+        for (--index; index >= 0; index--) {
+            this.logElems[index].classList.add("hidden")
         }
     }
 }

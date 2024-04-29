@@ -531,22 +531,43 @@ export class LogCache extends CacheObject<Logs> {
         })
     }
 
-    async getAll(): Promise<Logs> {
-        await this.get(false)
-        let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -2))
-        this.data.mergeLogs(data)
-        return data
+    async getAll(isRefresh = false): Promise<Logs> {
+        if (isRefresh || this.data == null) {
+            let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -2))
+            this.data.mergeLogs(data)
+            return this.data
+        }
+
+        for (let pageNo = 0; pageNo < this.data.pageLength; pageNo++) {
+            if (!this.data.hasPage(pageNo)) {
+                let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -2))
+                this.data.mergeLogs(data)
+                break
+            }
+        }
+
+        return this.data
     }
 
-    async getLast(): Promise<Logs> {
-        await this.get(false)
+    async getLast(isRefresh = false): Promise<Logs> {
+        await this.get(isRefresh)
+
+        if (!isRefresh && this.data.hasPage(this.data.pageLength - 1)) {
+            return this.data.getPageAsLog(this.data.pageLength - 1)
+        }
+
         let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -1))
         this.data.mergeLogs(data)
         return data
     }
 
-    async getPage(pageNo: number): Promise<Logs> {
+    async getPage(pageNo: number, isRefresh = false): Promise<Logs> {
         await this.get(false)
+
+        if (!isRefresh && this.data.hasPage(pageNo)) {
+            return this.data.getPageAsLog(pageNo)
+        }
+
         let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, pageNo))
         this.data.mergeLogs(data)
         return data

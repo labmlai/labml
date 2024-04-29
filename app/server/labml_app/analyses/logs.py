@@ -74,7 +74,7 @@ class Logs:
         elif page_no == -1 and len(self.log_pages) > 0:
             page = self.log_pages[-1].load()
             page_dict[str(len(self.log_pages) - 1)] = page.logs + page.logs_unmerged
-        elif len(self.log_pages) > page_no:
+        elif len(self.log_pages) > page_no >= 0:
             page = self.log_pages[page_no].load()
             page_dict[str(page_no)] = page.logs + page.logs_unmerged
 

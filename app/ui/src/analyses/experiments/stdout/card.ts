@@ -20,7 +20,7 @@ export class StdOutCard extends Card {
         this.uuid = opt.uuid
         this.filter = new Filter({})
         this.loader = new DataLoader(async (force) => {
-            this.stdOut = await stdOutCache.getLogCache(this.uuid).get(force)
+            this.stdOut = await stdOutCache.getLogCache(this.uuid).getLast(force)
         })
     }
 
@@ -53,7 +53,7 @@ export class StdOutCard extends Card {
         try {
             await this.loader.load()
 
-            if (this.stdOut?.logs) {
+            if (this.stdOut?.hasPage(this.stdOut?.pageLength - 1)) {
                 this.renderOutput()
             } else {
                 this.elem.classList.add('hide')
@@ -67,17 +67,19 @@ export class StdOutCard extends Card {
         this.outputContainer.innerHTML = ''
         $(this.outputContainer, $ => {
             let output = $('div', '')
-            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.stdOut.logs))
+            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.stdOut.getPage(this.stdOut.pageLength - 1)))
         })
     }
 
     async refresh() {
         try {
             await this.loader.load(true)
-            if (this.stdOut?.logs) {
+            if (this.stdOut?.hasPage(this.stdOut?.pageLength - 1)) {
                 this.renderOutput()
-                this.elem.classList.remove('hide')
+            } else {
+                this.elem.classList.add('hide')
             }
+            this.elem.classList.remove('hide')
         } catch (e) {
 
         }
