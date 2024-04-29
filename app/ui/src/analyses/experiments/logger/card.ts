@@ -56,8 +56,9 @@ export class LoggerCard extends Card {
         try {
             await this.loader.load()
 
-            if (this.stdLogger?.logs) {
+            if (this.stdLogger?.hasPage(this.stdLogger?.pageLength - 1)) {
                 this.renderOutput()
+                this.elem.classList.remove('hide')
             } else {
                 this.elem.classList.add('hide')
             }
@@ -70,16 +71,18 @@ export class LoggerCard extends Card {
         this.outputContainer.innerHTML = ''
         $(this.outputContainer, $ => {
             let output = $('div', '')
-            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.stdLogger.logs))
+            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.stdLogger.getPage(this.stdLogger.pageLength - 1)))
         })
     }
 
     async refresh() {
         try {
             await this.loader.load(true)
-            if (this.stdLogger?.logs) {
+            if (this.stdLogger?.hasPage(this.stdLogger?.pageLength - 1)) {
                 this.renderOutput()
                 this.elem.classList.remove('hide')
+            } else {
+                this.elem.classList.add('hide')
             }
         } catch (e) {
 

@@ -531,7 +531,7 @@ export class LogCache extends CacheObject<Logs> {
         })
     }
 
-    async getAll(isRefresh = false): Promise<Logs> {
+    private async getAll(isRefresh = false): Promise<Logs> {
         if (isRefresh || this.data == null) {
             let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -2))
             this.data.mergeLogs(data)
@@ -562,6 +562,10 @@ export class LogCache extends CacheObject<Logs> {
     }
 
     async getPage(pageNo: number, isRefresh = false): Promise<Logs> {
+        if (pageNo == -2) {
+            return await this.getAll(isRefresh)
+        }
+
         await this.get(false)
 
         if (!isRefresh && this.data.hasPage(pageNo)) {

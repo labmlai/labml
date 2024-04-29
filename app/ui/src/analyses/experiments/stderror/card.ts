@@ -56,8 +56,9 @@ export class StdErrorCard extends Card {
         try {
             await this.loader.load()
 
-            if (this.stdErr?.logs) {
+            if (this.stdErr?.hasPage(this.stdErr?.pageLength - 1)) {
                 this.renderOutput()
+                this.elem.classList.remove('hide')
             } else {
                 this.elem.classList.add('hide')
             }
@@ -70,16 +71,18 @@ export class StdErrorCard extends Card {
         this.outputContainer.innerHTML = ''
         $(this.outputContainer, $ => {
             let output = $('div', '')
-            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.stdErr.logs))
+            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.stdErr.getPage(this.stdErr.pageLength - 1)))
         })
     }
 
     async refresh() {
         try {
             await this.loader.load(true)
-            if (this.stdErr?.logs) {
+            if (this.stdErr?.hasPage(this.stdErr?.pageLength - 1)) {
                 this.renderOutput()
                 this.elem.classList.remove('hide')
+            } else {
+                this.elem.classList.add('hide')
             }
         } catch (e) {
 

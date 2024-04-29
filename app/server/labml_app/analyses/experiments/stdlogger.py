@@ -23,19 +23,31 @@ class StdLoggerIndex(Index['StdLogger']):
     pass
 
 
-@Analysis.route('GET', 'logs/std_logger/{run_uuid}')
-async def get_std_logger(_: Request, run_uuid: str) -> Any:
+@Analysis.route('POST', 'logs/std_logger/{run_uuid}')
+async def get_std_logger(request: Request, run_uuid: str) -> Any:
+    """
+            body data: {
+                page: int
+            }
+
+            page = -2 means get all logs.
+            page = -1 means get last page.
+            page = n means get nth page.
+        """
+    json = await request.json()
+    page = json.get('page', -1)
+
     key = StdLoggerIndex.get(run_uuid)
-    std_logger: StdLoggerModel
+    std_out: StdLoggerModel
 
     if key is None:
-        std_logger = StdLoggerModel()
-        std_logger.save()
-        StdLoggerIndex.set(run_uuid, std_logger.key)
+        std_out = StdLoggerModel()
+        std_out.save()
+        StdLoggerIndex.set(run_uuid, std_out.key)
     else:
-        std_logger = key.load()
+        std_out = key.load()
 
-    return std_logger.get_data()
+    return std_out.get_data(page_no=page)
 
 
 def update_std_logger(run_uuid: str, content: str):

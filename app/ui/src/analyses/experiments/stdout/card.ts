@@ -55,6 +55,7 @@ export class StdOutCard extends Card {
 
             if (this.stdOut?.hasPage(this.stdOut?.pageLength - 1)) {
                 this.renderOutput()
+                this.elem.classList.remove('hide')
             } else {
                 this.elem.classList.add('hide')
             }
@@ -76,10 +77,10 @@ export class StdOutCard extends Card {
             await this.loader.load(true)
             if (this.stdOut?.hasPage(this.stdOut?.pageLength - 1)) {
                 this.renderOutput()
+                this.elem.classList.remove('hide')
             } else {
                 this.elem.classList.add('hide')
             }
-            this.elem.classList.remove('hide')
         } catch (e) {
 
         }

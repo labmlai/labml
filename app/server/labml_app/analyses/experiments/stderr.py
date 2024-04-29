@@ -23,19 +23,31 @@ class StdErrIndex(Index['StdErr']):
     pass
 
 
-@Analysis.route('GET', 'logs/stderr/{run_uuid}')
-async def get_std_err(_: Request, run_uuid: str) -> Any:
+@Analysis.route('POST', 'logs/stderr/{run_uuid}')
+async def get_std_err(request: Request, run_uuid: str) -> Any:
+    """
+            body data: {
+                page: int
+            }
+
+            page = -2 means get all logs.
+            page = -1 means get last page.
+            page = n means get nth page.
+        """
+    json = await request.json()
+    page = json.get('page', -1)
+
     key = StdErrIndex.get(run_uuid)
-    std_err: StdErrModel
+    std_out: StdErrModel
 
     if key is None:
-        std_err = StdErrModel()
-        std_err.save()
-        StdErrIndex.set(run_uuid, std_err.key)
+        std_out = StdErrModel()
+        std_out.save()
+        StdErrIndex.set(run_uuid, std_out.key)
     else:
-        std_err = key.load()
+        std_out = key.load()
 
-    return std_err.get_data()
+    return std_out.get_data(page_no=page)
 
 
 def update_stderr(run_uuid: str, content: str):
