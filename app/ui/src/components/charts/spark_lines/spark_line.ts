@@ -17,7 +17,6 @@ export interface SparkLineOptions {
     color: string
     isComparison?: boolean
     isBase?: boolean
-    smoothedValues: number[]
 }
 
 export class SparkLine {
@@ -37,16 +36,13 @@ export class SparkLine {
     bisect: d3.Bisector<number, number>
     linePlot: LinePlot
     isBase: boolean
-    smoothedValues: number[]
     isComparison: boolean
 
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
-        this.smoothedValues = opt.smoothedValues
 
         if (opt.selected == -1) {
             this.series = [this.series[this.series.length - 1]]
-            this.smoothedValues = [this.smoothedValues[this.smoothedValues.length - 1]]
         }
         this.name = opt.name
         this.selected = opt.selected
@@ -86,14 +82,13 @@ export class SparkLine {
         const index = this.isSelected ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1
         const last = this.series[index]
-        const lastSmoothed = this.smoothedValues[index]
 
-        if (Math.abs(last.value - lastSmoothed) > Math.abs(last.value) / 1e6) {
+        if (Math.abs(last.value - last.smoothed) > Math.abs(last.value) / 1e6) {
             this.secondaryElem.textContent = formatFixed(last.value, 6)
         } else {
             this.secondaryElem.textContent = ''
         }
-        this.primaryElem.textContent = formatFixed(lastSmoothed, 6)
+        this.primaryElem.textContent = formatFixed(last.smoothed, 6)
     }
 
     render($: WeyaElementFunction) {
