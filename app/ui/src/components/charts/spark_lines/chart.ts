@@ -67,7 +67,7 @@ export class SparkLines {
             this.currentSmoothedValues.push(smoothedSeries.map(d => d.smoothed))
         }
         for (let i = 0; i < this.baseSeries.length; i++) {
-            let smoothedSeries = smoothSeries(this.baseSeries[i].series, smoothWindow[0][1])
+            let smoothedSeries = smoothSeries(this.baseSeries[i].series, smoothWindow[1][i])
             this.baseSmoothedValues.push(smoothedSeries.map(d => d.smoothed))
         }
 
