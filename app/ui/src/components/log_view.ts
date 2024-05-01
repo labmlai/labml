@@ -37,7 +37,7 @@ export class LogView {
 
     render($: WeyaElementFunction) {
         this.logElemLength = 0
-        this.elem = $('div', $ => {
+        this.elem = $('div', '.std', $ => {
             this.loadAllButton
                 .render($)
             this.loadMoreButton

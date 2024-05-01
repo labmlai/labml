@@ -1577,3 +1577,9 @@ input[type=number] {
 .relative {
   position: relative;
 }
+
+.std {
+  .nav-link {
+    width: fit-content;
+  }
+}
