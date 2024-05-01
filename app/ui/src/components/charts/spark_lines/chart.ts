@@ -35,9 +35,6 @@ export class SparkLines {
     uniqueItems: Map<string, number>
     onlySelected: boolean
 
-    private readonly currentSmoothedValues: number[][]
-    private readonly baseSmoothedValues: number[][]
-
     constructor(opt: CompareSparkLinesOptions) {
         this.currentSeries = opt.series
         this.baseSeries = opt.baseSeries ?? []
@@ -58,18 +55,6 @@ export class SparkLines {
 
         const margin = Math.floor(opt.width / 64)
         this.rowWidth = Math.min(450, opt.width - Math.max(3 * margin, 60))
-
-        this.currentSmoothedValues = []
-        this.baseSmoothedValues = []
-        let [smoothWindow, _] = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
-        for (let i = 0; i < this.currentSeries.length; i++) {
-            let smoothedSeries = smoothSeries(this.currentSeries[i].series, smoothWindow[0][i])
-            this.currentSmoothedValues.push(smoothedSeries.map(d => d.smoothed))
-        }
-        for (let i = 0; i < this.baseSeries.length; i++) {
-            let smoothedSeries = smoothSeries(this.baseSeries[i].series, smoothWindow[0][1])
-            this.baseSmoothedValues.push(smoothedSeries.map(d => d.smoothed))
-        }
 
         this.stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
 
@@ -104,7 +89,6 @@ export class SparkLines {
                     onClick: onClick,
                     color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt,
-                    smoothedValues: this.currentSmoothedValues[i],
                     isComparison: this.baseSeries.length > 0
                 })
                 this.sparkLines.push(sparkLine)
@@ -130,7 +114,6 @@ export class SparkLines {
                     isMouseMoveOpt: this.isMouseMoveOpt,
                     isBase: true,
                     isComparison: this.baseSeries.length > 0,
-                    smoothedValues: this.baseSmoothedValues[i]
                 })
                 this.sparkLines.push(sparkLine)
             })

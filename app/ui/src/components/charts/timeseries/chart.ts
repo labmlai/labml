@@ -75,7 +75,7 @@ export class TimeSeriesChart {
         })
 
         if (opt.stepRange != null) {
-            this.series = trimSteps(this.series, opt.stepRange[0], opt.stepRange[1])
+            // this.series = trimSteps(this.series, opt.stepRange[0], opt.stepRange[1]) // todo
             this.isEmpty = true
             for (let series of this.series) {
                 if (series.series.length > 0) {

@@ -181,21 +181,47 @@ export function getChartType(index: number): 'log' | 'linear' {
     return index === 0 ? 'linear' : 'log'
 }
 
-export function trimSteps(series: Indicator[], min: number, max: number, smoothRange: number = 0) : Indicator[] {
-    smoothRange /= 2 // remove half from each end
-    return  <Indicator[]>series.map(s => {
-        let res = {...s}
+/**
+ * Smooths and trims all charts in the current and base series.
+ *
+ * @param {Indicator[]} series - The current series of data.
+ * @param {Indicator[]} baseSeries - The base series of data for comparison.
+ * @param {number} smoothValue - The value to be used for smoothing the data.
+ * @param {number[]} stepRange - The range of steps to be considered for trimming.
+ */
+export function smoothAndTrimAllCharts(series: Indicator[], baseSeries: Indicator[], smoothValue: number, stepRange: number[]) {
+    let [smoothWindow, smoothRange ] = getSmoothWindow(series ?? [],
+            baseSeries ?? [], smoothValue)
 
+    if (series != null) {
+        series = series.map((s, i) => {
+            s.series = smoothSeries(s.series, smoothWindow[0][i])
+            return s
+        })
+        trimSteps(series, stepRange[0], stepRange[1], smoothRange)
+    }
+
+    if (baseSeries != null) {
+        baseSeries = baseSeries.map((s, i) => {
+            s.series = smoothSeries(s.series, smoothWindow[1][i])
+            return s
+        })
+        trimSteps(baseSeries, stepRange[0], stepRange[1], smoothRange)
+    }
+}
+
+export function trimSteps(series: Indicator[], min: number, max: number, smoothRange: number = 0) {
+    smoothRange /= 2 // remove half from each end
+    series.forEach(s => {
+        let localSmoothRange = smoothRange
         if (s.series.length <= 2) {
-            smoothRange = 0
+            localSmoothRange = 0
         } else {
-            let trimStepCount = smoothRange / (s.series[1].step - s.series[0].step)
+            let trimStepCount = localSmoothRange / (s.series[1].step - s.series[0].step)
             if (trimStepCount < 1) {
-                smoothRange = 0
+                localSmoothRange = 0
             }
         }
-
-        res.series = []
 
         let localMin = min
         let localMax = max
@@ -203,51 +229,26 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
         if (localMin == -1) {
             localMin = s.series[0].step
         }
-        localMin = Math.max(localMin, s.series[0].step + smoothRange)
+        localMin = Math.max(localMin, s.series[0].step + localSmoothRange)
 
         if (localMax == -1) {
             localMax = s.series[s.series.length - 1].step
         }
-        localMax = Math.min(localMax, s.series[s.series.length - 1].step - smoothRange)
+        localMax = Math.min(localMax, s.series[s.series.length - 1].step - localSmoothRange)
+
+        let minIndex = s.series.length - 1
+        let maxIndex = 0
 
         for (let i = 0; i < s.series.length; i++) {
             let p = s.series[i]
             if (p.step >= localMin && p.step <= localMax) {
-                res.series.push(p)
+                minIndex = Math.min(i, minIndex)
+                maxIndex = Math.max(i, maxIndex)
             }
         }
 
-        return res
-    })
-}
-
-export function trimStepsOfPoints(series: PointValue[][], min: number, max: number, smoothRange: number = 0) : PointValue[][] {
-     smoothRange /= 2 // remove half from each end
-    return series.map(s => {
-        let res = []
-        let start = 1e9, end = -1
-        let localMin = min
-        let localMax = max
-
-        if (localMin == -1) {
-            localMin = s[0].step
-        }
-        localMin = Math.max(localMin, s[0].step + smoothRange)
-
-        if (localMax == -1) {
-            localMax = s[s.length - 1].step
-        }
-        localMax = Math.min(localMax, s[s.length - 1].step - smoothRange)
-        for (let i = 0; i < s.length; i++) {
-            let p = s[i]
-            if ((p.step >= localMin || localMin == -1) && (p.step <= localMax || localMax == -1)) {
-                start = Math.min(start, i)
-                end = Math.max(end, i)
-                res.push(p)
-            }
-        }
-
-        return res
+        s.lowTrimIndex = minIndex
+        s.highTrimIndex = maxIndex
     })
 }
 
