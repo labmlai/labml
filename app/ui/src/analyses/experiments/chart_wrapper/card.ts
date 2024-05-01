@@ -3,7 +3,7 @@ import {Indicator} from "../../../models/run"
 import {
     AnalysisPreferenceModel, ComparisonPreferenceModel,
 } from "../../../models/preferences"
-import {getChartType} from "../../../components/charts/utils"
+import {getChartType, smoothAndTrimAllCharts, trimSteps} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 
@@ -73,6 +73,8 @@ export class CardWrapper {
         this.stepRange = preferenceData.step_range
         this.focusSmoothed = preferenceData.focus_smoothed
         this.smoothValue = preferenceData.smooth_value
+
+        smoothAndTrimAllCharts(this.series, this.baseSeries, this.smoothValue, this.stepRange)
     }
 
     public render() {

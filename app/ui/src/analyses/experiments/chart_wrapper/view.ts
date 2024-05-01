@@ -3,7 +3,10 @@ import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {DeleteButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import {getChartType} from "../../../components/charts/utils"
+import {
+    getChartType,
+    smoothAndTrimAllCharts
+} from "../../../components/charts/utils"
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
 import {Loader} from "../../../components/loader"
 import {Slider} from "../../../components/input/slider"
@@ -129,7 +132,7 @@ namespace ChangeHandlers {
 
             if ((this.isBase && this.wrapper.dataStore.baseSeries[this.idx].is_summary) || (!this.isBase && this.wrapper.dataStore.series[this.idx].is_summary)) {
                 // have to load from the backend
-                this.wrapper.requestMissingMetrics()
+                this.wrapper.requestMissingMetrics().then()
             }
         }
     }
@@ -305,10 +308,15 @@ export class ViewWrapper {
                 })
             })
         } else if (!isLoading) {
+            this.smoothSeries()
             this.renderCharts()
         }
 
         this.isLoading = isLoading
+    }
+
+    private smoothSeries() {
+        smoothAndTrimAllCharts(this.dataStore.series, this.dataStore.baseSeries, this.dataStore.smoothValue, this.dataStore.stepRange)
     }
 
     private renderTopButtons() {
@@ -323,6 +331,8 @@ export class ViewWrapper {
     }
 
     private renderCharts() {
+        this.smoothSeries()
+
         this.renderSparkLines()
         this.renderLineChart()
     }

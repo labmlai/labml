@@ -53,11 +53,32 @@ export class Indicator {
     name : string
     series: PointValue[]
     is_summary: boolean
+    lowTrimIndex: number
+    highTrimIndex: number
 
     constructor(indicator: IndicatorModel) {
         this.name = indicator.name
         this.series = toPointValue(indicator)
         this.is_summary = indicator.is_summary
+        this.lowTrimIndex = 0
+        this.highTrimIndex = this.series.length - 1
+    }
+
+    get trimmedSeries(): PointValue[] {
+        return this.series.slice(this.lowTrimIndex, this.highTrimIndex + 1)
+    }
+
+    getCopy(): Indicator {
+        let copy = new Indicator({
+            name: this.name,
+            step: "",
+            value: "",
+            mean: 0,
+            is_summary: this.is_summary,
+            last_step: ""
+        })
+        copy.series = [...this.series]
+        return copy
     }
 }
 
