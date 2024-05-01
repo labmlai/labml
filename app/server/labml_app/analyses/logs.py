@@ -96,7 +96,7 @@ class Logs:
             unmerged_logs = page.logs_unmerged
             page.logs_unmerged = ''
             page.save()
-            content += unmerged_logs
+            content = unmerged_logs + content
 
             page = LogPageModel()
             page.update_logs(content)
