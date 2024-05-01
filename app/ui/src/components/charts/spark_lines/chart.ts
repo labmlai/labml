@@ -56,17 +56,6 @@ export class SparkLines {
         const margin = Math.floor(opt.width / 64)
         this.rowWidth = Math.min(450, opt.width - Math.max(3 * margin, 60))
 
-        let [smoothWindow, _] = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
-
-        this.currentSeries = this.currentSeries.map((s, i) => {
-            s.series = smoothSeries(s.series, smoothWindow[0][i])
-            return s
-        })
-        this.baseSeries = this.baseSeries.map((s, i) => {
-            s.series = smoothSeries(s.series, smoothWindow[1][i])
-            return s
-        })
-
         this.stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
 
         this.chartColors = new ChartColors({nColors: this.uniqueItems.size, secondNColors: this.uniqueItems.size, isDivergent: opt.isDivergent})

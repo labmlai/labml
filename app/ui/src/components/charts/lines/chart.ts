@@ -74,8 +74,6 @@ export class LineChart {
         this.chartWidth = windowWidth - 2 * this.margin - this.axisSize
         this.chartHeight = Math.round(Math.min(this.chartWidth, windowHeight) / 2)
 
-        let [smoothWindow, smoothRange ] = getSmoothWindow(this.currentSeries, this.baseSeries, opt.smoothValue)
-
         let idx: number = 0
         for (let s of this.currentSeries.concat(this.baseSeries)) {
             if (!this.uniqueItems.has(s.name)) {
@@ -86,22 +84,7 @@ export class LineChart {
         this.baseSeries = this.baseSeries.filter((_, i) => this.basePlotIndex[i] == 1)
         this.currentSeries = this.currentSeries.filter((_, i) => this.currentPlotIndex[i] == 1)
 
-        smoothWindow[0] = smoothWindow[0].filter((_, i) => this.currentPlotIndex[i] == 1)
-        smoothWindow[1] = smoothWindow[1].filter((_, i) => this.basePlotIndex[i] == 1)
-
-        this.currentSeries = this.currentSeries.map((s, i) => {
-            s.series = smoothSeries(s.series, smoothWindow[0][i])
-            return s
-        })
-        this.baseSeries = this.baseSeries.map((s, i) => {
-            s.series = smoothSeries(s.series, smoothWindow[1][i])
-            return s
-        })
-
-        this.baseSeries = trimSteps(this.baseSeries, opt.stepRange[0], opt.stepRange[1], smoothRange)
-        this.currentSeries = trimSteps(this.currentSeries, opt.stepRange[0], opt.stepRange[1], smoothRange)
-
-        const stepExtent = getExtent(this.baseSeries.concat(this.currentSeries).map(s => s.series), d => d.step, false, true)
+        const stepExtent = getExtent(this.baseSeries.concat(this.currentSeries).map(s => s.trimmedSeries), d => d.step, false, true)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
         this.chartColors = new ChartColors({
@@ -213,11 +196,11 @@ export class LineChart {
                                 }, $ => {
                                     if (this.currentSeries.length < 3 && this.baseSeries.length == 0) {
                                         this.currentSeries.map((s, i) => {
-                                            if (this.currentSeries[i].series.length == 0) {
+                                            if (this.currentSeries[i].trimmedSeries.length == 0) {
                                                 return
                                             }
                                             new LineFill({
-                                                series: this.currentSeries[i].series,
+                                                series: this.currentSeries[i].trimmedSeries,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
                                                 color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
@@ -228,7 +211,7 @@ export class LineChart {
                                     }
                                     this.currentSeries.map((s, i) => {
                                         let linePlot = new LinePlot({
-                                            series: s.series,
+                                            series: s.trimmedSeries,
                                             xScale: this.xScale,
                                             yScale: this.yScale,
                                             color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
@@ -241,7 +224,7 @@ export class LineChart {
 
                                     this.baseSeries.map((s, i) => {
                                         let linePlot = new LinePlot({
-                                            series: s.series,
+                                            series: s.trimmedSeries,
                                             xScale: this.xScale,
                                             yScale: this.yScale,
                                             color: this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),

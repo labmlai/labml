@@ -3,7 +3,7 @@ import {Indicator} from "../../../models/run"
 export function getSeriesData(series: Indicator[], analysis: string, isMean: boolean = false): Indicator[]{
     let res: Indicator[] = []
     for (let r of series) {
-        let s = {...r}
+        let s = r.getCopy()
         if (s.name.includes(analysis)) {
             if (s.name.includes('mean')) {
                 if (isMean) {
