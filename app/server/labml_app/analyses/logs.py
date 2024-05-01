@@ -71,12 +71,13 @@ class Logs:
             pages: List['LogPage'] = [page.load() for page in self.log_pages]
             for i, p in enumerate(pages):
                 page_dict[str(i)] = p.logs + p.logs_unmerged
-        elif page_no == -1 and len(self.log_pages) > 0:
-            page = self.log_pages[-1].load()
-            page_dict[str(len(self.log_pages) - 1)] = page.logs + page.logs_unmerged
         elif len(self.log_pages) > page_no >= 0:
             page = self.log_pages[page_no].load()
             page_dict[str(page_no)] = page.logs + page.logs_unmerged
+
+        if len(self.log_pages) > 0:  # always include the last page
+            page = self.log_pages[-1].load()
+            page_dict[str(len(self.log_pages) - 1)] = page.logs + page.logs_unmerged
 
         return {
             'pages': page_dict,
