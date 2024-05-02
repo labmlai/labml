@@ -96,23 +96,22 @@ export function toDate(time: number) {
 export function smoothSeries(series: PointValue[], windowSize: number): PointValue[] {
     let result: PointValue[] = []
     windowSize = ~~windowSize
-    let extraWindow = windowSize / 2
-    extraWindow = ~~extraWindow
-    if (series.length <= windowSize) {
-        return series
+    if (series.length < windowSize) {
+        windowSize = series.length
     }
+
 
     let count = 0
     let total = 0
 
-    for (let i = 0; i < series.length + extraWindow; i++) {
-        let j = i - extraWindow
+    for (let i = 0; i < series.length + windowSize; i++) {
+        let j = i - windowSize
         if (i < series.length) {
             total += series[i].value
             count++
         }
-        if (j - extraWindow - 1 >= 0) {
-            total -= series[j - extraWindow - 1].value
+        if (j - windowSize - 1 >= 0) {
+            total -= series[j - windowSize - 1].value
             count--
         }
         if (j>=0) {
@@ -194,7 +193,7 @@ export function smoothAndTrimAllCharts(series: Indicator[], baseSeries: Indicato
             baseSeries ?? [], smoothValue)
 
     if (series != null) {
-        series = series.map((s, i) => {
+        series.map((s, i) => {
             s.series = smoothSeries(s.series, smoothWindow[0][i])
             return s
         })
@@ -202,7 +201,7 @@ export function smoothAndTrimAllCharts(series: Indicator[], baseSeries: Indicato
     }
 
     if (baseSeries != null) {
-        baseSeries = baseSeries.map((s, i) => {
+        baseSeries.map((s, i) => {
             s.series = smoothSeries(s.series, smoothWindow[1][i])
             return s
         })
@@ -218,7 +217,7 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
             localSmoothRange = 0
         } else {
             let trimStepCount = localSmoothRange / (s.series[1].step - s.series[0].step)
-            if (trimStepCount < 1) {
+            if (trimStepCount < 1) { // not going to trim anything - or else will filter out single steps
                 localSmoothRange = 0
             }
         }
@@ -236,6 +235,9 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
         }
         localMax = Math.min(localMax, s.series[s.series.length - 1].step - localSmoothRange)
 
+        localMin = Math.floor(localMin)
+        localMax = Math.ceil(localMax)
+
         let minIndex = s.series.length - 1
         let maxIndex = 0
 
@@ -249,6 +251,14 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
 
         s.lowTrimIndex = minIndex
         s.highTrimIndex = maxIndex
+
+        if (s.lowTrimIndex > s.highTrimIndex) { // if trim covers all just give the middle value
+            s.lowTrimIndex = s.series.length / 2
+            s.highTrimIndex = s.series.length / 2
+        }
+
+        console.log(s.trimmedSeries)
+        console.log(s.lowTrimIndex, s.highTrimIndex)
     })
 }
 
@@ -285,7 +295,7 @@ export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicato
         return [stepRange, 0]
     }
 
-    let smoothRange = mapRange(smoothValue, 1, 100, 1, Math.max(maxRange/10, 1))
+    let smoothRange = mapRange(smoothValue, 1, 100, 1, maxRange)
 
     let stepRange = [[],[]]
     for (let s of currentSeries) {
