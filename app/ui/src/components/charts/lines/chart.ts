@@ -5,10 +5,7 @@ import {Indicator} from "../../../models/run"
 import {
     getExtent,
     getLogScale,
-    getScale,
-    getSmoothWindow,
-    smoothSeries,
-    trimSteps
+    getScale
 } from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
