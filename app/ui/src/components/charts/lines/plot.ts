@@ -88,6 +88,10 @@ export class LinePlot {
                     })
             })
         })
+
+        if (this.series.length == 1) {
+            this.renderCircle(0)
+        }
     }
 
     renderIndicators(cursorStep: number | null) {
