@@ -89,7 +89,7 @@ export class LinePlot {
             })
         })
 
-        if (this.series.length == 1) {
+        if (this.series.length == 1) { // allways render circle for single point
             this.renderCircle(0)
         }
     }

@@ -255,8 +255,22 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
         s.highTrimIndex = maxIndex
 
         if (s.lowTrimIndex > s.highTrimIndex) { // if trim covers all just give the middle value
-            s.lowTrimIndex = s.series.length / 2
-            s.highTrimIndex = s.series.length / 2
+            localMax = max == -1 ? s.series[s.series.length - 1].step : max
+            localMin = min == -1 ? s.series[0].step : min
+
+            minIndex = s.series.length - 1
+            maxIndex = 0
+
+            for (let i = 0; i < s.series.length; i++) {
+                let p = s.series[i]
+                if (p.step >= localMin && p.step <= localMax) {
+                    minIndex = Math.min(i, minIndex)
+                    maxIndex = Math.max(i, maxIndex)
+                }
+            }
+
+            s.lowTrimIndex = (minIndex + maxIndex) / 2
+            s.highTrimIndex = (minIndex + maxIndex) / 2
         }
     })
 }
