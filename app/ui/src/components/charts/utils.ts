@@ -93,25 +93,27 @@ export function toDate(time: number) {
     return new Date(time * 1000)
 }
 
-export function smoothSeries(series: PointValue[], windowSize: number): PointValue[] {
+function smoothSeries(series: PointValue[], windowSize: number): PointValue[] {
     let result: PointValue[] = []
     windowSize = ~~windowSize
     if (series.length < windowSize) {
         windowSize = series.length
     }
+    let extraWindow = windowSize / 2
+    extraWindow = ~~extraWindow
 
 
     let count = 0
     let total = 0
 
-    for (let i = 0; i < series.length + windowSize; i++) {
-        let j = i - windowSize
+    for (let i = 0; i < series.length + extraWindow; i++) {
+        let j = i - extraWindow
         if (i < series.length) {
             total += series[i].value
             count++
         }
-        if (j - windowSize - 1 >= 0) {
-            total -= series[j - windowSize - 1].value
+        if (j - extraWindow - 1 >= 0) {
+            total -= series[j - extraWindow - 1].value
             count--
         }
         if (j>=0) {
@@ -256,9 +258,6 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
             s.lowTrimIndex = s.series.length / 2
             s.highTrimIndex = s.series.length / 2
         }
-
-        console.log(s.trimmedSeries)
-        console.log(s.lowTrimIndex, s.highTrimIndex)
     })
 }
 

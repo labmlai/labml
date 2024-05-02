@@ -1,6 +1,6 @@
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
-import {getExtent, getSmoothWindow, smoothSeries} from "../utils"
+import {getExtent} from "../utils"
 import {SparkLine} from "./spark_line"
 import ChartColors from "../chart_colors"
 import {DefaultLineGradient} from "../chart_gradients"

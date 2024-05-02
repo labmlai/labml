@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {FillOptions, PlotOptions} from '../types'
 import {PointValue} from "../../../models/run"
-import {getSelectedIdx, mapRange, smoothSeries} from "../utils"
+import {getSelectedIdx} from "../utils"
 
 export interface LinePlotOptions extends PlotOptions {
     xScale: d3.ScaleLinear<number, number>
