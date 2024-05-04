@@ -189,8 +189,10 @@ export function getChartType(index: number): 'log' | 'linear' {
  * @param {Indicator[]} baseSeries - The base series of data for comparison.
  * @param {number} smoothValue - The value to be used for smoothing the data.
  * @param {number[]} stepRange - The range of steps to be considered for trimming.
+ * @param {boolean} trimSmoothEnds - Whether to trim the smoothed ends of the series.
  */
-export function smoothAndTrimAllCharts(series: Indicator[], baseSeries: Indicator[], smoothValue: number, stepRange: number[]) {
+export function smoothAndTrimAllCharts(series: Indicator[], baseSeries: Indicator[], smoothValue: number,
+                                       stepRange: number[], trimSmoothEnds: boolean = true) {
     let [smoothWindow, smoothRange ] = getSmoothWindow(series ?? [],
             baseSeries ?? [], smoothValue)
 
@@ -199,7 +201,7 @@ export function smoothAndTrimAllCharts(series: Indicator[], baseSeries: Indicato
             s.series = smoothSeries(s.series, smoothWindow[0][i])
             return s
         })
-        trimSteps(series, stepRange[0], stepRange[1], smoothRange)
+        trimSteps(series, stepRange[0], stepRange[1], smoothWindow[0], trimSmoothEnds)
     }
 
     if (baseSeries != null) {
@@ -207,22 +209,23 @@ export function smoothAndTrimAllCharts(series: Indicator[], baseSeries: Indicato
             s.series = smoothSeries(s.series, smoothWindow[1][i])
             return s
         })
-        trimSteps(baseSeries, stepRange[0], stepRange[1], smoothRange)
+        trimSteps(baseSeries, stepRange[0], stepRange[1], smoothWindow[1], trimSmoothEnds)
     }
 }
 
-export function trimSteps(series: Indicator[], min: number, max: number, smoothRange: number = 0) {
-    smoothRange /= 2 // remove half from each end
-    series.forEach(s => {
-        let localSmoothRange = smoothRange
-        if (s.series.length <= 2) {
-            localSmoothRange = 0
-        } else {
-            let trimStepCount = localSmoothRange / (s.series[1].step - s.series[0].step)
-            if (trimStepCount < 1) { // not going to trim anything - or else will filter out single steps
-                localSmoothRange = 0
-            }
+function trimSteps(series: Indicator[], min: number, max: number, smoothWindow: number[], trimSmoothEnds: boolean = true) {
+    series.forEach((s, i) => {
+        let localSmoothWindow = smoothWindow[i] / 2 // remove half from each end
+        localSmoothWindow = Math.floor(localSmoothWindow)
+        if (localSmoothWindow < 0) {
+            localSmoothWindow = 0
         }
+        if (s.series.length <= 1) {
+            localSmoothWindow = 0
+        } else if (smoothWindow[i] >= s.series.length) {
+            localSmoothWindow = Math.floor(s.series.length/2)
+        }
+
 
         let localMin = min
         let localMax = max
@@ -230,15 +233,20 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
         if (localMin == -1) {
             localMin = s.series[0].step
         }
-        localMin = Math.max(localMin, s.series[0].step + localSmoothRange)
+        if (trimSmoothEnds) {
+            localMin = Math.max(localMin, s.series[localSmoothWindow].step)
+        }
 
         if (localMax == -1) {
             localMax = s.series[s.series.length - 1].step
         }
-        localMax = Math.min(localMax, s.series[s.series.length - 1].step - localSmoothRange)
+        if (trimSmoothEnds) {
+            localMax = Math.min(localMax, s.series[s.series.length - 1 - localSmoothWindow +
+            (s.series.length%2 == 0 && localSmoothWindow != 0 ? 1 : 0)].step) // get the mid value for even length series
+        }
 
-        localMin = Math.floor(localMin)
-        localMax = Math.ceil(localMax)
+        localMin = Math.floor(localMin-1)
+        localMax = Math.ceil(localMax+1)
 
         let minIndex = s.series.length - 1
         let maxIndex = 0
@@ -253,25 +261,6 @@ export function trimSteps(series: Indicator[], min: number, max: number, smoothR
 
         s.lowTrimIndex = minIndex
         s.highTrimIndex = maxIndex
-
-        if (s.lowTrimIndex > s.highTrimIndex) { // if trim covers all just give the middle value
-            localMax = max == -1 ? s.series[s.series.length - 1].step : max
-            localMin = min == -1 ? s.series[0].step : min
-
-            minIndex = s.series.length - 1
-            maxIndex = 0
-
-            for (let i = 0; i < s.series.length; i++) {
-                let p = s.series[i]
-                if (p.step >= localMin && p.step <= localMax) {
-                    minIndex = Math.min(i, minIndex)
-                    maxIndex = Math.max(i, maxIndex)
-                }
-            }
-
-            s.lowTrimIndex = (minIndex + maxIndex) / 2
-            s.highTrimIndex = (minIndex + maxIndex) / 2
-        }
     })
 }
 
@@ -312,7 +301,9 @@ export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicato
 
     let stepRange = [[],[]]
     for (let s of currentSeries) {
-        if (s.series.length >= 2 && !s.is_summary) {
+        if (smoothValue == 100) { // hardcode to max range in case not range due to step inconsistencies
+            stepRange[0].push(s.series.length)
+        } else if (s.series.length >= 2 && !s.is_summary) {
             let stepGap = s.series[1].step - s.series[0].step
             let numSteps = Math.max(1, Math.floor(smoothRange / stepGap))
             stepRange[0].push(numSteps)
@@ -321,7 +312,9 @@ export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicato
         }
     }
     for (let s of baseSeries) {
-        if (s.series.length >= 2 && !s.is_summary) {
+        if (smoothValue == 100) {
+            stepRange[1].push(s.series.length)
+        } else if (s.series.length >= 2 && !s.is_summary) {
             let stepGap = s.series[1].step - s.series[0].step
             let numSteps = Math.max(1, Math.floor(smoothRange / stepGap))
             stepRange[1].push(numSteps)
