@@ -95,7 +95,7 @@ export class LineChart {
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     changeScale() {
-        let plotSeries = this.baseSeries.concat(this.currentSeries).map(s => s.trimmedSeries)
+        let plotSeries = this.baseSeries.concat(this.currentSeries).map(s => s.trimmedSeries).filter(s => s.length > 0)
         if (plotSeries.length == 0) {
             this.yScale = d3.scaleLinear()
                 .domain([0, 0])
