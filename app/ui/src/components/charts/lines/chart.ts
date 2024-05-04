@@ -81,7 +81,9 @@ export class LineChart {
         this.baseSeries = this.baseSeries.filter((_, i) => this.basePlotIndex[i] == 1)
         this.currentSeries = this.currentSeries.filter((_, i) => this.currentPlotIndex[i] == 1)
 
-        const stepExtent = getExtent(this.baseSeries.concat(this.currentSeries).map(s => s.trimmedSeries), d => d.step, false, true)
+        // get steps from series with at least one value
+        const series_concat = this.baseSeries.concat(this.currentSeries).filter(s => s.trimmedSeries.length > 0)
+        const stepExtent = getExtent(series_concat.map(s => s.trimmedSeries), d => d.step, false, true)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
         this.chartColors = new ChartColors({

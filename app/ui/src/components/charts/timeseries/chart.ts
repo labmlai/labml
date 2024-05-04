@@ -9,7 +9,6 @@ import {
     getTimeScale,
     smooth45,
     toDate,
-    trimSteps
 } from "../utils"
 import {BottomTimeAxis, RightAxis} from "../axis"
 import {TimeSeriesFill, TimeSeriesPlot} from './plot'
