@@ -1578,8 +1578,17 @@ input[type=number] {
   position: relative;
 }
 
+
 .std {
   .nav-link {
     width: fit-content;
   }
+}
+
+pre {
+  user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  -webkit-user-select: text !important;
+
 }

@@ -41,7 +41,7 @@ export class SparkLine {
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
 
-        if (opt.selected == -1) {
+        if (opt.selected == -1 && this.series.length > 0) {
             this.series = [this.series[this.series.length - 1]]
         }
         this.name = opt.name
@@ -73,12 +73,16 @@ export class SparkLine {
 
     changeCursorValue(cursorStep?: number | null) {
         if (this.isSelected) {
-            this.linePlot.renderIndicators(cursorStep)
+            this.linePlot?.renderIndicators(cursorStep)
             this.renderValue(cursorStep)
         }
     }
 
     renderValue(cursorStep?: number | null) {
+        if (this.series.length == 0) {
+            return
+        }
+
         const index = this.isSelected ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1
         const last = this.series[index]
@@ -107,6 +111,9 @@ export class SparkLine {
                 let title = $('span', '.title', this.name, {style: {color: this.color}})
                 let sparkline = $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth * 2}px`}, height: 36}, $ => {
                     $('g', {transform: `translate(${this.titleWidth}, 30)`}, $ => {
+                        if (this.series.length == 0) {
+                            return
+                        }
                         new LineFill({
                             series: this.series,
                             xScale: this.xScale,
