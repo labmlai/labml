@@ -97,7 +97,7 @@ export class BackButton extends Button {
     }
 
     onClick = () => {
-        if (ROUTER.canBack() && this.navigatePath == null) {
+        if (ROUTER.canBack()) {
             ROUTER.back()
             return
         }
