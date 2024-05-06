@@ -45,10 +45,10 @@ class RunView extends ScreenView {
     private processContainer: WeyaElement
     private customMetrics: CustomMetricList
 
-    constructor(uuid: string, rank?: string) {
+    constructor(uuid: string) {
         super()
-        this.uuid = uuid + (rank ? '_' + rank : '')
-        this.rank = rank
+        this.uuid = uuid
+        this.rank = uuid.split('_')[1]
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.userCache = CACHE.getUser()
@@ -325,7 +325,7 @@ class RunView extends ScreenView {
             this.rankElems = $('div', '.hidden.list.runs-list.list-group', $ => {
                 for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
                     $('a', '.list-item.list-group-item.list-group-item-action',
-                        {href: `/run/${this.uuid}/${rank}`, target: "_blank"},
+                        {href: `/run/${this.uuid}_${rank}`, target: "_blank"},
                         $ => {
                             $('div', $ => {
                                 $('h6', `Rank ${+rank + 1}`)
@@ -340,11 +340,6 @@ class RunView extends ScreenView {
 export class RunHandler {
     constructor() {
         ROUTER.route('run/:uuid', [this.handleRun])
-        ROUTER.route('run/:uuid/:rank', [this.handleDistributedRun])
-    }
-
-    handleDistributedRun = (uuid: string, rank: string) => {
-        SCREEN.setView(new RunView(uuid, rank))
     }
 
     handleRun = (uuid: string) => {
