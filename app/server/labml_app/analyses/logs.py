@@ -1,3 +1,5 @@
+from labml_app.settings import LOG_CHAR_LIMIT
+
 from typing import Any, Dict, List
 
 from labml_db import Key, Model
@@ -47,7 +49,7 @@ class LogPage:
         }
 
     def is_full(self):
-        return len(self.logs) > 10
+        return len(self.logs) > LOG_CHAR_LIMIT
 
 
 @Analysis.db_model(PickleSerializer, 'log_page')
