@@ -15,6 +15,7 @@ class Preferences:
     step_range: List[int]
     focus_smoothed: bool
     smooth_value: float
+    trim_smooth_ends: float
 
     @classmethod
     def defaults(cls):
@@ -23,7 +24,8 @@ class Preferences:
                     errors=[],
                     step_range=[-1, -1],
                     focus_smoothed=True,
-                    smooth_value=50  # 50% smooth
+                    smooth_value=50,  # 50% smooth
+                    trim_smooth_ends=True
                     )
 
     def update_preferences(self, data: PreferencesData) -> None:
@@ -42,6 +44,9 @@ class Preferences:
         if 'smooth_value' in data:
             self.smooth_value = data['smooth_value']
 
+        if 'trim_smooth_ends' in data:
+            self.trim_smooth_ends = data['trim_smooth_ends']
+
         self.save()
 
     def update_series_preferences(self, data: SeriesPreferences) -> None:
@@ -53,5 +58,6 @@ class Preferences:
             'chart_type': self.chart_type,
             'step_range': self.step_range,
             'focus_smoothed': self.focus_smoothed,
-            'smooth_value': self.smooth_value
+            'smooth_value': self.smooth_value,
+            'trim_smooth_ends': self.trim_smooth_ends
         }

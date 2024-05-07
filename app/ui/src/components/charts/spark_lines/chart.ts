@@ -1,6 +1,6 @@
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
-import {getExtent, getSmoothWindow, smoothSeries} from "../utils"
+import {getExtent} from "../utils"
 import {SparkLine} from "./spark_line"
 import ChartColors from "../chart_colors"
 import {DefaultLineGradient} from "../chart_gradients"
@@ -56,7 +56,7 @@ export class SparkLines {
         const margin = Math.floor(opt.width / 64)
         this.rowWidth = Math.min(450, opt.width - Math.max(3 * margin, 60))
 
-        this.stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
+        this.stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.trimmedSeries), d => d.step)
 
         this.chartColors = new ChartColors({nColors: this.uniqueItems.size, secondNColors: this.uniqueItems.size, isDivergent: opt.isDivergent})
     }
@@ -82,7 +82,7 @@ export class SparkLines {
                 }
                 let sparkLine = new SparkLine({
                     name: s.name,
-                    series: s.series,
+                    series: s.trimmedSeries,
                     selected: this.currentPlotIdx[i],
                     stepExtent: this.stepExtent,
                     width: this.rowWidth,
@@ -105,7 +105,7 @@ export class SparkLines {
                 }
                 let sparkLine = new SparkLine({
                     name: s.name,
-                    series: s.series,
+                    series: s.trimmedSeries,
                     selected: this.basePlotIdx[i],
                     stepExtent: this.stepExtent,
                     width: this.rowWidth,
