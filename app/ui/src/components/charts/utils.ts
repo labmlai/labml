@@ -93,36 +93,6 @@ export function toDate(time: number) {
     return new Date(time * 1000)
 }
 
-function smoothSeries(series: PointValue[], windowSize: number): PointValue[] {
-    let result: PointValue[] = []
-    windowSize = ~~windowSize
-    if (series.length < windowSize) {
-        windowSize = series.length
-    }
-    let extraWindow = windowSize / 2
-    extraWindow = ~~extraWindow
-
-
-    let count = 0
-    let total = 0
-
-    for (let i = 0; i < series.length + extraWindow; i++) {
-        let j = i - extraWindow
-        if (i < series.length) {
-            total += series[i].value
-            count++
-        }
-        if (j - extraWindow - 1 >= 0) {
-            total -= series[j - extraWindow - 1].value
-            count--
-        }
-        if (j>=0) {
-            result.push({step: series[j].step, value: series[j].value, smoothed: total / count, lastStep: series[j].lastStep})
-        }
-    }
-    return result
-}
-
 export function fillPlotPreferences(series: Indicator[], currentPlotIdx: number[] = []) {
     if (currentPlotIdx.length != 0) {
         if (currentPlotIdx.length == series.length) {
@@ -213,19 +183,103 @@ export function smoothAndTrimAllCharts(series: Indicator[], baseSeries: Indicato
     }
 }
 
+/**
+ * Calculates the smooth window size for each series in the current and base series.
+ * The smooth window size is determined based on the minimum range of steps in the series and the provided smooth value.
+ *
+ * @param {Indicator[]} currentSeries - The current series of data.
+ * @param {Indicator[]} baseSeries - The base series of data for comparison.
+ * @param {number} smoothValue - The value to be used for smoothing the data.
+ * @returns {[number[][], number]} - Returns an array of smooth window sizes for each series. and the smooth window size in steps.
+ * (ret[0] = smooth window for current series, ret[1] = smooth window for base series
+ */
+function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicator[], smoothValue: number): [number[][], number] {
+    let maxRange: number = Number.MIN_SAFE_INTEGER
+    for (let s of currentSeries) {
+        if (s.series.length > 1 && !s.is_summary) {
+            maxRange = Math.max(maxRange, s.series[s.series.length - 1].step - s.series[0].step)
+        }
+    }
+    for (let s of baseSeries) {
+        if (s.series.length > 1 && !s.is_summary) {
+            maxRange = Math.max(maxRange, s.series[s.series.length - 1].step - s.series[0].step)
+        }
+    }
+    if (maxRange == Number.MIN_SAFE_INTEGER) { // all single points. -> can't smooth
+        let stepRange = [[],[]]
+        for (let s of currentSeries) {
+            stepRange[0].push(1)
+        }
+        for (let s of baseSeries) {
+            stepRange[1].push(1)
+        }
+        return [stepRange, 0]
+    }
+
+    let smoothRange = mapRange(smoothValue, 1, 100, 1, 2*maxRange)
+
+    let stepRange = [[],[]]
+
+    for (let s of currentSeries) {
+        if (s.series.length >= 2 && !s.is_summary) {
+            let stepGap = s.series[1].step - s.series[0].step
+            let numSteps = Math.max(1, Math.ceil(smoothRange / stepGap))
+            stepRange[0].push(numSteps)
+        } else { // can't smooth - just a single point
+            stepRange[0].push(1)
+        }
+    }
+
+    for (let s of baseSeries) {
+        if (s.series.length >= 2 && !s.is_summary) {
+            let stepGap = s.series[1].step - s.series[0].step
+            let numSteps = Math.max(1, Math.ceil(smoothRange / stepGap))
+            stepRange[1].push(numSteps)
+        } else { // can't smooth - just a single point
+            stepRange[1].push(1)
+        }
+    }
+
+    return [stepRange, smoothRange]
+}
+
+function smoothSeries(series: PointValue[], windowSize: number): PointValue[] {
+    let result: PointValue[] = []
+    windowSize = ~~windowSize
+    let extraWindow = windowSize / 2
+    extraWindow = ~~extraWindow
+
+
+    let count = 0
+    let total = 0
+
+    for (let i = 0; i < series.length + extraWindow; i++) {
+        let j = i - extraWindow
+        if (i < series.length) {
+            total += series[i].value
+            count++
+        }
+        if (j - extraWindow - 1 >= 0) {
+            total -= series[j - extraWindow - 1].value
+            count--
+        }
+        if (j>=0) {
+            result.push({step: series[j].step, value: series[j].value, smoothed: total / count, lastStep: series[j].lastStep})
+        }
+    }
+    return result
+}
+
+
 function trimSteps(series: Indicator[], min: number, max: number, smoothWindow: number[], trimSmoothEnds: boolean = true) {
     series.forEach((s, i) => {
-        let localSmoothWindow = smoothWindow[i] / 2 // remove half from each end
-        localSmoothWindow = Math.floor(localSmoothWindow)
-        if (localSmoothWindow < 0) {
-            localSmoothWindow = 0
-        }
+        let localSmoothWindow = Math.floor(smoothWindow[i] / 2) // remove half from each end
+
         if (s.series.length <= 1) {
             localSmoothWindow = 0
         } else if (smoothWindow[i] >= s.series.length) {
             localSmoothWindow = Math.floor(s.series.length/2)
         }
-
 
         let localMin = min
         let localMax = max
@@ -245,8 +299,8 @@ function trimSteps(series: Indicator[], min: number, max: number, smoothWindow: 
             (s.series.length%2 == 0 && localSmoothWindow != 0 ? 1 : 0)].step) // get the mid value for even length series
         }
 
-        localMin = Math.floor(localMin-1)
-        localMax = Math.ceil(localMax+1)
+        localMin = Math.floor(localMin) - 0.5
+        localMax = Math.ceil(localMax) + 0.5
 
         let minIndex = s.series.length - 1
         let maxIndex = 0
@@ -262,68 +316,6 @@ function trimSteps(series: Indicator[], min: number, max: number, smoothWindow: 
         s.lowTrimIndex = minIndex
         s.highTrimIndex = maxIndex
     })
-}
-
-/**
- * Calculates the smooth window size for each series in the current and base series.
- * The smooth window size is determined based on the minimum range of steps in the series and the provided smooth value.
- *
- * @param {Indicator[]} currentSeries - The current series of data.
- * @param {Indicator[]} baseSeries - The base series of data for comparison.
- * @param {number} smoothValue - The value to be used for smoothing the data.
- * @returns {[number[][], number]} - Returns an array of smooth window sizes for each series. and the smooth window size in steps.
- * (ret[0] = smooth window for current series, ret[1] = smooth window for base series
- */
-export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicator[], smoothValue: number): [number[][], number] {
-    let maxRange: number = Number.MIN_SAFE_INTEGER
-    for (let s of currentSeries) {
-        if (s.series.length > 1 && !s.is_summary) {
-            maxRange = Math.max(maxRange, s.series[s.series.length - 1].step - s.series[0].step)
-        }
-    }
-    for (let s of baseSeries) {
-        if (s.series.length > 1 && !s.is_summary) {
-            maxRange = Math.max(maxRange, s.series[s.series.length - 1].step - s.series[0].step)
-        }
-    }
-    if (maxRange == Number.MIN_SAFE_INTEGER) {
-        let stepRange = [[],[]]
-        for (let s of currentSeries) {
-            stepRange[0].push(1)
-        }
-        for (let s of baseSeries) {
-            stepRange[1].push(1)
-        }
-        return [stepRange, 0]
-    }
-
-    let smoothRange = mapRange(smoothValue, 1, 100, 1, maxRange)
-
-    let stepRange = [[],[]]
-    for (let s of currentSeries) {
-        if (smoothValue == 100) { // hardcode to max range in case not range due to step inconsistencies
-            stepRange[0].push(s.series.length)
-        } else if (s.series.length >= 2 && !s.is_summary) {
-            let stepGap = s.series[1].step - s.series[0].step
-            let numSteps = Math.max(1, Math.floor(smoothRange / stepGap))
-            stepRange[0].push(numSteps)
-        } else {
-            stepRange[0].push(1)
-        }
-    }
-    for (let s of baseSeries) {
-        if (smoothValue == 100) {
-            stepRange[1].push(s.series.length)
-        } else if (s.series.length >= 2 && !s.is_summary) {
-            let stepGap = s.series[1].step - s.series[0].step
-            let numSteps = Math.max(1, Math.floor(smoothRange / stepGap))
-            stepRange[1].push(numSteps)
-        } else {
-            stepRange[1].push(1)
-        }
-    }
-
-    return [stepRange, smoothRange]
 }
 
 // Default smoothing function from backend
