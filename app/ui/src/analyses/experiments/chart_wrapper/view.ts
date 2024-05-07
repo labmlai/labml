@@ -239,7 +239,7 @@ export class ViewWrapper {
                 let changeHandler = new ChangeHandlers.TrimSmoothToggleHandler(this)
                 changeHandler.change()
             },
-            text: 'Trim Smooth Ends',
+            text: 'Clip',
             isToggled: this.dataStore.trimSmoothEnds,
             parent: this.constructor.name
         })
