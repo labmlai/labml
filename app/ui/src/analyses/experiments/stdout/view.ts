@@ -1,4 +1,4 @@
-import {Run} from "../../../models/run"
+import {LogModel, Logs, Run} from "../../../models/run"
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import Filter from "../../../utils/ansi_to_html"
@@ -12,6 +12,8 @@ import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
+import stdOutCache from "./cache"
+import {LogView} from "../../../components/log_view"
 
 class StdOutView extends ScreenView {
     elem: HTMLDivElement
@@ -22,10 +24,12 @@ class StdOutView extends ScreenView {
     runCache: RunCache
     actualWidth: number
     outputContainer: HTMLDivElement
+    logView: LogView
     runHeaderCard: RunHeaderCard
     filter: Filter
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
+    private stdOut: Logs
 
     constructor(uuid: string) {
         super()
@@ -37,10 +41,13 @@ class StdOutView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
+            this.stdOut = await stdOutCache.getLogCache(this.uuid).getLast(force)
             this.run = await this.runCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
-
+        this.logView = new LogView(new Logs(<LogModel>{pages: {}, page_length: 0}), async (currentPage): Promise<Logs> => {
+            return await stdOutCache.getLogCache(this.uuid).getPage(currentPage, false)
+        })
     }
 
     get requiresAuth(): boolean {
@@ -75,7 +82,9 @@ class StdOutView extends ScreenView {
                     this.runHeaderCard.render($).then()
                     $('h2', '.header.text-center', 'Standard Out')
                     this.loader.render($)
-                    this.outputContainer = $('div', '.terminal-card')
+                    this.outputContainer = $('div', '.terminal-card' , $ => {
+                        this.logView.render($)
+                    })
                 })
             })
         })
@@ -127,11 +136,7 @@ class StdOutView extends ScreenView {
     }
 
     renderOutput() {
-        this.outputContainer.innerHTML = ''
-        $(this.outputContainer, $ => {
-            let output = $('pre', '')
-            output.innerHTML = this.filter.toHtml(this.run.stdout)
-        })
+        this.logView.addLogs(this.stdOut)
     }
 }
 

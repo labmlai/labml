@@ -24,9 +24,6 @@ export interface RunModel {
     size_tensorboard: number
     computer_uuid: string
     configs: ConfigModel[]
-    stdout: string
-    logger: string
-    stderr: string
     selected_configs: string[]
     favourite_configs: string[]
     session_id: string
@@ -128,9 +125,6 @@ export class Run {
     computer_uuid: string
     configs: Config[]
     dynamic: object
-    stdout: string
-    logger: string
-    stderr: string
     selected_configs: string[]
     favourite_configs: string[]
     session_id: string
@@ -163,9 +157,6 @@ export class Run {
         for (let c of run.configs) {
             this.configs.push(new Config(c,this.selected_configs.includes(c.key), this.favourite_configs.includes(c.key)))
         }
-        this.stdout = run.stdout
-        this.logger = run.logger
-        this.stderr = run.stderr
         this.session_id = run.session_id
         this.process_id = run.process_id
     }
@@ -256,5 +247,44 @@ export class CustomMetricList {
 
     public updateMetric(metric: CustomMetric) {
         this.metrics[metric.id] = metric
+    }
+}
+
+export interface LogModel {
+    pages: Record<string, string>
+    page_length: number
+}
+
+export interface LogUpdateFeedback {
+    lowerIndexes: string[]
+    higherIndexes: string[]
+}
+
+export class Logs {
+    pages: Record<string, string>
+    pageLength: number
+
+    constructor(logs: LogModel) {
+        this.pages = logs.pages
+        this.pageLength = logs.page_length
+    }
+
+    public getPage(index: number): string | null {
+        return this.pages[index]
+    }
+
+    public getPageAsLog(index: number): Logs {
+        let pages = {}
+        pages[index] = this.getPage(index)
+        return new Logs({pages: pages, page_length: this.pageLength})
+    }
+
+    public hasPage(index: number): Boolean {
+        return this.pages.hasOwnProperty(index)
+    }
+
+    public mergeLogs(logs: Logs) {
+        this.pages = {...this.pages, ...logs.pages}
+        this.pageLength = logs.pageLength
     }
 }

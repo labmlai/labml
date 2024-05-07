@@ -1,4 +1,4 @@
-import {Run} from "../../../models/run"
+import {LogModel, Logs, Run} from "../../../models/run"
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import Filter from "../../../utils/ansi_to_html"
@@ -12,20 +12,25 @@ import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
+import stdLoggerCache from "./cache"
+import {LogView} from "../../../components/log_view";
+import stdOutCache from "../stdout/cache";
 
 class LoggerView extends ScreenView {
-    elem: HTMLDivElement
-    uuid: string
-    run: Run
-    status: Status
-    statusCache: RunStatusCache
-    runCache: RunCache
-    actualWidth: number
-    outputContainer: HTMLDivElement
-    runHeaderCard: RunHeaderCard
-    filter: Filter
+    private elem: HTMLDivElement
+    private readonly uuid: string
+    private run: Run
+    private stdLogger: Logs
+    private status: Status
+    private statusCache: RunStatusCache
+    private runCache: RunCache
+    private actualWidth: number
+    private outputContainer: HTMLDivElement
+    private runHeaderCard: RunHeaderCard
+    private filter: Filter
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
+    private logView: LogView
 
     constructor(uuid: string) {
         super()
@@ -38,9 +43,12 @@ class LoggerView extends ScreenView {
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
+            this.stdLogger = await stdLoggerCache.getLogCache(this.uuid).getLast(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
-
+        this.logView = new LogView(new Logs(<LogModel>{pages: {}, page_length: 0}), async (currentPage): Promise<Logs> => {
+            return await stdLoggerCache.getLogCache(this.uuid).getPage(currentPage, false)
+        })
     }
 
     get requiresAuth(): boolean {
@@ -74,7 +82,9 @@ class LoggerView extends ScreenView {
                     this.runHeaderCard.render($).then()
                     $('h2', '.header.text-center', 'Logger')
                     this.loader.render($)
-                    this.outputContainer = $('div', '.terminal-card')
+                    this.outputContainer = $('div', '.terminal-card' , $ => {
+                        this.logView.render($)
+                    })
                 })
             })
         })
@@ -128,10 +138,7 @@ class LoggerView extends ScreenView {
 
     renderOutput() {
         this.outputContainer.innerHTML = ''
-        $(this.outputContainer, $ => {
-            let output = $('pre', '')
-            output.innerHTML = this.filter.toHtml(this.run.logger)
-        })
+        this.logView.addLogs(this.stdLogger)
     }
 }
 

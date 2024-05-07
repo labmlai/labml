@@ -1,4 +1,4 @@
-import {AnalysisData, CustomMetric, CustomMetricList, CustomMetricModel, Run} from "../models/run"
+import {AnalysisData, CustomMetric, CustomMetricList, CustomMetricModel, Logs, Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK from "../network"
 import { User} from "../models/user"
@@ -91,7 +91,7 @@ export abstract class CacheObject<T> {
     public lastUpdated: number
     protected data!: T
     protected broadcastPromise = new BroadcastPromise<T>()
-    private lastUsed: number
+    protected lastUsed: number
 
     constructor() {
         this.lastUsed = 0
@@ -513,6 +513,83 @@ export class CustomMetricCache extends CacheObject<CustomMetricList> {
     }
 }
 
+export class LogCache extends CacheObject<Logs> {
+    private readonly url: string
+    private readonly uuid: string
+
+    constructor(uuid: string, url: string) {
+        super();
+
+        this.url = url
+        this.uuid = uuid
+    }
+
+    load(...args: any[]): Promise<Logs> {
+        return this.broadcastPromise.create(async () => {
+            let data = await NETWORK.getLogs(this.uuid, this.url, args[0])
+            return new Logs(data)
+        })
+    }
+
+    private async getAll(isRefresh = false): Promise<Logs> {
+        if (isRefresh || this.data == null) {
+            let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -2))
+            this.data.mergeLogs(data)
+            return this.data
+        }
+
+        for (let pageNo = 0; pageNo < this.data.pageLength; pageNo++) {
+            if (!this.data.hasPage(pageNo)) {
+                let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -2))
+                this.data.mergeLogs(data)
+                break
+            }
+        }
+
+        return this.data
+    }
+
+    async getLast(isRefresh = false): Promise<Logs> {
+        await this.get(isRefresh)
+
+        if (!isRefresh && this.data.hasPage(this.data.pageLength - 1)) {
+            return this.data.getPageAsLog(this.data.pageLength - 1)
+        }
+
+        let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -1))
+        this.data.mergeLogs(data)
+        return data
+    }
+
+    async getPage(pageNo: number, isRefresh = false): Promise<Logs> {
+        if (pageNo == -2) {
+            return await this.getAll(isRefresh)
+        }
+
+        await this.get(false)
+
+        if (!isRefresh && this.data.hasPage(pageNo)) {
+            return this.data.getPageAsLog(pageNo)
+        }
+
+        let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, pageNo))
+        this.data.mergeLogs(data)
+        return data
+    }
+
+    async get(isRefresh = false, ...args: any[]): Promise<Logs> {
+        if (this.data == null || (isRefresh && isForceReloadTimeout(this.lastUpdated)) || isReloadTimeout(this.lastUpdated)) {
+            this.data = await this.load(-1)
+
+            this.lastUpdated = (new Date()).getTime()
+        }
+
+        this.lastUsed = new Date().getTime()
+
+        return this.data
+    }
+}
+
 class Cache {
     private runs: { [uuid: string]: RunCache }
     private customMetrics: { [uuid: string]: CustomMetricCache }
@@ -604,6 +681,7 @@ class Cache {
         this.sessions = {}
         this.runStatuses = {}
         this.sessionStatuses = {}
+        this.customMetrics = {}
         if (this.user != null) {
             this.user.invalidate_cache()
         }
