@@ -93,36 +93,6 @@ export function toDate(time: number) {
     return new Date(time * 1000)
 }
 
-function smoothSeries(series: PointValue[], windowSize: number): PointValue[] {
-    let result: PointValue[] = []
-    windowSize = ~~windowSize
-    if (series.length < windowSize) {
-        windowSize = series.length
-    }
-    let extraWindow = windowSize / 2
-    extraWindow = ~~extraWindow
-
-
-    let count = 0
-    let total = 0
-
-    for (let i = 0; i < series.length + extraWindow; i++) {
-        let j = i - extraWindow
-        if (i < series.length) {
-            total += series[i].value
-            count++
-        }
-        if (j - extraWindow - 1 >= 0) {
-            total -= series[j - extraWindow - 1].value
-            count--
-        }
-        if (j>=0) {
-            result.push({step: series[j].step, value: series[j].value, smoothed: total / count, lastStep: series[j].lastStep})
-        }
-    }
-    return result
-}
-
 export function fillPlotPreferences(series: Indicator[], currentPlotIdx: number[] = []) {
     if (currentPlotIdx.length != 0) {
         if (currentPlotIdx.length == series.length) {
@@ -213,57 +183,6 @@ export function smoothAndTrimAllCharts(series: Indicator[], baseSeries: Indicato
     }
 }
 
-function trimSteps(series: Indicator[], min: number, max: number, smoothWindow: number[], trimSmoothEnds: boolean = true) {
-    series.forEach((s, i) => {
-        let localSmoothWindow = smoothWindow[i] / 2 // remove half from each end
-        localSmoothWindow = Math.floor(localSmoothWindow)
-        if (localSmoothWindow < 0) {
-            localSmoothWindow = 0
-        }
-        if (s.series.length <= 1) {
-            localSmoothWindow = 0
-        } else if (smoothWindow[i] >= s.series.length) {
-            localSmoothWindow = Math.floor(s.series.length/2)
-        }
-
-
-        let localMin = min
-        let localMax = max
-
-        if (localMin == -1) {
-            localMin = s.series[0].step
-        }
-        if (trimSmoothEnds) {
-            localMin = Math.max(localMin, s.series[localSmoothWindow].step)
-        }
-
-        if (localMax == -1) {
-            localMax = s.series[s.series.length - 1].step
-        }
-        if (trimSmoothEnds) {
-            localMax = Math.min(localMax, s.series[s.series.length - 1 - localSmoothWindow +
-            (s.series.length%2 == 0 && localSmoothWindow != 0 ? 1 : 0)].step) // get the mid value for even length series
-        }
-
-        localMin = Math.floor(localMin-1)
-        localMax = Math.ceil(localMax+1)
-
-        let minIndex = s.series.length - 1
-        let maxIndex = 0
-
-        for (let i = 0; i < s.series.length; i++) {
-            let p = s.series[i]
-            if (p.step >= localMin && p.step <= localMax) {
-                minIndex = Math.min(i, minIndex)
-                maxIndex = Math.max(i, maxIndex)
-            }
-        }
-
-        s.lowTrimIndex = minIndex
-        s.highTrimIndex = maxIndex
-    })
-}
-
 /**
  * Calculates the smooth window size for each series in the current and base series.
  * The smooth window size is determined based on the minimum range of steps in the series and the provided smooth value.
@@ -274,7 +193,7 @@ function trimSteps(series: Indicator[], min: number, max: number, smoothWindow: 
  * @returns {[number[][], number]} - Returns an array of smooth window sizes for each series. and the smooth window size in steps.
  * (ret[0] = smooth window for current series, ret[1] = smooth window for base series
  */
-export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicator[], smoothValue: number): [number[][], number] {
+function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicator[], smoothValue: number): [number[][], number] {
     let maxRange: number = Number.MIN_SAFE_INTEGER
     for (let s of currentSeries) {
         if (s.series.length > 1 && !s.is_summary) {
@@ -324,6 +243,88 @@ export function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicato
     }
 
     return [stepRange, smoothRange]
+}
+
+function smoothSeries(series: PointValue[], windowSize: number): PointValue[] {
+    let result: PointValue[] = []
+    windowSize = ~~windowSize
+    if (series.length < windowSize) {
+        windowSize = series.length
+    }
+    let extraWindow = windowSize / 2
+    extraWindow = ~~extraWindow
+
+
+    let count = 0
+    let total = 0
+
+    for (let i = 0; i < series.length + extraWindow; i++) {
+        let j = i - extraWindow
+        if (i < series.length) {
+            total += series[i].value
+            count++
+        }
+        if (j - extraWindow - 1 >= 0) {
+            total -= series[j - extraWindow - 1].value
+            count--
+        }
+        if (j>=0) {
+            result.push({step: series[j].step, value: series[j].value, smoothed: total / count, lastStep: series[j].lastStep})
+        }
+    }
+    return result
+}
+
+
+function trimSteps(series: Indicator[], min: number, max: number, smoothWindow: number[], trimSmoothEnds: boolean = true) {
+    series.forEach((s, i) => {
+        let localSmoothWindow = smoothWindow[i] / 2 // remove half from each end
+        localSmoothWindow = Math.floor(localSmoothWindow)
+        if (localSmoothWindow < 0) {
+            localSmoothWindow = 0
+        }
+        if (s.series.length <= 1) {
+            localSmoothWindow = 0
+        } else if (smoothWindow[i] >= s.series.length) {
+            localSmoothWindow = Math.floor(s.series.length/2)
+        }
+
+
+        let localMin = min
+        let localMax = max
+
+        if (localMin == -1) {
+            localMin = s.series[0].step
+        }
+        if (trimSmoothEnds) {
+            localMin = Math.max(localMin, s.series[localSmoothWindow].step)
+        }
+
+        if (localMax == -1) {
+            localMax = s.series[s.series.length - 1].step
+        }
+        if (trimSmoothEnds) {
+            localMax = Math.min(localMax, s.series[s.series.length - 1 - localSmoothWindow +
+            (s.series.length%2 == 0 && localSmoothWindow != 0 ? 1 : 0)].step) // get the mid value for even length series
+        }
+
+        localMin = Math.floor(localMin-1)
+        localMax = Math.ceil(localMax+1)
+
+        let minIndex = s.series.length - 1
+        let maxIndex = 0
+
+        for (let i = 0; i < s.series.length; i++) {
+            let p = s.series[i]
+            if (p.step >= localMin && p.step <= localMax) {
+                minIndex = Math.min(i, minIndex)
+                maxIndex = Math.max(i, maxIndex)
+            }
+        }
+
+        s.lowTrimIndex = minIndex
+        s.highTrimIndex = maxIndex
+    })
 }
 
 // Default smoothing function from backend
