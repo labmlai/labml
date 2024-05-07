@@ -118,7 +118,6 @@ class Logs:
             page = self.log_pages[-1].load()
 
         for line in content.split('\n'):
-            print(line)
             line = line + "\n"
             if page.is_full():
                 unmerged_logs = page.logs_unmerged
@@ -134,4 +133,3 @@ class Logs:
 
         for page in loaded_pages:
             page.save()
-            print(page.key)
