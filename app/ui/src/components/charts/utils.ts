@@ -205,7 +205,7 @@ function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicator[], sm
             maxRange = Math.max(maxRange, s.series[s.series.length - 1].step - s.series[0].step)
         }
     }
-    if (maxRange == Number.MIN_SAFE_INTEGER) {
+    if (maxRange == Number.MIN_SAFE_INTEGER) { // all single points. -> can't smooth
         let stepRange = [[],[]]
         for (let s of currentSeries) {
             stepRange[0].push(1)
@@ -216,28 +216,26 @@ function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicator[], sm
         return [stepRange, 0]
     }
 
-    let smoothRange = mapRange(smoothValue, 1, 100, 1, maxRange)
+    let smoothRange = mapRange(smoothValue, 1, 100, 1, 2*maxRange)
 
     let stepRange = [[],[]]
+
     for (let s of currentSeries) {
-        if (smoothValue == 100) { // hardcode to max range in case not range due to step inconsistencies
-            stepRange[0].push(s.series.length)
-        } else if (s.series.length >= 2 && !s.is_summary) {
+        if (s.series.length >= 2 && !s.is_summary) {
             let stepGap = s.series[1].step - s.series[0].step
-            let numSteps = Math.max(1, Math.floor(smoothRange / stepGap))
+            let numSteps = Math.max(1, Math.ceil(smoothRange / stepGap))
             stepRange[0].push(numSteps)
-        } else {
+        } else { // can't smooth - just a single point
             stepRange[0].push(1)
         }
     }
+
     for (let s of baseSeries) {
-        if (smoothValue == 100) {
-            stepRange[1].push(s.series.length)
-        } else if (s.series.length >= 2 && !s.is_summary) {
+        if (s.series.length >= 2 && !s.is_summary) {
             let stepGap = s.series[1].step - s.series[0].step
-            let numSteps = Math.max(1, Math.floor(smoothRange / stepGap))
+            let numSteps = Math.max(1, Math.ceil(smoothRange / stepGap))
             stepRange[1].push(numSteps)
-        } else {
+        } else { // can't smooth - just a single point
             stepRange[1].push(1)
         }
     }
@@ -248,9 +246,6 @@ function getSmoothWindow(currentSeries: Indicator[], baseSeries: Indicator[], sm
 function smoothSeries(series: PointValue[], windowSize: number): PointValue[] {
     let result: PointValue[] = []
     windowSize = ~~windowSize
-    if (series.length < windowSize) {
-        windowSize = series.length
-    }
     let extraWindow = windowSize / 2
     extraWindow = ~~extraWindow
 
@@ -278,17 +273,13 @@ function smoothSeries(series: PointValue[], windowSize: number): PointValue[] {
 
 function trimSteps(series: Indicator[], min: number, max: number, smoothWindow: number[], trimSmoothEnds: boolean = true) {
     series.forEach((s, i) => {
-        let localSmoothWindow = smoothWindow[i] / 2 // remove half from each end
-        localSmoothWindow = Math.floor(localSmoothWindow)
-        if (localSmoothWindow < 0) {
-            localSmoothWindow = 0
-        }
+        let localSmoothWindow = Math.floor(smoothWindow[i] / 2) // remove half from each end
+
         if (s.series.length <= 1) {
             localSmoothWindow = 0
         } else if (smoothWindow[i] >= s.series.length) {
             localSmoothWindow = Math.floor(s.series.length/2)
         }
-
 
         let localMin = min
         let localMax = max
@@ -308,8 +299,8 @@ function trimSteps(series: Indicator[], min: number, max: number, smoothWindow: 
             (s.series.length%2 == 0 && localSmoothWindow != 0 ? 1 : 0)].step) // get the mid value for even length series
         }
 
-        localMin = Math.floor(localMin-1)
-        localMax = Math.ceil(localMax+1)
+        localMin = Math.floor(localMin) - 0.5
+        localMax = Math.ceil(localMax) + 0.5
 
         let minIndex = s.series.length - 1
         let maxIndex = 0
