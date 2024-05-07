@@ -72,7 +72,13 @@ export class BackButton extends Button {
         this.currentPath = window.location.pathname
         this.navigatePath = null
 
-        if (/\/run\/.+\/.+/.test(this.currentPath)) {
+        if (/\/run\/.+_\d+/.test(this.currentPath)) {
+            this.navigatePath = this.currentPath.replace(/(\/run\/.+?)_\d+/, '$1');
+            this.text = "Run"
+        } else if (/\/run\/.+\/metrics\/.+/.test(this.currentPath)) {
+            this.text = 'Run'
+            this.navigatePath = this.currentPath.replace(/\/run\/(.+)\/metrics\/.+/, '/run/$1');
+        } else if (/\/run\/.+\/.+/.test(this.currentPath)) {
             this.text = 'Run'
             this.navigatePath = this.currentPath.replace(/\/run\/(.+)\/.+/, '/run/$1')
         } else if (/\/session\/.+\/.+/.test(this.currentPath)) {
@@ -97,7 +103,7 @@ export class BackButton extends Button {
     }
 
     onClick = () => {
-        if (ROUTER.canBack() && this.navigatePath == null) {
+        if (ROUTER.canBack()) {
             ROUTER.back()
             return
         }
