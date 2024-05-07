@@ -131,5 +131,4 @@ class Logs:
             else:
                 page.update_logs(line)
 
-        for page in loaded_pages:
-            page.save()
+        LogPageModel.msave(loaded_pages)
