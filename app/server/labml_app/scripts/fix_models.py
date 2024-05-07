@@ -29,24 +29,50 @@ def fix_stdout():
         stderr = r.stderr + r.stderr_unmerged
         stdlogger = r.logger + r.logger_unmerged
 
+        # run only if there's no stdout, stderr or stdlogger
+        stdout_key = StdOutIndex.get(run_uuid)
+        if stdout_key is not None:
+            continue
+
         if stdout:
-            stdout_list = stdout.split('\n')
-            for i in range(len(stdout_list) - 1):
-                stdout_list[i] += '\n'
-            for line in stdout_list:
-                update_stdout(run_uuid, line)
+            key = StdOutIndex.get(run_uuid)
+            std_out: StdOutModel
+
+            if key is None:
+                std_out = StdOutModel()
+                std_out.save()
+                StdOutIndex.set(run_uuid, std_out.key)
+            else:
+                std_out = key.load()
+
+            std_out.update_logs_bulk(stdout)
+            std_out.save()
         if stderr:
-            stderr_list = stderr.split('\n')
-            for i in range(len(stderr_list) - 1):
-                stderr_list[i] += '\n'
-            for line in stderr_list:
-                update_stderr(run_uuid, line)
+            key = StdErrIndex.get(run_uuid)
+            std_err: StdErrModel
+
+            if key is None:
+                std_err = StdErrModel()
+                std_err.save()
+                StdErrIndex.set(run_uuid, std_err.key)
+            else:
+                std_err = key.load()
+
+            std_err.update_logs_bulk(stderr)
+            std_err.save()
         if stdlogger:
-            stdlogger_list = stdlogger.split('\n')
-            for i in range(len(stdlogger_list) - 1):
-                stdlogger_list[i] += '\n'
-            for line in stdlogger_list:
-                update_std_logger(run_uuid, line)
+            key = StdLoggerIndex.get(run_uuid)
+            std_logger: StdLoggerModel
+
+            if key is None:
+                std_logger = StdLoggerModel()
+                std_logger.save()
+                StdLoggerIndex.set(run_uuid, std_logger.key)
+            else:
+                std_logger = key.load()
+
+            std_logger.update_logs_bulk(stdlogger)
+            std_logger.save()
 
 
 def clear_all_logs():
