@@ -107,3 +107,31 @@ class Logs:
         else:
             page.update_logs(content)
             page.save()
+
+    def update_logs_bulk(self, content: str):
+        loaded_pages = []
+        if len(self.log_pages) == 0:
+            page = LogPageModel()
+            self.log_pages.append(page.key)
+            loaded_pages.append(page)
+        else:
+            page = self.log_pages[-1].load()
+
+        for line in content.split('\n'):
+            print(line)
+            line = line + "\n"
+            if page.is_full():
+                unmerged_logs = page.logs_unmerged
+                page.logs_unmerged = ''
+                line = unmerged_logs + line
+
+                page = LogPageModel()
+                page.update_logs(line)
+                self.log_pages.append(page.key)
+                loaded_pages.append(page)
+            else:
+                page.update_logs(line)
+
+        for page in loaded_pages:
+            page.save()
+            print(page.key)
