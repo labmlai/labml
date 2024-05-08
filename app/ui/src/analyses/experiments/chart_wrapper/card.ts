@@ -3,9 +3,10 @@ import {Indicator} from "../../../models/run"
 import {
     AnalysisPreferenceModel, ComparisonPreferenceModel,
 } from "../../../models/preferences"
-import {getChartType, smoothAndTrimAllCharts} from "../../../components/charts/utils"
+import {getChartType} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
+import {MovingAverage} from "../../../components/charts/smoothing/moving_average"
 
 interface CardWrapperOptions {
     width: number
@@ -76,7 +77,16 @@ export class CardWrapper {
         this.smoothValue = preferenceData.smooth_value
         this.trimSmoothEnds = preferenceData.trim_smooth_ends
 
-        smoothAndTrimAllCharts(this.series, this.baseSeries, this.smoothValue, this.stepRange, this.trimSmoothEnds)
+        let [smoothedSeries, smoothedBaseSeries] = (new MovingAverage({
+            indicators: this.series.concat(this.baseSeries ?? []) ?? [],
+            smoothValue: this.smoothValue,
+            min: this.stepRange[0],
+            max: this.stepRange[1],
+            currentIndicatorLength: this.series.length
+        }, this.trimSmoothEnds)).smoothAndTrim()
+
+        this.series = smoothedSeries
+        this.baseSeries = smoothedBaseSeries
     }
 
     public render() {

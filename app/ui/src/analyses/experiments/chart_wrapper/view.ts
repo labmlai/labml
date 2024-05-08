@@ -4,14 +4,14 @@ import {DeleteButton, SaveButton, ToggleButton} from "../../../components/button
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {
-    getChartType,
-    smoothAndTrimAllCharts
+    getChartType
 } from "../../../components/charts/utils"
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
 import {Loader} from "../../../components/loader"
 import {Slider} from "../../../components/input/slider"
 import {UserMessages} from "../../../components/user_messages"
 import {NetworkError} from "../../../network"
+import {MovingAverage} from "../../../components/charts/smoothing/moving_average"
 
 interface ViewWrapperOpt {
     dataStore: MetricDataStore
@@ -333,8 +333,16 @@ export class ViewWrapper {
     }
 
     private smoothSeries() {
-        smoothAndTrimAllCharts(this.dataStore.series, this.dataStore.baseSeries,
-            this.dataStore.smoothValue, this.dataStore.stepRange, this.dataStore.trimSmoothEnds)
+        let [series, baseSeries] = (new MovingAverage({
+            indicators: this.dataStore.series.concat(this.dataStore.baseSeries ?? []) ?? [],
+            smoothValue: this.dataStore.smoothValue,
+            min: this.dataStore.stepRange[0],
+            max: this.dataStore.stepRange[1],
+            currentIndicatorLength: this.dataStore.series.length
+        }, this.dataStore.trimSmoothEnds)).smoothAndTrim()
+
+        this.dataStore.series = series
+        this.dataStore.baseSeries = baseSeries
     }
 
     private renderTopButtons() {
