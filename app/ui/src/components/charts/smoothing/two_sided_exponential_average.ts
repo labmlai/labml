@@ -3,7 +3,7 @@ import {PointValue} from "../../../models/run"
 
 export class TwoSidedExponentialAverage extends SeriesSmoothing {
     protected smooth(): void {
-        let smoothingFactor = 1 - this.smoothValue / 100
+        let smoothingFactor = this.smoothValue / 100
 
         for (let i = 0; i < this.indicators.length; i++) {
             let ind = this.indicators[i]
@@ -13,27 +13,45 @@ export class TwoSidedExponentialAverage extends SeriesSmoothing {
             }
 
             let result: PointValue[] = []
-            let forward_pass: number[] = []
-            let lastSmoothed = ind.series[0].value
+
+            let f_sum: number[] = []
+            let b_sum: number[] = []
+            let f_weights: number[] = []
+            let b_weights: number[] = []
+
+            let last_sum = 0
+            let last_weight = 0
+            let last_step = ind.series[0].step
             for (let j = 0; j < ind.series.length; j++) {
-                let smoothed = lastSmoothed * (1 - smoothingFactor) + ind.series[j].value * smoothingFactor
-                forward_pass.push(smoothed)
-                lastSmoothed = smoothed
+                let smooth_gap = Math.pow(smoothingFactor, Math.abs(ind.series[j].step - last_step))
+                f_sum.push(last_sum * smooth_gap + ind.series[j].value)
+                f_weights.push(last_weight * smooth_gap + 1)
+
+                last_sum = f_sum[j]
+                last_weight = f_weights[j]
+                last_step = ind.series[j].step
             }
 
-            let backward_pass: number[] = []
-            lastSmoothed = ind.series[ind.series.length - 1].value
+            last_sum = 0
+            last_weight = 0
+            last_step = ind.series[ind.series.length - 1].step
             for (let j = ind.series.length - 1; j >= 0; j--) {
-                let smoothed = lastSmoothed * (1 - smoothingFactor) + ind.series[j].value * smoothingFactor
-                backward_pass.push(smoothed)
-                lastSmoothed = smoothed
+                let smooth_gap = Math.pow(smoothingFactor, Math.abs(ind.series[j].step - last_step))
+                b_sum.push(last_sum * smooth_gap + ind.series[j].value)
+                b_weights.push(last_weight * smooth_gap + 1)
+
+                last_sum = b_sum[b_sum.length - 1]
+                last_weight = b_weights[b_weights.length - 1]
+                last_step = ind.series[j].step
             }
-            backward_pass = backward_pass.reverse()
+            b_weights.reverse()
+            b_sum.reverse()
 
             for (let j = 0; j < ind.series.length; j++) {
-                let smoothed = (forward_pass[j] + backward_pass[j]) / 2
-                result.push({step: ind.series[j].step, value: ind.series[j].value, smoothed: smoothed,
-                    lastStep: ind.series[j].lastStep})
+                let smoothed = (f_sum[j] + b_sum[j] - ind.series[j].value) /
+                    (f_weights[j] + b_weights[j] - 1)
+                result.push({step: ind.series[j].step, value: ind.series[j].value,
+                    smoothed: smoothed, lastStep: ind.series[j].lastStep})
             }
 
             ind.series = result
