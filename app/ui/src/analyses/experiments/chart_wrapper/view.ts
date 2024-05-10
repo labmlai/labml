@@ -4,14 +4,14 @@ import {DeleteButton, SaveButton, ToggleButton} from "../../../components/button
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {
-    getChartType,
-    smoothAndTrimAllCharts
+    getChartType
 } from "../../../components/charts/utils"
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
 import {Loader} from "../../../components/loader"
 import {Slider} from "../../../components/input/slider"
 import {UserMessages} from "../../../components/user_messages"
 import {NetworkError} from "../../../network"
+import {TwoSidedExponentialAverage} from "../../../components/charts/smoothing/two_sided_exponential_average"
 
 interface ViewWrapperOpt {
     dataStore: MetricDataStore
@@ -221,10 +221,10 @@ export class ViewWrapper {
             parent: this.constructor.name
         })
         this.smoothSlider = new Slider({
-            min: 1,
+            min: 0,
             max: 100,
             value: this.dataStore.smoothValue,
-            step: 0.1,
+            step: 0.001,
             onChange: (value: number) => {
                 let changeHandler = new ChangeHandlers.SmoothValueHandler(this, value)
                 changeHandler.change()
@@ -333,8 +333,16 @@ export class ViewWrapper {
     }
 
     private smoothSeries() {
-        smoothAndTrimAllCharts(this.dataStore.series, this.dataStore.baseSeries,
-            this.dataStore.smoothValue, this.dataStore.stepRange, this.dataStore.trimSmoothEnds)
+        let [series, baseSeries] = (new TwoSidedExponentialAverage({
+            indicators: this.dataStore.series.concat(this.dataStore.baseSeries ?? []) ?? [],
+            smoothValue: this.dataStore.smoothValue,
+            min: this.dataStore.stepRange[0],
+            max: this.dataStore.stepRange[1],
+            currentIndicatorLength: this.dataStore.series.length
+        })).smoothAndTrim()
+
+        this.dataStore.series = series
+        this.dataStore.baseSeries = baseSeries
     }
 
     private renderTopButtons() {
