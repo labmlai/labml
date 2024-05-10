@@ -6,7 +6,7 @@ import {
 import {getChartType} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import {MovingAverage} from "../../../components/charts/smoothing/moving_average"
+import {TwoSidedExponentialAverage} from "../../../components/charts/smoothing/two_sided_exponential_average"
 
 interface CardWrapperOptions {
     width: number
@@ -77,13 +77,13 @@ export class CardWrapper {
         this.smoothValue = preferenceData.smooth_value
         this.trimSmoothEnds = preferenceData.trim_smooth_ends
 
-        let [smoothedSeries, smoothedBaseSeries] = (new MovingAverage({
+        let [smoothedSeries, smoothedBaseSeries] = (new TwoSidedExponentialAverage({
             indicators: this.series.concat(this.baseSeries ?? []) ?? [],
             smoothValue: this.smoothValue,
             min: this.stepRange[0],
             max: this.stepRange[1],
             currentIndicatorLength: this.series.length
-        }, this.trimSmoothEnds)).smoothAndTrim()
+        })).smoothAndTrim()
 
         this.series = smoothedSeries
         this.baseSeries = smoothedBaseSeries

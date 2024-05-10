@@ -15,7 +15,7 @@ export abstract class SeriesSmoothing {
     protected max: number
     protected currentIndicatorLength: number
 
-    protected constructor(opt: SeriesSmoothingOptions) {
+    constructor(opt: SeriesSmoothingOptions) {
         this.indicators = opt.indicators
         this.smoothValue = opt.smoothValue
         this.min = opt.min
