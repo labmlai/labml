@@ -68,5 +68,6 @@ export class Slider {
             this.slider.value = this.value.toString()
             this.onChange(this.value)
         }
+        this.slider.value = this.value.toString()
     }
 }
