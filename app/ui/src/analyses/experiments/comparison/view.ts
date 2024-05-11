@@ -37,7 +37,6 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     focusSmoothed: boolean
     stepRange: number[]
     smoothValue: number
-    trimSmoothEnds: boolean
 
     isUnsaved: boolean
 
@@ -99,7 +98,6 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                 this.basePlotIdx = [...this.preferenceData.base_series_preferences]
             }
             this.smoothValue = this.preferenceData.smooth_value
-            this.trimSmoothEnds = this.preferenceData.trim_smooth_ends
 
             if (!!this.baseUuid) {
                 await this.updateBaseRun(force)
@@ -278,7 +276,6 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             series_names: this.series.map(s => s.name),
             base_series_names: this.baseSeries ? this.baseSeries.map(s => s.name) : [],
             smooth_value: this.smoothValue,
-            trim_smooth_ends: this.trimSmoothEnds
         }
 
         await this.preferenceCache.setPreference(preferenceData)

@@ -36,7 +36,6 @@ export interface MetricDataStore {
     focusSmoothed: boolean
     stepRange: number[]
     smoothValue: number
-    trimSmoothEnds: boolean
 
     isUnsaved: boolean
 }
@@ -101,12 +100,6 @@ namespace ChangeHandlers {
         }
     }
 
-    export class TrimSmoothToggleHandler extends ChangeHandlerBase {
-        protected handleChange() {
-            this.wrapper.dataStore.trimSmoothEnds = !this.wrapper.dataStore.trimSmoothEnds
-        }
-    }
-
     export class ToggleChangeHandler extends ChangeHandlerBase {
         private readonly idx: number
         private readonly isBase: boolean
@@ -160,7 +153,6 @@ export class ViewWrapper {
     private readonly focusButton: ToggleButton
     private readonly smoothSlider: Slider
     private readonly deleteButton: DeleteButton
-    private readonly trimSmoothToggleButton: ToggleButton
     private sparkLines: SparkLines
 
     public dataStore: MetricDataStore
@@ -222,9 +214,9 @@ export class ViewWrapper {
         })
         this.smoothSlider = new Slider({
             min: 0,
-            max: 100,
+            max: 1,
             value: this.dataStore.smoothValue,
-            step: 0.001,
+            step: 0.0001,
             onChange: (value: number) => {
                 let changeHandler = new ChangeHandlers.SmoothValueHandler(this, value)
                 changeHandler.change()
@@ -233,15 +225,6 @@ export class ViewWrapper {
         this.deleteButton = new DeleteButton({
             parent: this.constructor.name,
             onButtonClick: this.onDelete
-        })
-        this.trimSmoothToggleButton = new ToggleButton({
-            onButtonClick: () => {
-                let changeHandler = new ChangeHandlers.TrimSmoothToggleHandler(this)
-                changeHandler.change()
-            },
-            text: 'Clip',
-            isToggled: this.dataStore.trimSmoothEnds,
-            parent: this.constructor.name
         })
     }
 
@@ -383,7 +366,6 @@ export class ViewWrapper {
             $('div', '.button-row', $ => {
                 $('span.key', 'Smoothing:')
                 this.smoothSlider.render($)
-                this.trimSmoothToggleButton.render($)
             })
         })
     }
