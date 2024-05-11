@@ -37,7 +37,6 @@ export class CardWrapper {
     private stepRange: number[]
     private focusSmoothed: boolean
     private smoothValue: number
-    private trimSmoothEnds: boolean
 
     private readonly title?: string
 
@@ -75,7 +74,6 @@ export class CardWrapper {
         this.stepRange = preferenceData.step_range
         this.focusSmoothed = preferenceData.focus_smoothed
         this.smoothValue = preferenceData.smooth_value
-        this.trimSmoothEnds = preferenceData.trim_smooth_ends
 
         let [smoothedSeries, smoothedBaseSeries] = (new TwoSidedExponentialAverage({
             indicators: this.series.concat(this.baseSeries ?? []) ?? [],
