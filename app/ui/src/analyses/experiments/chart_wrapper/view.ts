@@ -214,9 +214,9 @@ export class ViewWrapper {
         })
         this.smoothSlider = new Slider({
             min: 0,
-            max: 100,
+            max: 1,
             value: this.dataStore.smoothValue,
-            step: 0.001,
+            step: 0.0001,
             onChange: (value: number) => {
                 let changeHandler = new ChangeHandlers.SmoothValueHandler(this, value)
                 changeHandler.change()

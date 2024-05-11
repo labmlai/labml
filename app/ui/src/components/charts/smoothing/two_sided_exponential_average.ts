@@ -3,7 +3,14 @@ import {PointValue} from "../../../models/run"
 
 export class TwoSidedExponentialAverage extends SeriesSmoothing {
     protected smooth(): void {
-        let smoothingFactor = this.smoothValue / 100
+        let smoothingFactor = this.smoothValue
+
+        if (smoothingFactor <= 0) {
+            smoothingFactor = 0
+        }
+        if (smoothingFactor >= 1) {
+            smoothingFactor = 1
+        }
 
         for (let i = 0; i < this.indicators.length; i++) {
             let ind = this.indicators[i]
