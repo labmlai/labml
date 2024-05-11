@@ -1592,3 +1592,26 @@ pre {
   -webkit-user-select: text !important;
 
 }
+
+.slider-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+
+  input {
+    width: 4rem;
+  }
+
+  .input-container {
+    width: 5rem;
+    flex: unset;
+  }
+
+  .slider {
+    width: 9rem;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+}
