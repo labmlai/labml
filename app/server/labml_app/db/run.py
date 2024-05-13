@@ -6,7 +6,7 @@ from fastapi import Request
 from labml_db import Model, Key, Index, load_keys
 
 from .. import auth
-from . import user
+from . import user, folder
 from .. import utils
 from . import project
 from . import computer
@@ -64,6 +64,7 @@ class Run(Model['Run']):
     selected_configs: List['str']
     favourite_configs: List['str']
     main_rank: int
+    parent_folder: Key['folder.Folder']
 
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -110,6 +111,7 @@ class Run(Model['Run']):
                     process_key=None,
                     session_id='',
                     main_rank=0,
+                    parent_folder=None,
                     )
 
     @property
@@ -383,7 +385,7 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, m
               )
 
     if run.rank == 0:  # TODO
-        p.add_run_with_key(run_uuid, run.key)
+        p.add_run_with_model(run)
 
     run.save()
     p.save()

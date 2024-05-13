@@ -2,7 +2,7 @@ from typing import List, Dict, Union, Optional
 
 from labml_db import Model, Key, Index
 
-from . import run
+from . import run, folder
 from . import session
 from ..logger import logger
 
@@ -14,6 +14,7 @@ class Project(Model['Project']):
     runs: Dict[str, Key['run.Run']]
     sessions: Dict[str, Key['session.Session']]
     is_run_added: bool
+    folders: Dict[str, Key['folder.Folder']]
 
     @classmethod
     def defaults(cls):
@@ -23,6 +24,7 @@ class Project(Model['Project']):
                     runs={},
                     sessions={},
                     is_run_added=False,
+                    folders={},
                     )
 
     def is_project_run(self, run_uuid: str) -> bool:
@@ -31,10 +33,15 @@ class Project(Model['Project']):
     def is_project_session(self, session_uuid: str) -> bool:
         return session_uuid in self.sessions
 
-    def get_runs(self) -> List['run.Run']:
+    def get_runs(self, folder_name: str = "Default") -> List['run.Run']:
         res = []
         likely_deleted = []
-        for run_uuid, run_key in self.runs.items():
+        run_uuids = self.runs.keys()
+        if folder_name in self.folders:
+            f = self.folders[folder_name].load()
+            if f:
+                run_uuids = f.run_uuids
+        for run_uuid in run_uuids:
             try:
                 r = run.get(run_uuid)
                 if r:
@@ -71,6 +78,7 @@ class Project(Model['Project']):
                 r = run.get(run_uuid)
                 if r and r.owner == project_owner:
                     try:
+                        delete_from_folder(r)
                         run.delete(run_uuid)
                     except TypeError:
                         logger.error(f'error while deleting the run {run_uuid}')
@@ -95,12 +103,15 @@ class Project(Model['Project']):
 
         if r:
             self.runs[run_uuid] = r.key
+            self.add_to_folder(folder.DefaultFolders.DEFAULT.value, r)
 
         self.save()
 
-    def add_run_with_key(self, run_uuid: str, run_key: Key['run.Run']) -> None:
-        self.runs[run_uuid] = run_key
+    def add_run_with_model(self, r: run.Run) -> None:
+        self.runs[r.run_uuid] = r.key
         self.is_run_added = True
+
+        self.add_to_folder(folder.DefaultFolders.DEFAULT.value, r)
 
         self.save()
 
@@ -117,6 +128,43 @@ class Project(Model['Project']):
             self.sessions[session_uuid] = s.key
 
         self.save()
+
+    def add_to_folder(self, folder_name: str, r: run.Run) -> None:
+        if folder_name not in self.folders:
+            f = folder.Folder(name=folder_name)
+            self.folders[folder_name] = f.key
+        else:
+            f = self.folders[folder_name].load()
+
+        f.add_run(r.run_uuid)
+        f.save()
+
+        r.parent_folder = f.key
+        r.save()
+
+    def remove_from_folder(self, folder_name: str, r: run.Run) -> None:
+        if folder_name not in self.folders:
+            f = folder.Folder(name=folder_name)
+            self.folders[folder_name] = f.key
+        else:
+            f = self.folders[folder_name].load()
+
+        f.remove_run(r.run_uuid)
+        f.save()
+
+        r.parent_folder = None
+        r.save()
+
+
+def delete_from_folder(r: run.Run) -> None:
+    folder_key = r.parent_folder
+    if folder_key is None:
+        return
+    parent_folder = folder_key.load()
+    if parent_folder is None:
+        return
+    parent_folder.remove_run(r.run_uuid)
+    parent_folder.save()
 
 
 class ProjectIndex(Index['Project']):
