@@ -98,6 +98,18 @@ class Project(Model['Project']):
 
         self.save()
 
+    def add_run_with_key(self, run_uuid: str, run_key: Key['run.Run']) -> None:
+        self.runs[run_uuid] = run_key
+        self.is_run_added = True
+
+        self.save()
+
+    def get_run(self, run_uuid: str) -> Optional['run.Run']:
+        if run_uuid in self.runs:
+            return self.runs[run_uuid].load()
+        else:
+            return None
+
     def add_session(self, session_uuid: str) -> None:
         s = session.get(session_uuid)
 
@@ -123,8 +135,8 @@ def get_project(labml_token: str) -> Union[None, Project]:
 def get_run(run_uuid: str, labml_token: str = '') -> Optional['run.Run']:
     p = get_project(labml_token)
 
-    if run_uuid in p.runs:
-        return p.runs[run_uuid].load()
+    if p.is_project_run(run_uuid):
+        return p.get_run(run_uuid)
     else:
         return None
 

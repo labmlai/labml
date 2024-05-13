@@ -214,12 +214,11 @@ async def claim_run(request: Request, run_uuid: str, token: Optional[str] = None
 
     default_project = u.default_project
 
-    if r.run_uuid not in default_project.runs:
+    if not default_project.is_project_run(run_uuid):
         # float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
 
         # if r.run_uuid in float_project.runs:
-        default_project.runs[r.run_uuid] = r.key
-        default_project.is_run_added = True
+        default_project.add_run_with_key(run_uuid, r.key)
         default_project.save()
         r.is_claimed = True
         r.owner = u.email

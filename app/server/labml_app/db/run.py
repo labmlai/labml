@@ -354,8 +354,8 @@ class RunIndex(Index['Run']):
 def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, main_rank: int, labml_token: str = '') -> 'Run':
     p = project.get_project(labml_token)
 
-    if run_uuid in p.runs:
-        return p.runs[run_uuid].load()
+    if p.is_project_run(run_uuid):
+        return p.get_run(run_uuid)
 
     run = get(run_uuid)
     if run is not None:
@@ -383,8 +383,7 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, m
               )
 
     if run.rank == 0:  # TODO
-        p.runs[run.run_uuid] = run.key
-        p.is_run_added = True
+        p.add_run_with_key(run_uuid, run.key)
 
     run.save()
     p.save()
@@ -415,9 +414,8 @@ def delete(run_uuid: str) -> None:
 
 
 def get_runs(labml_token: str) -> List['Run']:
-    res = []
     p = project.get_project(labml_token)
-    load_keys(list(p.runs.values()))
+    res = p.get_runs()
 
     return res
 
