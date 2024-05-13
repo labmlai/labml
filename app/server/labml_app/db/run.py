@@ -415,9 +415,9 @@ def delete(run_uuid: str) -> None:
         analyses.AnalysisManager.delete_run(run_uuid)
 
 
-def get_runs(labml_token: str) -> List['Run']:
+def get_runs(labml_token: str, folder_name: str) -> List['Run']:
     p = project.get_project(labml_token)
-    res = p.get_runs()
+    res = p.get_runs(folder_name)
 
     return res
 

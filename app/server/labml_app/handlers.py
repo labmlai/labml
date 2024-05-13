@@ -10,7 +10,7 @@ from .analyses.experiments import stdout, stderr, stdlogger
 from .logger import logger
 from . import settings
 from . import auth
-from .db import run
+from .db import run, folder
 from .db import computer
 from .db import session
 from .db import user
@@ -361,15 +361,16 @@ async def get_session_status(request: Request, session_uuid: str) -> JSONRespons
 
 @auth.login_required
 @auth.check_labml_token_permission
-async def get_runs(request: Request, labml_token: str, token: Optional[str] = None) -> EndPointRes:
+async def get_runs(request: Request, labml_token: str, token: Optional[str] = None,
+                   folder_name: str = folder.DefaultFolders.DEFAULT.value) -> EndPointRes:
     u = user.get_by_session_token(token)
 
     if labml_token:
-        runs_list = run.get_runs(labml_token)
+        runs_list = run.get_runs(labml_token, folder_name)
     else:
         default_project = u.default_project
         labml_token = default_project.labml_token
-        runs_list = default_project.get_runs()
+        runs_list = default_project.get_runs(folder_name)
 
     # run_uuids = [r.run_uuid for r in runs_list if r.world_size == 0]
     #
@@ -489,6 +490,39 @@ async def add_run(request: Request, run_uuid: str, token: Optional[str] = None) 
     u = user.get_by_session_token(token)
 
     u.default_project.add_run(run_uuid)
+
+    return {'is_successful': True}
+
+
+@auth.login_required
+async def archive_runs(request: Request, token: Optional[str] = None) -> EndPointRes:
+    json = await request.json()
+    run_uuids = json['run_uuids']
+
+    u = user.get_by_session_token(token)
+
+    try:
+        u.default_project.archive_runs(run_uuids)
+    except KeyError:
+        return {'is_successful': False, 'error': "Failed to archive. Probably due to inconsistencies with the server."
+                                                 "Please refresh the page and try again."}
+
+    return {'is_successful': True}
+
+
+@auth.login_required
+async def un_archive_runs(request: Request, token: Optional[str] = None) -> EndPointRes:
+    json = await request.json()
+    run_uuids = json['run_uuids']
+
+    u = user.get_by_session_token(token)
+
+    try:
+        u.default_project.un_archive_runs(run_uuids)
+    except KeyError:
+        return {'is_successful': False, 'error': "Failed to un-archive. Probably due to inconsistencies with the "
+                                                 "server."
+                                                 "Please refresh the page and try again."}
 
     return {'is_successful': True}
 

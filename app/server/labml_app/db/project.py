@@ -155,6 +155,26 @@ class Project(Model['Project']):
         r.parent_folder = None
         r.save()
 
+    def archive_runs(self, run_uuids: List[str]) -> None:
+        for run_uuid in run_uuids:
+            if run_uuid in self.runs:
+                r = self.runs[run_uuid].load()
+                if r:
+                    self.remove_from_folder(folder.DefaultFolders.DEFAULT.value, r)
+                    self.add_to_folder(folder.DefaultFolders.ARCHIVE.value, r)
+
+        self.save()
+
+    def un_archive_runs(self, run_uuids: List[str]) -> None:
+        for run_uuid in run_uuids:
+            if run_uuid in self.runs:
+                r = self.runs[run_uuid].load()
+                if r:
+                    self.remove_from_folder(folder.DefaultFolders.ARCHIVE.value, r)
+                    self.add_to_folder(folder.DefaultFolders.DEFAULT.value, r)
+
+        self.save()
+
 
 def delete_from_folder(r: run.Run) -> None:
     folder_key = r.parent_folder
