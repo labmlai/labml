@@ -65,6 +65,14 @@ class Network {
         return this.sendHttpRequest('GET', `/sessions/${null}`)['promise']
     }
 
+    async archiveRuns(runUUIDS: string[]): Promise<any> {
+        return this.sendHttpRequest('POST', `/runs/archive`, {'run_uuids': runUUIDS})['promise']
+    }
+
+    async unarchiveRuns(runUUIDS: string[]): Promise<any> {
+        return this.sendHttpRequest('POST', `/runs/unarchive`, {'run_uuids': runUUIDS})['promise']
+    }
+
     async deleteRuns(runUUIDS: string[]): Promise<any> {
         return this.sendHttpRequest('PUT', `/runs`, {'run_uuids': runUUIDS})['promise']
     }
@@ -215,6 +223,11 @@ class Network {
     private updateSession(token?: string) {
         this.sessionToken = token
     }
+}
+
+export interface ErrorResponse {
+    is_successful: boolean
+    error?: string
 }
 
 export class NetworkError {

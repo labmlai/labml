@@ -586,6 +586,9 @@ def add_handlers(app: FastAPI):
     _add_server(app, 'POST', update_run, '{labml_token}/track')
     _add_server(app, 'POST', update_session, '{labml_token}/computer')
 
+    _add_ui(app, 'POST', archive_runs, 'runs/archive')
+    _add_ui(app, 'POST', un_archive_runs, 'runs/unarchive')
+
     _add_ui(app, 'GET', get_runs, 'runs/{labml_token}')
     _add_ui(app, 'PUT', delete_runs, 'runs')
     _add_ui(app, 'GET', get_sessions, 'sessions/{labml_token}')

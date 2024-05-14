@@ -1,6 +1,6 @@
 import {AnalysisData, CustomMetric, CustomMetricList, CustomMetricModel, Logs, Run} from "../models/run"
 import {Status} from "../models/status"
-import NETWORK from "../network"
+import NETWORK, {ErrorResponse} from "../network"
 import { User} from "../models/user"
 import {RunListItemModel, RunsList} from '../models/run_list'
 import {AnalysisPreferenceModel, ComparisonPreferenceModel} from "../models/preferences"
@@ -192,6 +192,39 @@ export class RunsListCache extends CacheObject<RunsList> {
                     }
                 }
             }
+        }
+    }
+
+    getRuns(runUUIDS: Array<string>): Array<RunListItemModel> {
+        let runs = []
+        if (this.data) {
+            for (let run of this.data.runs) {
+                if (runUUIDS.includes(run.run_uuid)) {
+                    runs.push(run)
+                }
+            }
+        }
+        return runs
+    }
+
+    removeRuns(runUUIDS: Array<string>): void {
+        if (this.data) {
+            let runs = []
+            for (let run of this.data.runs) {
+                if (!runUUIDS.includes(run.run_uuid)) {
+                    runs.push(run)
+                }
+            }
+            this.data.runs = runs
+        }
+    }
+
+    insertRuns(runs: Array<RunListItemModel>): void {
+        if (this.data) {
+            this.data.runs = this.data.runs.concat(runs)
+            this.data.runs.sort((a, b) => {
+                return b.start_time - a.start_time
+            })
         }
     }
 }
@@ -687,6 +720,36 @@ class Cache {
         }
 
         return this.user
+    }
+
+    async archiveRuns(runUUIDS: Array<string>): Promise<ErrorResponse> {
+        let response: ErrorResponse = await NETWORK.archiveRuns(runUUIDS)
+        if (response.is_successful == false) {
+            return response
+        }
+
+        let defaultFolder = this.getRunsList(RunsFolder.DEFAULT)
+        let archiveFolder = this.getRunsList(RunsFolder.ARCHIVE)
+        let runs = defaultFolder.getRuns(runUUIDS)
+        archiveFolder.insertRuns(runs)
+        defaultFolder.removeRuns(runUUIDS)
+
+        return response
+    }
+
+    async unarchiveRuns(runUUIDS: Array<string>): Promise<ErrorResponse> {
+        let response: ErrorResponse = await NETWORK.unarchiveRuns(runUUIDS)
+        if (response.is_successful == false) {
+            return response
+        }
+
+        let defaultFolder = this.getRunsList(RunsFolder.DEFAULT)
+        let archiveFolder = this.getRunsList(RunsFolder.ARCHIVE)
+        let runs = archiveFolder.getRuns(runUUIDS)
+        defaultFolder.insertRuns(runs)
+        archiveFolder.removeRuns(runUUIDS)
+
+        return response
     }
 
     invalidateCache() {

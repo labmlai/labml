@@ -78,7 +78,7 @@ class Project(Model['Project']):
                 r = run.get(run_uuid)
                 if r and r.owner == project_owner:
                     try:
-                        delete_from_folder(r)
+                        self.delete_from_folder(r)
                         run.delete(run_uuid)
                     except TypeError:
                         logger.error(f'error while deleting the run {run_uuid}')
