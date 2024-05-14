@@ -5,7 +5,7 @@ import CACHE, {RunsFolder, RunsListCache} from "../cache/cache"
 import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
-import {CancelButton, CustomButton, DeleteButton, EditButton} from '../components/buttons'
+import {CancelButton, DeleteButton, EditButton, IconButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import EmptyRunsList from './empty_runs_list'
 import {UserMessages} from '../components/user_messages'
@@ -24,7 +24,7 @@ class RunsListView extends ScreenView {
     searchQuery: string
     buttonContainer: HTMLDivElement
     deleteButton: DeleteButton
-    archiveButton: CustomButton
+    archiveButton: IconButton
     editButton: EditButton
     cancelButton: CancelButton
     isEditMode: boolean
@@ -46,11 +46,10 @@ class RunsListView extends ScreenView {
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
         this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
-        this.archiveButton = new CustomButton({
-            text: this.folder == RunsFolder.DEFAULT ? 'Archive' : 'Unarchive',
+        this.archiveButton = new IconButton({
             onButtonClick: this.onArchiveClick,
             parent: this.constructor.name
-        })
+        }, folder == RunsFolder.DEFAULT ? '.fas.fa-archive' : '.fas.fa-upload')
 
         this.userMessages = new UserMessages()
 
@@ -140,7 +139,8 @@ class RunsListView extends ScreenView {
         this.deleteButton.hide(noRuns || !this.isEditMode)
         this.cancelButton.hide(noRuns || !this.isEditMode)
         this.editButton.hide(noRuns || this.isEditMode)
-        this.archiveButton.hide(noRuns || !this.isEditMode)
+        this.archiveButton.hide((noRuns || !this.isEditMode) ||
+            (this.folder != RunsFolder.DEFAULT && this.folder != RunsFolder.ARCHIVE))
 
         if (!noRuns && !this.isEditMode) {
             this.refresh.start()
