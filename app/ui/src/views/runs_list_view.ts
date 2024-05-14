@@ -1,11 +1,11 @@
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import CACHE, {RunsListCache} from "../cache/cache"
+import CACHE, {RunsFolder, RunsListCache} from "../cache/cache"
 import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
-import {CancelButton, DeleteButton, EditButton} from '../components/buttons'
+import {CancelButton, DeleteButton, EditButton, IconButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import EmptyRunsList from './empty_runs_list'
 import {UserMessages} from '../components/user_messages'
@@ -14,6 +14,7 @@ import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
 import {DefaultLineGradient} from "../components/charts/chart_gradients";
+import {ErrorResponse} from "../network";
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -23,6 +24,7 @@ class RunsListView extends ScreenView {
     searchQuery: string
     buttonContainer: HTMLDivElement
     deleteButton: DeleteButton
+    archiveButton: IconButton
     editButton: EditButton
     cancelButton: CancelButton
     isEditMode: boolean
@@ -32,15 +34,22 @@ class RunsListView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private isTBProcessing: boolean
     private actualWidth: number
+    private readonly folder: string
 
-    constructor() {
+    constructor(folder: string) {
         super()
 
-        this.runListCache = CACHE.getRunsList()
+        this.folder = folder
+
+        this.runListCache = CACHE.getRunsList(this.folder)
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
         this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
+        this.archiveButton = new IconButton({
+            onButtonClick: this.onArchiveClick,
+            parent: this.constructor.name
+        }, folder == RunsFolder.DEFAULT ? '.fas.fa-archive' : '.fas.fa-upload')
 
         this.userMessages = new UserMessages()
 
@@ -93,10 +102,12 @@ class RunsListView extends ScreenView {
         })
         $(this.buttonContainer, $ => {
             this.deleteButton.render($)
+            this.archiveButton.render($)
             this.cancelButton.render($)
             this.editButton.render($)
             this.refresh.render($)
             this.deleteButton.hide(true)
+            this.archiveButton.hide(true)
             this.cancelButton.hide(true)
             this.editButton.hide(true)
         })
@@ -128,6 +139,8 @@ class RunsListView extends ScreenView {
         this.deleteButton.hide(noRuns || !this.isEditMode)
         this.cancelButton.hide(noRuns || !this.isEditMode)
         this.editButton.hide(noRuns || this.isEditMode)
+        this.archiveButton.hide((noRuns || !this.isEditMode) ||
+            (this.folder != RunsFolder.DEFAULT && this.folder != RunsFolder.ARCHIVE))
 
         if (!noRuns && !this.isEditMode) {
             this.refresh.start()
@@ -162,7 +175,43 @@ class RunsListView extends ScreenView {
         this.isEditMode = true
         this.refresh.disabled = true
         this.deleteButton.disabled = isRunsSelected
+        this.archiveButton.disabled = isRunsSelected
         this.updateButtons()
+    }
+
+    onArchiveClick = async () => {
+        try {
+            let runUUIDs: Array<string> = []
+            for (let runListItem of this.selectedRunsSet) {
+                runUUIDs.push(runListItem.run_uuid)
+            }
+
+            let response: ErrorResponse
+            if (this.folder == RunsFolder.DEFAULT) {
+                response = await CACHE.archiveRuns(runUUIDs)
+            } else if (this.folder == RunsFolder.ARCHIVE) {
+                response = await CACHE.unarchiveRuns(runUUIDs)
+            }
+
+            if (response.is_successful == false) {
+                this.userMessages.error(response.error ?? `Failed to ${
+                    this.folder == RunsFolder.DEFAULT ? '': 'Un'}archive runs`)
+                return
+            }
+
+            this.isEditMode = false
+            this.selectedRunsSet.clear()
+            this.archiveButton.disabled = this.selectedRunsSet.size === 0
+
+            await this.loader.load()
+            await this.renderList()
+            this.refresh.disabled = false
+        } catch (e) {
+            if (this.folder == RunsFolder.DEFAULT)
+                this.userMessages.networkError(e, 'Failed to archive runs')
+            else
+                this.userMessages.networkError(e, 'Failed to unarchive runs')
+        }
     }
 
     onDelete = async () => {
@@ -212,6 +261,7 @@ class RunsListView extends ScreenView {
         let isRunsSelected = this.selectedRunsSet.size === 0
 
         this.deleteButton.disabled = isRunsSelected || this.isTBProcessing
+        this.archiveButton.disabled = isRunsSelected
     }
 
     onSearch = async (query: string) => {
@@ -247,9 +297,14 @@ class RunsListView extends ScreenView {
 export class RunsListHandler {
     constructor() {
         ROUTER.route('runs', [this.handleRunsList])
+        ROUTER.route('runs/:folder', [this.handleFolder])
+    }
+
+    handleFolder = (folder: string) => {
+        SCREEN.setView(new RunsListView(folder))
     }
 
     handleRunsList = () => {
-        SCREEN.setView(new RunsListView())
+        SCREEN.setView(new RunsListView(RunsFolder.DEFAULT))
     }
 }

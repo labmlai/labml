@@ -57,12 +57,20 @@ class Network {
         return this.sendHttpRequest('GET', `/session/status/${sessionUUId}`)['promise']
     }
 
-    async getRuns(labml_token: string | null): Promise<any> {
-        return this.sendHttpRequest('GET', `/runs/${labml_token}`)['promise']
+    async getRuns(labml_token: string | null, folder: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/runs/${labml_token}?folder_name=${folder}`)['promise']
     }
 
     async getSessions(): Promise<any> {
         return this.sendHttpRequest('GET', `/sessions/${null}`)['promise']
+    }
+
+    async archiveRuns(runUUIDS: string[]): Promise<any> {
+        return this.sendHttpRequest('POST', `/runs/archive`, {'run_uuids': runUUIDS})['promise']
+    }
+
+    async unarchiveRuns(runUUIDS: string[]): Promise<any> {
+        return this.sendHttpRequest('POST', `/runs/unarchive`, {'run_uuids': runUUIDS})['promise']
     }
 
     async deleteRuns(runUUIDS: string[]): Promise<any> {
@@ -215,6 +223,11 @@ class Network {
     private updateSession(token?: string) {
         this.sessionToken = token
     }
+}
+
+export interface ErrorResponse {
+    is_successful: boolean
+    error?: string
 }
 
 export class NetworkError {

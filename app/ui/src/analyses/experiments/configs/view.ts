@@ -128,7 +128,7 @@ class RunConfigsView extends ScreenView {
             }
 
             await CACHE.getRun(this.uuid).updateRunData(data)
-            await CACHE.getRunsList().localUpdateRun(this.run)
+            await CACHE.getRunsList(this.run.folder).localUpdateRun(this.run)
         } catch (e) {
             this.userMessage.networkError(e, "Failed to save configurations")
             this.save.disabled = false

@@ -274,6 +274,22 @@ export class DeleteButton extends Button {
     }
 }
 
+export class IconButton extends Button {
+    private readonly icon: string
+    constructor(opt: ButtonOptions, icon: string) {
+        super(opt)
+        this.icon = icon
+    }
+
+    render($: WeyaElementFunction) {
+        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
+            {on: {click: this.onClick}},
+            $ => {
+                $('span', this.icon, '')
+            })
+    }
+}
+
 export class CancelButton extends Button {
     constructor(opt: ButtonOptions) {
         super(opt)

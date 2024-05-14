@@ -6,7 +6,7 @@ from fastapi import Request
 from labml_db import Model, Key, Index, load_keys
 
 from .. import auth
-from . import user
+from . import user, folder
 from .. import utils
 from . import project
 from . import computer
@@ -64,6 +64,7 @@ class Run(Model['Run']):
     selected_configs: List['str']
     favourite_configs: List['str']
     main_rank: int
+    parent_folder: str
 
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -110,6 +111,7 @@ class Run(Model['Run']):
                     process_key=None,
                     session_id='',
                     main_rank=0,
+                    parent_folder='',
                     )
 
     @property
@@ -303,7 +305,8 @@ class Run(Model['Run']):
             'favourite_configs': self.favourite_configs,
             'selected_configs': self.selected_configs,
             'process_id': self.process_id,
-            'session_id': self.session_id
+            'session_id': self.session_id,
+            'folder': self.parent_folder
         }
 
     def get_summary(self) -> Dict[str, str]:
@@ -354,8 +357,8 @@ class RunIndex(Index['Run']):
 def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, main_rank: int, labml_token: str = '') -> 'Run':
     p = project.get_project(labml_token)
 
-    if run_uuid in p.runs:
-        return p.runs[run_uuid].load()
+    if p.is_project_run(run_uuid):
+        return p.get_run(run_uuid)
 
     run = get(run_uuid)
     if run is not None:
@@ -383,8 +386,7 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, m
               )
 
     if run.rank == 0:  # TODO
-        p.runs[run.run_uuid] = run.key
-        p.is_run_added = True
+        p.add_run_with_model(run)
 
     run.save()
     p.save()
@@ -414,10 +416,9 @@ def delete(run_uuid: str) -> None:
         analyses.AnalysisManager.delete_run(run_uuid)
 
 
-def get_runs(labml_token: str) -> List['Run']:
-    res = []
+def get_runs(labml_token: str, folder_name: str) -> List['Run']:
     p = project.get_project(labml_token)
-    load_keys(list(p.runs.values()))
+    res = p.get_runs(folder_name)
 
     return res
 
