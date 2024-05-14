@@ -32,7 +32,6 @@ class RunHeaderView extends ScreenView {
     elem: HTMLDivElement
     run: Run
     runCache: RunCache
-    runListCache: RunsListCache
     status: Status
     statusCache: RunStatusCache
     user: User
@@ -57,7 +56,6 @@ class RunHeaderView extends ScreenView {
         super()
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
-        this.runListCache = CACHE.getRunsList()
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.userCache = CACHE.getUser()
 
@@ -268,7 +266,7 @@ class RunHeaderView extends ScreenView {
     onDelete = async () => {
         if (confirm("Are you sure?")) {
             try {
-                await CACHE.getRunsList().deleteRuns([this.uuid])
+                await CACHE.getRunsList(this.run.folder).deleteRuns([this.uuid])
                 ROUTER.navigate('/runs')
             } catch (e) {
                 this.userMessages.networkError(e, "Failed to delete run")
@@ -299,7 +297,7 @@ class RunHeaderView extends ScreenView {
 
         try {
             await this.runCache.updateRunData(data)
-            await CACHE.getRunsList().localUpdateRun(this.run)
+            await CACHE.getRunsList(this.run.folder).localUpdateRun(this.run)
             await this._render()
             this.editStatus = EditStatus.NOCHANGE
         } catch (e) {

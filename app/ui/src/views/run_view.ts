@@ -24,7 +24,6 @@ class RunView extends ScreenView {
     runCache: RunCache
     status: Status
     statusCache: RunStatusCache
-    runListCache: RunsListCache
     user: User
     userCache: UserCache
     actualWidth: number
@@ -52,7 +51,6 @@ class RunView extends ScreenView {
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.userCache = CACHE.getUser()
-        this.runListCache = CACHE.getRunsList()
         this.isRankExpanded = false
         this.userMessages = new UserMessages()
 
@@ -221,11 +219,11 @@ class RunView extends ScreenView {
         } else {
             try {
                 if (isRunClaim) {
-                    await this.runListCache.claimRun(this.run)
+                    await CACHE.getRunsList(this.run.folder).claimRun(this.run)
                     this.userMessages.success('Successfully claimed and added to your runs list')
                     this.run.is_claimed = true
                 } else {
-                    await this.runListCache.addRun(this.run)
+                    await CACHE.getRunsList(this.run.folder).addRun(this.run)
                     this.userMessages.success('Successfully added to your runs list')
                 }
                 this.run.is_project_run = true

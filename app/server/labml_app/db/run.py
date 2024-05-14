@@ -64,7 +64,7 @@ class Run(Model['Run']):
     selected_configs: List['str']
     favourite_configs: List['str']
     main_rank: int
-    parent_folder: Key['folder.Folder']
+    parent_folder: str
 
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -111,7 +111,7 @@ class Run(Model['Run']):
                     process_key=None,
                     session_id='',
                     main_rank=0,
-                    parent_folder=None,
+                    parent_folder='',
                     )
 
     @property
@@ -305,7 +305,8 @@ class Run(Model['Run']):
             'favourite_configs': self.favourite_configs,
             'selected_configs': self.selected_configs,
             'process_id': self.process_id,
-            'session_id': self.session_id
+            'session_id': self.session_id,
+            'folder': self.parent_folder
         }
 
     def get_summary(self) -> Dict[str, str]:

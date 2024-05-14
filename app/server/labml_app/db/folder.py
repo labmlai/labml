@@ -8,8 +8,8 @@ from labml_app.db import run
 
 
 class DefaultFolders(Enum):
-    ARCHIVE = 'Archive'
-    DEFAULT = 'Default'
+    ARCHIVE = 'archive'
+    DEFAULT = 'default'
 
 
 class Folder(Model['Folder']):

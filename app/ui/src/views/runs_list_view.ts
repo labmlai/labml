@@ -1,7 +1,7 @@
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import CACHE, {RunsListCache} from "../cache/cache"
+import CACHE, {RunsFolder, RunsListCache} from "../cache/cache"
 import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
@@ -32,11 +32,14 @@ class RunsListView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private isTBProcessing: boolean
     private actualWidth: number
+    private readonly folder: string
 
-    constructor() {
+    constructor(folder: string) {
         super()
 
-        this.runListCache = CACHE.getRunsList()
+        this.folder = folder
+
+        this.runListCache = CACHE.getRunsList(this.folder)
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
         this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
@@ -247,9 +250,14 @@ class RunsListView extends ScreenView {
 export class RunsListHandler {
     constructor() {
         ROUTER.route('runs', [this.handleRunsList])
+        ROUTER.route('runs/:folder', [this.handleFolder])
+    }
+
+    handleFolder = (folder: string) => {
+        SCREEN.setView(new RunsListView(folder))
     }
 
     handleRunsList = () => {
-        SCREEN.setView(new RunsListView())
+        SCREEN.setView(new RunsListView(RunsFolder.DEFAULT))
     }
 }

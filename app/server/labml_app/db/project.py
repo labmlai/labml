@@ -139,7 +139,7 @@ class Project(Model['Project']):
         f.add_run(r.run_uuid)
         f.save()
 
-        r.parent_folder = f.key
+        r.parent_folder = f.name
         r.save()
 
     def remove_from_folder(self, folder_name: str, r: run.Run) -> None:
@@ -152,7 +152,7 @@ class Project(Model['Project']):
         f.remove_run(r.run_uuid)
         f.save()
 
-        r.parent_folder = None
+        r.parent_folder = ''
         r.save()
 
     def archive_runs(self, run_uuids: List[str]) -> None:
@@ -175,16 +175,15 @@ class Project(Model['Project']):
 
         self.save()
 
-
-def delete_from_folder(r: run.Run) -> None:
-    folder_key = r.parent_folder
-    if folder_key is None:
-        return
-    parent_folder = folder_key.load()
-    if parent_folder is None:
-        return
-    parent_folder.remove_run(r.run_uuid)
-    parent_folder.save()
+    def delete_from_folder(self, r: run.Run) -> None:
+        folder_name = r.parent_folder
+        if folder_name in self.folders:
+            return
+        parent_folder = self.folders[folder_name].load()
+        if parent_folder is None:
+            return
+        parent_folder.remove_run(r.run_uuid)
+        parent_folder.save()
 
 
 class ProjectIndex(Index['Project']):

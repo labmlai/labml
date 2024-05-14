@@ -116,21 +116,34 @@ export abstract class CacheObject<T> {
     }
 }
 
+export enum RunsFolder {
+    DEFAULT = 'default',
+    ARCHIVE = 'archive',
+}
+
 export class RunsListCache extends CacheObject<RunsList> {
+    private readonly folderName: string
+
+    constructor(folderName: string) {
+        super()
+        this.folderName = folderName
+    }
+
+
     async load(...args: any[]): Promise<RunsList> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.getRuns(args[0])
+            let res = await NETWORK.getRuns(args[0], args[1])
             return new RunsList(res)
         })
     }
 
     async get(isRefresh = false, ...args: any[]): Promise<RunsList> {
-        if (args && args[0]) {
-            return await this.load(args[0])
+        if (args && args[0] && args[1]) {
+            return await this.load(args[0], args[1])
         }
 
         if (this.data == null || (isRefresh && isForceReloadTimeout(this.lastUpdated)) || isReloadTimeout(this.lastUpdated)) {
-            this.data = await this.load(null)
+            this.data = await this.load(null, this.folderName)
             this.lastUpdated = (new Date()).getTime()
         }
 
@@ -598,7 +611,7 @@ class Cache {
     private sessionStatuses: { [uuid: string]: SessionStatusCache }
 
     private user: UserCache | null
-    private runsList: RunsListCache | null
+    private runsList: { [folderName: string]: RunsListCache }
     private sessionsList: SessionsListCache | null
 
     constructor() {
@@ -607,8 +620,8 @@ class Cache {
         this.runStatuses = {}
         this.sessionStatuses = {}
         this.customMetrics = {}
+        this.runsList = {}
         this.user = null
-        this.runsList = null
         this.sessionsList = null
     }
 
@@ -636,12 +649,12 @@ class Cache {
         return this.sessions[uuid]
     }
 
-    getRunsList() {
-        if (this.runsList == null) {
-            this.runsList = new RunsListCache()
+    getRunsList(folderName: string) {
+        if (this.runsList[folderName] == null) {
+            this.runsList[folderName] = new RunsListCache(folderName)
         }
 
-        return this.runsList
+        return this.runsList[folderName]
     }
 
     getSessionsList() {
