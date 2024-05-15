@@ -299,6 +299,12 @@ export class RunCache extends CacheObject<Run> {
     async updateRunData(data: Record<string, any>): Promise<void> {
         await NETWORK.updateRunData(this.uuid, data)
     }
+
+    localUpdateFolder(folder: string) {
+        if (this.data != null) {
+            this.data.folder = folder
+        }
+    }
 }
 
 export class SessionCache extends CacheObject<Session> {
@@ -734,6 +740,11 @@ class Cache {
         archiveFolder.insertRuns(runs)
         defaultFolder.removeRuns(runUUIDS)
 
+        for (let uuid of runUUIDS) {
+            let run = this.getRun(uuid)
+            run.localUpdateFolder(RunsFolder.ARCHIVE)
+        }
+
         return response
     }
 
@@ -748,6 +759,11 @@ class Cache {
         let runs = archiveFolder.getRuns(runUUIDS)
         defaultFolder.insertRuns(runs)
         archiveFolder.removeRuns(runUUIDS)
+
+        for (let uuid of runUUIDS) {
+            let run = this.getRun(uuid)
+            run.localUpdateFolder(RunsFolder.DEFAULT)
+        }
 
         return response
     }
