@@ -100,7 +100,17 @@ def clear_all_logs():
         log_key.delete()
 
 
+def archive_all_runs():
+    u = user.get_by_session_token('local')
+    default_project = u.default_project
+    runs_list = default_project.get_runs("all")
+
+    for r in monit.iterate('runs', runs_list):
+        if r.parent_folder == '':
+            default_project.add_to_folder('archive', r)
+
+
 if __name__ == '__main__':
     init_mongo_db()
 
-    fix_stdout()
+    archive_all_runs()
