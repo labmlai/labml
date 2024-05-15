@@ -109,6 +109,8 @@ def archive_all_runs():
         if r.parent_folder == '':
             default_project.add_to_folder('archive', r)
 
+    default_project.save()
+
 
 if __name__ == '__main__':
     init_mongo_db()
