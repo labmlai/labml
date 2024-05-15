@@ -36,7 +36,9 @@ class Project(Model['Project']):
     def get_runs(self, folder_name: str = "Default") -> List['run.Run']:
         res = []
         likely_deleted = []
-        run_uuids = self.runs.keys()
+        run_uuids = []
+        if folder_name == 'all':
+            run_uuids = self.runs.keys()
         if folder_name in self.folders:
             f = self.folders[folder_name].load()
             if f:
@@ -52,7 +54,8 @@ class Project(Model['Project']):
                 logger.error('error in creating run list, ' + run_uuid + ':' + str(e))
 
         for run_uuid in likely_deleted:
-            self.runs.pop(run_uuid)
+            if run_uuid in self.runs:
+                self.runs.pop(run_uuid)
 
         if self.is_run_added:
             self.is_run_added = False
@@ -74,7 +77,6 @@ class Project(Model['Project']):
     def delete_runs(self, run_uuids: List[str], project_owner: str) -> None:
         for run_uuid in run_uuids:
             if run_uuid in self.runs:
-                self.runs.pop(run_uuid)
                 r = run.get(run_uuid)
                 if r and r.owner == project_owner:
                     try:

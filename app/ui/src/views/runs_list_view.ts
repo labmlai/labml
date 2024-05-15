@@ -86,7 +86,7 @@ class RunsListView extends ScreenView {
             $('div', $ => {
                 this.userMessages.render($)
                 new HamburgerMenuView({
-                    title: 'Runs',
+                    title: (this.folder == RunsFolder.ARCHIVE ? 'Archived ' : '') + 'Runs',
                     setButtonContainer: container => this.buttonContainer = container
                 }).render($)
 
@@ -136,7 +136,8 @@ class RunsListView extends ScreenView {
     updateButtons() {
         let noRuns = this.currentRunsList.length == 0
 
-        this.deleteButton.hide(noRuns || !this.isEditMode)
+        this.deleteButton.hide((noRuns || !this.isEditMode) ||
+            (this.folder != RunsFolder.DEFAULT && this.folder != RunsFolder.ARCHIVE))
         this.cancelButton.hide(noRuns || !this.isEditMode)
         this.editButton.hide(noRuns || this.isEditMode)
         this.archiveButton.hide((noRuns || !this.isEditMode) ||
