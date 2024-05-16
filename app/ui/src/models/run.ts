@@ -263,6 +263,11 @@ export interface LogUpdateFeedback {
     higherIndexes: string[]
 }
 
+export enum LogUpdateType {
+    LAST = -1,
+    ALL = -2
+}
+
 export class Logs {
     pages: Record<string, string>
     pageLength: number
