@@ -51,17 +51,26 @@ export class LogView {
         this.renderLogs()
     }
 
+    private setLoading(isLoading: boolean) {
+        this.loadMoreButton.disabled = isLoading
+        this.loadAllButton.disabled = isLoading
+    }
+
     private onLoadMoreClick = () => {
+        this.setLoading(true)
         this.loadPage(this.toLoadPage).then((logs) => {
             this.logs.mergeLogs(logs)
             this.renderLogs()
+            this.setLoading(false)
         })
     }
 
     private onLoadAllClick = () => {
+        this.setLoading(true)
         this.loadPage(LogUpdateType.ALL).then((logs) => {
             this.logs.mergeLogs(logs)
             this.renderLogs()
+            this.setLoading(false)
         })
     }
 
