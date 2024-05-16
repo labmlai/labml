@@ -1,3 +1,5 @@
+from enum import Enum
+
 from labml_app.settings import LOG_CHAR_LIMIT
 
 from typing import Any, Dict, List
@@ -57,6 +59,11 @@ class LogPageModel(Model['LogPageModel'], LogPage):
     pass
 
 
+class LogPageType(Enum):
+    LAST = -1
+    ALL = -2
+
+
 class Logs:
     log_pages: List[Key['LogPageModel']]
 
@@ -66,10 +73,10 @@ class Logs:
             log_pages=[]
         )
 
-    def get_data(self, page_no: int = -1):
+    def get_data(self, page_no: int = LogPageType.LAST.value):
         page_dict: Dict[str, str] = {}
 
-        if page_no == -2:
+        if page_no == LogPageType.ALL.value:
             pages: List['LogPage'] = [page.load() for page in self.log_pages]
             for i, p in enumerate(pages):
                 page_dict[str(i)] = p.logs + p.logs_unmerged

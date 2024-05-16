@@ -1,5 +1,5 @@
 import {Weya as $, WeyaElementFunction} from "../../../lib/weya/weya"
-import {Logs} from "../models/run";
+import {Logs, LogUpdateType} from "../models/run";
 import Filter from "../utils/ansi_to_html"
 import {CustomButton} from "./buttons"
 
@@ -51,17 +51,26 @@ export class LogView {
         this.renderLogs()
     }
 
+    private setLoading(isLoading: boolean) {
+        this.loadMoreButton.disabled = isLoading
+        this.loadAllButton.disabled = isLoading
+    }
+
     private onLoadMoreClick = () => {
+        this.setLoading(true)
         this.loadPage(this.toLoadPage).then((logs) => {
             this.logs.mergeLogs(logs)
             this.renderLogs()
+            this.setLoading(false)
         })
     }
 
     private onLoadAllClick = () => {
-        this.loadPage(-2).then((logs) => {
+        this.setLoading(true)
+        this.loadPage(LogUpdateType.ALL).then((logs) => {
             this.logs.mergeLogs(logs)
             this.renderLogs()
+            this.setLoading(false)
         })
     }
 

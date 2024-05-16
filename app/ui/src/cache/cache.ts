@@ -1,4 +1,4 @@
-import {AnalysisData, CustomMetric, CustomMetricList, CustomMetricModel, Logs, Run} from "../models/run"
+import {AnalysisData, CustomMetric, CustomMetricList, CustomMetricModel, Logs, LogUpdateType, Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK, {ErrorResponse} from "../network"
 import { User} from "../models/user"
@@ -585,14 +585,14 @@ export class LogCache extends CacheObject<Logs> {
 
     private async getAll(isRefresh = false): Promise<Logs> {
         if (isRefresh || this.data == null) {
-            let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -2))
+            let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, LogUpdateType.ALL))
             this.data.mergeLogs(data)
             return this.data
         }
 
         for (let pageNo = 0; pageNo < this.data.pageLength; pageNo++) {
             if (!this.data.hasPage(pageNo)) {
-                let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -2))
+                let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, LogUpdateType.ALL))
                 this.data.mergeLogs(data)
                 break
             }
@@ -608,7 +608,7 @@ export class LogCache extends CacheObject<Logs> {
             return this.data.getPageAsLog(this.data.pageLength - 1)
         }
 
-        let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, -1))
+        let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, LogUpdateType.LAST))
         this.data.mergeLogs(data)
         return data
     }
@@ -631,7 +631,7 @@ export class LogCache extends CacheObject<Logs> {
 
     async get(isRefresh = false, ...args: any[]): Promise<Logs> {
         if (this.data == null || (isRefresh && isForceReloadTimeout(this.lastUpdated)) || isReloadTimeout(this.lastUpdated)) {
-            this.data = await this.load(-1)
+            this.data = await this.load(LogUpdateType.LAST)
 
             this.lastUpdated = (new Date()).getTime()
         }
