@@ -9,7 +9,7 @@ from labml_db.serializer.yaml import YamlSerializer
 from fastapi import Request
 
 from labml_app.analyses.analysis import Analysis
-from labml_app.analyses.logs import Logs
+from labml_app.analyses.logs import Logs, LogPageType
 
 
 class StdErr(Logs):
@@ -42,7 +42,7 @@ async def get_std_err(request: Request, run_uuid: str) -> Any:
         return JSONResponse(status_code=404, content={'message': 'Run not found'})
 
     json = await request.json()
-    page = json.get('page', -1)
+    page = json.get('page', LogPageType.LAST.value)
 
     key = StdErrIndex.get(run_uuid)
     std_out: StdErrModel

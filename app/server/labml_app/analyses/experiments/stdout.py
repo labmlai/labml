@@ -8,7 +8,7 @@ from starlette.responses import JSONResponse
 
 import labml_app.db.run
 from labml_app.analyses.analysis import Analysis
-from labml_app.analyses.logs import Logs
+from labml_app.analyses.logs import Logs, LogPageType
 
 
 class StdOut(Logs):
@@ -43,7 +43,7 @@ async def get_stdout(request: Request, run_uuid: str) -> Any:
         return JSONResponse(status_code=404, content={'message': 'Run not found'})
 
     json = await request.json()
-    page = json.get('page', -1)
+    page = json.get('page', LogPageType.LAST.value)
 
     key = StdOutIndex.get(run_uuid)
     std_out: StdOutModel
