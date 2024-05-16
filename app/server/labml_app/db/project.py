@@ -4,6 +4,7 @@ from labml_db import Model, Key, Index
 
 from . import run, folder
 from . import session
+from .folder import DefaultFolders
 from ..logger import logger
 
 
@@ -33,7 +34,7 @@ class Project(Model['Project']):
     def is_project_session(self, session_uuid: str) -> bool:
         return session_uuid in self.sessions
 
-    def get_runs(self, folder_name: str = "Default") -> List['run.Run']:
+    def get_runs(self, folder_name: str = DefaultFolders.DEFAULT) -> List['run.Run']:
         res = []
         likely_deleted = []
         run_uuids = []
@@ -139,7 +140,6 @@ class Project(Model['Project']):
             f = self.folders[folder_name].load()
 
         f.add_run(r.run_uuid)
-        f.save()
 
         r.parent_folder = f.name
         r.save()
@@ -152,7 +152,6 @@ class Project(Model['Project']):
             f = self.folders[folder_name].load()
 
         f.remove_run(r.run_uuid)
-        f.save()
 
         r.parent_folder = ''
         r.save()
