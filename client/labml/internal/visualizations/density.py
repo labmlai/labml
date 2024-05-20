@@ -235,7 +235,7 @@ def distribution(*args: any,
 
     Keyword Arguments:
         names(List[str]): List of names of series
-        levels: how many levels of the distribution to be plotted
+        levels: how many levels of the distribution to be plotted (Maximum 5)
         alpha: opacity of the distribution
         color_scheme: color scheme
         height: height of the visualization
@@ -248,6 +248,9 @@ def distribution(*args: any,
     Example:
         >>> distribution(np.random.rand(5), np.array([i for i in range(5)]), width=800, height=400, height_minimap=100)
     """
+
+    if levels > 5:
+        levels = 5
 
     series = None
     step = None
