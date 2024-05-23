@@ -34,6 +34,13 @@ class IpynbDestination(Destination):
         return False
 
     @staticmethod
+    def _escape_html(text: str) -> str:
+        text = text.replace('&', '&amp;')
+        text = text.replace('<', '&lt;')
+        text = text.replace('>', '&gt;')
+        return text
+
+    @staticmethod
     def html_code(text: str, color: List[StyleCode] or StyleCode or None):
         """
         ### Add ansi color codes
@@ -41,6 +48,8 @@ class IpynbDestination(Destination):
         if text == '\n':
             assert color is None
             return text
+
+        text = IpynbDestination._escape_html(text)
 
         if color is None:
             return text
