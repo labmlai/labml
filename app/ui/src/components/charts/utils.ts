@@ -255,6 +255,6 @@ export function getSmoother(smoothingType: string, opt: SeriesSmoothingOptions):
         case SmoothingType.LEFT_EXPONENTIAL:
             return new ExponentialMovingAverage(opt)
         default:
-            throw new TwoSidedExponentialAverage(opt)
+            throw new Error(`Unknown smoothing type: ${smoothingType}`)
     }
 }

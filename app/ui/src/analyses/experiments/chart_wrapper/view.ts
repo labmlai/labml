@@ -381,6 +381,7 @@ export class ViewWrapper {
         this.scaleButton.isToggled = this.dataStore.chartType > 0
         this.focusButton.isToggled = this.dataStore.focusSmoothed
         this.smoothSlider.value = this.dataStore.smoothValue
+        this.leftSmoothButton.isToggled = this.dataStore.smoothFunction === SmoothingType.LEFT_EXPONENTIAL
 
         this.optionRowContainer.innerHTML = ''
         this.optionRowContainer.classList.add('chart-options')
