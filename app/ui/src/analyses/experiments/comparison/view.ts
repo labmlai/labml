@@ -346,7 +346,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                         this.plotIdx = []
                         this.stepRange = [-1, -1]
                         this.focusSmoothed = true
-                        this.smoothValue = 50
+                        this.smoothValue = 0.5
                         this.chartType = 0
 
                         this.setBaseLoading(true)
