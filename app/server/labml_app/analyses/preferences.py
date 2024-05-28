@@ -1,7 +1,13 @@
+from enum import Enum
 from typing import Dict, List, Any, Union
 
 PreferencesData = Dict[str, Any]
 SeriesPreferences = List[int]
+
+
+class SmoothFunction(Enum):
+    Exponential = 'exponential'
+    LeftExponential = 'left_exponential'
 
 
 class Preferences:
@@ -15,6 +21,7 @@ class Preferences:
     step_range: List[int]
     focus_smoothed: bool
     smooth_value: float
+    smooth_function: str
 
     @classmethod
     def defaults(cls):
@@ -24,6 +31,7 @@ class Preferences:
                     step_range=[-1, -1],
                     focus_smoothed=True,
                     smooth_value=0.5,  # 50% smooth
+                    smooth_function=SmoothFunction.Exponential.value
                     )
 
     def update_preferences(self, data: PreferencesData) -> None:
@@ -42,6 +50,9 @@ class Preferences:
         if 'smooth_value' in data:
             self.smooth_value = data['smooth_value']
 
+        if 'smooth_function' in data:
+            self.smooth_function = data['smooth_function']
+
         self.save()
 
     def update_series_preferences(self, data: SeriesPreferences) -> None:
@@ -54,4 +65,5 @@ class Preferences:
             'step_range': self.step_range,
             'focus_smoothed': self.focus_smoothed,
             'smooth_value': self.smooth_value,
+            'smooth_function': self.smooth_function,
         }

@@ -56,6 +56,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
     stepRange: number[]
     smoothValue: number
     isUnsaved: boolean
+    smoothFunction: string
 
     constructor(uuid: string, metricUuid?: string) {
         super()
@@ -91,6 +92,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
             this.focusSmoothed = this.preferenceData.focus_smoothed
             this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
             this.smoothValue = this.preferenceData.smooth_value
+            this.smoothFunction = this.preferenceData.smooth_function
         })
 
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
@@ -276,6 +278,7 @@ class MetricsView extends ScreenView implements MetricDataStore {
             sub_series_preferences: undefined,
             series_names: this.series.map(s => s.name),
             smooth_value: this.smoothValue,
+            smooth_function: this.smoothFunction
         }
 
         if (this.metricUuid == null) {

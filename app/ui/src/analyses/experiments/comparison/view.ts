@@ -21,6 +21,7 @@ import {MetricDataStore, ViewWrapper} from "../chart_wrapper/view"
 import comparisonCache from "./cache"
 import {NetworkError} from "../../../network"
 import {RunsPickerView} from "../../../views/run_picker_view"
+import {SmoothingType} from "../../../components/charts/smoothing/smoothing_base"
 
 class ComparisonView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
@@ -37,6 +38,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     focusSmoothed: boolean
     stepRange: number[]
     smoothValue: number
+    smoothFunction: string
 
     isUnsaved: boolean
 
@@ -98,6 +100,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                 this.basePlotIdx = [...this.preferenceData.base_series_preferences]
             }
             this.smoothValue = this.preferenceData.smooth_value
+            this.smoothFunction = this.preferenceData.smooth_function
 
             if (!!this.baseUuid) {
                 await this.updateBaseRun(force)
@@ -276,6 +279,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             series_names: this.series.map(s => s.name),
             base_series_names: this.baseSeries ? this.baseSeries.map(s => s.name) : [],
             smooth_value: this.smoothValue,
+            smooth_function: this.smoothFunction
         }
 
         await this.preferenceCache.setPreference(preferenceData)
@@ -348,6 +352,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                         this.focusSmoothed = true
                         this.smoothValue = 0.5
                         this.chartType = 0
+                        this.smoothFunction = SmoothingType.EXPONENTIAL
 
                         this.setBaseLoading(true)
                         this.updateBaseRun(true).then(async () => {

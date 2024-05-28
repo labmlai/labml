@@ -3,10 +3,9 @@ import {Indicator} from "../../../models/run"
 import {
     AnalysisPreferenceModel, ComparisonPreferenceModel,
 } from "../../../models/preferences"
-import {getChartType} from "../../../components/charts/utils"
+import {getChartType, getSmoother} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import {TwoSidedExponentialAverage} from "../../../components/charts/smoothing/two_sided_exponential_average"
 
 interface CardWrapperOptions {
     width: number
@@ -37,6 +36,7 @@ export class CardWrapper {
     private stepRange: number[]
     private focusSmoothed: boolean
     private smoothValue: number
+    private smoothFunction: string
 
     private readonly title?: string
 
@@ -74,14 +74,15 @@ export class CardWrapper {
         this.stepRange = preferenceData.step_range
         this.focusSmoothed = preferenceData.focus_smoothed
         this.smoothValue = preferenceData.smooth_value
+        this.smoothFunction = preferenceData.smooth_function
 
-        let [smoothedSeries, smoothedBaseSeries] = (new TwoSidedExponentialAverage({
+        let [smoothedSeries, smoothedBaseSeries] = getSmoother(this.smoothFunction, {
             indicators: this.series.concat(this.baseSeries ?? []) ?? [],
             smoothValue: this.smoothValue,
             min: this.stepRange[0],
             max: this.stepRange[1],
             currentIndicatorLength: this.series.length
-        })).smoothAndTrim()
+        }).smoothAndTrim()
 
         this.series = smoothedSeries
         this.baseSeries = smoothedBaseSeries

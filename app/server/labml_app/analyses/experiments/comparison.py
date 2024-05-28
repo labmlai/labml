@@ -28,6 +28,7 @@ class ComparisonPreferences(preferences.Preferences):
                     step_range=[-1, -1],
                     is_base_distributed=False,
                     smooth_value=0.5,
+                    smooth_function=preferences.SmoothFunction.Exponential.value
                     )
 
     def update_preferences(self, data: preferences.PreferencesData) -> None:
@@ -52,6 +53,9 @@ class ComparisonPreferences(preferences.Preferences):
         if 'smooth_value' in data:
             self.smooth_value = data['smooth_value']
 
+        if 'smooth_function' in data:
+            self.smooth_function = data['smooth_function']
+
         r = run.get(self.base_experiment)
         if r is not None and r.world_size > 0:  # distributed run
             self.is_base_distributed = True
@@ -72,7 +76,8 @@ class ComparisonPreferences(preferences.Preferences):
             'step_range': self.step_range,
             'focus_smoothed': self.focus_smoothed,
             'is_base_distributed': self.is_base_distributed,
-            'smooth_value': self.smooth_value
+            'smooth_value': self.smooth_value,
+            'smooth_function': self.smooth_function,
         }
 
 
