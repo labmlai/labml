@@ -6,6 +6,7 @@ export interface AnalysisPreferenceBaseModel {
     step_range: number[]
     focus_smoothed: boolean
     smooth_value: number
+    smooth_function: string
 }
 
 export interface AnalysisPreferenceModel extends AnalysisPreferenceBaseModel {

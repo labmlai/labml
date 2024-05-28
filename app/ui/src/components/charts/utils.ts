@@ -2,6 +2,9 @@ import d3 from "../../d3"
 
 import {Indicator, IndicatorModel, PointValue} from "../../models/run"
 import {OUTLIER_MARGIN} from "./constants"
+import {SeriesSmoothing, SeriesSmoothingOptions, SmoothingType} from "./smoothing/smoothing_base"
+import {TwoSidedExponentialAverage} from "./smoothing/two_sided_exponential_average"
+import {ExponentialMovingAverage} from "./smoothing/exponential_moving_average"
 
 export function getExtentWithoutOutliers(series: PointValue[], func: (d: PointValue) => number): [number, number] {
     let values = series.map(func)
@@ -242,5 +245,16 @@ function getListFromBinary(binaryString: string): Float32Array {
     } catch (e) {
         console.error("Error parsing binary data", e)
         return  new Float32Array(0);
+    }
+}
+
+export function getSmoother(smoothingType: string, opt: SeriesSmoothingOptions): SeriesSmoothing {
+    switch (smoothingType) {
+        case SmoothingType.EXPONENTIAL:
+            return new TwoSidedExponentialAverage(opt)
+        case SmoothingType.LEFT_EXPONENTIAL:
+            return new ExponentialMovingAverage(opt)
+        default:
+            throw new Error(`Unknown smoothing type: ${smoothingType}`)
     }
 }

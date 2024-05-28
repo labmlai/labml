@@ -1,4 +1,4 @@
-import {Indicator} from "../../../models/run";
+import {Indicator} from "../../../models/run"
 
 export interface SeriesSmoothingOptions {
     indicators: Indicator[]
@@ -57,4 +57,9 @@ export abstract class SeriesSmoothing {
             ind.highTrimIndex = maxIndex
         })
     }
+}
+
+export enum SmoothingType {
+    EXPONENTIAL = 'exponential',
+    LEFT_EXPONENTIAL = 'left_exponential'
 }

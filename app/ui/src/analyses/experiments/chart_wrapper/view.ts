@@ -4,14 +4,14 @@ import {DeleteButton, SaveButton, ToggleButton} from "../../../components/button
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {
-    getChartType
+    getChartType, getSmoother
 } from "../../../components/charts/utils"
 import {NumericRangeField} from "../../../components/input/numeric_range_field"
 import {Loader} from "../../../components/loader"
 import {Slider} from "../../../components/input/slider"
 import {UserMessages} from "../../../components/user_messages"
 import {NetworkError} from "../../../network"
-import {TwoSidedExponentialAverage} from "../../../components/charts/smoothing/two_sided_exponential_average"
+import {SmoothingType} from "../../../components/charts/smoothing/smoothing_base";
 
 interface ViewWrapperOpt {
     dataStore: MetricDataStore
@@ -36,6 +36,7 @@ export interface MetricDataStore {
     focusSmoothed: boolean
     stepRange: number[]
     smoothValue: number
+    smoothFunction: string
 
     isUnsaved: boolean
 }
@@ -100,6 +101,19 @@ namespace ChangeHandlers {
         }
     }
 
+    export class SmoothFunctionHandler extends ChangeHandlerBase {
+        private readonly value: string
+
+        constructor(wrapper: ViewWrapper, value: string) {
+            super(wrapper)
+            this.value = value
+        }
+
+        protected handleChange() {
+            this.wrapper.dataStore.smoothFunction = this.value
+        }
+    }
+
     export class ToggleChangeHandler extends ChangeHandlerBase {
         private readonly idx: number
         private readonly isBase: boolean
@@ -153,6 +167,7 @@ export class ViewWrapper {
     private readonly focusButton: ToggleButton
     private readonly smoothSlider: Slider
     private readonly deleteButton: DeleteButton
+    private readonly leftSmoothButton: ToggleButton
     private sparkLines: SparkLines
 
     public dataStore: MetricDataStore
@@ -225,6 +240,22 @@ export class ViewWrapper {
         this.deleteButton = new DeleteButton({
             parent: this.constructor.name,
             onButtonClick: this.onDelete
+        })
+        this.leftSmoothButton = new ToggleButton({
+            onButtonClick: () => {
+                let value: string
+                if (this.dataStore.smoothFunction === SmoothingType.LEFT_EXPONENTIAL) {
+                    value = SmoothingType.EXPONENTIAL
+                } else {
+                    value = SmoothingType.LEFT_EXPONENTIAL
+                }
+                let changeHandler = new ChangeHandlers.SmoothFunctionHandler(this,
+                    value)
+                changeHandler.change()
+            },
+            text: 'Left',
+            isToggled: this.dataStore.smoothFunction === SmoothingType.LEFT_EXPONENTIAL,
+            parent: this.constructor.name
         })
     }
 
@@ -316,13 +347,13 @@ export class ViewWrapper {
     }
 
     private smoothSeries() {
-        let [series, baseSeries] = (new TwoSidedExponentialAverage({
+        let [series, baseSeries] = getSmoother(this.dataStore.smoothFunction, {
             indicators: this.dataStore.series.concat(this.dataStore.baseSeries ?? []) ?? [],
             smoothValue: this.dataStore.smoothValue,
             min: this.dataStore.stepRange[0],
             max: this.dataStore.stepRange[1],
             currentIndicatorLength: this.dataStore.series.length
-        })).smoothAndTrim()
+        }).smoothAndTrim()
 
         this.dataStore.series = series
         this.dataStore.baseSeries = baseSeries
@@ -350,6 +381,7 @@ export class ViewWrapper {
         this.scaleButton.isToggled = this.dataStore.chartType > 0
         this.focusButton.isToggled = this.dataStore.focusSmoothed
         this.smoothSlider.value = this.dataStore.smoothValue
+        this.leftSmoothButton.isToggled = this.dataStore.smoothFunction === SmoothingType.LEFT_EXPONENTIAL
 
         this.optionRowContainer.innerHTML = ''
         this.optionRowContainer.classList.add('chart-options')
@@ -366,6 +398,7 @@ export class ViewWrapper {
             $('div', '.button-row', $ => {
                 $('span.key', 'Smoothing:')
                 this.smoothSlider.render($)
+                this.leftSmoothButton.render($)
             })
         })
     }
