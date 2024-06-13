@@ -46,6 +46,8 @@ class StdOutView extends ScreenView {
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.logView = new LogView(new Logs(<LogModel>{pages: {}, page_length: 0}), async (currentPage): Promise<Logs> => {
+            this.refresh.stop()
+
             return await stdOutCache.getLogCache(this.uuid).getPage(currentPage, false)
         })
     }
