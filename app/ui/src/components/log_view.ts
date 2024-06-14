@@ -1,5 +1,5 @@
 import {Weya as $, WeyaElementFunction} from "../../../lib/weya/weya"
-import {Logs, LogUpdateType} from "../models/run";
+import {LogModel, Logs, LogUpdateType} from "../models/run";
 import Filter from "../utils/ansi_to_html"
 import {CustomButton} from "./buttons"
 
@@ -44,6 +44,11 @@ export class LogView {
                 .render($)
         })
         this.renderLogs()
+    }
+
+    public invalidateLogs() {
+        delete this.logs
+        this.logs = new Logs(<LogModel>{pages: {}, page_length: 0})
     }
 
     public addLogs(logs: Logs) {
@@ -102,7 +107,7 @@ export class LogView {
             this.loadMoreButton.hide(false)
         }
 
-        for (--index; index >= 0; index--) {
+        for (index; index >= 0; index--) {
             this.logElems[index].classList.add("hidden")
         }
     }

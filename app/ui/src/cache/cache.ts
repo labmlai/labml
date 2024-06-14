@@ -112,7 +112,7 @@ export abstract class CacheObject<T> {
     }
 
     invalidate_cache(): void {
-        this.data = null
+        delete this.data
     }
 }
 
@@ -602,15 +602,12 @@ export class LogCache extends CacheObject<Logs> {
     }
 
     async getLast(isRefresh = false): Promise<Logs> {
-        await this.get(isRefresh)
-
-        if (!isRefresh && this.data.hasPage(this.data.pageLength - 1)) {
+        if (!isRefresh && this.data != null && this.data.hasPage(this.data.pageLength - 1)) {
             return this.data.getPageAsLog(this.data.pageLength - 1)
         }
 
-        let data = new Logs(await NETWORK.getLogs(this.uuid, this.url, LogUpdateType.LAST))
-        this.data.mergeLogs(data)
-        return data
+        await this.get(isRefresh)
+        return this.data
     }
 
     async getPage(pageNo: number, isRefresh = false): Promise<Logs> {

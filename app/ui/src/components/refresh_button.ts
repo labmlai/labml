@@ -154,3 +154,56 @@ export class AwesomeRefreshButton {
         }
     }
 }
+
+
+export class RefreshButton {
+    private readonly _refresh: () => Promise<void>
+    private refreshButton: HTMLElement
+    private refreshIcon: HTMLSpanElement
+    private isDisabled: boolean
+
+    constructor(refresh: () => Promise<void>) {
+        this._refresh = refresh
+        this.isDisabled = false
+    }
+
+    set visibility(value: boolean) {
+        if (value) {
+            this.refreshButton.classList.add('hidden')
+        } else {
+            this.refreshButton.classList.remove('hidden')
+        }
+    }
+
+    set disabled(value: boolean) {
+        this.isDisabled = value
+
+        if (this.refreshButton) {
+            if (this.isDisabled) {
+                this.refreshButton.classList.add('disabled')
+            } else {
+                this.refreshButton.classList.remove('disabled')
+            }
+        }
+    }
+
+    render($: WeyaElementFunction) {
+        this.refreshButton = $('nav', `.nav-link.tab.float-right.btn-refresh${this.isDisabled ? '.disabled' : ''}`,
+            {on: {click: this.onRefreshClick.bind(this)}},
+            $ => {
+                this.refreshIcon = $('span', '.fas.fa-sync', '')
+            })
+    }
+
+    async onRefreshClick() {
+        await this.refresh()
+    }
+
+    private refresh = async () => {
+        this.refreshIcon.classList.add('spin')
+        this.refreshButton.classList.add('disabled')
+        await this._refresh()
+        this.refreshIcon.classList.remove('spin')
+        this.refreshButton.classList.remove('disabled')
+    }
+}

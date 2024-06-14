@@ -8,13 +8,12 @@ import {BackButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {DataLoader} from "../../../components/loader"
 import {ViewHandler} from "../../types"
-import {AwesomeRefreshButton} from '../../../components/refresh_button'
+import {RefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
 import stdLoggerCache from "./cache"
-import {LogView} from "../../../components/log_view";
-import stdOutCache from "../stdout/cache";
+import {LogView} from "../../../components/log_view"
 
 class LoggerView extends ScreenView {
     private elem: HTMLDivElement
@@ -29,7 +28,7 @@ class LoggerView extends ScreenView {
     private runHeaderCard: RunHeaderCard
     private filter: Filter
     private loader: DataLoader
-    private refresh: AwesomeRefreshButton
+    private refresh: RefreshButton
     private logView: LogView
 
     constructor(uuid: string) {
@@ -45,10 +44,8 @@ class LoggerView extends ScreenView {
             this.run = await this.runCache.get(force)
             this.stdLogger = await stdLoggerCache.getLogCache(this.uuid).getLast(force)
         })
-        this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
+        this.refresh = new RefreshButton(this.onRefresh.bind(this))
         this.logView = new LogView(new Logs(<LogModel>{pages: {}, page_length: 0}), async (currentPage): Promise<Logs> => {
-            this.refresh.stop()
-
             return await stdLoggerCache.getLogCache(this.uuid).getPage(currentPage, false)
         })
     }
@@ -99,11 +96,6 @@ class LoggerView extends ScreenView {
             this.renderOutput()
         } catch (e) {
             handleNetworkErrorInplace(e)
-        } finally {
-            if (this.status && this.status.isRunning) {
-                this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
-                this.refresh.start()
-            }
         }
     }
 
@@ -116,27 +108,26 @@ class LoggerView extends ScreenView {
     }
 
     destroy() {
-        this.refresh.stop()
+
     }
 
     async onRefresh() {
         try {
+            stdLoggerCache.getLogCache(this.uuid).invalidate_cache()
+            this.logView.invalidateLogs()
+
             await this.loader.load(true)
 
             this.renderOutput()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
-            if (this.status && !this.status.isRunning) {
-                this.refresh.stop()
-            }
-
             await this.runHeaderCard.refresh().then()
         }
     }
 
     onVisibilityChange() {
-        this.refresh.changeVisibility(!document.hidden)
+
     }
 
     renderOutput() {
