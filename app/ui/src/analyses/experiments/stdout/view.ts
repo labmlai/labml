@@ -8,7 +8,7 @@ import {BackButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {DataLoader} from "../../../components/loader"
 import {ViewHandler} from "../../types"
-import {AwesomeRefreshButton} from '../../../components/refresh_button'
+import {RefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
@@ -28,7 +28,7 @@ class StdOutView extends ScreenView {
     runHeaderCard: RunHeaderCard
     filter: Filter
     private loader: DataLoader
-    private refresh: AwesomeRefreshButton
+    private refresh: RefreshButton
     private stdOut: Logs
 
     constructor(uuid: string) {
@@ -44,10 +44,8 @@ class StdOutView extends ScreenView {
             this.stdOut = await stdOutCache.getLogCache(this.uuid).getLast(force)
             this.run = await this.runCache.get(force)
         })
-        this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
+        this.refresh = new RefreshButton(this.onRefresh.bind(this))
         this.logView = new LogView(new Logs(<LogModel>{pages: {}, page_length: 0}), async (currentPage): Promise<Logs> => {
-            this.refresh.stop()
-
             return await stdOutCache.getLogCache(this.uuid).getPage(currentPage, false)
         })
     }
@@ -98,11 +96,6 @@ class StdOutView extends ScreenView {
             this.renderOutput()
         } catch (e) {
             handleNetworkErrorInplace(e)
-        } finally {
-            if (this.status && this.status.isRunning) {
-                this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
-                this.refresh.start()
-            }
         }
     }
 
@@ -115,26 +108,26 @@ class StdOutView extends ScreenView {
     }
 
     destroy() {
-        this.refresh.stop()
+
     }
 
     async onRefresh() {
         try {
+            stdOutCache.getLogCache(this.uuid).invalidate_cache()
+            this.logView.invalidateLogs()
+
             await this.loader.load(true)
 
             this.renderOutput()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
-            if (this.status && !this.status.isRunning) {
-                this.refresh.stop()
-            }
             await this.runHeaderCard.refresh().then()
         }
     }
 
     onVisibilityChange() {
-        this.refresh.changeVisibility(!document.hidden)
+
     }
 
     renderOutput() {
