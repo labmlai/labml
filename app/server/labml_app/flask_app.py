@@ -17,6 +17,8 @@ from labml_app import handlers
 from labml_app.logger import logger
 from labml_app.settings import WEB_URL, IS_LOCAL_SETUP, IS_DEBUG
 
+import traceback
+
 
 def get_static_path():
     package_path = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -124,7 +126,7 @@ async def error_handling_middleware(request: Request, call_next):
             raise e
         return JSONResponse(
             status_code=500,
-            content={"error": str(e), "trace": str(e.__traceback__)},
+            content={"error": str(e), "trace": traceback.format_exc()},
         )
 
 
