@@ -42,7 +42,8 @@ export class UserMessages {
         } else if (error instanceof Error) {
             description = error.message
         }
-        this.error(message + (description ? `: ${description}` : ''))
+        this.error(message + (description ? `: ${description}` : '') + (error instanceof NetworkError &&
+        error?.stackTrace ? `\n${error.stackTrace}` : ''))
     }
 
     success(message: string) {

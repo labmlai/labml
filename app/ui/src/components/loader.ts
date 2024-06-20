@@ -74,7 +74,8 @@ export class DataLoader {
         } catch (e) {
             this.loaded = false
             if (e instanceof NetworkError) {
-                this.errorMessage = new ErrorMessage("Server Error", e.errorDescription)
+                this.errorMessage = new ErrorMessage("Server Error", e.errorDescription +
+                    (e.stackTrace ? `\n${e.stackTrace}` : ''))
                 this.errorMessage.render(this.elem)
             }
             console.log(e)
