@@ -68,10 +68,10 @@ export class SparkTimeLines {
 
     render($: WeyaElementFunction) {
         $('div.sparkline-list.list-group', $ => {
+            $('svg', {style: {height: `${1}px`}}, $ => {
+                new DefaultLineGradient().render($)
+            })
             this.series.map((s, i) => {
-                $('svg', {style: {height: `${1}px`}}, $ => {
-                    new DefaultLineGradient().render($)
-                })
                 let onClick
                 if (this.onSelect != null) {
                     onClick = this.onSelect.bind(null, i)

@@ -70,12 +70,12 @@ export class SparkLines {
     render($: WeyaElementFunction) {
         this.sparkLines = []
         $('div.sparkline-list.list-group', $ => {
+            $('svg', {style: {height: `${1}px`}}, $ => {
+                new DefaultLineGradient().render($)
+            })
             this.currentSeries.map((s, i) => {
                 if (this.onlySelected && this.currentPlotIdx[i]!=1)
                     return
-                $('svg', {style: {height: `${1}px`}}, $ => {
-                    new DefaultLineGradient().render($)
-                })
                 let onClick
                 if (this.onCurrentSelect != null) {
                     onClick = this.onCurrentSelect.bind(null, i)
@@ -96,9 +96,6 @@ export class SparkLines {
             this.baseSeries.map((s, i) => {
                 if (this.onlySelected && this.basePlotIdx[i]!=1)
                     return
-                $('svg', {style: {height: `${1}px`}}, $ => {
-                    new DefaultLineGradient().render($)
-                })
                 let onClick
                 if (this.onBaseSelect != null) {
                     onClick = this.onBaseSelect.bind(null, i)
