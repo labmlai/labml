@@ -256,6 +256,7 @@ export class CustomMetricList {
 export interface LogModel {
     pages: Record<string, string>
     page_length: number
+    wrap_logs: boolean
 }
 
 export interface LogUpdateFeedback {
@@ -271,10 +272,12 @@ export enum LogUpdateType {
 export class Logs {
     pages: Record<string, string>
     pageLength: number
+    logWrap: boolean
 
     constructor(logs: LogModel) {
         this.pages = logs.pages
         this.pageLength = logs.page_length
+        this.logWrap = logs.wrap_logs
     }
 
     public getPage(index: number): string | null {
@@ -284,7 +287,7 @@ export class Logs {
     public getPageAsLog(index: number): Logs {
         let pages = {}
         pages[index] = this.getPage(index)
-        return new Logs({pages: pages, page_length: this.pageLength})
+        return new Logs({pages: pages, page_length: this.pageLength, wrap_logs: this.logWrap})
     }
 
     public hasPage(index: number): Boolean {
@@ -294,5 +297,6 @@ export class Logs {
     public mergeLogs(logs: Logs) {
         this.pages = {...this.pages, ...logs.pages}
         this.pageLength = logs.pageLength
+        this.logWrap = logs.logWrap
     }
 }

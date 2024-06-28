@@ -637,6 +637,11 @@ export class LogCache extends CacheObject<Logs> {
 
         return this.data
     }
+
+    async updateLogWrap(wrapLogs: boolean): Promise<boolean> {
+        let res = await NETWORK.updateLogOptions(this.uuid, this.url, wrapLogs)
+        return res.is_successful == true
+    }
 }
 
 class Cache {

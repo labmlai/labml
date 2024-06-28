@@ -1,7 +1,8 @@
 import {Weya as $, WeyaElementFunction} from "../../../lib/weya/weya"
 import {LogModel, Logs, LogUpdateType} from "../models/run";
 import Filter from "../utils/ansi_to_html"
-import {CustomButton} from "./buttons"
+import {CustomButton, ToggleButton} from "./buttons"
+import {UserMessages} from "./user_messages"
 
 export class LogView {
     private logs: Logs
@@ -11,17 +12,23 @@ export class LogView {
     private logElemLength: number
 
     private readonly loadPage:  (currentPage: number) => Promise<Logs>
+    private readonly updateWrap: (wrap: boolean) => Promise<boolean>
     private readonly loadMoreButton: CustomButton
     private readonly loadAllButton: CustomButton
+    private readonly wrapButton: ToggleButton
     private toLoadPage: number = -1
+    private userMessages: UserMessages
 
-    constructor(logs: Logs, loadPage: (currentPage: number) => Promise<Logs>) {
+    constructor(logs: Logs,
+                loadPage: (currentPage: number) => Promise<Logs>,
+                updateWrap: (wrap: boolean) => Promise<boolean>) {
         this.logs = logs
         this.logElems = {}
         this.logElemLength = 0
         this.filter = new Filter({})
 
         this.loadPage = loadPage
+        this.updateWrap = updateWrap
 
         this.loadMoreButton = new CustomButton({
             parent: this.constructor.name,
@@ -33,11 +40,22 @@ export class LogView {
             text: "Load All",
             onButtonClick: this.onLoadAllClick
         })
+        this.wrapButton = new ToggleButton({
+            parent: this.constructor.name,
+            text: "Wrap Text",
+            isToggled: logs.logWrap,
+            onButtonClick: this.onWrapButtonClik
+        })
+        this.userMessages = new UserMessages()
     }
 
     render($: WeyaElementFunction) {
         this.logElemLength = 0
         this.elem = $('div', '.std', $ => {
+            this.userMessages
+                .render($)
+            this.wrapButton
+                .render($)
             this.loadAllButton
                 .render($)
             this.loadMoreButton
@@ -59,6 +77,23 @@ export class LogView {
     private setLoading(isLoading: boolean) {
         this.loadMoreButton.disabled = isLoading
         this.loadAllButton.disabled = isLoading
+    }
+
+    private onWrapButtonClik = async () => {
+        try {
+            await this.updateWrap(!this.logs.logWrap)
+            this.logs.logWrap = !this.logs.logWrap
+
+            if (this.logs.logWrap) {
+                this.elem.classList.add('wrap')
+            } else {
+                this.elem.classList.remove('wrap')
+            }
+        } catch (e) {
+            console.error(e)
+            this.userMessages.networkError(e, "Failed to update wrap")
+            this.wrapButton.toggle = !this.wrapButton.toggle
+        }
     }
 
     private onLoadMoreClick = () => {
@@ -109,6 +144,13 @@ export class LogView {
 
         for (index; index >= 0; index--) {
             this.logElems[index].classList.add("hidden")
+        }
+
+        this.wrapButton.toggle = this.logs.logWrap
+        if (this.logs.logWrap) {
+            this.elem.classList.add('wrap')
+        } else {
+            this.elem.classList.remove('wrap')
         }
     }
 }

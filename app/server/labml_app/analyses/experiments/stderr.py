@@ -57,6 +57,26 @@ async def get_std_err(request: Request, run_uuid: str) -> Any:
     return std_out.get_data(page_no=page)
 
 
+@Analysis.route('POST', 'logs/stderr/{run_uuid}/opt')
+async def update_stderr_opt(request: Request, run_uuid: str) -> Any:
+    run_uuid = labml_app.db.run.get_main_rank(run_uuid)
+    if run_uuid is None:
+        return JSONResponse(status_code=404, content={'message': 'Run not found'})
+
+    key = StdErrIndex.get(run_uuid)
+    std_err: StdErrModel
+
+    if key is None:
+        return JSONResponse(status_code=404, content={'message': 'StdErr not found'})
+
+    std_err = key.load()
+    data = await request.json()
+    std_err.update_opt(data)
+    std_err.save()
+
+    return {'is_successful': True}
+
+
 def update_stderr(run_uuid: str, content: str):
     key = StdErrIndex.get(run_uuid)
     std_err: StdErrModel

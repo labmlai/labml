@@ -57,6 +57,26 @@ async def get_std_logger(request: Request, run_uuid: str) -> Any:
     return std_out.get_data(page_no=page)
 
 
+@Analysis.route('POST', 'logs/std_logger/{run_uuid}/opt')
+async def update_stdlogger_opt(request: Request, run_uuid: str) -> Any:
+    run_uuid = labml_app.db.run.get_main_rank(run_uuid)
+    if run_uuid is None:
+        return JSONResponse(status_code=404, content={'message': 'Run not found'})
+
+    key = StdLoggerIndex.get(run_uuid)
+    std_logger: StdLoggerModel
+
+    if key is None:
+        return JSONResponse(status_code=404, content={'message': 'StdLogger not found'})
+
+    std_logger = key.load()
+    data = await request.json()
+    std_logger.update_opt(data)
+    std_logger.save()
+
+    return {'is_successful': True}
+
+
 def update_std_logger(run_uuid: str, content: str):
     key = StdLoggerIndex.get(run_uuid)
     std_logger: StdLoggerModel

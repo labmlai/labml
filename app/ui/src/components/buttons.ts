@@ -410,6 +410,12 @@ export class ToggleButton extends Button {
         this.defaultClass = this.isToggled ? 'selected' : 'empty'
     }
 
+    set toggle(isToggle: boolean) {
+        this.isToggled = isToggle
+        this.defaultClass = this.isToggled ? 'selected' : 'empty'
+        this.renderToggleButton()
+    }
+
     onClick = () => {
         this.onButtonClick()
 
