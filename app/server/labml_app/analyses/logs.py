@@ -66,11 +66,13 @@ class LogPageType(Enum):
 
 class Logs:
     log_pages: List[Key['LogPageModel']]
+    wrap_logs: bool
 
     @classmethod
     def defaults(cls):
         return dict(
-            log_pages=[]
+            log_pages=[],
+            wrap_logs=True
         )
 
     def get_data(self, page_no: int = LogPageType.LAST.value):
@@ -90,8 +92,12 @@ class Logs:
 
         return {
             'pages': page_dict,
-            'page_length': len(self.log_pages)
+            'page_length': len(self.log_pages),
+            'wrap_logs': self.wrap_logs,
         }
+
+    def update_opt(self, data: Dict[str, Any]):
+        self.wrap_logs = data.get('wrap_logs', True)
 
     def update_logs(self, content: str):
         if len(self.log_pages) == 0:

@@ -47,6 +47,8 @@ class StdErrorView extends ScreenView {
         this.refresh = new RefreshButton(this.onRefresh.bind(this))
         this.logView = new LogView(new Logs(<LogModel>{pages: {}, page_length: 0}), async (currentPage): Promise<Logs> => {
             return await stdErrCache.getLogCache(this.uuid).getPage(currentPage, false)
+        }, async (wrap: boolean): Promise<boolean> => {
+            return await stdErrCache.getLogCache(this.uuid).updateLogWrap(wrap)
         })
     }
 

@@ -58,6 +58,26 @@ async def get_stdout(request: Request, run_uuid: str) -> Any:
     return std_out.get_data(page_no=page)
 
 
+@Analysis.route('POST', 'logs/stdout/{run_uuid}/opt')
+async def update_stdout_opt(request: Request, run_uuid: str) -> Any:
+    run_uuid = labml_app.db.run.get_main_rank(run_uuid)
+    if run_uuid is None:
+        return JSONResponse(status_code=404, content={'message': 'Run not found'})
+
+    key = StdOutIndex.get(run_uuid)
+    std_out: StdOutModel
+
+    if key is None:
+        return JSONResponse(status_code=404, content={'message': 'Stdout not found'})
+
+    std_out = key.load()
+    data = await request.json()
+    std_out.update_opt(data)
+    std_out.save()
+
+    return {'is_successful': True}
+
+
 def update_stdout(run_uuid: str, content: str):
     key = StdOutIndex.get(run_uuid)
     std_out: StdOutModel

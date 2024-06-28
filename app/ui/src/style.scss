@@ -1584,6 +1584,15 @@ input[type=number] {
   .nav-link {
     width: fit-content;
   }
+
+  &.wrap {
+    max-width: 100%;
+    pre {
+      text-wrap: wrap;
+      max-width: 100%;
+      word-break: break-all;
+    }
+  }
 }
 
 pre {
