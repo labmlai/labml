@@ -5,7 +5,7 @@ with open("../readme.md", "r") as f:
 
 setuptools.setup(
     name='labml_app',
-    version='0.5.10',
+    version='0.5.11',
     author="Varuna Jayasiri, Nipun, Aditya",
     author_email="vpjayasiri@gmail.com",
     description="",
@@ -15,15 +15,14 @@ setuptools.setup(
     project_urls={
         'Documentation': 'https://docs.labml.ai'
     },
-    install_requires=['labml>=0.4.158',
-                      'gunicorn',
+    install_requires=['labml>=0.5.2',
+                      'gunicorn>=22.0.0',
                       'numpy',
-                      'labml-db',
-                      'fastapi',
-                      'uvicorn',
-                      'aiofiles',
-                      'labml_db',
-                      'pymongo',
+                      'labml-db>=0.0.15',
+                      'fastapi>=labml-db',
+                      'uvicorn>=0.30.1',
+                      'aiofiles>=24.1.0',
+                      'pymongo>=4.8.0',
                       ],
     packages=['labml_app'],
     include_package_data=True,
