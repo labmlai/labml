@@ -21,7 +21,6 @@ setuptools.setup(
                       'labml-db>=0.0.15',
                       'fastapi>=0.111.0',
                       'uvicorn>=0.30.1',
-                      'aiofiles>=24.1.0',
                       'pymongo>=4.8.0',
                       ],
     packages=['labml_app'],
