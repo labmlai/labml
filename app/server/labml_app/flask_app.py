@@ -122,11 +122,11 @@ async def error_handling_middleware(request: Request, call_next):
         response = await call_next(request)
         return response
     except Exception as e:
-        if IS_DEBUG:
-            raise e
+        stacktrace = traceback.format_exc()
+        logger.error(stacktrace)
         return JSONResponse(
             status_code=500,
-            content={"error": str(e), "trace": traceback.format_exc()},
+            content={"error": str(e), "trace": stacktrace},
         )
 
 
