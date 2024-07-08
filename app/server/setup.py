@@ -5,7 +5,7 @@ with open("../readme.md", "r") as f:
 
 setuptools.setup(
     name='labml_app',
-    version='0.5.12',
+    version='0.5.14',
     author="labml.ai Team",
     author_email="contact@labml.ai",
     description="Web app for https://github.com/labmlai/labml",
