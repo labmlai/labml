@@ -68,9 +68,9 @@ clean: clean-pycache ## Cleanup builds
 	rm -rf server/dist
 	rm -rf static
 	rm -rf server/*.egg-info
-	rm labml_app.log
+	rm -f labml_app.log
 
-package: build-ui-package clean-pycache ## Build PIPy Package
+package: clean build-ui-package ## Build PIPy Package
 	rm -rf server/labml_app/static
 	cp -r static/ server/labml_app/static
 	rm -f server/labml_app/analyses_settings.py

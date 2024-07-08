@@ -19,7 +19,7 @@ setuptools.setup(
                       'gunicorn>=22.0.0',
                       'numpy',
                       'labml-db>=0.0.15',
-                      'fastapi>=labml-db',
+                      'fastapi>=0.111.0',
                       'uvicorn>=0.30.1',
                       'aiofiles>=24.1.0',
                       'pymongo>=4.8.0',
