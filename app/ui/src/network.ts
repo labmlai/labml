@@ -257,6 +257,14 @@ export class NetworkError {
 
         this.errorDescription = description
     }
+
+    toString() {
+        return `Status Code: ${this.statusCode}\n
+        URL: ${this.url}\n
+        Description: ${this.errorDescription}\n
+        Message: ${this.message}\n
+        StackTrace: ${this.stackTrace}`
+    }
 }
 
 const NETWORK = new Network(API_BASE_URL)

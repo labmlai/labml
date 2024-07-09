@@ -127,3 +127,14 @@ export function valueOrDefault(x: string | null | undefined, defaultValue: strin
     }
     return x
 }
+
+export function errrToString(e: any) {
+    return "error object:\n" +
+        e + "\n\n" +
+        "error object toString():\n\t" +
+        e.toString() + "\n\n" +
+        "error object attributes: \n\t" +
+        'name: ' + e.name + ' message: ' + e.message + ' at: ' + e.at + ' text: ' + e.text + "\n\n" +
+        "error object stack: \n" +
+        e.stack;
+}

@@ -1,5 +1,6 @@
 import {WeyaElementFunction, Weya as $,} from '../../../lib/weya/weya'
-import {NetworkError} from "../network";
+import {NetworkError} from "../network"
+import {errrToString} from "../utils/value"
 
 export class UserMessages {
     message: string
@@ -36,16 +37,13 @@ export class UserMessages {
     }
 
     networkError(error: NetworkError | Error, message: String = 'An unexpected network error occurred. Please try again later') {
-        let description = ''
+        let description = message + '\n'
         if (error instanceof NetworkError) {
-            description = `(${error.statusCode})`
-                + ((error.errorDescription != null) ? " " + error.errorDescription : "")
-                + ((error.message != null) ? " " + error.message : "")
-        } else if (error instanceof Error) {
-            description = error.message
+            description += error.toString()
+        } else {
+            description += errrToString(error)
         }
-        this.error(message + (description ? `: ${description}` : '') + (error instanceof NetworkError &&
-        error?.stackTrace ? `\n${error.stackTrace}` : ''))
+        this.error(description)
     }
 
     success(message: string) {
