@@ -216,8 +216,8 @@ class Network {
                 }
             }
 
-            xhr.onerror = () => {
-                reject('Network Failure')
+            xhr.onerror = (event) => {
+                reject(new Error(`XHR request failed: ${event}\n Type: ${event.type}: ${event.loaded} bytes transferred`))
             }
 
             xhr.send(JSON.stringify(data))
