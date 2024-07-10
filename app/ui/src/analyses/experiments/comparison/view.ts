@@ -312,10 +312,18 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     private onDelete = async () => {
         this.deleteButton.disabled = true
         this.deleteButton.loading = true
+
         try {
             this.preferenceData = await this.preferenceCache.deleteBaseExperiment()
+        } catch (e) {
+            this.content.renderError(e, "Failed to delete comparison")
+            this.deleteButton.disabled = false
+            return
+        } finally {
+            this.deleteButton.loading = false
+        }
 
-            this.baseSeries = undefined
+        this.baseSeries = undefined
             this.basePlotIdx = []
             this.baseUuid = ''
             this.baseRun = undefined
@@ -326,12 +334,6 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             this.renderHeaders()
             this.content.render(this.missingBaseExperiment)
             this.renderButtons()
-        } catch (e) {
-            this.content.renderError(e, "Failed to delete comparison")
-            this.deleteButton.disabled = false
-        } finally {
-            this.deleteButton.loading = false
-        }
     }
 
     private onEditClick = () => {
@@ -355,30 +357,31 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                         this.smoothFunction = SmoothingType.EXPONENTIAL
 
                         this.setBaseLoading(true)
-                        this.updateBaseRun(true).then(async () => {
-                            this.isUnsaved = false
-                            this.refresh.resume()
 
-                            await this.savePreferences()
-                            this.plotIdx = fillPlotPreferences(this.series, [])
-                            this.basePlotIdx = fillPlotPreferences(this.baseSeries, [])
+                        await this.updateBaseRun(true)
 
-                            this.renderHeaders()
-                            this.content.render(this.missingBaseExperiment)
-                            this.renderButtons()
+                        this.isUnsaved = false
+                        this.refresh.resume()
 
-                            this.setBaseLoading(false)
-                        })
+                        await this.savePreferences()
+                        this.plotIdx = fillPlotPreferences(this.series, [])
+                        this.basePlotIdx = fillPlotPreferences(this.baseSeries, [])
                     }
                 } catch (e) {
                     this.content.renderError(e, "Failed to update comparison")
                     this.setBaseLoading(false)
+                    return
                 } finally {
                     this.runPickerElem.classList.remove("fullscreen-cover")
                     document.body.classList.remove("stop-scroll")
                     clearChildElements(this.runPickerElem)
                 }
 
+                this.renderHeaders()
+                this.content.render(this.missingBaseExperiment)
+                this.renderButtons()
+
+                this.setBaseLoading(false)
             }, onCancel: () => {
                 this.runPickerElem.classList.remove("fullscreen-cover")
                 document.body.classList.remove("stop-scroll")

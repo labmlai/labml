@@ -149,11 +149,12 @@ class SessionView extends ScreenView {
                 }
 
                 this.session.is_project_session = true
-                this.renderButtons()
             } catch (e) {
                 this.userMessages.networkError(e, "Failed to claim session")
                 return
             }
+
+            this.renderButtons()
         }
     }
 

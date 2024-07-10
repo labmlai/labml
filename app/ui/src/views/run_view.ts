@@ -227,11 +227,11 @@ class RunView extends ScreenView {
                     this.userMessages.success('Successfully added to your runs list')
                 }
                 this.run.is_project_run = true
-                this.renderButtons()
             } catch (e) {
                 this.userMessages.networkError(e, "Failed to claim the run")
                 return
             }
+            this.renderButtons()
         }
     }
 

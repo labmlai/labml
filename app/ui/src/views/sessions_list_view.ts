@@ -84,7 +84,7 @@ class SessionsListView extends ScreenView {
         try {
             await this.loader.load()
 
-            this.renderList().then()
+            this.renderList()
         } catch (e) {
             handleNetworkErrorInplace(e)
         }
@@ -150,18 +150,21 @@ class SessionsListView extends ScreenView {
             this.deleteButton.disabled = this.sessionsDeleteSet.size === 0
 
             await this.loader.load()
-            await this.renderList()
-            this.refresh.disabled = false
         } catch (e) {
             this.userMessages.networkError(e, "Failed to delete sessions")
+            return
+        } finally {
+            this.refresh.disabled = false
         }
+
+        this.renderList()
     }
 
     onCancel = () => {
         this.isEditMode = false
         this.refresh.disabled = false
         this.sessionsDeleteSet.clear()
-        this.renderList().then()
+        this.renderList()
     }
 
     onItemClicked = (elem: SessionsListItemView) => {
@@ -184,10 +187,10 @@ class SessionsListView extends ScreenView {
     onSearch = async (query: string) => {
         this.searchQuery = query
         await this.loader.load()
-        this.renderList().then()
+        this.renderList()
     }
 
-    private async renderList() {
+    private renderList() {
         if (this.currentSessionsList.length > 0) {
             let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
             this.currentSessionsList = this.currentSessionsList.filter(session => this.sessionsFilter(session, re))

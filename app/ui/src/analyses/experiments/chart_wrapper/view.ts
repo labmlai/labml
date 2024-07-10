@@ -305,15 +305,15 @@ export class ViewWrapper {
         this.saveButton.disabled = true
         try {
             await this.onRequestMissingMetrics()
-
-            this.renderCharts()
         } catch (e) {
             this.userMessage.networkError(e, "Failed to load metrics")
+            return
         } finally {
             this.setLoading(false)
             this.saveButton.disabled = false
         }
 
+        this.renderCharts()
     }
 
     private onSave = async () => {

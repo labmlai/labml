@@ -141,15 +141,17 @@ class RunConfigsView extends ScreenView {
     async onRefresh() {
         try {
             await this.loader.load(true)
-            this.renderConfigsView()
         } catch (e) {
             this.userMessage.networkError(e, "Refresh failed")
+            return
         } finally {
             if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
             await this.runHeaderCard.refresh().then()
         }
+
+        this.renderConfigsView()
     }
 
     onVisibilityChange() {

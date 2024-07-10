@@ -298,14 +298,14 @@ class RunHeaderView extends ScreenView {
         try {
             await this.runCache.updateRunData(data)
             await CACHE.getRunsList(this.run.folder).localUpdateRun(this.run)
-            await this._render()
-            this.editStatus = EditStatus.NOCHANGE
         } catch (e) {
             this.editStatus = EditStatus.CHANGE
             this.userMessages.networkError(e, "Failed to save run")
+            return
         }
 
-
+        await this._render()
+        this.editStatus = EditStatus.NOCHANGE
     }
 }
 
