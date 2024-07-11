@@ -1,6 +1,6 @@
 import {WeyaElementFunction, Weya as $, WeyaElement,} from '../../../lib/weya/weya'
 import {NetworkError} from "../network"
-import {errrToString} from "../utils/value"
+import {errorToString} from "../utils/value"
 
 export class UserMessages {
     message: string
@@ -48,7 +48,7 @@ export class UserMessages {
         if (error instanceof NetworkError) {
             description += error.toString()
         } else {
-            description += errrToString(error)
+            description += errorToString(error)
         }
         this.error(description)
     }

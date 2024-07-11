@@ -128,7 +128,7 @@ export function valueOrDefault(x: string | null | undefined, defaultValue: strin
     return x
 }
 
-export function errrToString(e: any) {
+export function errorToString(e: any) {
     return "error object:\n" +
         e + "\n\n" +
         "error object toString():\n\t" +
