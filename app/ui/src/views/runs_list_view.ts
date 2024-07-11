@@ -30,7 +30,6 @@ class RunsListView extends ScreenView {
     isEditMode: boolean
     selectedRunsSet: Set<RunListItemModel>
     private loader: DataLoader
-    private userMessages: UserMessages
     private refresh: AwesomeRefreshButton
     private isTBProcessing: boolean
     private actualWidth: number
@@ -50,8 +49,6 @@ class RunsListView extends ScreenView {
             onButtonClick: this.onArchiveClick,
             parent: this.constructor.name
         }, folder == RunsFolder.DEFAULT ? '.fas.fa-archive' : '.fas.fa-upload')
-
-        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             let runsList = (await this.runListCache.get(force)).runs
@@ -84,7 +81,6 @@ class RunsListView extends ScreenView {
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', $ => {
-                this.userMessages.render($)
                 new HamburgerMenuView({
                     title: (this.folder == RunsFolder.ARCHIVE ? 'Archived ' : '') + 'Runs',
                     setButtonContainer: container => this.buttonContainer = container
@@ -115,7 +111,7 @@ class RunsListView extends ScreenView {
         try {
             await this.loader.load()
 
-            this.renderList().then()
+            this.renderList()
         } catch (e) {
             handleNetworkErrorInplace(e)
         }
@@ -195,8 +191,8 @@ class RunsListView extends ScreenView {
             }
 
             if (response.is_successful == false) {
-                this.userMessages.error(response.error ?? `Failed to ${
-                    this.folder == RunsFolder.DEFAULT ? '': 'Un'}archive runs`)
+                UserMessages.shared.error(response.error ?? `Failed to ${
+                    this.folder == RunsFolder.DEFAULT ? '': 'Un'}archive runs. is_successful=false from server`)
                 return
             }
 
@@ -205,14 +201,17 @@ class RunsListView extends ScreenView {
             this.archiveButton.disabled = this.selectedRunsSet.size === 0
 
             await this.loader.load()
-            await this.renderList()
+
             this.refresh.disabled = false
         } catch (e) {
             if (this.folder == RunsFolder.DEFAULT)
-                this.userMessages.networkError(e, 'Failed to archive runs')
+                UserMessages.shared.networkError(e, 'Failed to archive runs')
             else
-                this.userMessages.networkError(e, 'Failed to unarchive runs')
+                UserMessages.shared.networkError(e, 'Failed to unarchive runs')
+            return
         }
+
+        this.renderList()
     }
 
     onDelete = async () => {
@@ -229,18 +228,23 @@ class RunsListView extends ScreenView {
             this.deleteButton.disabled = this.selectedRunsSet.size === 0
 
             await this.loader.load()
-            await this.renderList()
-            this.refresh.disabled = false
+
+
         } catch (e) {
-            this.userMessages.networkError(e, 'Failed to delete runs')
+            UserMessages.shared.networkError(e, 'Failed to delete runs')
+            return
+        } finally {
+            this.refresh.disabled = false
         }
+
+        this.renderList()
     }
 
     onCancel = () => {
         this.isEditMode = false
         this.refresh.disabled = false
         this.selectedRunsSet.clear()
-        this.renderList().then()
+        this.renderList()
     }
 
     onItemClicked = (elem: RunsListItemView) => {
@@ -268,10 +272,10 @@ class RunsListView extends ScreenView {
     onSearch = async (query: string) => {
         this.searchQuery = query
         await this.loader.load()
-        this.renderList().then()
+        this.renderList()
     }
 
-    private async renderList() {
+    private renderList() {
         if (this.currentRunsList.length > 0) {
             let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
             this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))

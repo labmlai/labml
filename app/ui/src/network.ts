@@ -216,8 +216,9 @@ class Network {
                 }
             }
 
-            xhr.onerror = () => {
-                reject('Network Failure')
+            xhr.onerror = (event) => {
+                reject(new NetworkError(xhr.status, url, xhr.responseText,
+                    `XHR request failed: ${event}\n Type: ${event.type}: ${event.loaded} bytes transferred`))
             }
 
             xhr.send(JSON.stringify(data))
@@ -256,6 +257,14 @@ export class NetworkError {
         }
 
         this.errorDescription = description
+    }
+
+    toString() {
+        return `Status Code: ${this.statusCode}\n
+        URL: ${this.url}\n
+        Description: ${this.errorDescription}\n
+        Message: ${this.message}\n
+        StackTrace: ${this.stackTrace}`
     }
 }
 

@@ -23,14 +23,12 @@ class SettingsView extends ScreenView {
     actualWidth: number
     radioLight: HTMLInputElement
     radioDark: HTMLInputElement
-    userMessage: UserMessages
 
     constructor() {
         super()
 
         this.userCache = CACHE.getUser()
         this.loader = new Loader(true)
-        this.userMessage = new UserMessages()
     }
 
     onResize(width: number) {
@@ -39,7 +37,6 @@ class SettingsView extends ScreenView {
 
     render() {
         this.elem = $('div', '.page', $ => {
-            this.userMessage.render($)
             new HamburgerMenuView({title: 'Settings'}).render($)
             this.settingsContainer = $('div', '.auto-margin', {style: {width: `${this.actualWidth}px`}})
             this.loader.render($)
@@ -111,7 +108,7 @@ class SettingsView extends ScreenView {
             this.user.theme = this.radioDark.checked ? DARK : LIGHT
             await SCREEN.updateTheme()
         } catch (e) {
-            this.userMessage.networkError(e, "Failed to save")
+            UserMessages.shared.networkError(e, "Failed to save")
             this.updateRadio()
         }
     }

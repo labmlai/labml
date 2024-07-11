@@ -179,8 +179,6 @@ export class ViewWrapper {
     private readonly preferenceChange: () => void
     private readonly onDelete?: () => void
 
-    private userMessage: UserMessages
-
     constructor(opt: ViewWrapperOpt) {
         this.dataStore = opt.dataStore
         this.isLoading = false
@@ -194,8 +192,6 @@ export class ViewWrapper {
         this.savePreferences = opt.savePreferences
         this.preferenceChange = opt.preferenceChange
         this.onDelete = opt.deleteChart
-
-        this.userMessage = new UserMessages()
 
         this.stepRangeField = new NumericRangeField({
             min: this.dataStore.stepRange[0], max: this.dataStore.stepRange[1],
@@ -266,13 +262,10 @@ export class ViewWrapper {
     }
 
     public renderError(error: Error | NetworkError, message: string) {
-        this.userMessage.networkError(error, message)
+        UserMessages.shared.networkError(error, message)
     }
 
     public render(missingBaseExperiment: boolean = false) {
-        $(this.messageContainer, $ => {
-            this.userMessage.render($)
-        })
         if (missingBaseExperiment) {
             this.clear()
             return
@@ -305,15 +298,15 @@ export class ViewWrapper {
         this.saveButton.disabled = true
         try {
             await this.onRequestMissingMetrics()
-
-            this.renderCharts()
         } catch (e) {
-            this.userMessage.networkError(e, "Failed to load metrics")
+            UserMessages.shared.networkError(e, "Failed to load metrics")
+            return
         } finally {
             this.setLoading(false)
             this.saveButton.disabled = false
         }
 
+        this.renderCharts()
     }
 
     private onSave = async () => {
@@ -323,7 +316,7 @@ export class ViewWrapper {
             await this.savePreferences()
             this.dataStore.isUnsaved = false
         } catch (e) {
-            this.userMessage.networkError(e, "Failed to save preferences")
+            UserMessages.shared.networkError(e, "Failed to save preferences")
             return
         } finally {
             this.saveButton.loading = false

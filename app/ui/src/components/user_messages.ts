@@ -1,18 +1,25 @@
-import {WeyaElementFunction, Weya as $,} from '../../../lib/weya/weya'
-import {NetworkError} from "../network";
+import {WeyaElementFunction, Weya as $, WeyaElement,} from '../../../lib/weya/weya'
+import {NetworkError} from "../network"
+import {errorToString} from "../utils/value"
 
 export class UserMessages {
     message: string
-    elem: HTMLDivElement
+    elem: WeyaElement
 
-    constructor() {
+    public static shared = new UserMessages()
+
+    private constructor() {
     }
 
-    render($: WeyaElementFunction) {
-        this.elem = $('div', '.pointer-cursor.mt-1')
+    private render() {
+        if (document.getElementById("shared-u-m") != null)
+            return
+        this.elem = $('div#shared-u-m', '.pointer-cursor.mt-1')
+        document.body.prepend(this.elem)
     }
 
     hide(isHidden: boolean) {
+        this.render()
         if (isHidden) {
             this.elem.classList.add('hide')
         } else {
@@ -21,11 +28,26 @@ export class UserMessages {
     }
 
     error(message: string = 'An unexpected network error occurred. Please try again later') {
+        this.render()
         this.message = message
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.message.alert', $ => {
-                $('span', this.message)
+                $('span', this.message.substring(0, 100))
+                if (this.message.length > 100) {
+                    $('a', '',{
+                        href: '#',
+                        on: {
+                            click: () => {
+                                let win = window.open('', '_blank')
+                                win.document.body.innerHTML = `<pre>${this.message}</pre>`
+                            }
+                        }
+                    }, $ => {
+                        $('span', ' ...more')
+                    })
+                }
+
                 $('span', '.close-btn',
                     String.fromCharCode(215),
                     {on: {click: this.hide.bind(this, true)}}
@@ -36,19 +58,17 @@ export class UserMessages {
     }
 
     networkError(error: NetworkError | Error, message: String = 'An unexpected network error occurred. Please try again later') {
-        let description = ''
+        let description = message + '\n'
         if (error instanceof NetworkError) {
-            description = `(${error.statusCode})`
-                + ((error.errorDescription != null) ? " " + error.errorDescription : "")
-                + ((error.message != null) ? " " + error.message : "")
-        } else if (error instanceof Error) {
-            description = error.message
+            description += error.toString()
+        } else {
+            description += errorToString(error)
         }
-        this.error(message + (description ? `: ${description}` : '') + (error instanceof NetworkError &&
-        error?.stackTrace ? `\n${error.stackTrace}` : ''))
+        this.error(description)
     }
 
     success(message: string) {
+        this.render()
         this.message = message
         this.elem.innerHTML = ''
         $(this.elem, $ => {
@@ -64,6 +84,7 @@ export class UserMessages {
     }
 
     warning(message: string) {
+        this.render()
         this.message = message
         this.elem.innerHTML = ''
         $(this.elem, $ => {

@@ -17,7 +17,6 @@ export class LogView {
     private readonly loadAllButton: CustomButton
     private readonly wrapButton: ToggleButton
     private toLoadPage: number = -1
-    private userMessages: UserMessages
 
     constructor(logs: Logs,
                 loadPage: (currentPage: number) => Promise<Logs>,
@@ -46,14 +45,11 @@ export class LogView {
             isToggled: logs.logWrap,
             onButtonClick: this.onWrapButtonClik
         })
-        this.userMessages = new UserMessages()
     }
 
     render($: WeyaElementFunction) {
         this.logElemLength = 0
         this.elem = $('div', '.std', $ => {
-            this.userMessages
-                .render($)
             this.wrapButton
                 .render($)
             this.loadAllButton
@@ -82,17 +78,19 @@ export class LogView {
     private onWrapButtonClik = async () => {
         try {
             await this.updateWrap(!this.logs.logWrap)
-            this.logs.logWrap = !this.logs.logWrap
-
-            if (this.logs.logWrap) {
-                this.elem.classList.add('wrap')
-            } else {
-                this.elem.classList.remove('wrap')
-            }
         } catch (e) {
             console.error(e)
-            this.userMessages.networkError(e, "Failed to update wrap")
+            UserMessages.shared.networkError(e, "Failed to update wrap")
             this.wrapButton.toggle = !this.wrapButton.toggle
+            return
+        }
+
+        this.logs.logWrap = !this.logs.logWrap
+
+        if (this.logs.logWrap) {
+            this.elem.classList.add('wrap')
+        } else {
+            this.elem.classList.remove('wrap')
         }
     }
 
