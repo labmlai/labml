@@ -50,7 +50,6 @@ class RunHeaderView extends ScreenView {
     private deleteButton: DeleteButton
     private saveButton: SaveButton
     private loader: DataLoader
-    private userMessages: UserMessages
 
     constructor(uuid: string) {
         super()
@@ -67,7 +66,6 @@ class RunHeaderView extends ScreenView {
         })
 
         this.editStatus = EditStatus.NOCHANGE
-        this.userMessages = new UserMessages()
     }
 
     get requiresAuth(): boolean {
@@ -107,7 +105,6 @@ class RunHeaderView extends ScreenView {
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
                     $('div', $ => {
-                        this.userMessages.render($)
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                             this.saveButton = new SaveButton({onButtonClick: this.updateRun, parent: this.constructor.name, isDisabled: true})
@@ -269,7 +266,7 @@ class RunHeaderView extends ScreenView {
                 await CACHE.getRunsList(this.run.folder).deleteRuns([this.uuid])
                 ROUTER.navigate('/runs')
             } catch (e) {
-                this.userMessages.networkError(e, "Failed to delete run")
+                UserMessages.shared.networkError(e, "Failed to delete run")
                 return
             }
         }
@@ -300,7 +297,7 @@ class RunHeaderView extends ScreenView {
             await CACHE.getRunsList(this.run.folder).localUpdateRun(this.run)
         } catch (e) {
             this.editStatus = EditStatus.CHANGE
-            this.userMessages.networkError(e, "Failed to save run")
+            UserMessages.shared.networkError(e, "Failed to save run")
             return
         }
 

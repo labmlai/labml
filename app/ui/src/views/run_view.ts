@@ -36,7 +36,6 @@ class RunView extends ScreenView {
     private rankContainer: WeyaElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
-    private userMessages: UserMessages
     private share: ShareButton
     private addCustomMetricButton: AddButton
     private isRankExpanded: boolean
@@ -52,7 +51,6 @@ class RunView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.userCache = CACHE.getUser()
         this.isRankExpanded = false
-        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
@@ -99,7 +97,6 @@ class RunView extends ScreenView {
             $('div', '.run.page',
                 {style: {width: `${this.actualWidth}px`}}, $ => {
                     $('div', $ => {
-                        this.userMessages.render($)
                         $('div.nav-container', $ => {
                             new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
                             this.refresh.render($)
@@ -194,7 +191,7 @@ class RunView extends ScreenView {
 
     renderClaimMessage() {
         if (!this.run.is_claimed && !this.isRank) {
-            this.userMessages.warning('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
+            UserMessages.shared.warning('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
         }
     }
 
@@ -207,7 +204,7 @@ class RunView extends ScreenView {
             })
             ROUTER.navigate(`/run/${this.uuid}/metrics/${customMetric.id}`)
         } catch (e) {
-            this.userMessages.networkError(e, 'Failed to create custom metric')
+            UserMessages.shared.networkError(e, 'Failed to create custom metric')
         } finally {
             this.addCustomMetricButton.loading = false
         }
@@ -220,15 +217,15 @@ class RunView extends ScreenView {
             try {
                 if (isRunClaim) {
                     await CACHE.getRunsList(this.run.folder).claimRun(this.run)
-                    this.userMessages.success('Successfully claimed and added to your runs list')
+                    UserMessages.shared.success('Successfully claimed and added to your runs list')
                     this.run.is_claimed = true
                 } else {
                     await CACHE.getRunsList(this.run.folder).addRun(this.run)
-                    this.userMessages.success('Successfully added to your runs list')
+                    UserMessages.shared.success('Successfully added to your runs list')
                 }
                 this.run.is_project_run = true
             } catch (e) {
-                this.userMessages.networkError(e, "Failed to claim the run")
+                UserMessages.shared.networkError(e, "Failed to claim the run")
                 return
             }
             this.renderButtons()

@@ -30,7 +30,6 @@ class RunsListView extends ScreenView {
     isEditMode: boolean
     selectedRunsSet: Set<RunListItemModel>
     private loader: DataLoader
-    private userMessages: UserMessages
     private refresh: AwesomeRefreshButton
     private isTBProcessing: boolean
     private actualWidth: number
@@ -50,8 +49,6 @@ class RunsListView extends ScreenView {
             onButtonClick: this.onArchiveClick,
             parent: this.constructor.name
         }, folder == RunsFolder.DEFAULT ? '.fas.fa-archive' : '.fas.fa-upload')
-
-        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             let runsList = (await this.runListCache.get(force)).runs
@@ -84,7 +81,6 @@ class RunsListView extends ScreenView {
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', $ => {
-                this.userMessages.render($)
                 new HamburgerMenuView({
                     title: (this.folder == RunsFolder.ARCHIVE ? 'Archived ' : '') + 'Runs',
                     setButtonContainer: container => this.buttonContainer = container
@@ -195,8 +191,8 @@ class RunsListView extends ScreenView {
             }
 
             if (response.is_successful == false) {
-                this.userMessages.error(response.error ?? `Failed to ${
-                    this.folder == RunsFolder.DEFAULT ? '': 'Un'}archive runs`)
+                UserMessages.shared.error(response.error ?? `Failed to ${
+                    this.folder == RunsFolder.DEFAULT ? '': 'Un'}archive runs. is_successful=false from server`)
                 return
             }
 
@@ -209,9 +205,9 @@ class RunsListView extends ScreenView {
             this.refresh.disabled = false
         } catch (e) {
             if (this.folder == RunsFolder.DEFAULT)
-                this.userMessages.networkError(e, 'Failed to archive runs')
+                UserMessages.shared.networkError(e, 'Failed to archive runs')
             else
-                this.userMessages.networkError(e, 'Failed to unarchive runs')
+                UserMessages.shared.networkError(e, 'Failed to unarchive runs')
             return
         }
 
@@ -235,7 +231,7 @@ class RunsListView extends ScreenView {
 
 
         } catch (e) {
-            this.userMessages.networkError(e, 'Failed to delete runs')
+            UserMessages.shared.networkError(e, 'Failed to delete runs')
             return
         } finally {
             this.refresh.disabled = false

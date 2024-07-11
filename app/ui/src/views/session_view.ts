@@ -33,7 +33,6 @@ class SessionView extends ScreenView {
     private cardContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
-    private userMessages: UserMessages
     private share: ShareButton
 
     constructor(uuid: string) {
@@ -43,8 +42,6 @@ class SessionView extends ScreenView {
         this.statusCache = CACHE.getSessionStatus(this.uuid)
         this.userCache = CACHE.getUser()
         this.sessionsListCache = CACHE.getSessionsList()
-
-        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             this.session = await this.sessionCache.get(force)
@@ -79,7 +76,6 @@ class SessionView extends ScreenView {
         $(this.elem, $ => {
             $('div', '.run.page',
                 {style: {width: `${this.actualWidth}px`}}, $ => {
-                    this.userMessages.render($)
                     this.ButtonsContainer = $('span', '.float-right')
                     $('div', '.nav-container', $ => {
                         new BackButton({text: 'Computers', parent: this.constructor.name}).render($)
@@ -141,16 +137,16 @@ class SessionView extends ScreenView {
             try {
                 if (isSessionClaim) {
                     await this.sessionsListCache.claimSession(this.session)
-                    this.userMessages.success('Successfully claimed and added to your computers list')
+                    UserMessages.shared.success('Successfully claimed and added to your computers list')
                     this.session.is_claimed = true
                 } else {
                     await this.sessionsListCache.addSession(this.session)
-                    this.userMessages.success('Successfully added to your computers list')
+                    UserMessages.shared.success('Successfully added to your computers list')
                 }
 
                 this.session.is_project_session = true
             } catch (e) {
-                this.userMessages.networkError(e, "Failed to claim session")
+                UserMessages.shared.networkError(e, "Failed to claim session")
                 return
             }
 

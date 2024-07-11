@@ -28,7 +28,6 @@ class SessionsListView extends ScreenView {
     isEditMode: boolean
     sessionsDeleteSet: Set<string>
     private loader: DataLoader
-    private userMessages: UserMessages
     private refresh: AwesomeRefreshButton
 
     constructor() {
@@ -39,8 +38,6 @@ class SessionsListView extends ScreenView {
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
         this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
-
-        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             this.currentSessionsList = (await this.sessionListCache.get(force)).sessions
@@ -58,7 +55,6 @@ class SessionsListView extends ScreenView {
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', $ => {
-                this.userMessages.render($)
                 new HamburgerMenuView({
                     title: 'Computers',
                     setButtonContainer: container => this.buttonContainer = container
@@ -151,7 +147,7 @@ class SessionsListView extends ScreenView {
 
             await this.loader.load()
         } catch (e) {
-            this.userMessages.networkError(e, "Failed to delete sessions")
+            UserMessages.shared.networkError(e, "Failed to delete sessions")
             return
         } finally {
             this.refresh.disabled = false

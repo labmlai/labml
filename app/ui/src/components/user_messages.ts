@@ -1,19 +1,25 @@
-import {WeyaElementFunction, Weya as $,} from '../../../lib/weya/weya'
+import {WeyaElementFunction, Weya as $, WeyaElement,} from '../../../lib/weya/weya'
 import {NetworkError} from "../network"
 import {errrToString} from "../utils/value"
 
 export class UserMessages {
     message: string
-    elem: HTMLDivElement
+    elem: WeyaElement
 
-    constructor() {
+    public static shared = new UserMessages()
+
+    private constructor() {
     }
 
-    render($: WeyaElementFunction) {
-        this.elem = $('div', '.pointer-cursor.mt-1')
+    private render() {
+        if (document.getElementById("shared-u-m") != null)
+            return
+        this.elem = $('div#shared-u-m', '.pointer-cursor.mt-1')
+        document.body.prepend(this.elem)
     }
 
     hide(isHidden: boolean) {
+        this.render()
         if (isHidden) {
             this.elem.classList.add('hide')
         } else {
@@ -22,6 +28,7 @@ export class UserMessages {
     }
 
     error(message: string = 'An unexpected network error occurred. Please try again later') {
+        this.render()
         this.message = message
         this.elem.innerHTML = ''
         $(this.elem, $ => {
@@ -47,6 +54,7 @@ export class UserMessages {
     }
 
     success(message: string) {
+        this.render()
         this.message = message
         this.elem.innerHTML = ''
         $(this.elem, $ => {
@@ -62,6 +70,7 @@ export class UserMessages {
     }
 
     warning(message: string) {
+        this.render()
         this.message = message
         this.elem.innerHTML = ''
         $(this.elem, $ => {

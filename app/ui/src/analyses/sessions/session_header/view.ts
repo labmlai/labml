@@ -36,7 +36,6 @@ class SessionHeaderView extends ScreenView {
     private fieldContainer: HTMLDivElement
     private deleteButton: DeleteButton
     private loader: DataLoader
-    private userMessages: UserMessages
 
     constructor(uuid: string) {
         super()
@@ -59,7 +58,6 @@ class SessionHeaderView extends ScreenView {
                 this.sessionsList = sessionsList.filter(session => this.sessionsFilter(session))
             }
         })
-        this.userMessages = new UserMessages()
     }
 
     get requiresAuth(): boolean {
@@ -88,7 +86,6 @@ class SessionHeaderView extends ScreenView {
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
                     $('div', $ => {
-                        this.userMessages.render($)
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                             if (this.isEditMode) {
@@ -224,7 +221,7 @@ class SessionHeaderView extends ScreenView {
                 await CACHE.getSessionsList().deleteSessions(new Set<string>([this.uuid]))
                 ROUTER.navigate('/computers')
             } catch (e) {
-                this.userMessages.networkError(e, "Failed to delete session")
+                UserMessages.shared.networkError(e, "Failed to delete session")
                 return
             }
         }

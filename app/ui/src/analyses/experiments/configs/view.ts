@@ -28,7 +28,6 @@ class RunConfigsView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private save: SaveButton
     private configsChanged: boolean
-    private userMessage: UserMessages
 
     constructor(uuid: string) {
         super()
@@ -44,7 +43,6 @@ class RunConfigsView extends ScreenView {
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.save = new SaveButton({onButtonClick: this.onSave.bind(this), parent: this.constructor.name, isDisabled: true})
         this.configsChanged = false
-        this.userMessage = new UserMessages()
     }
 
     get requiresAuth(): boolean {
@@ -67,7 +65,6 @@ class RunConfigsView extends ScreenView {
         $(this.elem, $ => {
             $('div', '.page',
                 {style: {width: `${this.actualWidth}px`}}, $ => {
-                this.userMessage.render($)
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
@@ -130,7 +127,7 @@ class RunConfigsView extends ScreenView {
             await CACHE.getRun(this.uuid).updateRunData(data)
             await CACHE.getRunsList(this.run.folder).localUpdateRun(this.run)
         } catch (e) {
-            this.userMessage.networkError(e, "Failed to save configurations")
+            UserMessages.shared.networkError(e, "Failed to save configurations")
             this.save.disabled = false
             this.configsChanged = true
         } finally {
@@ -142,7 +139,7 @@ class RunConfigsView extends ScreenView {
         try {
             await this.loader.load(true)
         } catch (e) {
-            this.userMessage.networkError(e, "Refresh failed")
+            UserMessages.shared.networkError(e, "Refresh failed")
             return
         } finally {
             if (this.status && !this.status.isRunning) {
