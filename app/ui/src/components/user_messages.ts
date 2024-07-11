@@ -33,7 +33,21 @@ export class UserMessages {
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.message.alert', $ => {
-                $('span', this.message)
+                $('span', this.message.substring(0, 100))
+                if (this.message.length > 100) {
+                    $('a', '',{
+                        href: '#',
+                        on: {
+                            click: () => {
+                                let win = window.open('', '_blank')
+                                win.document.body.innerHTML = `<pre>${this.message}</pre>`
+                            }
+                        }
+                    }, $ => {
+                        $('span', ' ...more')
+                    })
+                }
+
                 $('span', '.close-btn',
                     String.fromCharCode(215),
                     {on: {click: this.hide.bind(this, true)}}
