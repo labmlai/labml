@@ -1434,7 +1434,7 @@ a.generic-link {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .toggle-list-title {

@@ -6,6 +6,7 @@ interface SliderOptions {
     value: number
     step: number
     onChange: (value: number) => void
+    hideSlider?: boolean // at the moment slider is not needed, text input is enough. but keeping the component
 }
 
 export class Slider {
@@ -18,17 +19,20 @@ export class Slider {
     private readonly step: number
     value: number
 
+    private readonly hideSlider: boolean
+
     constructor(opt: SliderOptions) {
         this.onChange = opt.onChange
         this.min = opt.min
         this.max = opt.max
         this.step = opt.step
         this.value = opt.value
+        this.hideSlider = opt.hideSlider ?? false
     }
 
     render($: WeyaElementFunction) {
         $('div.slider-container', $ => {
-            this.slider = <HTMLInputElement>$('input.slider', {
+            this.slider = <HTMLInputElement>$('input.slider' + (this.hideSlider ? '.hidden' : ''), {
                 type: 'range',
                 min: this.min,
                 max: this.max,
