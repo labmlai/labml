@@ -304,6 +304,9 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                             }
                         }
                     })
+                    if (this.baseRun.comment != "") {
+                       $('span', `(${this.baseRun.comment || ''})`)
+                    }
                 }
             })
         })
