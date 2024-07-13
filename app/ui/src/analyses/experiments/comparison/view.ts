@@ -420,10 +420,18 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     }
 
     private async requestMissingMetrics() {
-        this.series = (await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series
+        let res = metricsCache.getAnalysis(this.uuid).getAllMetrics()
+        if (res == null) {
+            return // already loading
+        }
+        this.series = (await res).series
 
         if (this.baseUuid !== '') {
-            this.baseSeries = (await metricsCache.getAnalysis(this.baseUuid).getAllMetrics()).series
+            res = metricsCache.getAnalysis(this.baseUuid).getAllMetrics()
+            if (res == null) {
+                return // already loading
+            }
+            this.baseSeries = (await res).series
         }
     }
 }

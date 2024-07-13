@@ -262,7 +262,11 @@ class MetricsView extends ScreenView implements MetricDataStore {
     }
 
     private requestMissingMetrics = async () => {
-        this.series = (await metricsCache.getAnalysis(this.uuid).getAllMetrics()).series
+        let res = metricsCache.getAnalysis(this.uuid).getAllMetrics()
+        if (res == null) {
+            return // already loading
+        }
+        this.series = (await res).series
     }
 
     private onPreferenceChange = () => {

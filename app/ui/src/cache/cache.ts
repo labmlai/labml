@@ -32,14 +32,6 @@ class BroadcastPromise<T> {
         this.rejectors = []
     }
 
-    forceCreate(load: () => Promise<T>): Promise<T> {
-        if (this.isLoading) {
-            this.reject("")
-            this.isLoading = false
-        }
-        return this.create(load)
-    }
-
     create(load: () => Promise<T>): Promise<T> {
         let promise = new Promise<T>((resolve, reject) => {
             this.add(resolve, reject)
@@ -400,15 +392,17 @@ export abstract class BaseDataCache<T> extends CacheObject<T> {
         return this.broadcastPromise.create(async () => {
             let response = NETWORK.getAnalysis(this.url, this.uuid, false, this.currentUUID, this.isExperiment)
             this.currentXHR = response.xhr
-            return this.createInstance(await response.promise)
+            let data = await response.promise
+            this.currentXHR = null
+            return this.createInstance(data)
         })
     }
 
-    async getAllMetrics(): Promise<T> {
+    async getAllMetrics(): Promise<T> | null {
         if (this.currentXHR != null) {
-            this.currentXHR.abort()
+            return null // Already loading
         }
-        this.data = await this.broadcastPromise.forceCreate(async () => {
+        this.data = await this.broadcastPromise.create(async () => {
             this.lastUpdated = (new Date()).getTime()
             let response = NETWORK.getAnalysis(this.url, this.uuid, true, this.currentUUID, this.isExperiment)
             return this.createInstance(await response.promise)
