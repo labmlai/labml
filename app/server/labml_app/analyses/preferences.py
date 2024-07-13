@@ -31,7 +31,7 @@ class Preferences:
                     step_range=[-1, -1],
                     focus_smoothed=True,
                     smooth_value=0.5,  # 50% smooth
-                    smooth_function=SmoothFunction.Exponential.value
+                    smooth_function=SmoothFunction.LeftExponential.value
                     )
 
     def update_preferences(self, data: PreferencesData) -> None:

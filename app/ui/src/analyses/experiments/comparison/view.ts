@@ -304,6 +304,9 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                             }
                         }
                     })
+                    if (this.baseRun.comment != "") {
+                       $('span', `(${this.baseRun.comment || ''})`)
+                    }
                 }
             })
         })
@@ -354,7 +357,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                         this.focusSmoothed = true
                         this.smoothValue = 0.5
                         this.chartType = 0
-                        this.smoothFunction = SmoothingType.EXPONENTIAL
+                        this.smoothFunction = SmoothingType.LEFT_EXPONENTIAL
 
                         this.setBaseLoading(true)
 

@@ -231,7 +231,8 @@ export class ViewWrapper {
             onChange: (value: number) => {
                 let changeHandler = new ChangeHandlers.SmoothValueHandler(this, value)
                 changeHandler.change()
-            }
+            },
+            hideSlider: true
         })
         this.deleteButton = new DeleteButton({
             parent: this.constructor.name,
