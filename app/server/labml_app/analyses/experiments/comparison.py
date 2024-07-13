@@ -28,7 +28,7 @@ class ComparisonPreferences(preferences.Preferences):
                     step_range=[-1, -1],
                     is_base_distributed=False,
                     smooth_value=0.5,
-                    smooth_function=preferences.SmoothFunction.Exponential.value
+                    smooth_function=preferences.SmoothFunction.LeftExponential.value
                     )
 
     def update_preferences(self, data: preferences.PreferencesData) -> None:
