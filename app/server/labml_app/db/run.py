@@ -478,11 +478,18 @@ def get_merged_status_data(run_uuids: List[str]) -> Union[None, 'status.Status']
 
 
 def get_main_rank(run_uuid: str) -> Optional[str]:
-    r = get(run_uuid)
-    is_dist_run = len(run_uuid.split("_")) == 1
-    if r is None:
-        return None
-    other_rank_run_uuids = r.get_rank_uuids()
-    if r.world_size != 0 and other_rank_run_uuids and is_dist_run:
-        return other_rank_run_uuids[r.main_rank]
-    return run_uuid
+    is_rank = len(run_uuid.split("_")) == 2
+
+    if is_rank:
+        if run_uuid.split('_')[-1] == 0:  # first rank is the main uuid
+            return run_uuid.split('_')[0]
+        else:
+            return run_uuid
+    else:
+        r = get(run_uuid)
+        if r is None:
+            return None
+        other_rank_run_uuids = r.get_rank_uuids()
+        if r.world_size != 0 and other_rank_run_uuids:
+            return other_rank_run_uuids[r.main_rank]
+        return run_uuid
