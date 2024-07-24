@@ -903,8 +903,12 @@ $keyFontSize: 0.8rem;
     width: 120px;
     opacity: 0.7;
     white-space: nowrap;
-    text-overflow: ellipsis;
+    overflow: auto;
     vertical-align: middle;
+
+    @media (max-width: $mobile) {
+      width: 200px;
+    }
 
 
     & + span {
@@ -1498,7 +1502,7 @@ a.generic-link {
   .combined {
     width: 330px;
     display: inline-block;
-    overflow: hidden;
+    overflow: auto;
   }
 }
 
