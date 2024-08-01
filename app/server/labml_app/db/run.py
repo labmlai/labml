@@ -336,6 +336,9 @@ class Run(Model['Run']):
         if 'selected_configs' in data:
             self.selected_configs = data.get('selected_configs', self.selected_configs)
 
+        if 'tags' in data:
+            self.tags = data.get('tags', self.tags)
+
         if self.world_size > 0:
             run_uuids = [f'{self.run_uuid}_{rank}' for rank in range(1, self.world_size)]
             runs = mget(run_uuids)

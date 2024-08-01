@@ -45,6 +45,7 @@ class RunHeaderView extends ScreenView {
     commentField: EditableField
     noteField: EditableField
     sizeField: EditableField
+    tagField: EditableField
     sizeCheckPoints: EditableField
     sizeTensorBoard: EditableField
     private deleteButton: DeleteButton
@@ -166,16 +167,14 @@ class RunHeaderView extends ScreenView {
                     onChange: this.onInputChange.bind(this)
                 })
                 this.commentField.render($)
-                $(`li`, $ => {
-                    $('span', '.item-key', 'Tags')
-                    $('span', '.item-value', $ => {
-                        $('div', $ => {
-                            this.run.tags.map((tag, idx) => (
-                                new BadgeView({text: tag}).render($)
-                            ))
-                        })
-                    })
+                this.tagField = new EditableField({
+                    name: 'Tags',
+                    value: this.run.tags.join(', '),
+                    placeholder: 'Add tags separated by comma',
+                    isEditable: true,
+                    onChange: this.onInputChange.bind(this)
                 })
+                this.tagField.render($)
                 this.noteField = new EditableField({
                     name: 'Note',
                     value: this.run.note,
@@ -286,10 +285,14 @@ class RunHeaderView extends ScreenView {
             this.run.note = this.noteField.getInput()
         }
 
+        this.run.tags = this.tagField.getInput().split(',').map(tag => tag.trim())
+        this.run.tags = this.run.tags.filter(tag => tag.length > 0)
+
         let data = {
             'name': this.run.name,
             'comment': this.run.comment,
-            'note': this.run.note
+            'note': this.run.note,
+            'tags': this.run.tags
         }
 
         try {

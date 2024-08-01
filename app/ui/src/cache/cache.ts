@@ -178,6 +178,7 @@ export class RunsListCache extends CacheObject<RunsList> {
                 runItem.name = run.name
                 runItem.comment = run.comment
                 runItem.favorite_configs = []
+                runItem.tags = run.tags
                 for (let c of run.configs) {
                     if (run.favourite_configs.includes(c.name)) {
                         runItem.favorite_configs.push(new Config(c))

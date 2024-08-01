@@ -149,8 +149,9 @@ class RunsListView extends ScreenView {
     runsFilter = (run: RunListItemModel, query: RegExp) => {
         let name = run.name.toLowerCase()
         let comment = run.comment.toLowerCase()
+        let tags = run.tags.join(' ').toLowerCase()
 
-        return (name.search(query) !== -1 || comment.search(query) !== -1)
+        return (name.search(query) !== -1 || comment.search(query) !== -1 || tags.search(query) !== -1)
     }
 
     onRefresh = async () => {

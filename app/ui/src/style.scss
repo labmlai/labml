@@ -155,7 +155,18 @@ body {
 }
 
 .label-info {
-  background-color: #2196F3;
+  background-color: rgba(33, 150, 243);
+}
+
+.tags {
+  .label {
+    font-weight: bold;
+    font-size: 0.6rem;
+  }
+
+  .label-info {
+    background-color: rgba(33, 150, 243, 0.4);
+  }
 }
 
 .auto-margin {

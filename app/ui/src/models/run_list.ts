@@ -18,6 +18,7 @@ export interface RunListItemModel {
     favorite_configs?: ConfigModel[]
     metric_values?: MetricValue[]
     step: number
+    tags: string[]
 }
 
 export interface RunsListModel {
@@ -37,6 +38,7 @@ export class RunListItem {
     favorite_configs?: Config[]
     metric_values?: MetricValue[]
     step: number
+    tags: string[]
 
     constructor(run_list_item: RunListItemModel) {
         this.run_uuid = run_list_item.run_uuid
@@ -50,6 +52,7 @@ export class RunListItem {
         this.favorite_configs = []
         this.metric_values = run_list_item.metric_values
         this.step = run_list_item.step
+        this.tags = run_list_item.tags
         if (run_list_item.favorite_configs != null) {
             for (let c of run_list_item.favorite_configs) {
                 this.favorite_configs.push(new Config(c))
