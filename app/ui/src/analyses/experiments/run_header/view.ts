@@ -286,6 +286,7 @@ class RunHeaderView extends ScreenView {
         }
 
         this.run.tags = this.tagField.getInput().split(',').map(tag => tag.trim())
+        this.run.tags = this.run.tags.filter(tag => tag.length > 0)
 
         let data = {
             'name': this.run.name,
