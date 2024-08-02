@@ -321,6 +321,7 @@ class Run(Model['Run']):
             'start_time': self.start_time,
             'world_size': self.world_size,
             'favorite_configs': fav_configs,
+            'tags': self.tags,
         }
 
     def edit_run(self, data: Dict[str, any]) -> None:
