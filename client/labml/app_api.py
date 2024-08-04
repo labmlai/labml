@@ -53,7 +53,7 @@ class AppAPI:
         self.network = Network(base_url)
 
     def get_run(self, run_uuid):
-        return self.network.send_http_request('GET', f'/runs/{run_uuid}')
+        return self.network.send_http_request('GET', f'/run/{run_uuid}')
 
     """
     Updates the run data
@@ -72,7 +72,10 @@ class AppAPI:
     def get_run_status(self, run_uuid):
         return self.network.send_http_request('GET', f'/run/status/{run_uuid}')
 
-    def get_runs(self):
+    """
+    folder_name: str [default, archive]
+    """
+    def get_runs(self, folder_name: str = 'default'):
         return self.network.send_http_request('GET', '/runs/null')
 
     def archive_runs(self, run_uuids):
