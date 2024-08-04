@@ -26,71 +26,15 @@ class NetworkError(Exception):
 class Network:
     def __init__(self, base_url):
         self.base_url = base_url
-        self.session_token = None
-        self.app_token = None
 
-    def get_app_token(self):  # todo where to save this token
-        return self.app_token
-
-    def set_app_token(self, token):
-        self.app_token = token
-
-    def update_session(self, token):
-        self.session_token = token
-
-    def get_user(self):
+    def send_http_request(self, method, url, data=None):
         headers = {}
-        app_token = self.get_app_token()
-        if app_token:
-            headers['Authorization'] = f'Bearer {app_token}'
-
-        device_info = {
-            'userAgent': platform.platform(),
-            'platform': platform.system(),
-            'appName': 'Python',
-            'appCodeName': 'Python',
-            'engine': platform.python_implementation(),
-            'appVersion': platform.python_version(),
-            'height': 0,
-            'width': 0
-        }
-
-        data = {
-            'device': device_info,
-            'referrer': ''
-        }
-
-        response = requests.post(f'{self.base_url}/auth/user', json=data, headers=headers)
-        res = response.json()
-
-        if res and res.get('user') and res['user'].get('token'):
-            self.set_app_token(res['user']['token'])
-
-        return res
-
-    def send_http_request(self, method, url, data=None, retry_auth=True):
-        headers = {}
-        app_token = self.session_token
-
-        if app_token:
-            headers['Authorization'] = f'Bearer {app_token}'
 
         if data:
             headers['Content-Type'] = 'application/json'
 
         full_url = self.base_url + url
         response = requests.request(method, full_url, json=data, headers=headers)
-
-        if 'Authorization' in response.headers:
-            token = response.headers['Authorization']
-            if '/auth/sign_in' in url or '/auth/sign_up' in url:
-                self.set_app_token(token)
-            else:
-                self.update_session(token)
-
-        if response.status_code == 401 and retry_auth:
-            self.get_user()
-            return self.send_http_request(method, url, data, False)
 
         if response.status_code >= 400:
             error_message = None
