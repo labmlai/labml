@@ -34,7 +34,10 @@ Fetches the status of a specific run.
   - `run_uuid` (str): The unique identifier for the run.
 
 
-### `get_runs(self)`
+### `get_runs(self, folder_name='default')`
+- **Parameters:**
+  - `folder_name` (str): default or archive
+
 Fetches all runs.
 
 
