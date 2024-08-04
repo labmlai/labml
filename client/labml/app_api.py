@@ -52,5 +52,123 @@ class AppAPI:
     def __init__(self, base_url="http://localhost:5005/api/v1"):
         self.network = Network(base_url)
 
+    def get_run(self, run_uuid):
+        return self.network.send_http_request('GET', f'/runs/{run_uuid}')
+
+    """
+    Updates the run data
+    data: {
+        'name': str,
+        'comment': str,
+        'note': str,
+        'favourite_configs': List[str],
+        'selected_configs': List[str],
+        'tags': List[str],
+    }
+    """
+    def update_run_data(self, run_uuid, data):
+        return self.network.send_http_request('POST', f'/runs/{run_uuid}/data', data)
+
+    def get_run_status(self, run_uuid):
+        return self.network.send_http_request('GET', f'/run/status/{run_uuid}')
+
     def get_runs(self):
         return self.network.send_http_request('GET', '/runs/null')
+
+    def archive_runs(self, run_uuids):
+        return self.network.send_http_request('POST', '/runs/archive', {'run_uuids': run_uuids})
+
+    def unarchive_runs(self, run_uuids):
+        return self.network.send_http_request('POST', '/runs/unarchive', {'run_uuids': run_uuids})
+
+    def delete_runs(self, run_uuids):
+        return self.network.send_http_request('PUT', '/runs', {'run_uuids': run_uuids})
+
+    """
+    Get analysis data
+    
+    url: str [compare/metrics, std_logger, stderr, metrics, stdout, battery, cpu, memory, disk, gpu, process]
+    
+    kwargs: {
+        'get_all': bool, Either get all indicators or only the selected indicators
+        'current_uuid': str, Current run uuid for comparisons (only required for comparison metrics)
+    }
+    """
+    def get_analysis(self, url: str, run_uuid: str, **kwargs):
+        method = 'GET'
+
+        if url == 'compare/metrics' or url == 'metrics':
+            method = 'POST'
+
+        return self.network.send_http_request(method, f"/{url}/{run_uuid}?current={kwargs.get('current_uuid', '')}",
+                                              {'get_all': kwargs.get('get_all', False)})
+
+    """
+        Get analysis preferences
+
+        url: str [compare/metrics, std_logger, stderr, metrics, stdout, battery, cpu, memory, disk, gpu, process]
+    """
+    def get_preferences(self, url: str,  run_uuid):
+        return self.network.send_http_request('GET', f'{url}/preferences/{run_uuid}')
+
+    """
+        Update analysis preferences
+
+        url: str [compare/metrics, std_logger, stderr, metrics, stdout, battery, cpu, memory, disk, gpu, process]
+        data: {
+            'series_preferences': List[int],  # Preferences for series data
+            'series_names': List[str],  # Names of the series indicators
+            'chart_type': int,  # Type of chart to display
+            'step_range': List[int],  # Range of steps to display. Two integers. -1 for no bound
+            'focus_smoothed': bool,  # Whether to focus on smoothed data
+            'smooth_value': float,  # Value for smoothing the data. in (0, 1)
+            'smooth_function': str,  # Function used for smoothing [exponential, left_exponential]
+            # following needed for comparisons
+            'base_experiment': str,  # Base experiment for
+            'base_series_preferences': List[int],  # Preferences for base series data
+            'base_series_names': List[str],  # Names of the base series indicators
+        }
+        
+        - series_preferences content:
+        -1 -> not selected
+        1 -> selected
+    """
+    def update_preferences(self, url: str, run_uuid, data):
+        return self.network.send_http_request('POST', f'{url}/preferences/{run_uuid}', data)
+
+    """
+    data {
+        'name': str,
+        'description': str
+    }
+    """
+    def create_custom_metric(self, run_uuid, data):
+        return self.network.send_http_request('POST', f'/custom_metrics/{run_uuid}/create', data)
+
+    def get_custom_metrics(self, run_uuid):
+        return self.network.send_http_request('GET', f'/custom_metrics/{run_uuid}')
+
+    """
+    data {
+        id: str,
+        preferences: dict # same as set preference method data
+        name: str,
+        description: str
+    }
+    """
+    def update_custom_metric(self, run_uuid, data):
+        return self.network.send_http_request('POST', f'/custom_metrics/{run_uuid}', data)
+
+    def delete_custom_metric(self, run_uuid, metric_id):
+        return self.network.send_http_request('POST', f'/custom_metrics/{run_uuid}/delete',
+                                              {'id': metric_id})
+
+    """
+    url: str [stderr, std_logger, stdout]
+    page_no: int 
+    -1 -> get all pages
+    -2 -> get last page
+    i -> get ith page
+    """
+    def get_logs(self, run_uuid: str, url: str, page_no: int):
+        return self.network.send_http_request('POST', f'/logs/{url}/{run_uuid}', {'page': page_no})
