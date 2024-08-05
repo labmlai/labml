@@ -1,6 +1,6 @@
-import platform
-import requests
 import json
+
+import requests
 
 
 class NetworkError(Exception):
@@ -45,7 +45,11 @@ class Network:
                     error_message = response.json()['data']['error']
             raise NetworkError(response.status_code, url, response.text, error_message)
 
-        return response.json()
+        # return response
+        try:
+            return response.json()
+        except json.JSONDecodeError:
+            raise NetworkError(response.status_code, url, 'JSON decode error', response.text)
 
 
 class AppAPI:
@@ -66,6 +70,7 @@ class AppAPI:
         'tags': List[str],
     }
     """
+
     def update_run_data(self, run_uuid, data):
         return self.network.send_http_request('POST', f'/runs/{run_uuid}/data', data)
 
@@ -75,6 +80,7 @@ class AppAPI:
     """
     folder_name: str [default, archive]
     """
+
     def get_runs(self, folder_name: str = 'default'):
         return self.network.send_http_request('GET', '/runs/null')
 
@@ -92,26 +98,28 @@ class AppAPI:
     
     url: str [compare/metrics, std_logger, stderr, metrics, stdout, battery, cpu, memory, disk, gpu, process]
     
-    kwargs: {
-        'get_all': bool, Either get all indicators or only the selected indicators
-        'current_uuid': str, Current run uuid for comparisons (only required for comparison metrics)
-    }
+    'get_all': bool, Either get all indicators or only the selected indicators
+    'current_uuid': str, Current run uuid for comparisons (only required for comparison metrics)
     """
-    def get_analysis(self, url: str, run_uuid: str, **kwargs):
+
+    def get_analysis(self, url: str, run_uuid: str, *,
+                     get_all=False,
+                     current_uuid: str = ''):
         method = 'GET'
 
         if url == 'compare/metrics' or url == 'metrics':
             method = 'POST'
 
-        return self.network.send_http_request(method, f"/{url}/{run_uuid}?current={kwargs.get('current_uuid', '')}",
-                                              {'get_all': kwargs.get('get_all', False)})
+        return self.network.send_http_request(method, f"/{url}/{run_uuid}?current={current_uuid}",
+                                              {'get_all': get_all})
 
     """
         Get analysis preferences
 
         url: str [compare/metrics, std_logger, stderr, metrics, stdout, battery, cpu, memory, disk, gpu, process]
     """
-    def get_preferences(self, url: str,  run_uuid):
+
+    def get_preferences(self, url: str, run_uuid):
         return self.network.send_http_request('GET', f'{url}/preferences/{run_uuid}')
 
     """
@@ -136,6 +144,7 @@ class AppAPI:
         -1 -> not selected
         1 -> selected
     """
+
     def update_preferences(self, url: str, run_uuid, data):
         return self.network.send_http_request('POST', f'{url}/preferences/{run_uuid}', data)
 
@@ -145,6 +154,7 @@ class AppAPI:
         'description': str
     }
     """
+
     def create_custom_metric(self, run_uuid, data):
         return self.network.send_http_request('POST', f'/custom_metrics/{run_uuid}/create', data)
 
@@ -159,6 +169,7 @@ class AppAPI:
         description: str
     }
     """
+
     def update_custom_metric(self, run_uuid, data):
         return self.network.send_http_request('POST', f'/custom_metrics/{run_uuid}', data)
 
@@ -173,5 +184,6 @@ class AppAPI:
     -2 -> get last page
     i -> get ith page
     """
+
     def get_logs(self, run_uuid: str, url: str, page_no: int):
         return self.network.send_http_request('POST', f'/logs/{url}/{run_uuid}', {'page': page_no})

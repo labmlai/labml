@@ -64,6 +64,8 @@ Deletes the specified runs.
 
 ## Analysis Endpoints
 
+Analyses: `metrics`, 
+
 ### `get_analysis(self, url: str, run_uuid: str, **kwargs)`
 Fetches analysis data.
 
