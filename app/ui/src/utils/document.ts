@@ -22,3 +22,12 @@ export function clearChildElements(elem: HTMLElement) {
 export function showError(error?: string) {
     alert(error ?? 'Something went wrong. Please try again later.\n\nIf the problem persist, please reach us at contact@labml.ai')
 }
+
+export function getQueryParameter(param: string, search: string) {
+    const queryParams = new URLSearchParams(search)
+    const r = queryParams.get(param)
+    if (r) {
+        return decodeURIComponent(r);
+    }
+    return ""
+}

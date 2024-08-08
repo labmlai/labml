@@ -11,13 +11,14 @@ import EmptyRunsList from './empty_runs_list'
 import {UserMessages} from '../components/user_messages'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
-import {setTitle} from '../utils/document'
+import {getQueryParameter, setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
 import {DefaultLineGradient} from "../components/charts/chart_gradients";
 import {ErrorResponse} from "../network";
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
+    runsList: RunListItem[]
     currentRunsList: RunListItem[]
     elem: HTMLDivElement
     runsListContainer: HTMLDivElement
@@ -52,14 +53,15 @@ class RunsListView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             let runsList = (await this.runListCache.get(force)).runs
-            this.currentRunsList = []
+            this.runsList = []
             for (let run of runsList) {
-                this.currentRunsList.push(new RunListItem(run))
+                this.runsList.push(new RunListItem(run))
             }
+            this.currentRunsList = this.runsList.slice()
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
-        this.searchQuery = ''
+        this.searchQuery = getQueryParameter('query', window.location.search)
         this.isEditMode = false
         this.selectedRunsSet = new Set<RunListItemModel>()
         this.isTBProcessing = false
@@ -87,7 +89,7 @@ class RunsListView extends ScreenView {
                 }).render($)
 
                 $('div', '.runs-list', $ => {
-                    new SearchView({onSearch: this.onSearch}).render($)
+                    new SearchView({onSearch: this.onSearch, initText: this.searchQuery}).render($)
                     this.loader.render($)
                     $('svg', {style: {height: `${1}px`}}, $ => {
                         new DefaultLineGradient().render($)
@@ -272,14 +274,14 @@ class RunsListView extends ScreenView {
 
     onSearch = async (query: string) => {
         this.searchQuery = query
-        await this.loader.load()
+        window.history.replaceState({}, "", `${window.location.toString().replace(window.location.search, "")}?query=${encodeURIComponent(query)}`)
         this.renderList()
     }
 
     private renderList() {
-        if (this.currentRunsList.length > 0) {
+        if (this.runsList.length > 0) {
             let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
-            this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
+            this.currentRunsList = this.runsList.filter(run => this.runsFilter(run, re))
 
             this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {
