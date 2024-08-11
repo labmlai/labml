@@ -82,7 +82,7 @@ class AppAPI:
     """
 
     def get_runs(self, folder_name: str = 'default'):
-        return self.network.send_http_request('GET', '/runs/null')
+        return self.network.send_http_request('GET', f'/runs/null?folder_name={folder_name}')
 
     def archive_runs(self, run_uuids):
         return self.network.send_http_request('POST', '/runs/archive', {'run_uuids': run_uuids})
