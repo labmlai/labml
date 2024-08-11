@@ -15,6 +15,7 @@ import {getQueryParameter, setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
 import {DefaultLineGradient} from "../components/charts/chart_gradients";
 import {ErrorResponse} from "../network";
+import {extractTags} from "../utils/value"
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -62,6 +63,13 @@ class RunsListView extends ScreenView {
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
         this.searchQuery = getQueryParameter('query', window.location.search)
+        let tags = getQueryParameter('tags', window.location.search)
+        if (tags) {
+            for (let tag of tags.split(',')) {
+                this.searchQuery += ` :${tag}`
+            }
+        }
+
         this.isEditMode = false
         this.selectedRunsSet = new Set<RunListItemModel>()
         this.isTBProcessing = false
@@ -148,12 +156,26 @@ class RunsListView extends ScreenView {
         }
     }
 
-    runsFilter = (run: RunListItemModel, query: RegExp) => {
-        let name = run.name.toLowerCase()
-        let comment = run.comment.toLowerCase()
-        let tags = run.tags.join(' ').toLowerCase()
+    runsFilter = (run: RunListItemModel, searchText: string) => {
+        let {tags, query} = extractTags(searchText)
 
-        return (name.search(query) !== -1 || comment.search(query) !== -1 || tags.search(query) !== -1)
+        if (tags.length == 0 && query == "") {
+            return true
+        }
+
+        const queryRegex = new RegExp(query, 'g')
+        const tagRegex: RegExp[] = []
+        for (let tag of tags) {
+            tagRegex.push(new RegExp(`(^|\\s)${tag}(?=\\s|$)`, 'g'))
+        }
+
+        let matchName = query == "" || run.name.toLowerCase().search(queryRegex) !== -1
+        let matchComment = query == "" || run.comment.toLowerCase().search(queryRegex) !== -1
+        let matchTags = tags.length == 0 || tagRegex.every(tag => run.tags.join(' ').toLowerCase().search(tag) !== -1)
+
+        if (!matchTags)
+            return false
+        return matchName || matchComment
     }
 
     onRefresh = async () => {
@@ -161,7 +183,7 @@ class RunsListView extends ScreenView {
         try {
             await this.loader.load(true)
 
-            await this.renderList()
+            this.renderList()
         } catch (e) {
 
         } finally {
@@ -274,14 +296,15 @@ class RunsListView extends ScreenView {
 
     onSearch = async (query: string) => {
         this.searchQuery = query
-        window.history.replaceState({}, "", `${window.location.toString().replace(window.location.search, "")}?query=${encodeURIComponent(query)}`)
+        let r = extractTags(query)
+        window.history.replaceState({}, "",
+            `${window.location.toString().replace(window.location.search, "")}?query=${encodeURIComponent(r.query)}&tags=${encodeURIComponent(r.tags.join(','))}`)
         this.renderList()
     }
 
     private renderList() {
         if (this.runsList.length > 0) {
-            let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
-            this.currentRunsList = this.runsList.filter(run => this.runsFilter(run, re))
+            this.currentRunsList = this.runsList.filter(run => this.runsFilter(run, this.searchQuery.toLowerCase()))
 
             this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {
