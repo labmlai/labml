@@ -1,7 +1,7 @@
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import CACHE, {RunsFolder, RunsListCache} from "../cache/cache"
+import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
@@ -14,7 +14,6 @@ import {handleNetworkErrorInplace} from '../utils/redirect'
 import {getQueryParameter, setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
 import {DefaultLineGradient} from "../components/charts/chart_gradients";
-import {ErrorResponse} from "../network";
 import {extractTags} from "../utils/value"
 
 class RunsListView extends ScreenView {
@@ -26,7 +25,6 @@ class RunsListView extends ScreenView {
     searchQuery: string
     buttonContainer: HTMLDivElement
     deleteButton: DeleteButton
-    archiveButton: IconButton
     editButton: EditButton
     cancelButton: CancelButton
     isEditMode: boolean
@@ -35,22 +33,19 @@ class RunsListView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private isTBProcessing: boolean
     private actualWidth: number
-    private readonly folder: string
+    private readonly defaultTag: string // permanent tag in the url
 
-    constructor(folder: string) {
+    constructor(tag: string) {
         super()
 
-        this.folder = folder
+        this.defaultTag = tag
 
-        this.runListCache = CACHE.getRunsList(this.folder)
+        this.runListCache = CACHE.getRunsList()
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
         this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
-        this.archiveButton = new IconButton({
-            onButtonClick: this.onArchiveClick,
-            parent: this.constructor.name
-        }, folder == RunsFolder.DEFAULT ? '.fas.fa-archive' : '.fas.fa-upload')
+
 
         this.loader = new DataLoader(async (force) => {
             let runsList = (await this.runListCache.get(force)).runs
@@ -92,7 +87,7 @@ class RunsListView extends ScreenView {
         $(this.elem, $ => {
             $('div', $ => {
                 new HamburgerMenuView({
-                    title: (this.folder == RunsFolder.ARCHIVE ? 'Archived ' : '') + 'Runs',
+                    title: 'Runs',
                     setButtonContainer: container => this.buttonContainer = container
                 }).render($)
 
@@ -108,12 +103,10 @@ class RunsListView extends ScreenView {
         })
         $(this.buttonContainer, $ => {
             this.deleteButton.render($)
-            this.archiveButton.render($)
             this.cancelButton.render($)
             this.editButton.render($)
             this.refresh.render($)
             this.deleteButton.hide(true)
-            this.archiveButton.hide(true)
             this.cancelButton.hide(true)
             this.editButton.hide(true)
         })
@@ -142,12 +135,9 @@ class RunsListView extends ScreenView {
     updateButtons() {
         let noRuns = this.currentRunsList.length == 0
 
-        this.deleteButton.hide((noRuns || !this.isEditMode) ||
-            (this.folder != RunsFolder.DEFAULT && this.folder != RunsFolder.ARCHIVE))
+        this.deleteButton.hide((noRuns || !this.isEditMode))
         this.cancelButton.hide(noRuns || !this.isEditMode)
         this.editButton.hide(noRuns || this.isEditMode)
-        this.archiveButton.hide((noRuns || !this.isEditMode) ||
-            (this.folder != RunsFolder.DEFAULT && this.folder != RunsFolder.ARCHIVE))
 
         if (!noRuns && !this.isEditMode) {
             this.refresh.start()
@@ -158,6 +148,9 @@ class RunsListView extends ScreenView {
 
     runsFilter = (run: RunListItemModel, searchText: string) => {
         let {tags, query} = extractTags(searchText)
+        if (this.defaultTag) {
+            tags.push(this.defaultTag)
+        }
 
         if (tags.length == 0 && query == "") {
             return true
@@ -197,46 +190,7 @@ class RunsListView extends ScreenView {
         this.isEditMode = true
         this.refresh.disabled = true
         this.deleteButton.disabled = isRunsSelected
-        this.archiveButton.disabled = isRunsSelected
         this.updateButtons()
-    }
-
-    onArchiveClick = async () => {
-        try {
-            let runUUIDs: Array<string> = []
-            for (let runListItem of this.selectedRunsSet) {
-                runUUIDs.push(runListItem.run_uuid)
-            }
-
-            let response: ErrorResponse
-            if (this.folder == RunsFolder.DEFAULT) {
-                response = await CACHE.archiveRuns(runUUIDs)
-            } else if (this.folder == RunsFolder.ARCHIVE) {
-                response = await CACHE.unarchiveRuns(runUUIDs)
-            }
-
-            if (response.is_successful == false) {
-                UserMessages.shared.error(response.error ?? `Failed to ${
-                    this.folder == RunsFolder.DEFAULT ? '': 'Un'}archive runs. is_successful=false from server`)
-                return
-            }
-
-            this.isEditMode = false
-            this.selectedRunsSet.clear()
-            this.archiveButton.disabled = this.selectedRunsSet.size === 0
-
-            await this.loader.load()
-
-            this.refresh.disabled = false
-        } catch (e) {
-            if (this.folder == RunsFolder.DEFAULT)
-                UserMessages.shared.networkError(e, 'Failed to archive runs')
-            else
-                UserMessages.shared.networkError(e, 'Failed to unarchive runs')
-            return
-        }
-
-        this.renderList()
     }
 
     onDelete = async () => {
@@ -291,7 +245,6 @@ class RunsListView extends ScreenView {
         let isRunsSelected = this.selectedRunsSet.size === 0
 
         this.deleteButton.disabled = isRunsSelected || this.isTBProcessing
-        this.archiveButton.disabled = isRunsSelected
     }
 
     onSearch = async (query: string) => {
@@ -328,14 +281,14 @@ class RunsListView extends ScreenView {
 export class RunsListHandler {
     constructor() {
         ROUTER.route('runs', [this.handleRunsList])
-        ROUTER.route('runs/:folder', [this.handleFolder])
+        ROUTER.route('runs/:tag', [this.handleTag])
     }
 
-    handleFolder = (folder: string) => {
-        SCREEN.setView(new RunsListView(folder))
+    handleTag = (tag: string) => {
+        SCREEN.setView(new RunsListView(tag))
     }
 
     handleRunsList = () => {
-        SCREEN.setView(new RunsListView(RunsFolder.DEFAULT))
+        SCREEN.setView(new RunsListView(""))
     }
 }

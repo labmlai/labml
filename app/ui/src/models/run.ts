@@ -130,7 +130,6 @@ export class Run {
     favourite_configs: string[]
     session_id: string
     process_id: string
-    folder: string
 
     constructor(run: RunModel) {
         this.run_uuid = run.run_uuid
@@ -161,7 +160,6 @@ export class Run {
         }
         this.session_id = run.session_id
         this.process_id = run.process_id
-        this.folder = run.folder
     }
 
     public updateConfigs() {

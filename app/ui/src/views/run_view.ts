@@ -216,11 +216,11 @@ class RunView extends ScreenView {
         } else {
             try {
                 if (isRunClaim) {
-                    await CACHE.getRunsList(this.run.folder).claimRun(this.run)
+                    await CACHE.getRunsList().claimRun(this.run)
                     UserMessages.shared.success('Successfully claimed and added to your runs list')
                     this.run.is_claimed = true
                 } else {
-                    await CACHE.getRunsList(this.run.folder).addRun(this.run)
+                    await CACHE.getRunsList().addRun(this.run)
                     UserMessages.shared.success('Successfully added to your runs list')
                 }
                 this.run.is_project_run = true
