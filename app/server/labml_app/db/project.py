@@ -2,9 +2,8 @@ from typing import List, Dict, Union, Optional
 
 from labml_db import Model, Key, Index
 
-from . import run, folder
+from . import run
 from . import session
-from .folder import DefaultFolders
 from ..logger import logger
 
 
@@ -15,7 +14,7 @@ class Project(Model['Project']):
     runs: Dict[str, Key['run.Run']]
     sessions: Dict[str, Key['session.Session']]
     is_run_added: bool
-    folders: Dict[str, Key['folder.Folder']]
+    folders: any  # delete from db and then remove
 
     @classmethod
     def defaults(cls):
@@ -25,7 +24,6 @@ class Project(Model['Project']):
                     runs={},
                     sessions={},
                     is_run_added=False,
-                    folders={},
                     )
 
     def is_project_run(self, run_uuid: str) -> bool:
@@ -34,16 +32,10 @@ class Project(Model['Project']):
     def is_project_session(self, session_uuid: str) -> bool:
         return session_uuid in self.sessions
 
-    def get_runs(self, folder_name: str = DefaultFolders.DEFAULT) -> List['run.Run']:
+    def get_runs(self) -> List['run.Run']:
         res = []
         likely_deleted = []
-        run_uuids = []
-        if folder_name == 'all':
-            run_uuids = self.runs.keys()
-        if folder_name in self.folders:
-            f = self.folders[folder_name].load()
-            if f:
-                run_uuids = f.run_uuids
+        run_uuids = self.runs.keys()
         for run_uuid in run_uuids:
             try:
                 r = run.get(run_uuid)
@@ -106,15 +98,12 @@ class Project(Model['Project']):
 
         if r:
             self.runs[run_uuid] = r.key
-            self.add_to_folder(folder.DefaultFolders.DEFAULT.value, r)
 
         self.save()
 
     def add_run_with_model(self, r: run.Run) -> None:
         self.runs[r.run_uuid] = r.key
         self.is_run_added = True
-
-        self.add_to_folder(folder.DefaultFolders.DEFAULT.value, r)
 
         self.save()
 
@@ -131,60 +120,6 @@ class Project(Model['Project']):
             self.sessions[session_uuid] = s.key
 
         self.save()
-
-    def add_to_folder(self, folder_name: str, r: run.Run) -> None:
-        if folder_name not in self.folders:
-            f = folder.Folder(name=folder_name)
-            self.folders[folder_name] = f.key
-        else:
-            f = self.folders[folder_name].load()
-
-        f.add_run(r.run_uuid)
-
-        r.parent_folder = f.name
-        r.save()
-
-    def remove_from_folder(self, folder_name: str, r: run.Run) -> None:
-        if folder_name not in self.folders:
-            f = folder.Folder(name=folder_name)
-            self.folders[folder_name] = f.key
-        else:
-            f = self.folders[folder_name].load()
-
-        f.remove_run(r.run_uuid)
-
-        r.parent_folder = ''
-        r.save()
-
-    def archive_runs(self, run_uuids: List[str]) -> None:
-        for run_uuid in run_uuids:
-            if run_uuid in self.runs:
-                r = self.runs[run_uuid].load()
-                if r:
-                    self.remove_from_folder(folder.DefaultFolders.DEFAULT.value, r)
-                    self.add_to_folder(folder.DefaultFolders.ARCHIVE.value, r)
-
-        self.save()
-
-    def un_archive_runs(self, run_uuids: List[str]) -> None:
-        for run_uuid in run_uuids:
-            if run_uuid in self.runs:
-                r = self.runs[run_uuid].load()
-                if r:
-                    self.remove_from_folder(folder.DefaultFolders.ARCHIVE.value, r)
-                    self.add_to_folder(folder.DefaultFolders.DEFAULT.value, r)
-
-        self.save()
-
-    def delete_from_folder(self, r: run.Run) -> None:
-        folder_name = r.parent_folder
-        if folder_name in self.folders:
-            return
-        parent_folder = self.folders[folder_name].load()
-        if parent_folder is None:
-            return
-        parent_folder.remove_run(r.run_uuid)
-        parent_folder.save()
 
 
 class ProjectIndex(Index['Project']):

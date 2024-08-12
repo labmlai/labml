@@ -11,7 +11,7 @@ from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 
 from .. import settings
-from . import project, folder
+from . import project
 from . import user
 from . import status
 from . import app_token
@@ -58,7 +58,6 @@ class MongoPickleDbDriver(MongoDbDriver):
 
 models = [user.User,
           project.Project,
-          folder.Folder,
           status.Status,
           status.RunStatus,
           app_token.AppToken,

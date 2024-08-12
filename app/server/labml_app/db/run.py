@@ -6,8 +6,7 @@ from fastapi import Request
 from labml_db import Model, Key, Index, load_keys
 
 from .. import auth
-from . import user, folder
-from .. import utils
+from . import user
 from . import project
 from . import computer
 from . import status
@@ -64,7 +63,7 @@ class Run(Model['Run']):
     selected_configs: List['str']
     favourite_configs: List['str']
     main_rank: int
-    parent_folder: str
+    parent_folder: str  # delete from saved db and then remove
 
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -111,7 +110,6 @@ class Run(Model['Run']):
                     process_key=None,
                     session_id='',
                     main_rank=0,
-                    parent_folder='',
                     )
 
     @property
@@ -306,7 +304,6 @@ class Run(Model['Run']):
             'selected_configs': self.selected_configs,
             'process_id': self.process_id,
             'session_id': self.session_id,
-            'folder': self.parent_folder
         }
 
     def get_summary(self) -> Dict[str, str]:
@@ -420,9 +417,9 @@ def delete(run_uuid: str) -> None:
         analyses.AnalysisManager.delete_run(run_uuid)
 
 
-def get_runs(labml_token: str, folder_name: str) -> List['Run']:
+def get_runs(labml_token: str) -> List['Run']:
     p = project.get_project(labml_token)
-    res = p.get_runs(folder_name)
+    res = p.get_runs()
 
     return res
 
