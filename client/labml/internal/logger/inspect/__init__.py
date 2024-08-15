@@ -169,6 +169,8 @@ def _get_value_full(value: any):
         numpy = None
 
     if numpy is not None and isinstance(value, numpy.ndarray):
+        if len(value.shape) == 0:
+            return _get_value_full(value.tolist())
         arr, trunc = _render_tensor(value, new_line='\n')
         arr, trunc_format = _format_tensor(arr)
         if not trunc and not trunc_format:
@@ -194,6 +196,8 @@ def _get_value_full(value: any):
         torch = None
 
     if torch is not None and isinstance(value, torch.Tensor):
+        if len(value.shape) == 0:
+            return _get_value_full(value.item())
         arr, trunc = _render_tensor(value, new_line='\n')
         arr, trunc_format = _format_tensor(arr)
         if not trunc and not trunc_format:
