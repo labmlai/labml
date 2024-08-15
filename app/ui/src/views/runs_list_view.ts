@@ -48,7 +48,7 @@ class RunsListView extends ScreenView {
 
 
         this.loader = new DataLoader(async (force) => {
-            let runsList = (await this.runListCache.get(force)).runs
+            let runsList = (await this.runListCache.get(force, this.defaultTag)).runs
             this.runsList = []
             for (let run of runsList) {
                 this.runsList.push(new RunListItem(run))

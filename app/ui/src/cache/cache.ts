@@ -109,26 +109,35 @@ export abstract class CacheObject<T> {
 }
 
 export class RunsListCache extends CacheObject<RunsList> {
+    private loadedTags: Set<string>
 
     constructor() {
         super()
+
+        this.loadedTags = new Set<string>()
     }
 
 
     async load(...args: any[]): Promise<RunsList> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getRuns(args[0])
-            return new RunsList(res)
+            let runsList = new RunsList(res)
+
+            this.loadedTags.add(args[0])
+            return runsList
         })
     }
 
     async get(isRefresh = false, ...args: any[]): Promise<RunsList> {
-        if (args && args[0]) {
-            return await this.load(args[0])
+        let tag = ""
+        if (args) {
+            tag = args[0] ?? ""
         }
 
-        if (this.data == null || (isRefresh && isForceReloadTimeout(this.lastUpdated)) || isReloadTimeout(this.lastUpdated)) {
-            this.data = await this.load(null)
+        if (this.data == null || !(this.loadedTags.has("") || this.loadedTags.has(tag)) ||
+            (isRefresh && isForceReloadTimeout(this.lastUpdated)) ||
+            isReloadTimeout(this.lastUpdated)) {
+            this.data = await this.load(tag)
             this.lastUpdated = (new Date()).getTime()
         }
 
