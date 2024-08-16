@@ -72,17 +72,16 @@ class AppAPI:
     """
 
     def update_run_data(self, run_uuid, data):
-        return self.network.send_http_request('POST', f'/runs/{run_uuid}/data', data)
+        return self.network.send_http_request('POST', f'/run/{run_uuid}', data)
 
     def get_run_status(self, run_uuid):
         return self.network.send_http_request('GET', f'/run/status/{run_uuid}')
 
-    """
-    folder_name: str [default, archive]
-    """
+    def get_runs(self):
+        return self.network.send_http_request('GET', f'/runs/null')
 
-    def get_runs(self, folder_name: str = 'default'):
-        return self.network.send_http_request('GET', f'/runs/null?folder_name={folder_name}')
+    def get_runs_by_tag(self, tag):
+        return self.network.send_http_request('GET', f'/runs/null/{tag}')
 
     def archive_runs(self, run_uuids):
         return self.network.send_http_request('POST', '/runs/archive', {'run_uuids': run_uuids})
