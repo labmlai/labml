@@ -155,6 +155,7 @@ class Project(Model['Project']):
             self.tag_index[tag].add(run_uuid)  # set will handle duplicates
 
         r.edit_run(data)
+        self.save()
 
     def get_run(self, run_uuid: str) -> Optional['run.Run']:
         if run_uuid in self.runs:

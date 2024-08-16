@@ -110,6 +110,7 @@ class Run(Model['Run']):
                     process_key=None,
                     session_id='',
                     main_rank=0,
+                    parent_folder=""
                     )
 
     @property
@@ -340,13 +341,15 @@ class Run(Model['Run']):
         if self.world_size > 0:
             run_uuids = [f'{self.run_uuid}_{rank}' for rank in range(1, self.world_size)]
             runs = mget(run_uuids)
+            runs = [r for r in runs if r]  # todo check why there are empty ranks
             for r in runs:
                 r.name = self.name
                 r.note = self.note
                 r.comment = self.comment
                 r.favourite_configs = self.favourite_configs
                 r.selected_configs = self.selected_configs
-            Run.msave(runs)
+            if len(runs) != 0:
+                Run.msave(runs)
 
         self.save()
 
