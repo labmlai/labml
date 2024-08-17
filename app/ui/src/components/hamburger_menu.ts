@@ -98,18 +98,6 @@ export class HamburgerMenuView {
                 parent: this.constructor.name
             }).render($)
             new NavButton({
-                icon: '.fas.fa-archive',
-                text: 'Archived Runs',
-                link: '/runs/archive',
-                parent: this.constructor.name
-            }).render($)
-            new NavButton({
-                icon: '.fas.fa-running',
-                text: 'All Runs',
-                link: '/runs/all',
-                parent: this.constructor.name
-            }).render($)
-            new NavButton({
                 icon: '.fas.fa-desktop',
                 text: 'Computers',
                 link: '/computers',

@@ -57,8 +57,8 @@ class Network {
         return this.sendHttpRequest('GET', `/session/status/${sessionUUId}`)['promise']
     }
 
-    async getRuns(labml_token: string | null, folder: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/runs/${labml_token}?folder_name=${folder}`)['promise']
+    async getRuns(tag: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/runs/${null}${tag ? `/${tag}` : ""}`)['promise']
     }
 
     async getSessions(): Promise<any> {

@@ -1,6 +1,6 @@
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import CACHE, {RunsFolder, RunsListCache} from "../cache/cache"
+import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
@@ -35,7 +35,7 @@ export class RunsPickerView extends ScreenView {
         this.onPicked = opt.onPicked
         this.onCancel = opt.onCancel
         this.title = opt.title
-        this.runListCache = CACHE.getRunsList(RunsFolder.DEFAULT)
+        this.runListCache = CACHE.getRunsList()
 
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
 

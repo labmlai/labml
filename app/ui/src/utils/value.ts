@@ -138,3 +138,17 @@ export function errorToString(e: any) {
         "error object stack: \n" +
         e.stack;
 }
+
+export function extractTags(input: string): { tags: string[], query: string } {
+    const tags: string[] = []
+    const regex = /:(\S+)/g;
+    let match
+
+    while ((match = regex.exec(input)) !== null) {
+        tags.push(match[0].substring(1));
+    }
+
+    const rest = input.replace(regex, '').trim();
+
+    return { tags: tags, query: rest };
+}

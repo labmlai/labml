@@ -2,12 +2,14 @@ import {WeyaElementFunction} from '../../../lib/weya/weya'
 
 export interface SearchOptions {
     onSearch: (query: string) => void
+    initText?: string
 }
 
 export class SearchView {
     onSearch: () => void
     textbox: HTMLInputElement
     inputTimeout: number // NodeJS.Timeout
+    initText: string
 
     constructor(opt: SearchOptions) {
         this.onSearch = () => {
@@ -16,6 +18,7 @@ export class SearchView {
                 opt.onSearch(this.textbox.value)
             }, 250)
         }
+        this.initText = opt.initText ?? ""
     }
 
     render($: WeyaElementFunction) {
@@ -25,6 +28,7 @@ export class SearchView {
                     $('span', '.fas.fa-search', '')
                 })
                 this.textbox = $('input', '.search-input', {
+                    value: this.initText,
                     type: 'search',
                     placeholder: 'Search',
                     'aria-label': 'Search',

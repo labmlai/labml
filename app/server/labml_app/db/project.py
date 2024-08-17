@@ -1,10 +1,9 @@
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union, Optional, Set
 
 from labml_db import Model, Key, Index
 
-from . import run, folder
+from . import run
 from . import session
-from .folder import DefaultFolders
 from ..logger import logger
 
 
@@ -15,7 +14,8 @@ class Project(Model['Project']):
     runs: Dict[str, Key['run.Run']]
     sessions: Dict[str, Key['session.Session']]
     is_run_added: bool
-    folders: Dict[str, Key['folder.Folder']]
+    folders: any  # delete from db and then remove
+    tag_index: Dict[str, Set[str]]
 
     @classmethod
     def defaults(cls):
@@ -25,7 +25,7 @@ class Project(Model['Project']):
                     runs={},
                     sessions={},
                     is_run_added=False,
-                    folders={},
+                    tag_index={},
                     )
 
     def is_project_run(self, run_uuid: str) -> bool:
@@ -34,16 +34,10 @@ class Project(Model['Project']):
     def is_project_session(self, session_uuid: str) -> bool:
         return session_uuid in self.sessions
 
-    def get_runs(self, folder_name: str = DefaultFolders.DEFAULT) -> List['run.Run']:
+    def _get_runs_util(self, run_uuids) -> List['run.Run']:
         res = []
         likely_deleted = []
-        run_uuids = []
-        if folder_name == 'all':
-            run_uuids = self.runs.keys()
-        if folder_name in self.folders:
-            f = self.folders[folder_name].load()
-            if f:
-                run_uuids = f.run_uuids
+
         for run_uuid in run_uuids:
             try:
                 r = run.get(run_uuid)
@@ -57,6 +51,9 @@ class Project(Model['Project']):
         for run_uuid in likely_deleted:
             if run_uuid in self.runs:
                 self.runs.pop(run_uuid)
+            for tag, runs in self.tag_index.items():
+                if run_uuid in runs:
+                    self.tag_index[tag].remove(run_uuid)
 
         if self.is_run_added:
             self.is_run_added = False
@@ -65,6 +62,17 @@ class Project(Model['Project']):
             self.save()
 
         return res
+
+    def get_runs(self) -> List['run.Run']:
+        run_uuids = self.runs.keys()
+        return self._get_runs_util(run_uuids)
+
+    def get_runs_by_tags(self, tag: str) -> List['run.Run']:
+        if tag in self.tag_index:
+            run_uuids = [r for r in self.tag_index[tag]]
+            return self._get_runs_util(run_uuids)
+        else:
+            return []
 
     def get_sessions(self) -> List['session.Session']:
         res = []
@@ -81,7 +89,9 @@ class Project(Model['Project']):
                 r = run.get(run_uuid)
                 if r and r.owner == project_owner:
                     try:
-                        self.delete_from_folder(r)
+                        for tag in r.tags:
+                            if tag in self.tag_index:
+                                self.tag_index[tag].remove(run_uuid)
                         run.delete(run_uuid)
                     except TypeError:
                         logger.error(f'error while deleting the run {run_uuid}')
@@ -106,7 +116,11 @@ class Project(Model['Project']):
 
         if r:
             self.runs[run_uuid] = r.key
-            self.add_to_folder(folder.DefaultFolders.DEFAULT.value, r)
+
+            for tag in r.tags:
+                if tag not in self.tag_index:
+                    self.tag_index[tag] = set()
+                self.tag_index[tag].add(run_uuid)
 
         self.save()
 
@@ -114,9 +128,33 @@ class Project(Model['Project']):
         self.runs[r.run_uuid] = r.key
         self.is_run_added = True
 
-        self.add_to_folder(folder.DefaultFolders.DEFAULT.value, r)
+        for tag in r.tags:
+            if tag not in self.tag_index:
+                self.tag_index[tag] = set()
+            self.tag_index[tag].add(r.run_uuid)
 
         self.save()
+
+    def edit_run(self, run_uuid: str, data: any):
+        r = run.get(run_uuid)
+        if r is None:
+            raise ValueError(f'Run {run_uuid} not found')
+
+        current_tags = r.tags
+        new_tags = data.get('tags', r.tags)
+
+        for tag in current_tags:
+            if (tag not in new_tags  # removed tag
+                    and tag in self.tag_index
+                    and run_uuid in self.tag_index[tag]):
+                self.tag_index[tag].remove(run_uuid)
+
+        for tag in new_tags:
+            if tag not in self.tag_index:
+                self.tag_index[tag] = set()
+            self.tag_index[tag].add(run_uuid)  # set will handle duplicates
+
+        r.edit_run(data)
 
     def get_run(self, run_uuid: str) -> Optional['run.Run']:
         if run_uuid in self.runs:
@@ -131,60 +169,6 @@ class Project(Model['Project']):
             self.sessions[session_uuid] = s.key
 
         self.save()
-
-    def add_to_folder(self, folder_name: str, r: run.Run) -> None:
-        if folder_name not in self.folders:
-            f = folder.Folder(name=folder_name)
-            self.folders[folder_name] = f.key
-        else:
-            f = self.folders[folder_name].load()
-
-        f.add_run(r.run_uuid)
-
-        r.parent_folder = f.name
-        r.save()
-
-    def remove_from_folder(self, folder_name: str, r: run.Run) -> None:
-        if folder_name not in self.folders:
-            f = folder.Folder(name=folder_name)
-            self.folders[folder_name] = f.key
-        else:
-            f = self.folders[folder_name].load()
-
-        f.remove_run(r.run_uuid)
-
-        r.parent_folder = ''
-        r.save()
-
-    def archive_runs(self, run_uuids: List[str]) -> None:
-        for run_uuid in run_uuids:
-            if run_uuid in self.runs:
-                r = self.runs[run_uuid].load()
-                if r:
-                    self.remove_from_folder(folder.DefaultFolders.DEFAULT.value, r)
-                    self.add_to_folder(folder.DefaultFolders.ARCHIVE.value, r)
-
-        self.save()
-
-    def un_archive_runs(self, run_uuids: List[str]) -> None:
-        for run_uuid in run_uuids:
-            if run_uuid in self.runs:
-                r = self.runs[run_uuid].load()
-                if r:
-                    self.remove_from_folder(folder.DefaultFolders.ARCHIVE.value, r)
-                    self.add_to_folder(folder.DefaultFolders.DEFAULT.value, r)
-
-        self.save()
-
-    def delete_from_folder(self, r: run.Run) -> None:
-        folder_name = r.parent_folder
-        if folder_name in self.folders:
-            return
-        parent_folder = self.folders[folder_name].load()
-        if parent_folder is None:
-            return
-        parent_folder.remove_run(r.run_uuid)
-        parent_folder.save()
 
 
 class ProjectIndex(Index['Project']):

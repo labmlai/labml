@@ -10,7 +10,7 @@ from .analyses.experiments import stdout, stderr, stdlogger
 from .logger import logger
 from . import settings
 from . import auth
-from .db import run, folder
+from .db import run
 from .db import computer
 from .db import session
 from .db import user
@@ -283,16 +283,12 @@ async def get_session(request: Request, session_uuid: str) -> JSONResponse:
 
 @auth.login_required
 async def edit_run(request: Request, run_uuid: str, token: Optional[str] = None) -> EndPointRes:
-    r = run.get(run_uuid)
-    errors = []
+    json = await request.json()
 
-    if r:
-        data = await request.json()
-        r.edit_run(data)
-    else:
-        raise Exception("Invalid Run UUID")
+    u = user.get_by_session_token(token)
+    u.default_project.edit_run(run_uuid, json)
 
-    return {'errors': errors}
+    return {'is_successful': True}
 
 
 async def edit_session(request: Request, session_uuid: str) -> EndPointRes:
@@ -361,16 +357,16 @@ async def get_session_status(request: Request, session_uuid: str) -> JSONRespons
 
 @auth.login_required
 @auth.check_labml_token_permission
-async def get_runs(request: Request, labml_token: str, token: Optional[str] = None,
-                   folder_name: str = folder.DefaultFolders.DEFAULT.value) -> EndPointRes:
+async def get_runs(request: Request, labml_token: str, token: Optional[str] = None, tag: Optional[str] = None) -> EndPointRes:
     u = user.get_by_session_token(token)
 
-    if labml_token:
-        runs_list = run.get_runs(labml_token, folder_name)
+    default_project = u.default_project
+    labml_token = default_project.labml_token
+
+    if tag is None:
+        runs_list = default_project.get_runs()
     else:
-        default_project = u.default_project
-        labml_token = default_project.labml_token
-        runs_list = default_project.get_runs(folder_name)
+        runs_list = default_project.get_runs_by_tags(tag)
 
     # run_uuids = [r.run_uuid for r in runs_list if r.world_size == 0]
     #
@@ -495,39 +491,6 @@ async def add_run(request: Request, run_uuid: str, token: Optional[str] = None) 
 
 
 @auth.login_required
-async def archive_runs(request: Request, token: Optional[str] = None) -> EndPointRes:
-    json = await request.json()
-    run_uuids = json['run_uuids']
-
-    u = user.get_by_session_token(token)
-
-    try:
-        u.default_project.archive_runs(run_uuids)
-    except KeyError:
-        return {'is_successful': False, 'error': "Failed to archive. Probably due to inconsistencies with the server."
-                                                 "Please refresh the page and try again."}
-
-    return {'is_successful': True}
-
-
-@auth.login_required
-async def un_archive_runs(request: Request, token: Optional[str] = None) -> EndPointRes:
-    json = await request.json()
-    run_uuids = json['run_uuids']
-
-    u = user.get_by_session_token(token)
-
-    try:
-        u.default_project.un_archive_runs(run_uuids)
-    except KeyError:
-        return {'is_successful': False, 'error': "Failed to un-archive. Probably due to inconsistencies with the "
-                                                 "server."
-                                                 "Please refresh the page and try again."}
-
-    return {'is_successful': True}
-
-
-@auth.login_required
 async def add_session(request: Request, session_uuid: str, token: Optional[str] = None) -> EndPointRes:
     u = user.get_by_session_token(token)
 
@@ -586,9 +549,7 @@ def add_handlers(app: FastAPI):
     _add_server(app, 'POST', update_run, '{labml_token}/track')
     _add_server(app, 'POST', update_session, '{labml_token}/computer')
 
-    _add_ui(app, 'POST', archive_runs, 'runs/archive')
-    _add_ui(app, 'POST', un_archive_runs, 'runs/unarchive')
-
+    _add_ui(app, 'GET', get_runs, 'runs/{labml_token}/{tag}')
     _add_ui(app, 'GET', get_runs, 'runs/{labml_token}')
     _add_ui(app, 'PUT', delete_runs, 'runs')
     _add_ui(app, 'GET', get_sessions, 'sessions/{labml_token}')
