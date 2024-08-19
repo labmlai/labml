@@ -8,15 +8,11 @@ export interface SearchOptions {
 export class SearchView {
     onSearch: () => void
     textbox: HTMLInputElement
-    inputTimeout: number // NodeJS.Timeout
     initText: string
 
     constructor(opt: SearchOptions) {
         this.onSearch = () => {
-            clearTimeout(this.inputTimeout)
-            this.inputTimeout = setTimeout(() => {
-                opt.onSearch(this.textbox.value)
-            }, 250)
+            opt.onSearch(this.textbox.value)
         }
         this.initText = opt.initText ?? ""
     }
@@ -32,11 +28,14 @@ export class SearchView {
                     type: 'search',
                     placeholder: 'Search',
                     'aria-label': 'Search',
-                    on: {
-                        input: this.onSearch
-                    }
                 })
             })
+        })
+
+        this.textbox.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                this.onSearch()
+            }
         })
     }
 }
