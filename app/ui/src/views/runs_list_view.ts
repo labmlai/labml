@@ -59,6 +59,10 @@ class RunsListView extends ScreenView {
 
         this.searchQuery = getQueryParameter('query', window.location.search)
         let tags = getQueryParameter('tags', window.location.search)
+
+        if (this.defaultTag) {
+            this.searchQuery += ` $${this.defaultTag}`
+        }
         if (tags) {
             for (let tag of tags.split(',')) {
                 this.searchQuery += ` :${tag}`
@@ -147,19 +151,20 @@ class RunsListView extends ScreenView {
     }
 
     runsFilter = (run: RunListItemModel, searchText: string) => {
-        let {tags, query} = extractTags(searchText)
+        let {tags, query, mainTags} = extractTags(searchText)
         if (this.defaultTag) {
             tags.push(this.defaultTag)
         }
+        tags = tags.concat(mainTags)
 
         if (tags.length == 0 && query == "") {
             return true
         }
 
-        const queryRegex = new RegExp(query, 'g')
+        const queryRegex = new RegExp(query.toLowerCase(), 'g')
         const tagRegex: RegExp[] = []
         for (let tag of tags) {
-            tagRegex.push(new RegExp(`(^|\\s)${tag}(?=\\s|$)`, 'g'))
+            tagRegex.push(new RegExp(`(^|\\s)${tag.toLowerCase()}(?=\\s|$)`, 'g'))
         }
 
         let matchName = query == "" || run.name.toLowerCase().search(queryRegex) !== -1
@@ -250,14 +255,27 @@ class RunsListView extends ScreenView {
     onSearch = async (query: string) => {
         this.searchQuery = query
         let r = extractTags(query)
-        window.history.replaceState({}, "",
-            `${window.location.toString().replace(window.location.search, "")}?query=${encodeURIComponent(r.query)}&tags=${encodeURIComponent(r.tags.join(','))}`)
-        this.renderList()
+
+        let mainTag = r.mainTags.length > 0 ? r.mainTags[0] : ""
+        let tags = r.tags.concat(r.mainTags).filter(tag => tag !== mainTag)
+
+        if (this.defaultTag == mainTag) {
+            window.history.replaceState({}, "",
+                `${window.location.toString().replace(window.location.search, "")}?query=${encodeURIComponent(r.query)}&tags=${encodeURIComponent(r.tags.join(','))}`)
+            this.renderList()
+            return
+        }
+
+        if (mainTag) {
+            ROUTER.navigate(`/runs/${mainTag}?query=${encodeURIComponent(r.query)}&tags=${encodeURIComponent(tags.join(','))}`)
+        } else {
+            ROUTER.navigate(`/runs?query=${encodeURIComponent(r.query)}&tags=${encodeURIComponent(tags.join(','))}`)
+        }
     }
 
     private renderList() {
         if (this.runsList.length > 0) {
-            this.currentRunsList = this.runsList.filter(run => this.runsFilter(run, this.searchQuery.toLowerCase()))
+            this.currentRunsList = this.runsList.filter(run => this.runsFilter(run, this.searchQuery))
 
             this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {
