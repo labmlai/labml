@@ -52,7 +52,7 @@ export class RunListItem {
         this.favorite_configs = []
         this.metric_values = run_list_item.metric_values
         this.step = run_list_item.step
-        this.tags = run_list_item.tags
+        this.tags = run_list_item.tags.sort()
         if (run_list_item.favorite_configs != null) {
             for (let c of run_list_item.favorite_configs) {
                 this.favorite_configs.push(new Config(c))
