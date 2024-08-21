@@ -46,8 +46,10 @@ export class SparkLines {
         this.uniqueItems = new Map<string, number>()
         this.onlySelected = opt.onlySelected ?? false
 
+        let filteredSeries = this.currentSeries.filter((s, i) => this.currentPlotIdx[i] == 1)
+        let filteredBaseSeries = this.baseSeries.filter((s, i) => this.basePlotIdx[i] == 1)
         let idx = 0
-        for (let s of this.currentSeries.concat(this.baseSeries)) {
+        for (let s of filteredSeries.concat(filteredBaseSeries)) {
             if (!this.uniqueItems.has(s.name)) {
                 this.uniqueItems.set(s.name, idx++)
             }
@@ -87,7 +89,7 @@ export class SparkLines {
                     stepExtent: this.stepExtent,
                     width: this.rowWidth,
                     onClick: onClick,
-                    color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                    color: this.currentPlotIdx[i] == 1 ? this.chartColors.getColor(this.uniqueItems.get(s.name)): "",
                     isMouseMoveOpt: this.isMouseMoveOpt,
                     isComparison: this.baseSeries.length > 0
                 })
@@ -107,7 +109,7 @@ export class SparkLines {
                     stepExtent: this.stepExtent,
                     width: this.rowWidth,
                     onClick: onClick,
-                    color: this.chartColors.getSecondColor(this.uniqueItems.get(s.name)),
+                    color: this.basePlotIdx[i] == 1 ? this.chartColors.getSecondColor(this.uniqueItems.get(s.name)) : "",
                     isMouseMoveOpt: this.isMouseMoveOpt,
                     isBase: true,
                     isComparison: this.baseSeries.length > 0,
