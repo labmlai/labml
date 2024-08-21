@@ -573,27 +573,25 @@ span.fas {
   }
 }
 
-.runs-list {
-  .search-container {
-    .search-content {
-      display: flex;
-      border-radius: 10px;
+.search-container {
+  .search-content {
+    display: flex;
+    border-radius: 10px;
 
-      span.icon {
-        align-items: center;
-        padding: .375rem .75rem;
-      }
+    span.icon {
+      align-items: center;
+      padding: .375rem .75rem;
+    }
 
-      input {
-        flex: 1 1 auto;
-        padding: .375rem .75rem;
-        border: none;
-        outline: none;
-        background: none;
+    input {
+      flex: 1 1 auto;
+      padding: .375rem .75rem;
+      border: none;
+      outline: none;
+      background: none;
 
-        &:focus {
-          box-shadow: none;
-        }
+      &:focus {
+        box-shadow: none;
       }
     }
   }
@@ -644,9 +642,10 @@ svg#chart {
     stroke-width: 3;
 
     &.current {
-        stroke-width: 3;
-        //opacity: 1;
+      stroke-width: 3;
+      //opacity: 1;
     }
+
     &.base {
       stroke-width: 2;
       opacity: 0.8;
@@ -659,6 +658,7 @@ svg#chart {
 
   path.unsmoothed-line {
     stroke-width: 0.5;
+
     &.smooth-focused {
       stroke-width: 0.2;
       opacity: 0.5;
@@ -777,7 +777,7 @@ button.sparkline-list-item {
       }
     }
 
-    .icon{
+    .icon {
       top: 50%;
       transform: translateY(-15%);
       left: -2em;
@@ -1003,6 +1003,7 @@ $keyFontSize: 0.8rem;
   .config {
     .combined {
       width: 330px;
+
       > span {
         display: inline-block
       }
@@ -1330,7 +1331,7 @@ a.generic-link {
     }
   }
 
-  .error{
+  .error {
     margin-top: 20px;
     padding-left: 10px;
     text-align: center;
@@ -1378,8 +1379,8 @@ a.generic-link {
     }
 
     .selected-name {
-        margin-left: 5px;
-        font-weight: bold;
+      margin-left: 5px;
+      font-weight: bold;
     }
   }
 
@@ -1506,8 +1507,10 @@ a.generic-link {
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
+
   .data {
     line-height: normal;
+
     span {
       font-size: 0.6rem;
     }
@@ -1523,23 +1526,23 @@ a.generic-link {
 }
 
 .chart-overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(3.5px);
-    -webkit-backdrop-filter: blur(3.5px);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3.5px);
+  -webkit-backdrop-filter: blur(3.5px);
 
-    .loading {
-      padding: 20px;
-      background: white;
-      border-radius: 5px;
-      font-size: 20px;
-      color: black;
+  .loading {
+    padding: 20px;
+    background: white;
+    border-radius: 5px;
+    font-size: 20px;
+    color: black;
   }
 
   .text {
@@ -1589,6 +1592,7 @@ input[type=number] {
     .fa {
       opacity: 1;
     }
+
     span {
       margin-left: 5px;
     }
@@ -1607,6 +1611,7 @@ input[type=number] {
 
   &.wrap {
     max-width: 100%;
+
     pre {
       text-wrap: wrap;
       max-width: 100%;

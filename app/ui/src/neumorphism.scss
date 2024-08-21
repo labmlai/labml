@@ -215,21 +215,20 @@ option {
   }
 }
 
-.runs-list {
-  .search-container {
-    .search-content {
-      box-shadow: inset 2px 2px 5px var(--shadow1), inset -3px -3px 7px var(--shadow2);
+.search-container {
+  .search-content {
+    box-shadow: inset 2px 2px 5px var(--shadow1), inset -3px -3px 7px var(--shadow2);
 
-      span.icon {
-        color: var(--input-icon);
-      }
+    span.icon {
+      color: var(--input-icon);
+    }
 
-      input {
-        color: var(--input-pointer);
-      }
+    input {
+      color: var(--input-pointer);
     }
   }
 }
+
 
 .alert-message {
   box-shadow: 2px 2px 4px var(--shadow1);
