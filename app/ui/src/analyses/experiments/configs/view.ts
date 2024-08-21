@@ -87,6 +87,8 @@ class RunConfigsView extends ScreenView {
                 let attribute = search.split(/[: ]+/).pop().toLowerCase()
                 if (CONFIG_ATTRIBUTES.includes(attribute)) {
                     attributes.push(attribute)
+                } else {
+                    queries.push(search)
                 }
             } else {
                 queries.push(search)
