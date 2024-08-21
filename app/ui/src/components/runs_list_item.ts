@@ -3,7 +3,7 @@ import {RunListItem} from '../models/run_list'
 import {StatusView} from './status'
 import {formatTime} from '../utils/time'
 import {ConfigItemView} from "../analyses/experiments/configs/components";
-import {BadgeView} from "./badge"
+import {TagView} from "./tag"
 
 export interface RunsListItemOptions {
     item: RunListItem
@@ -79,9 +79,9 @@ export class RunsListItemView {
                         }
                     })
                 })
-                $('span.tags', $ => {
+                $('div.tags', $ => {
                     this.item.tags.map((tag: any, _: any) => (
-                        new BadgeView({text: tag}).render($)
+                        new TagView({text: tag}).render($)
                     ))
                 })
             })
