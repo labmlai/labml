@@ -160,12 +160,14 @@ body {
 
 .tags {
   margin-top: 5px;
-
+  margin-bottom: 10px;
+  margin-left: -6px;
   .tag {
     display: inline-block;
     padding: 2px 8px;
     border-radius: .4rem;
     margin-right: 6px;
+    margin-top: 6px;
     background-color: var(--tag-bg);
     font-size: 0.8rem;
     color: var(--text);
