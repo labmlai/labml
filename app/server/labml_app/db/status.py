@@ -1,7 +1,7 @@
 import time
-from typing import Dict
+from typing import Dict, List
 
-from labml_db import Model, Key
+from labml_db import Model, Key, load_keys
 
 from ..enums import RunEnums
 
@@ -88,3 +88,7 @@ def create_status() -> Status:
     run_status.save()
 
     return status
+
+
+def mget(keys: List[Key]) -> List['Status']:
+    return load_keys(keys)

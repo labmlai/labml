@@ -34,19 +34,19 @@ class Project(Model['Project']):
     def is_project_session(self, session_uuid: str) -> bool:
         return session_uuid in self.sessions
 
-    def _get_runs_util(self, run_uuids) -> List['run.Run']:
+    def _get_runs_util(self, run_uuids: List[str]) -> List['run.Run']:
         res = []
         likely_deleted = []
 
-        for run_uuid in run_uuids:
+        runs = run.mget(run_uuids)
+        for r in runs:
             try:
-                r = run.get(run_uuid)
                 if r:
                     res.append(r)
                 else:
-                    likely_deleted.append(run_uuid)
+                    likely_deleted.append(r.run_uuid)
             except TypeError as e:
-                logger.error('error in creating run list, ' + run_uuid + ':' + str(e))
+                logger.error('error in creating run list, ' + r.run_uuid + ':' + str(e))
 
         for run_uuid in likely_deleted:
             if run_uuid in self.runs:
@@ -64,7 +64,7 @@ class Project(Model['Project']):
         return res
 
     def get_runs(self) -> List['run.Run']:
-        run_uuids = self.runs.keys()
+        run_uuids = list(self.runs.keys())
         return self._get_runs_util(run_uuids)
 
     def get_runs_by_tags(self, tag: str) -> List['run.Run']:
