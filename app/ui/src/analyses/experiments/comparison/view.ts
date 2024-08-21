@@ -7,7 +7,7 @@ import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader, Loader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
-import {BackButton, DeleteButton, EditButton} from "../../../components/buttons"
+import {BackButton, DeleteButton, IconButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {fillPlotPreferences} from "../../../components/charts/utils"
@@ -22,6 +22,7 @@ import comparisonCache from "./cache"
 import {NetworkError} from "../../../network"
 import {RunsPickerView} from "../../../views/run_picker_view"
 import {SmoothingType} from "../../../components/charts/smoothing/smoothing_base"
+import {RunsListItemView} from "../../../components/runs_list_item";
 
 class ComparisonView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
@@ -52,6 +53,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     private runPickerElem: HTMLDivElement
     private headerContainer: HTMLDivElement
     private saveButtonContainer: HTMLDivElement
+    private topButtonContainer: HTMLDivElement
     private loaderContainer: HTMLDivElement
 
     private actualWidth: number
@@ -66,7 +68,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     private baseAnalysisCache: AnalysisDataCache
     private missingBaseExperiment: boolean
     private deleteButton: DeleteButton
-    private editButton: EditButton
+    private editButton: IconButton
 
     constructor(uuid: string) {
         super()
@@ -117,10 +119,10 @@ class ComparisonView extends ScreenView implements MetricDataStore {
 
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
-        this.editButton = new EditButton({
+        this.editButton = new IconButton({
             onButtonClick: this.onEditClick,
-            parent: this.constructor.name
-        })
+            parent: this.constructor.name,
+        }, '.fa.fa-balance-scale')
     }
 
     get requiresAuth(): boolean {
@@ -151,8 +153,8 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
 
                             $('div', $ => {
-                                this.buttonContainer = $('div')
                                 this.saveButtonContainer = $('div')
+                                this.topButtonContainer = $('div')
                             })
                             this.refresh.render($)
                         })
@@ -294,21 +296,32 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             this.runHeaderCard.render($).then()
             $('span', '.compared-with', $ => {
                 $('span', '.sub', 'Compared With ')
-                if (this.baseRun == null) {
-                    $('span', '.title', 'No run selected')
-                } else {
-                    $('a', '.title.clickable', `${this.baseRun.name} `, {
-                        on: {
-                            click: () => {
-                                window.open(`/run/${this.baseRun.run_uuid}`, '_blank')
-                            }
-                        }
-                    })
-                    if (this.baseRun.comment != "") {
-                       $('span', `(${this.baseRun.comment || ''})`)
-                    }
-                }
+                this.buttonContainer = $('div')
             })
+
+            if (this.baseRun == null) {
+                $('span', '.title', 'No run selected')
+            } else {
+                $('div.list.runs-list.list-group', $ => {
+                    new RunsListItemView({
+                        item: {
+                            run_uuid: this.baseRun.run_uuid,
+                            computer_uuid: this.baseRun.computer_uuid,
+                            run_status: null,
+                            last_updated_time: null,
+                            name: this.baseRun.name,
+                            comment: this.baseRun.comment,
+                            start_time: this.baseRun.start_time,
+                            world_size: this.baseRun.world_size,
+                            metric_values: [],
+                            step: null,
+                            tags: this.baseRun.tags
+                        },
+                        width: this.actualWidth
+                    })
+                        .render($)
+                })
+            }
         })
     }
 
@@ -398,8 +411,12 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         clearChildElements(this.buttonContainer)
         this.deleteButton.disabled = !this.baseUuid
         $(this.buttonContainer, $ => {
-            this.deleteButton.render($)
             this.editButton.render($)
+        })
+
+        clearChildElements(this.topButtonContainer)
+        $(this.topButtonContainer, $ => {
+            this.deleteButton.render($)
         })
     }
 

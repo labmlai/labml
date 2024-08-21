@@ -189,18 +189,6 @@ export class RunsListCache extends CacheObject<RunsList> {
             }
         }
     }
-
-    getRuns(runUUIDS: Array<string>): Array<RunListItemModel> {
-        let runs = []
-        if (this.data) {
-            for (let run of this.data.runs) {
-                if (runUUIDS.includes(run.run_uuid)) {
-                    runs.push(run)
-                }
-            }
-        }
-        return runs
-    }
 }
 
 export class SessionsListCache extends CacheObject<SessionsList> {
