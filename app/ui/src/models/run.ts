@@ -139,7 +139,7 @@ export class Run {
         this.name = run.name
         this.comment = run.comment
         this.note = run.note
-        this.tags = run.tags
+        this.tags = run.tags.sort()
         this.start_time = run.start_time
         this.python_file = run.python_file
         this.repo_remotes = run.repo_remotes
