@@ -62,19 +62,16 @@ export class RunHeaderCard {
                 $('div', $ => {
                     $('div.status', $ => {
                         this.lastRecordedContainer = $('div', '.last-updated.mb-2')
-                        if (this.run.world_size != 0) {
-                            $(`div.text-uppercase.label-info.label.text-light.run-info`, "distributed")
-                        }
                     })
                     $('div', '.run-info', $ => {
                         this.statusViewContainer = $('div')
-                        $('h3', `${this.run.name}`)
-                        $('h5', `${this.run.comment}`)
                         $('div.tags', $ => {
                             this.run.tags.map((tag: any, _: any) => (
                                 new TagView({text: tag}).render($)
                             ))
                         })
+                        $('h3', `${this.run.name}`)
+                        $('h5', `${this.run.comment}`)
                     })
 
                     if (this.showRank && this.run.world_size > 0) {
