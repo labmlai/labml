@@ -1,5 +1,5 @@
 import time
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from labml_db import Model, Key, load_keys
 
@@ -40,10 +40,11 @@ class Status(Model['Status']):
 
         return {
             'last_updated_time': self.last_updated_time,
-            'run_status': run_status
+            'step': self.last_step,
+            'run_status': run_status,
         }
 
-    def update_time_status(self, data: Dict[str, any], last_step: int) -> None:
+    def update_time_status(self, data: Dict[str, any], last_step: Optional[int]) -> None:
         self.last_updated_time = time.time()
 
         s = data.get('status', {})

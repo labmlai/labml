@@ -183,7 +183,7 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
 
     for d in data:
         c.update_session(d)
-        s.update_time_status(d)
+        s.update_time_status(d, None)
         if 'track' in d:
             analyses.AnalysisManager.track_computer(session_uuid, d['track'])
 
