@@ -16,7 +16,7 @@ import {UserMessages} from "../../../components/user_messages"
 import {SearchView} from "../../../components/search"
 import {Config} from "../../../models/config"
 
-const CONFIG_ATTRIBUTES = ['meta', 'custom', 'onlyoption', 'explicitlyspecified', 'hp', 'hyperparam']
+const CONFIG_ATTRIBUTES = ['meta', 'custom', 'only_option', 'explicit', 'explicitly_specified', 'hp', 'hyperparam']
 
 class RunConfigsView extends ScreenView {
     elem: HTMLDivElement
@@ -54,11 +54,12 @@ class RunConfigsView extends ScreenView {
             parent: this.constructor.name,
             isDisabled: true
         })
+        this.searchQuery = 'is:explicit'
         this.searchView = new SearchView({
-            onSearch: this.searchConfig.bind(this)
+            onSearch: this.renderSearchConfigView.bind(this),
+            initText: this.searchQuery
         })
         this.configsChanged = false
-        this.searchQuery = ''
     }
 
     get requiresAuth(): boolean {
@@ -75,7 +76,7 @@ class RunConfigsView extends ScreenView {
         }
     }
 
-    private searchConfig(query: string) {
+    private renderSearchConfigView(query: string) {
         this.searchQuery = query
 
         let searchArray = query.split(" ")
@@ -120,10 +121,13 @@ class RunConfigsView extends ScreenView {
             if (attribute == 'custom' && config.isCustom) {
                 return true
             }
-            if (attribute == 'onlyoption' && config.isOnlyOption) {
+            if (attribute == 'only_option' && config.isOnlyOption) {
                 return true
             }
-            if (attribute == 'explicitlyspecified' && config.isExplicitlySpecified) {
+            if (attribute == 'explicit' && config.isExplicitlySpecified) {
+                return true
+            }
+            if (attribute == 'explicitly_specified' && config.isExplicitlySpecified) {
                 return true
             }
             if (attribute == 'hp' && config.isHyperparam) {
@@ -166,7 +170,7 @@ class RunConfigsView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Configurations', item: this.run.name})
-            this.renderConfigsView()
+            this.renderSearchConfigView(this.searchQuery)
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -227,7 +231,7 @@ class RunConfigsView extends ScreenView {
             await this.runHeaderCard.refresh().then()
         }
 
-        this.renderConfigsView()
+        this.renderSearchConfigView(this.searchQuery)
     }
 
     onVisibilityChange() {
