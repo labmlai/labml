@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Callable
+from typing import Dict, List, Tuple, Callable, Optional
 
 from . import analysis
 from .series import SeriesModel
@@ -11,9 +11,14 @@ for ans in experiment_analyses:
 
 class AnalysisManager:
     @staticmethod
-    def track(run_uuid: str, data: Dict[str, SeriesModel]) -> None:
+    def track(run_uuid: str, data: Dict[str, SeriesModel]) -> Optional[int]:
+        last_step = None
         for ans in experiment_analyses:
-            ans.get_or_create(run_uuid).track(data, run_uuid)
+            ls = ans.get_or_create(run_uuid).track(data, run_uuid)
+            if ls is not None:
+                last_step = ls
+
+        return last_step
 
     @staticmethod
     def track_computer(session_uuid: str, data: Dict[str, SeriesModel]) -> None:

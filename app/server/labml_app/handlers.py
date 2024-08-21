@@ -88,9 +88,9 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
 
     for d in data:
         r.update_run(d)
-        s.update_time_status(d)
         if 'track' in d:
-            analyses.AnalysisManager.track(run_uuid, d['track'])
+            last_step = analyses.AnalysisManager.track(run_uuid, d['track'])
+            s.update_time_status(d, last_step)
 
         if 'stdout' in d and d['stdout']:
             stdout.update_stdout(run_uuid, d['stdout'])

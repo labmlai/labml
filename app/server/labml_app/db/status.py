@@ -15,18 +15,20 @@ class RunStatus(Model['RunStatusModel']):
     def defaults(cls):
         return dict(status='',
                     details=None,
-                    time=None
+                    time=None,
                     )
 
 
 class Status(Model['Status']):
     last_updated_time: float
+    last_step: int
     run_status: Key[RunStatus]
 
     @classmethod
     def defaults(cls):
         return dict(last_updated_time=None,
-                    run_status=None
+                    run_status=None,
+                    last_step=None
                     )
 
     # run_status can be sent as a parameter if loaded from outside
@@ -41,7 +43,7 @@ class Status(Model['Status']):
             'run_status': run_status
         }
 
-    def update_time_status(self, data: Dict[str, any]) -> None:
+    def update_time_status(self, data: Dict[str, any], last_step: int) -> None:
         self.last_updated_time = time.time()
 
         s = data.get('status', {})
@@ -53,6 +55,9 @@ class Status(Model['Status']):
             run_status.time = s.get('time', run_status.time)
 
             run_status.save()
+
+        if last_step is not None:
+            self.last_step = last_step
 
         self.save()
 
