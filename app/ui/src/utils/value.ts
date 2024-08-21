@@ -138,25 +138,3 @@ export function errorToString(e: any) {
         "error object stack: \n" +
         e.stack;
 }
-
-export function extractTags(input: string): { tags: string[], query: string, mainTags: string[] } {
-    const tags: string[] = []
-    const regex = /:(\S+)/g;
-    let match: RegExpExecArray | null
-
-    while ((match = regex.exec(input)) !== null) {
-        tags.push(match[0].substring(1));
-    }
-
-    const mainTags: string[] = []
-    const mainRegex = /\$(\S+)/g;
-    let mainMatch: RegExpExecArray | null
-
-    while ((mainMatch = mainRegex.exec(input)) !== null) {
-        mainTags.push(mainMatch[0].substring(1));
-    }
-
-    const rest = input.replace(regex, '').replace(mainRegex, '').trim()
-
-    return { tags: tags, query: rest, mainTags: mainTags };
-}

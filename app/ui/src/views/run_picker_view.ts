@@ -8,6 +8,7 @@ import {CancelButton} from '../components/buttons'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
+import {runsFilter} from "../utils/search";
 
 interface RunsPickerViewOptions {
     onPicked: (run: RunListItemModel) => void
@@ -103,13 +104,6 @@ export class RunsPickerView extends ScreenView {
         return this.elem
     }
 
-    runsFilter = (run: RunListItemModel, query: RegExp) => {
-        let name = run.name.toLowerCase()
-        let comment = run.comment.toLowerCase()
-
-        return (name.search(query) !== -1 || comment.search(query) !== -1)
-    }
-
     onItemClicked = (elem: RunsListItemView) => {
         this.onPicked(elem.item)
     }
@@ -121,8 +115,7 @@ export class RunsPickerView extends ScreenView {
     }
 
     private async renderList() {
-        let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
-        this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
+        this.currentRunsList = this.currentRunsList.filter(run => runsFilter(run, this.searchQuery, ""))
 
         this.runsListContainer.innerHTML = ''
         $(this.runsListContainer, $ => {

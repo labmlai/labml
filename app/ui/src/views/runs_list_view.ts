@@ -13,8 +13,8 @@ import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {getQueryParameter, setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
-import {DefaultLineGradient} from "../components/charts/chart_gradients";
-import {extractTags} from "../utils/value"
+import {DefaultLineGradient} from "../components/charts/chart_gradients"
+import {extractTags, runsFilter} from "../utils/search";
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -150,32 +150,6 @@ class RunsListView extends ScreenView {
         }
     }
 
-    runsFilter = (run: RunListItemModel, searchText: string) => {
-        let {tags, query, mainTags} = extractTags(searchText)
-        if (this.defaultTag) {
-            tags.push(this.defaultTag)
-        }
-        tags = tags.concat(mainTags)
-
-        if (tags.length == 0 && query == "") {
-            return true
-        }
-
-        const queryRegex = new RegExp(query.toLowerCase(), 'g')
-        const tagRegex: RegExp[] = []
-        for (let tag of tags) {
-            tagRegex.push(new RegExp(`(^|\\s)${tag.toLowerCase()}(?=\\s|$)`, 'g'))
-        }
-
-        let matchName = query == "" || run.name.toLowerCase().search(queryRegex) !== -1
-        let matchComment = query == "" || run.comment.toLowerCase().search(queryRegex) !== -1
-        let matchTags = tags.length == 0 || tagRegex.every(tag => run.tags.join(' ').toLowerCase().search(tag) !== -1)
-
-        if (!matchTags)
-            return false
-        return matchName || matchComment
-    }
-
     onRefresh = async () => {
         this.editButton.disabled = true
         try {
@@ -274,7 +248,7 @@ class RunsListView extends ScreenView {
 
     private renderList() {
         if (this.runsList.length > 0) {
-            this.currentRunsList = this.runsList.filter(run => this.runsFilter(run, this.searchQuery))
+            this.currentRunsList = this.runsList.filter(run => runsFilter(run, this.searchQuery, this.defaultTag))
 
             this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {
