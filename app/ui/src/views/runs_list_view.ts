@@ -13,8 +13,8 @@ import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {getQueryParameter, setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
-import {DefaultLineGradient} from "../components/charts/chart_gradients";
-import {extractTags} from "../utils/value"
+import {DefaultLineGradient} from "../components/charts/chart_gradients"
+import {extractTags, getSearchQuery, runsFilter} from "../utils/search";
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -33,7 +33,7 @@ class RunsListView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private isTBProcessing: boolean
     private actualWidth: number
-    private readonly defaultTag: string // permanent tag in the url
+    private defaultTag: string // permanent tag in the url
 
     constructor(tag: string) {
         super()
@@ -69,10 +69,15 @@ class RunsListView extends ScreenView {
             }
         }
 
+        if (this.searchQuery === "") {
+            this.searchQuery = getSearchQuery()
+            let r = extractTags(this.searchQuery)
+            this.defaultTag = r.mainTags.length > 0 ? r.mainTags[0] : ""
+        }
+
         this.isEditMode = false
         this.selectedRunsSet = new Set<RunListItemModel>()
         this.isTBProcessing = false
-
     }
 
     onResize(width: number) {
@@ -148,32 +153,6 @@ class RunsListView extends ScreenView {
         } else {
             this.refresh.stop()
         }
-    }
-
-    runsFilter = (run: RunListItemModel, searchText: string) => {
-        let {tags, query, mainTags} = extractTags(searchText)
-        if (this.defaultTag) {
-            tags.push(this.defaultTag)
-        }
-        tags = tags.concat(mainTags)
-
-        if (tags.length == 0 && query == "") {
-            return true
-        }
-
-        const queryRegex = new RegExp(query.toLowerCase(), 'g')
-        const tagRegex: RegExp[] = []
-        for (let tag of tags) {
-            tagRegex.push(new RegExp(`(^|\\s)${tag.toLowerCase()}(?=\\s|$)`, 'g'))
-        }
-
-        let matchName = query == "" || run.name.toLowerCase().search(queryRegex) !== -1
-        let matchComment = query == "" || run.comment.toLowerCase().search(queryRegex) !== -1
-        let matchTags = tags.length == 0 || tagRegex.every(tag => run.tags.join(' ').toLowerCase().search(tag) !== -1)
-
-        if (!matchTags)
-            return false
-        return matchName || matchComment
     }
 
     onRefresh = async () => {
@@ -259,23 +238,22 @@ class RunsListView extends ScreenView {
         let mainTag = r.mainTags.length > 0 ? r.mainTags[0] : ""
         let tags = r.tags.concat(r.mainTags).filter(tag => tag !== mainTag)
 
-        if (this.defaultTag == mainTag) {
-            window.history.replaceState({}, "",
-                `${window.location.toString().replace(window.location.search, "")}?query=${encodeURIComponent(r.query)}&tags=${encodeURIComponent(r.tags.join(','))}`)
-            this.renderList()
-            return
+        let queryString = (r.query == "" ? "" : `query=${encodeURIComponent(r.query)}`)
+        let tagsString = (tags.length == 0 ? "" : `tags=${encodeURIComponent(tags.join(','))}`)
+        if (queryString && tagsString) {
+            queryString += "&"
         }
+        window.history.replaceState({}, "", `/runs${mainTag ? "/"+mainTag : ""}${queryString || tagsString ? "?" : ""}${queryString}${tagsString}`)
 
-        if (mainTag) {
-            ROUTER.navigate(`/runs/${mainTag}?query=${encodeURIComponent(r.query)}&tags=${encodeURIComponent(tags.join(','))}`)
-        } else {
-            ROUTER.navigate(`/runs?query=${encodeURIComponent(r.query)}&tags=${encodeURIComponent(tags.join(','))}`)
-        }
+        this.defaultTag = mainTag
+        await this.loader.load()
+
+        this.renderList()
     }
 
     private renderList() {
         if (this.runsList.length > 0) {
-            this.currentRunsList = this.runsList.filter(run => this.runsFilter(run, this.searchQuery))
+            this.currentRunsList = this.runsList.filter(run => runsFilter(run, this.searchQuery))
 
             this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {
