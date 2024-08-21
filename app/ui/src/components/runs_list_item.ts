@@ -1,7 +1,7 @@
 import {WeyaElementFunction} from '../../../lib/weya/weya'
 import {RunListItem} from '../models/run_list'
 import {StatusView} from './status'
-import {formatTime} from '../utils/time'
+import {getDateTimeComponents} from '../utils/time'
 import {ConfigItemView} from "../analyses/experiments/configs/components";
 import {TagView} from "./tag"
 
@@ -27,6 +27,21 @@ export class RunsListItemView {
         }
     }
 
+    private getTimeString() {
+        let startDate = getDateTimeComponents(new Date(this.item.start_time * 1000))
+        let endDate = getDateTimeComponents(new Date(this.item.last_updated_time * 1000))
+
+        let timeString = `'${startDate[0]} ${startDate[1]} ${startDate[2]}, ${startDate[3]}:${startDate[4]}`
+
+        if (startDate[0] == endDate[0] && startDate[1] == endDate[1] && startDate[2] == endDate[2]) {
+            timeString += ` - ${endDate[3]}:${endDate[4]}`
+        } else {
+            timeString += ` - ${endDate[0]} ${endDate[1]} ${endDate[2]}, ${endDate[3]}:${endDate[4]}`
+        }
+
+        return timeString
+    }
+
     render($: WeyaElementFunction) {
         this.elem = $('a', '.list-item.list-group-item.list-group-item-action',
             {href: `/run/${this.item.run_uuid}`, on: {click: this.onClick}},
@@ -34,7 +49,12 @@ export class RunsListItemView {
                 new StatusView({status: this.item.run_status, isDistributed: this.item.world_size>0}).render($)
                 $('div', '.spaced-row', $ => {
                     $('div', $ => {
-                        $('p', `Started on ${formatTime(this.item.start_time)}`)
+                        $('p.time', this.getTimeString())
+                        $('div.tags', $ => {
+                            this.item.tags.map((tag: any, _: any) => (
+                                new TagView({text: tag}).render($)
+                            ))
+                        })
                         $('h5', this.item.name)
                         $('h6', this.item.comment)
                     })
@@ -78,11 +98,6 @@ export class RunsListItemView {
                             })
                         }
                     })
-                })
-                $('div.tags', $ => {
-                    this.item.tags.map((tag: any, _: any) => (
-                        new TagView({text: tag}).render($)
-                    ))
                 })
             })
     }
