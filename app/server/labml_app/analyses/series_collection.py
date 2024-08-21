@@ -31,12 +31,14 @@ class SeriesCollection:
 
         return res
 
-    def track(self, data: Dict[str, SeriesModel], keep_last_24h: bool = False) -> None:
+    def track(self, data: Dict[str, SeriesModel], keep_last_24h: bool = False) -> int:
         for ind, series in data.items():
             self.step = max(self.step, series['step'][-1])
             self._update_series(ind, series, keep_last_24h)
 
         self.save()
+
+        return self.step
 
     def _update_series(self, ind: str, series: SeriesModel, keep_last_24h: bool) -> None:
         if ind not in self.tracking:

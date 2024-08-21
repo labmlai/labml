@@ -58,7 +58,7 @@ class MetricsAnalysis(Analysis):
     def __init__(self, data):
         self.metrics = data
 
-    def track(self, data: Dict[str, SeriesModel], run_uuid: str = None):
+    def track(self, data: Dict[str, SeriesModel], run_uuid: str = None) -> int:
         res = {}
         current_indicators = list(self.metrics.indicators)
         new_indicators = set()
@@ -94,7 +94,7 @@ class MetricsAnalysis(Analysis):
                 logger.error(f'Error updating preferences: {e}')
                 raise e
 
-        self.metrics.track(res)
+        return self.metrics.track(res)
 
     def get_tracking(self):
         res = []
