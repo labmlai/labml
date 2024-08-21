@@ -106,7 +106,7 @@ class RunConfigsView extends ScreenView {
         let hasAttributesInConfig = this.hasAttributesInConfig(config, attributes)
 
         if (attributes.length > 0) {
-            return matchName || matchKey && hasAttributesInConfig
+            return (matchName || matchKey) && hasAttributesInConfig
         }
 
         return matchName || matchKey
