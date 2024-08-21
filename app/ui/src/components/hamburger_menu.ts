@@ -83,14 +83,6 @@ export class HamburgerMenuView {
         this.loader.remove()
 
         $(this.navLinksContainer, $ => {
-            $('div', '.text-center', $ => {
-                $('img', '.mt-2.image-style.rounded-circle', {
-                    src: this.user?.picture || DEFAULT_IMAGE,
-                })
-                $('div', '.mb-5.mt-3.mt-2', $ => {
-                    $('h5', this.user?.name || '')
-                })
-            })
             new NavButton({
                 icon: '.fas.fa-running',
                 text: 'Runs',

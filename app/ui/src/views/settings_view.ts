@@ -59,25 +59,8 @@ class SettingsView extends ScreenView {
         this.loader.remove()
 
         $(this.settingsContainer, $ => {
-            $('div', '.text-center', $ => {
-                $('img', '.mt-2.image-style.rounded-circle', {
-                    src: this.user.picture || DEFAULT_IMAGE
-                })
-            })
             $('div.input-list-container', $ => {
                 $('ul', $ => {
-                    new EditableField({
-                        name: 'Token',
-                        value: this.user.default_project
-                    }).render($)
-                    new EditableField({
-                        name: 'Name',
-                        value: this.user.name
-                    }).render($)
-                    new EditableField({
-                        name: 'Email',
-                        value: this.user.email
-                    }).render($)
                     $(`li`, $ => {
                         $('span.item-key', 'Theme')
                         $('span.item-value', {on: {change: this.onThemeUpdate}}, $ => {
