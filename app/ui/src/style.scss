@@ -159,14 +159,15 @@ body {
 }
 
 .tags {
-  .label {
-    font-weight: bold;
-    font-size: 0.6rem;
-    margin-bottom: 5px;
-  }
-
-  .label-info {
-    background-color: rgba(33, 150, 243, 0.4);
+  margin-top: 5px;
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: .4rem;
+    margin-right: 6px;
+    background-color: var(--tag-bg);
+    font-size: 0.8rem;
+    color: var(--text);
   }
 }
 
