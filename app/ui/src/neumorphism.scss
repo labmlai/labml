@@ -53,6 +53,7 @@
   --warning: #ffc107;
   --success: #28a745;
   --tag-bg: rgb(0 0 0 / 10%);
+  --time-color: rgb(0 0 0 / 90%)
 }
 
 .dark {
@@ -75,6 +76,7 @@
   --warning: #ffc107;
   --success: #28a745;
   --tag-bg: rgb(255 255 255 / 10%);
+  --time-color: rgb(255 255 255 / 90%)
 }
 
 body {
@@ -284,8 +286,8 @@ option {
       color: var(--text-secondary);
     }
 
-    p {
-      color: var(--text-secondary);
+    .time {
+      color: var(--time-color);
     }
 
     .status {

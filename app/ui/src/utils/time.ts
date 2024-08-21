@@ -1,6 +1,6 @@
 export function formatTime(time: number): string {
     let date = new Date(time * 1000)
-    let timeStr = date.toTimeString().substr(0, 8)
+    let timeStr = `${date.getHours()}:${date.getMinutes()}`
     let dateStr = date.toDateString()
 
     return `${dateStr} at ${timeStr}`
@@ -22,6 +22,17 @@ export function getTimeDiff(timestamp: number): string {
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
+
+export function getDateTimeComponents(dateTime: Date): string[] {
+    let year = dateTime.getFullYear().toString().substring(2)
+    let month = monthNames[dateTime.getMonth()]
+    let date = dateTime.getDate().toString()
+
+    let hours = dateTime.getHours().toString()
+    let minutes = dateTime.getMinutes().toString()
+
+    return [year, month, date, hours, minutes]
+}
 
 export function formatDateTime(dateTime: Date) {
     let date = dateTime.getDate()
