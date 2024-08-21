@@ -98,15 +98,8 @@ export class SparkLine {
     render($: WeyaElementFunction) {
         $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
             $(`div.sparkline-content`, {style: {width: `${Math.min(this.titleWidth * 2 + this.chartWidth, 450)}px`}}, $ => {
-                if (this.isComparison) {
-                    $('i', `.fa.fa-chart-line.title.icon.chart`, '', {style: {color: this.isBase ? getBaseColor() : '#E15759'}})
-                }
-                if (this.onClick != null) {
-                    if (this.isSelected) {
-                        $('span', '.fas.fa-eye.title.icon', '', {style: {color: getBaseColor()}})
-                    } else {
-                        $('span', '.fas.fa-eye-slash.title.icon', '', {style: {color: getBaseColor()}})
-                    }
+                if (this.isComparison && this.isBase) {
+                    $('i', `.fa.fa-balance-scale.title.icon.chart`, '', {style: {color: this.color}})
                 }
                 let title = $('span', '.title', this.name, {style: {color: this.color}})
                 let sparkline = $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth * 2}px`}, height: 36}, $ => {

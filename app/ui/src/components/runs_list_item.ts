@@ -7,7 +7,7 @@ import {TagView} from "./tag"
 
 export interface RunsListItemOptions {
     item: RunListItem
-    onClick: (elem: RunsListItemView) => void
+    onClick?: (elem: RunsListItemView) => void
     width: number
 }
 
@@ -21,13 +21,19 @@ export class RunsListItemView {
     constructor(opt: RunsListItemOptions) {
         this.item = opt.item
         this.width = opt.width
-        this.onClick = (e: Event) => {
-            e.preventDefault()
-            opt.onClick(this)
+        if (opt.onClick) {
+            this.onClick = (e: Event) => {
+                e.preventDefault()
+                opt.onClick(this)
+            }
         }
     }
 
     private getTimeString() {
+        if (this.item.start_time == null || this.item.last_updated_time == null) {
+            return ''
+        }
+
         let startDate = getDateTimeComponents(new Date(this.item.start_time * 1000))
         let endDate = getDateTimeComponents(new Date(this.item.last_updated_time * 1000))
 
@@ -44,9 +50,11 @@ export class RunsListItemView {
 
     render($: WeyaElementFunction) {
         this.elem = $('a', '.list-item.list-group-item.list-group-item-action',
-            {href: `/run/${this.item.run_uuid}`, on: {click: this.onClick}},
+            {href: `/run/${this.item.run_uuid}`, on: {click: this.onClick}, target: '_blank'},
             $ => {
-                new StatusView({status: this.item.run_status, isDistributed: this.item.world_size>0}).render($)
+                if (this.item.run_status) {
+                    new StatusView({status: this.item.run_status, isDistributed: this.item.world_size>0}).render($)
+                }
                 $('div', '.spaced-row', $ => {
                     $('div', $ => {
                         $('p.time', this.getTimeString())
