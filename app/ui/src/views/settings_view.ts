@@ -85,10 +85,10 @@ class SettingsView extends ScreenView {
     }
 
     onThemeUpdate = async () => {
-        this.updateRadio()
         try {
-            await this.userCache.setUser(this.user)
             this.user.theme = this.radioDark.checked ? DARK : LIGHT
+            await this.userCache.setUser(this.user)
+            this.updateRadio()
             await SCREEN.updateTheme()
         } catch (e) {
             UserMessages.shared.networkError(e, "Failed to save")
