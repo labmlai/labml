@@ -231,7 +231,7 @@ class RunConfigsView extends ScreenView {
             await this.runHeaderCard.refresh().then()
         }
 
-        this.renderConfigsView()
+        this.renderSearchConfigView(this.searchQuery)
     }
 
     onVisibilityChange() {
