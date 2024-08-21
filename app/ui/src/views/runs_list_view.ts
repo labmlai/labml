@@ -33,7 +33,7 @@ class RunsListView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private isTBProcessing: boolean
     private actualWidth: number
-    private readonly defaultTag: string // permanent tag in the url
+    private defaultTag: string // permanent tag in the url
 
     constructor(tag: string) {
         super()
@@ -259,18 +259,17 @@ class RunsListView extends ScreenView {
         let mainTag = r.mainTags.length > 0 ? r.mainTags[0] : ""
         let tags = r.tags.concat(r.mainTags).filter(tag => tag !== mainTag)
 
-        if (this.defaultTag == mainTag) {
-            window.history.replaceState({}, "",
-                `${window.location.toString().replace(window.location.search, "")}?query=${encodeURIComponent(r.query)}&tags=${encodeURIComponent(r.tags.join(','))}`)
-            this.renderList()
-            return
+        let queryString = (r.query == "" ? "" : `query=${encodeURIComponent(r.query)}`)
+        let tagsString = (tags.length == 0 ? "" : `tags=${encodeURIComponent(tags.join(','))}`)
+        if (queryString && tagsString) {
+            queryString += "&"
         }
+        window.history.replaceState({}, "", `/runs${mainTag ? "/"+mainTag : ""}${queryString || tagsString ? "?" : ""}${queryString}${tagsString}`)
 
-        if (mainTag) {
-            ROUTER.navigate(`/runs/${mainTag}?query=${encodeURIComponent(r.query)}&tags=${encodeURIComponent(tags.join(','))}`)
-        } else {
-            ROUTER.navigate(`/runs?query=${encodeURIComponent(r.query)}&tags=${encodeURIComponent(tags.join(','))}`)
-        }
+        this.defaultTag = mainTag
+        await this.loader.load()
+
+        this.renderList()
     }
 
     private renderList() {
