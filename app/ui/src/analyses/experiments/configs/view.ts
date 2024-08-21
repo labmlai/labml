@@ -16,7 +16,7 @@ import {UserMessages} from "../../../components/user_messages"
 import {SearchView} from "../../../components/search"
 import {Config} from "../../../models/config"
 
-const CONFIG_ATTRIBUTES = ['meta', 'custom', 'onlyoption', 'explicitlyspecified', 'hp', 'hyperparam']
+const CONFIG_ATTRIBUTES = ['meta', 'custom', 'onlyoption', 'explicit', 'hp', 'hyperparam']
 
 class RunConfigsView extends ScreenView {
     elem: HTMLDivElement
@@ -123,7 +123,7 @@ class RunConfigsView extends ScreenView {
             if (attribute == 'onlyoption' && config.isOnlyOption) {
                 return true
             }
-            if (attribute == 'explicitlyspecified' && config.isExplicitlySpecified) {
+            if (attribute == 'explicit' && config.isExplicitlySpecified) {
                 return true
             }
             if (attribute == 'hp' && config.isHyperparam) {
