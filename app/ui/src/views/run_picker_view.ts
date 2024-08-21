@@ -8,7 +8,7 @@ import {CancelButton} from '../components/buttons'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
-import {runsFilter} from "../utils/search";
+import {extractTags, getSearchQuery, runsFilter} from "../utils/search";
 
 interface RunsPickerViewOptions {
     onPicked: (run: RunListItemModel) => void
@@ -29,6 +29,7 @@ export class RunsPickerView extends ScreenView {
     private readonly onCancel: () => void
     private readonly title: string
     private actualWidth: number
+    private defaultTag: string
 
     constructor(opt: RunsPickerViewOptions) {
         super()
@@ -39,18 +40,18 @@ export class RunsPickerView extends ScreenView {
         this.runListCache = CACHE.getRunsList()
 
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
+        this.searchQuery = getSearchQuery()
+        let r = extractTags(this.searchQuery)
+        this.defaultTag = r.mainTags.length > 0 ? r.mainTags[0] : ''
 
         this.loader = new DataLoader(async (force) => {
-            let runsList = (await this.runListCache.get(force)).runs
+            let runsList = (await this.runListCache.get(force, this.defaultTag)).runs
                 .filter(run => !opt.excludedRuns.has(run.run_uuid))
             this.currentRunsList = []
             for (let run of runsList) {
                 this.currentRunsList.push(new RunListItem(run))
             }
         })
-
-        this.searchQuery = ''
-
     }
 
     onResize(width: number) {
@@ -80,7 +81,7 @@ export class RunsPickerView extends ScreenView {
                 })
 
                 $('div', '.runs-list', $ => {
-                    new SearchView({onSearch: this.onSearch}).render($)
+                    new SearchView({onSearch: this.onSearch, initText: this.searchQuery}).render($)
                     this.loader.render($)
                     this.runsListContainer = $('div', '.list.runs-list.list-group', '')
                 })
@@ -110,12 +111,15 @@ export class RunsPickerView extends ScreenView {
 
     onSearch = async (query: string) => {
         this.searchQuery = query
+        let r = extractTags(this.searchQuery)
+        this.defaultTag = r.mainTags.length > 0 ? r.mainTags[0] : ''
+
         await this.loader.load()
         this.renderList().then()
     }
 
     private async renderList() {
-        this.currentRunsList = this.currentRunsList.filter(run => runsFilter(run, this.searchQuery, ""))
+        this.currentRunsList = this.currentRunsList.filter(run => runsFilter(run, this.searchQuery))
 
         this.runsListContainer.innerHTML = ''
         $(this.runsListContainer, $ => {

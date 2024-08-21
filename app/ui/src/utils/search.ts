@@ -1,10 +1,17 @@
 import {RunListItemModel} from "../models/run_list"
 
-export function runsFilter(run: RunListItemModel, searchText: string, mainTag: string = "") {
+export function getSearchQuery() {
+    return localStorage.getItem('searchQuery') || ''
+}
+
+export function setSearchQuery(query: string) {
+    localStorage.setItem('searchQuery', query)
+}
+
+export function runsFilter(run: RunListItemModel, searchText: string) {
+    setSearchQuery(searchText)
+
     let {tags, query, mainTags} = extractTags(searchText)
-    if (mainTag) {
-        tags.push(mainTag)
-    }
     tags = tags.concat(mainTags)
 
     if (tags.length == 0 && query == "") {

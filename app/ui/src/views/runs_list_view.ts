@@ -14,7 +14,7 @@ import {handleNetworkErrorInplace} from '../utils/redirect'
 import {getQueryParameter, setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
 import {DefaultLineGradient} from "../components/charts/chart_gradients"
-import {extractTags, runsFilter} from "../utils/search";
+import {extractTags, getSearchQuery, runsFilter} from "../utils/search";
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -69,10 +69,15 @@ class RunsListView extends ScreenView {
             }
         }
 
+        if (this.searchQuery === "") {
+            this.searchQuery = getSearchQuery()
+            let r = extractTags(this.searchQuery)
+            this.defaultTag = r.mainTags.length > 0 ? r.mainTags[0] : ""
+        }
+
         this.isEditMode = false
         this.selectedRunsSet = new Set<RunListItemModel>()
         this.isTBProcessing = false
-
     }
 
     onResize(width: number) {
@@ -248,7 +253,7 @@ class RunsListView extends ScreenView {
 
     private renderList() {
         if (this.runsList.length > 0) {
-            this.currentRunsList = this.runsList.filter(run => runsFilter(run, this.searchQuery, this.defaultTag))
+            this.currentRunsList = this.runsList.filter(run => runsFilter(run, this.searchQuery))
 
             this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {
