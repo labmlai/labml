@@ -36,18 +36,15 @@ class Project(Model['Project']):
 
     def _get_runs_util(self, run_uuids: List[str]) -> List['run.Run']:
         res = []
-        likely_deleted = []
 
         runs = run.mget(run_uuids)
+        run_uuids_from_db = []
         for r in runs:
-            try:
-                if r:
-                    res.append(r)
-                else:
-                    likely_deleted.append(r.run_uuid)
-            except TypeError as e:
-                logger.error('error in creating run list, ' + r.run_uuid + ':' + str(e))
+            if r:
+                res.append(r)
+                run_uuids_from_db.append(r.run_uuid)
 
+        likely_deleted = set(run_uuids) - set(run_uuids_from_db)
         for run_uuid in likely_deleted:
             if run_uuid in self.runs:
                 self.runs.pop(run_uuid)
