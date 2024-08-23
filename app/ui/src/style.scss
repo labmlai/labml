@@ -903,10 +903,14 @@ $keyFontSize: 0.8rem;
 }
 
 .info_list {
-  vertical-align: middle;
+  vertical-align: top;
 
   * {
-    vertical-align: middle;
+    vertical-align: top;
+  }
+
+  .fas {
+    vertical-align: unset;
   }
 
   > span {
@@ -916,14 +920,18 @@ $keyFontSize: 0.8rem;
 
   > span.key {
     margin-right: 5px;
-    width: 120px;
+    width: 200px;
     opacity: 0.7;
-    white-space: nowrap;
-    overflow: auto;
-    vertical-align: middle;
+    white-space: wrap;
+    text-wrap: wrap;
+    vertical-align: top;
+    word-wrap: break-word;
+    display: inline-block;
+    font-size: 0.9rem;
 
     @media (max-width: $mobile) {
-      width: 200px;
+      width: calc(100% - 100px);
+      vertical-align: middle;
     }
 
 
@@ -1001,11 +1009,20 @@ $keyFontSize: 0.8rem;
   }
 
   .config {
-    .combined {
-      width: 330px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 
-      > span {
-        display: inline-block
+    .combined {
+      width: calc(100% - 300px);
+      white-space: wrap;
+      text-wrap: wrap;
+      vertical-align: top;
+      word-wrap: break-word;
+      display: inline-block;
+
+      @media (max-width: $mobile) {
+          width: 100%;
+          vertical-align: middle;
       }
     }
 
@@ -1517,14 +1534,6 @@ a.generic-link {
   }
 }
 
-.config {
-  .combined {
-    width: 330px;
-    display: inline-block;
-    overflow: auto;
-  }
-}
-
 .chart-overlay {
   position: absolute;
   width: 100%;
@@ -1648,5 +1657,19 @@ pre {
     width: 9rem;
     margin-top: auto;
     margin-bottom: auto;
+  }
+}
+
+.config {
+  .toggle-button {
+    .nav-link {
+      padding: 0px 5px;
+    }
+  }
+}
+
+.list-item {
+  .configs {
+    width: 100%;
   }
 }

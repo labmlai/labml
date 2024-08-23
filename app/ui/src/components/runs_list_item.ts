@@ -92,9 +92,8 @@ export class RunsListItemView {
                         }
 
 
-                    $('div', $ => {
+                    $('div.configs', $ => {
                         if (this.item.favorite_configs != null && this.item.favorite_configs.length != 0) {
-                            $('span', 'Configs: ')
                             this.item.favorite_configs.map((c) => {
                                 new ConfigItemView({
                                     config: c,
