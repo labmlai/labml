@@ -106,7 +106,7 @@ class Network {
         return this.sendHttpRequest('POST', `/user`, {'user': user})['promise']
     }
 
-    getAnalysis(url: string, runUUID: string, getAll: boolean = false, currentUUID: string = "",
+    getAnalysis(url: string, runUUID: string, getAll: boolean = false, metricUUID: string = "", currentUUID: string = "",
                       isExperiment: boolean): {promise: Promise<any>, xhr: XMLHttpRequest} {
         let method = 'GET'
         if (isExperiment) {
@@ -118,7 +118,7 @@ class Network {
         }
 
         return this.sendHttpRequest(method,
-            `/${url}/${runUUID}?current=${currentUUID}`, data)
+            `/${url}/${runUUID}?metric=${metricUUID}&current=${currentUUID}`, data)
     }
 
     async getCustomAnalysis(url: string): Promise<any> {

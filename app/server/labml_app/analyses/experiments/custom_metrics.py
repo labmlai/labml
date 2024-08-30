@@ -9,7 +9,7 @@ from labml_db.serializer.yaml import YamlSerializer
 from fastapi import Request
 
 from labml_app.analyses.analysis import Analysis
-from labml_app.analyses.experiments.comparison import ComparisonPreferencesModel
+from labml_app.analyses.preferences import ComparisonPreferencesModel
 
 
 @Analysis.db_model(PickleSerializer, 'custom_metrics')

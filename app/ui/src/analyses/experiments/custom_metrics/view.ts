@@ -83,7 +83,9 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
             this.run = await CACHE.getRun(this.uuid).get(force)
 
+            metricsCache.getAnalysis(this.uuid).setMetricUUID(this.customMetricUUID)
             metricsCache.getAnalysis(this.uuid).setCurrentUUID(this.uuid)
+
             this.series = (await metricsCache.getAnalysis(this.uuid).get(force)).series
 
             let customMetricList = await CACHE.getCustomMetrics(this.uuid).get(force)
@@ -441,6 +443,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
 
     private async updateBaseRun(force: boolean) {
         this.baseAnalysisCache = metricsCache.getAnalysis(this.baseUuid)
+        this.baseAnalysisCache.setMetricUUID(this.customMetricUUID)
         this.baseAnalysisCache.setCurrentUUID(this.uuid)
         this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
         try {
@@ -457,6 +460,8 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             }
         }
     }
+
+    // todo write a function to check if all metrics are here if not request them
 
     private async requestMissingMetrics() {
         let res = metricsCache.getAnalysis(this.uuid).getAllMetrics()

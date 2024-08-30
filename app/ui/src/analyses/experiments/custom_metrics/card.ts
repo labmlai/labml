@@ -35,6 +35,7 @@ export class MetricCard extends Card {
         this.currentUUID = opt.uuid
         this.width = opt.width
         this.currentAnalysisCache = metricsCache.getAnalysis(this.currentUUID)
+        this.currentAnalysisCache.setMetricUUID(this.customMetricUUID)
         this.currentAnalysisCache.setCurrentUUID(this.currentUUID)
 
         this.customMetricUUID = opt.params != null ? opt.params['custom_metric'] : null
@@ -55,6 +56,7 @@ export class MetricCard extends Card {
 
             if (!!this.baseUUID) {
                 this.baseAnalysisCache = metricsCache.getAnalysis(this.baseUUID)
+                this.baseAnalysisCache.setMetricUUID(this.customMetricUUID)
                 this.baseAnalysisCache.setCurrentUUID(this.currentUUID)
                 try {
                     let baseAnalysisData = await this.baseAnalysisCache.get(force)
