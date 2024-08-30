@@ -266,11 +266,7 @@ export class ViewWrapper {
         UserMessages.shared.networkError(error, message)
     }
 
-    public render(missingBaseExperiment: boolean = false) {
-        if (missingBaseExperiment) {
-            this.clear()
-            return
-        }
+    public render() {
         this.renderCharts()
         this.renderTopButtons()
         this.renderOptionRow()

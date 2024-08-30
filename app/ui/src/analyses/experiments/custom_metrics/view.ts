@@ -1,8 +1,5 @@
-import {Indicator, Run} from "../../../models/run"
-import CACHE, {
-    AnalysisDataCache,
-    ComparisonAnalysisPreferenceCache
-} from "../../../cache/cache"
+import {CustomMetric, Indicator, Run} from "../../../models/run"
+import CACHE, {AnalysisDataCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader, Loader} from "../../../components/loader"
@@ -16,15 +13,13 @@ import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {clearChildElements, setTitle} from '../../../utils/document'
 import {ScreenView} from '../../../screen_view'
-import metricsCache from "./cache"
 import {MetricDataStore, ViewWrapper} from "../chart_wrapper/view"
-import comparisonCache from "./cache"
 import {NetworkError} from "../../../network"
 import {RunsPickerView} from "../../../views/run_picker_view"
-import {SmoothingType} from "../../../components/charts/smoothing/smoothing_base"
-import {RunsListItemView} from "../../../components/runs_list_item";
+import {RunsListItemView} from "../../../components/runs_list_item"
+import metricsCache from "./cache"
 
-class ComparisonView extends ScreenView implements MetricDataStore {
+class CustomMetricView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
     private baseUuid: string
 
@@ -62,7 +57,6 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     private loader: DataLoader
     private content: ViewWrapper
 
-    private preferenceCache: ComparisonAnalysisPreferenceCache
     private run: Run
     private baseRun: Run
     private baseAnalysisCache: AnalysisDataCache
@@ -70,12 +64,15 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     private deleteButton: DeleteButton
     private editButton: IconButton
 
-    constructor(uuid: string) {
+    private readonly customMetricUUID: string
+    private customMetric: CustomMetric
+
+    constructor(uuid: string, customMetricUUID: string) {
         super()
 
+        this.customMetricUUID = customMetricUUID
         this.uuid = uuid
         this.chartType = 0
-        this.preferenceCache = <ComparisonAnalysisPreferenceCache>comparisonCache.getPreferences(this.uuid)
         this.isUnsaved = false
 
         this.loader = new DataLoader(async (force) => {
@@ -89,12 +86,20 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             metricsCache.getAnalysis(this.uuid).setCurrentUUID(this.uuid)
             this.series = (await metricsCache.getAnalysis(this.uuid).get(force)).series
 
-            this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
+            let customMetricList = await CACHE.getCustomMetrics(this.uuid).get(force)
+            if (customMetricList == null || customMetricList.getMetric(this.customMetricUUID) == null) {
+                throw new NetworkError(404, "", "Custom metric list is null")
+            }
+
+            this.preferenceData = customMetricList.getMetric(this.customMetricUUID).preferences
+            this.customMetric = customMetricList.getMetric(this.customMetricUUID)
+
             this.baseUuid = this.preferenceData.base_experiment
 
             this.chartType = this.preferenceData.chart_type
             this.stepRange = [...this.preferenceData.step_range]
             this.focusSmoothed = this.preferenceData.focus_smoothed
+
             this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
             if (this.baseSeries) {
                 this.basePlotIdx = [...fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)]
@@ -213,7 +218,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         })
 
         this.renderHeaders()
-        this.content.render(this.missingBaseExperiment)
+        this.content.render()
         this.renderButtons()
     }
 
@@ -248,7 +253,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
         try {
             await this.loader.load(true)
 
-            this.content.render(this.missingBaseExperiment)
+            this.content.render()
             this.renderButtons()
         } catch (e) {
 
@@ -269,7 +274,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     }
 
     private savePreferences = async () => {
-        let preferenceData: ComparisonPreferenceModel = {
+        this.customMetric.preferences = {
             series_preferences: this.plotIdx,
             chart_type: this.chartType,
             step_range: this.stepRange,
@@ -277,14 +282,17 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             sub_series_preferences: undefined,
             base_experiment: this.baseUuid,
             base_series_preferences: this.basePlotIdx,
-            is_base_distributed: this.baseRun.world_size != 0,
+            is_base_distributed: this.baseRun?.world_size != 0,
             series_names: this.series.map(s => s.name),
             base_series_names: this.baseSeries ? this.baseSeries.map(s => s.name) : [],
             smooth_value: this.smoothValue,
             smooth_function: this.smoothFunction
         }
 
-        await this.preferenceCache.setPreference(preferenceData)
+        // this.customMetric.name = this.nameField.getInput()
+        // this.customMetric.description = this.descriptionField.getInput()
+
+        await CACHE.getCustomMetrics(this.uuid).updateMetric(this.customMetricUUID, this.customMetric.toData())
 
         this.isUnsaved = false
         this.refresh.resume()
@@ -326,30 +334,40 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     }
 
     private onDelete = async () => {
-        this.deleteButton.disabled = true
-        this.deleteButton.loading = true
-
-        try {
-            this.preferenceData = await this.preferenceCache.deleteBaseExperiment()
-        } catch (e) {
-            this.content.renderError(e, "Failed to delete comparison")
-            this.deleteButton.disabled = false
-            return
-        } finally {
-            this.deleteButton.loading = false
+        if (confirm('Are you sure you want to delete this chart?')) {
+            try {
+                await CACHE.getCustomMetrics(this.uuid).deleteMetric(this.customMetricUUID)
+                ROUTER.navigate(`/run/${this.uuid}`)
+            } catch (e) {
+                this.content.renderError(e, "Failed to delete chart")
+            }
         }
-
-        this.baseSeries = undefined
-            this.basePlotIdx = []
-            this.baseUuid = ''
-            this.baseRun = undefined
-
-            this.missingBaseExperiment = true
-            this.isUnsaved = false
-            this.refresh.resume()
-            this.renderHeaders()
-            this.content.render(this.missingBaseExperiment)
-            this.renderButtons()
+        return
+        // todo
+        // this.deleteButton.disabled = true
+        // this.deleteButton.loading = true
+        //
+        // try {
+        //     this.preferenceData = await this.preferenceCache.deleteBaseExperiment()
+        // } catch (e) {
+        //     this.content.renderError(e, "Failed to delete comparison")
+        //     this.deleteButton.disabled = false
+        //     return
+        // } finally {
+        //     this.deleteButton.loading = false
+        // }
+        //
+        // this.baseSeries = undefined
+        //     this.basePlotIdx = []
+        //     this.baseUuid = ''
+        //     this.baseRun = undefined
+        //
+        //     this.missingBaseExperiment = true
+        //     this.isUnsaved = false
+        //     this.refresh.resume()
+        //     this.renderHeaders()
+        //     this.content.render(this.missingBaseExperiment)
+        //     this.renderButtons()
     }
 
     private onEditClick = () => {
@@ -361,28 +379,29 @@ class ComparisonView extends ScreenView implements MetricDataStore {
             excludedRuns: new Set<string>([this.run.run_uuid]),
             onPicked: async run => {
                 try {
-                    if (this.preferenceData.base_experiment !== run.run_uuid) {
-                        this.preferenceData = await this.preferenceCache.updateBaseExperiment(run)
-                        this.baseUuid = run.run_uuid
-                        this.basePlotIdx = []
-                        this.plotIdx = []
-                        this.stepRange = [-1, -1]
-                        this.focusSmoothed = true
-                        this.smoothValue = 0.5
-                        this.chartType = 0
-                        this.smoothFunction = SmoothingType.LEFT_EXPONENTIAL
-
-                        this.setBaseLoading(true)
-
-                        await this.updateBaseRun(true)
-
-                        this.isUnsaved = false
-                        this.refresh.resume()
-
-                        await this.savePreferences()
-                        this.plotIdx = fillPlotPreferences(this.series, [])
-                        this.basePlotIdx = fillPlotPreferences(this.baseSeries, [])
-                    }
+                    // todo
+                    // if (this.preferenceData.base_experiment !== run.run_uuid) {
+                    //     this.preferenceData = await this.preferenceCache.updateBaseExperiment(run)
+                    //     this.baseUuid = run.run_uuid
+                    //     this.basePlotIdx = []
+                    //     this.plotIdx = []
+                    //     this.stepRange = [-1, -1]
+                    //     this.focusSmoothed = true
+                    //     this.smoothValue = 0.5
+                    //     this.chartType = 0
+                    //     this.smoothFunction = SmoothingType.LEFT_EXPONENTIAL
+                    //
+                    //     this.setBaseLoading(true)
+                    //
+                    //     await this.updateBaseRun(true)
+                    //
+                    //     this.isUnsaved = false
+                    //     this.refresh.resume()
+                    //
+                    //     await this.savePreferences()
+                    //     this.plotIdx = fillPlotPreferences(this.series, [])
+                    //     this.basePlotIdx = fillPlotPreferences(this.baseSeries, [])
+                    // }
                 } catch (e) {
                     this.content.renderError(e, "Failed to update comparison")
                     this.setBaseLoading(false)
@@ -394,7 +413,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
                 }
 
                 this.renderHeaders()
-                this.content.render(this.missingBaseExperiment)
+                this.content.render()
                 this.renderButtons()
 
                 this.setBaseLoading(false)
@@ -421,7 +440,7 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     }
 
     private async updateBaseRun(force: boolean) {
-        this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
+        this.baseAnalysisCache = metricsCache.getAnalysis(this.baseUuid)
         this.baseAnalysisCache.setCurrentUUID(this.uuid)
         this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
         try {
@@ -456,13 +475,13 @@ class ComparisonView extends ScreenView implements MetricDataStore {
     }
 }
 
-export class ComparisonHandler extends ViewHandler {
+export class MetricHandler extends ViewHandler {
     constructor() {
         super()
-        ROUTER.route('run/:uuid/compare', [this.handleComparison])
+        ROUTER.route('run/:uuid/metrics/:metric_uuid', [this.handleMetrics])
     }
 
-    handleComparison = (uuid: string) => {
-        SCREEN.setView(new ComparisonView(uuid))
+    handleMetrics = (uuid: string, metric_uuid: string) => {
+        SCREEN.setView(new CustomMetricView(uuid, metric_uuid))
     }
 }
