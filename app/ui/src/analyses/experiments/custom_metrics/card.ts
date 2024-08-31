@@ -32,13 +32,12 @@ export class MetricCard extends Card {
     constructor(opt: CardOptions) {
         super(opt)
 
+        this.customMetricUUID = opt.params != null ? opt.params['custom_metric'] : null
         this.currentUUID = opt.uuid
         this.width = opt.width
         this.currentAnalysisCache = metricsCache.getAnalysis(this.currentUUID)
         this.currentAnalysisCache.setMetricUUID(this.customMetricUUID)
         this.currentAnalysisCache.setCurrentUUID(this.currentUUID)
-
-        this.customMetricUUID = opt.params != null ? opt.params['custom_metric'] : null
 
         this.loader = new DataLoader(async (force: boolean) => {
             let customMetricList = await CACHE.getCustomMetrics(this.currentUUID).get(force)
