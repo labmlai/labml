@@ -13,10 +13,34 @@ interface MetricDataModel {
 class MetricData {
     series: Indicator[]
 
-    constructor(data: MetricDataModel) {
-        this.series = []
-        for (let s of data.series) {
-            this.series.push(new Indicator(s))
+    constructor(data: MetricDataModel | Indicator[]) {
+        if (Array.isArray(data)) {
+            this.series = data
+        } else {
+            this.series = []
+            for (let s of data.series) {
+                this.series.push(new Indicator(s))
+            }
+        }
+    }
+
+    public merge(data: MetricData) {
+        for (let series of data.series) {
+            let index = this.series.findIndex(s => s.name === series.name)
+            if (index === -1) {
+                this.series.push(series)
+            } else {
+                if (this.series[index].is_summary) { // update anyway
+                    this.series[index] = series
+                } else {
+                    if (this.series[index].series[this.series[index].series.length - 1].step
+                        == series.series[series.series.length - 1].step) {
+                        continue // got a summary but have an updated series locally
+                    }
+
+                    this.series[index] = series
+                }
+            }
         }
     }
 }
@@ -31,33 +55,47 @@ export class MetricCache extends CacheObject<MetricData> {
         this.uuid = uuid
     }
 
-    load(args: any): Promise<MetricData> {
-        return this.broadcastPromise.create(async () => {
-            let response =
-                NETWORK.getAnalysis(this.baseUrl, this.uuid, args)
+    async load(args: any): Promise<MetricData> {
+        let response = NETWORK.getAnalysis(this.baseUrl, this.uuid, args)
 
-            this.currentXHR = response.xhr
-            let data = await response.promise
-            this.currentXHR = null
+        this.currentXHR = response.xhr
+        let data = await response.promise
+        this.currentXHR = null
 
-            return new MetricData(data)
-        })
+        return new MetricData(data)
     }
 
     async get(isRefresh = false, ...args: any[]): Promise<MetricData> {
         if (this.data == null || !this.checkDataExists(args[0]) ||
             (isRefresh && isForceReloadTimeout(this.lastUpdated)) || isReloadTimeout(this.lastUpdated)) {
-            this.cancel()
 
-            this.data = await this.load({
+            let data = await this.load({
                 indicators: args[0]
             })
+
+            if (this.data != null) {
+                this.data.merge(data)
+            } else {
+                this.data = data
+            }
+
             this.lastUpdated = (new Date()).getTime()
         }
 
         this.lastUsed = new Date().getTime()
 
-        return this.data
+        let indicators = []
+        for (let s of this.data.series) {
+            indicators.push(s.getCopy()) // deep copy
+        }
+
+        for (let series of indicators) {
+            if (!args[0].includes(series.name)) {
+                series.is_summary = true
+            }
+        }
+
+        return new MetricData(indicators)
     }
 
     private cancel() {
