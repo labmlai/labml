@@ -95,16 +95,10 @@ class MetricsAnalysis(Analysis):
             m.delete()
 
 
-def get_metrics_tracking_util(track_data: List[Dict[str, Any]], preference_data: List[int],
-                              get_all_data: bool):
+def get_metrics_tracking_util(track_data: List[Dict[str, Any]], indicators: List[str]):
     filtered_track_data = []
-    for preference_item, track_item in zip(preference_data, track_data):
-        include_full_data = False
-
-        if get_all_data:
-            include_full_data = True
-        else:
-            include_full_data = preference_item != -1
+    for track_item in track_data:
+        include_full_data = track_item['name'] in indicators
 
         filtered_track_data.append(track_item)
         if include_full_data:

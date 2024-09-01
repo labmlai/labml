@@ -66,6 +66,12 @@ class Preferences:
         if 'smooth_function' in data:
             self.smooth_function = data['smooth_function']
 
+        if 'base_experiment' in data:
+            self.base_experiment = data['base_experiment']
+
+        if 'base_series_preferences' in data:
+            self.base_series_preferences = data['base_series_preferences']
+
         r = run.get(self.base_experiment)
         if r is not None and r.world_size > 0:  # distributed run
             self.is_base_distributed = True
@@ -94,11 +100,16 @@ class Preferences:
         }
 
 
-@Analysis.db_model(PickleSerializer, 'comparison_preferences')
-class ComparisonPreferencesModel(Model['ComparisonPreferencesModel'], Preferences):
+class MetricPreferences(Preferences):
+    series_preferences: List[str]
+    base_series_preferences: List[str]
+
+
+@Analysis.db_model(PickleSerializer, 'metric_preferences')
+class MetricPreferenceModel(Model['MetricPreferencesModel'], Preferences):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'comparison_preferences_index.yaml')
-class ComparisonPreferencesIndex(Index['ComparisonPreferences']):
+@Analysis.db_index(YamlSerializer, 'metric_preferences_index.yaml')
+class MetricPreferenceIndex(Index['MetricPreferences']):
     pass

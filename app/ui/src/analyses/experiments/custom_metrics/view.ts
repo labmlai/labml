@@ -17,7 +17,8 @@ import {MetricDataStore, ViewWrapper} from "../chart_wrapper/view"
 import {NetworkError} from "../../../network"
 import {RunsPickerView} from "../../../views/run_picker_view"
 import {RunsListItemView} from "../../../components/runs_list_item"
-import metricsCache from "./cache"
+import metricsCache, {MetricCache} from "./cache"
+import {SmoothingType} from "../../../components/charts/smoothing/smoothing_base";
 
 class CustomMetricView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
@@ -59,10 +60,11 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
 
     private run: Run
     private baseRun: Run
-    private baseAnalysisCache: AnalysisDataCache
+    private baseAnalysisCache: MetricCache
     private missingBaseExperiment: boolean
     private deleteButton: DeleteButton
     private editButton: IconButton
+    private removeComparisonButton: IconButton
 
     private readonly customMetricUUID: string
     private customMetric: CustomMetric
@@ -83,11 +85,6 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
             this.run = await CACHE.getRun(this.uuid).get(force)
 
-            metricsCache.getAnalysis(this.uuid).setMetricUUID(this.customMetricUUID)
-            metricsCache.getAnalysis(this.uuid).setCurrentUUID(this.uuid)
-
-            this.series = (await metricsCache.getAnalysis(this.uuid).get(force)).series
-
             let customMetricList = await CACHE.getCustomMetrics(this.uuid).get(force)
             if (customMetricList == null || customMetricList.getMetric(this.customMetricUUID) == null) {
                 throw new NetworkError(404, "", "Custom metric list is null")
@@ -96,18 +93,14 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             this.preferenceData = customMetricList.getMetric(this.customMetricUUID).preferences
             this.customMetric = customMetricList.getMetric(this.customMetricUUID)
 
+            this.series = (await metricsCache.getAnalysis(this.uuid).get(force, this.preferenceData.series_preferences)).series
+
             this.baseUuid = this.preferenceData.base_experiment
 
             this.chartType = this.preferenceData.chart_type
             this.stepRange = [...this.preferenceData.step_range]
             this.focusSmoothed = this.preferenceData.focus_smoothed
 
-            this.plotIdx = [...fillPlotPreferences(this.series, this.preferenceData.series_preferences)]
-            if (this.baseSeries) {
-                this.basePlotIdx = [...fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)]
-            } else {
-                this.basePlotIdx = [...this.preferenceData.base_series_preferences]
-            }
             this.smoothValue = this.preferenceData.smooth_value
             this.smoothFunction = this.preferenceData.smooth_function
 
@@ -116,6 +109,8 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             } else {
                 this.missingBaseExperiment = true
             }
+
+            this.updatePlotIdxFromSeries()
         })
 
         this.runHeaderCard = new RunHeaderCard({
@@ -130,8 +125,12 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             onButtonClick: this.onEditClick,
             parent: this.constructor.name,
         }, '.fa.fa-balance-scale')
-    }
+        this.removeComparisonButton = new IconButton({
+            onButtonClick: this.onDelete,
+            parent: this.constructor.name,
+        }, '.fa.fa-times')
 
+    }
     get requiresAuth(): boolean {
         return false
     }
@@ -231,11 +230,11 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
                 new Loader().render($)
             })
             this.editButton.disabled = true
-            this.deleteButton.disabled = true
+            this.removeComparisonButton.disabled = true
             this.content.clear()
         } else {
             this.editButton.disabled = false
-            this.deleteButton.disabled = false
+            this.removeComparisonButton.disabled = false
         }
     }
 
@@ -276,25 +275,24 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
     }
 
     private savePreferences = async () => {
+        this.updateSeriesPreferencesFromPlotIdx()
+
         this.customMetric.preferences = {
-            series_preferences: this.plotIdx,
+            series_preferences: this.preferenceData.series_preferences,
             chart_type: this.chartType,
             step_range: this.stepRange,
             focus_smoothed: this.focusSmoothed,
-            sub_series_preferences: undefined,
             base_experiment: this.baseUuid,
-            base_series_preferences: this.basePlotIdx,
+            base_series_preferences: this.preferenceData.base_series_preferences,
             is_base_distributed: this.baseRun?.world_size != 0,
-            series_names: this.series.map(s => s.name),
-            base_series_names: this.baseSeries ? this.baseSeries.map(s => s.name) : [],
             smooth_value: this.smoothValue,
             smooth_function: this.smoothFunction
         }
 
-        // this.customMetric.name = this.nameField.getInput()
+        // this.customMetric.name = this.nameField.getInput() todo
         // this.customMetric.description = this.descriptionField.getInput()
 
-        await CACHE.getCustomMetrics(this.uuid).updateMetric(this.customMetricUUID, this.customMetric.toData())
+        await CACHE.getCustomMetrics(this.uuid).updateMetric(this.customMetric.toData())
 
         this.isUnsaved = false
         this.refresh.resume()
@@ -381,29 +379,27 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             excludedRuns: new Set<string>([this.run.run_uuid]),
             onPicked: async run => {
                 try {
-                    // todo
-                    // if (this.preferenceData.base_experiment !== run.run_uuid) {
-                    //     this.preferenceData = await this.preferenceCache.updateBaseExperiment(run)
-                    //     this.baseUuid = run.run_uuid
-                    //     this.basePlotIdx = []
-                    //     this.plotIdx = []
-                    //     this.stepRange = [-1, -1]
-                    //     this.focusSmoothed = true
-                    //     this.smoothValue = 0.5
-                    //     this.chartType = 0
-                    //     this.smoothFunction = SmoothingType.LEFT_EXPONENTIAL
-                    //
-                    //     this.setBaseLoading(true)
-                    //
-                    //     await this.updateBaseRun(true)
-                    //
-                    //     this.isUnsaved = false
-                    //     this.refresh.resume()
-                    //
-                    //     await this.savePreferences()
-                    //     this.plotIdx = fillPlotPreferences(this.series, [])
-                    //     this.basePlotIdx = fillPlotPreferences(this.baseSeries, [])
-                    // }
+                    if (this.preferenceData.base_experiment !== run.run_uuid) {
+                        this.baseUuid = run.run_uuid
+                        this.basePlotIdx = []
+                        this.plotIdx = []
+                        this.stepRange = [-1, -1]
+                        this.focusSmoothed = true
+                        this.smoothValue = 0.5
+                        this.chartType = 0
+                        this.smoothFunction = SmoothingType.LEFT_EXPONENTIAL
+
+                        this.setBaseLoading(true)
+
+                        await this.updateBaseRun(true)
+
+                        await this.savePreferences()
+
+                        this.updatePlotIdxFromSeries()
+
+                        this.isUnsaved = false
+                        this.refresh.resume()
+                    }
                 } catch (e) {
                     this.content.renderError(e, "Failed to update comparison")
                     this.setBaseLoading(false)
@@ -430,8 +426,9 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
 
     private renderButtons() {
         clearChildElements(this.buttonContainer)
-        this.deleteButton.disabled = !this.baseUuid
+        this.removeComparisonButton.disabled = !this.baseUuid
         $(this.buttonContainer, $ => {
+            this.removeComparisonButton.render($)
             this.editButton.render($)
         })
 
@@ -443,12 +440,9 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
 
     private async updateBaseRun(force: boolean) {
         this.baseAnalysisCache = metricsCache.getAnalysis(this.baseUuid)
-        this.baseAnalysisCache.setMetricUUID(this.customMetricUUID)
-        this.baseAnalysisCache.setCurrentUUID(this.uuid)
         this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
         try {
-            this.baseSeries = (await this.baseAnalysisCache.get(force)).series
-            this.preferenceData.base_series_preferences = [...fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)]
+            this.baseSeries = (await this.baseAnalysisCache.get(force, this.preferenceData.base_series_preferences)).series
             this.missingBaseExperiment = false
         } catch (e) {
             if (e instanceof NetworkError && e.statusCode === 404) {
@@ -461,23 +455,58 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
         }
     }
 
-    // todo write a function to check if all metrics are here if not request them
-
     private async requestMissingMetrics() {
-        let res = metricsCache.getAnalysis(this.uuid).getAllMetrics()
-        if (res == null) {
-            return // already loading
-        }
+        this.updateSeriesPreferencesFromPlotIdx()
+
+        let res = metricsCache.getAnalysis(this.uuid).get(false, this.preferenceData.series_preferences)
         this.series = (await res).series
 
         if (this.baseUuid !== '') {
-            res = metricsCache.getAnalysis(this.baseUuid).getAllMetrics()
-            if (res == null) {
-                return // already loading
-            }
+            res = metricsCache.getAnalysis(this.baseUuid).get(false, this.preferenceData.base_series_preferences)
             this.baseSeries = (await res).series
         }
+
+        this.updatePlotIdxFromSeries()
     }
+
+    private updatePlotIdxFromSeries() {
+        this.plotIdx = []
+        for (let i = 0; i < this.series.length; i++) {
+            this.plotIdx.push(this.preferenceData.series_preferences.includes(this.series[i].name) ? 1 : -1)
+        }
+
+        if (this.baseSeries) {
+            this.basePlotIdx = []
+            for (let i = 0; i < this.baseSeries.length; i++) {
+                this.basePlotIdx.push(this.preferenceData.base_series_preferences.includes(this.baseSeries[i].name) ? 1 : -1)
+            }
+        }
+    }
+
+    private updateSeriesPreferencesFromPlotIdx() {
+        this.plotIdx = fillPlotPreferences(this.series, this.plotIdx)
+        this.basePlotIdx = fillPlotPreferences(this.baseSeries, this.basePlotIdx)
+
+        let series_preferences = []
+        for (let i = 0; i < this.series.length; i++) {
+            if (this.plotIdx[i] != -1) {
+                series_preferences.push(this.series[i].name)
+            }
+        }
+
+        let base_series_preferences = []
+        if (this.baseSeries) {
+            for (let i = 0; i < this.baseSeries.length; i++) {
+                if (this.basePlotIdx[i] != -1) {
+                    base_series_preferences.push(this.baseSeries[i].name)
+                }
+            }
+        }
+
+        this.preferenceData.series_preferences = series_preferences
+        this.preferenceData.base_series_preferences = base_series_preferences
+    }
+
 }
 
 export class MetricHandler extends ViewHandler {

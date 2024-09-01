@@ -335,8 +335,6 @@ export abstract class BaseDataCache<T> extends CacheObject<T> {
     protected readonly uuid: string
     protected readonly url: string
     protected statusCache: StatusCache
-    protected metricUUID: string
-    protected currentUUID: string
     protected readonly isExperiment: boolean
     protected currentXHR: XMLHttpRequest | null
 
@@ -349,36 +347,15 @@ export abstract class BaseDataCache<T> extends CacheObject<T> {
         this.currentXHR = null
     }
 
-    public setMetricUUID(uuid: string) {
-        this.metricUUID = uuid
-    }
-
-    public setCurrentUUID(uuid: string) {
-        this.currentUUID = uuid
-    }
-
     async load(): Promise<T> {
         return this.broadcastPromise.create(async () => {
             let response =
-                NETWORK.getAnalysis(this.url, this.uuid, false, this.metricUUID, this.currentUUID, this.isExperiment)
+                NETWORK.getAnalysis(this.url, this.uuid, null)
             this.currentXHR = response.xhr
             let data = await response.promise
             this.currentXHR = null
             return this.createInstance(data)
         })
-    }
-
-    async getAllMetrics(): Promise<T> | null {
-        if (this.currentXHR != null) {
-            return null // Already loading
-        }
-        this.data = await this.broadcastPromise.create(async () => {
-            this.lastUpdated = (new Date()).getTime()
-            let response =
-                NETWORK.getAnalysis(this.url, this.uuid, true, this.metricUUID, this.currentUUID, this.isExperiment)
-            return this.createInstance(await response.promise)
-        })
-        return this.data
     }
 
     async get(isRefresh = false): Promise<T> {
@@ -521,9 +498,9 @@ export class CustomMetricCache extends CacheObject<CustomMetricList> {
         }
     }
     
-    async updateMetric(metricUUID: string, data: object): Promise<void> {
+    async updateMetric(data: object): Promise<void> {
         await NETWORK.updateCustomMetric(this.uuid, data)
-
+        console.log(data)
         if (this.data != null) {
             this.data.updateMetric(new CustomMetric(<CustomMetricModel>data))
         }

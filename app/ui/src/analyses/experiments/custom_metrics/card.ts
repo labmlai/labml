@@ -1,7 +1,7 @@
 import {Card, CardOptions} from "../../types"
 import {Weya as $, WeyaElementFunction} from "../../../../../lib/weya/weya"
 import CACHE, {AnalysisDataCache} from "../../../cache/cache"
-import metricsCache from "./cache"
+import metricsCache, {MetricCache} from "./cache"
 import {DataLoader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {DEBUG} from "../../../env"
@@ -15,10 +15,10 @@ export class MetricCard extends Card {
     private readonly  currentUUID: string
     private baseUUID: string
     private readonly width: number
-    private baseAnalysisCache: AnalysisDataCache
+    private baseAnalysisCache: MetricCache
     private baseSeries: Indicator[]
     private currentSeries: Indicator[]
-    private currentAnalysisCache: AnalysisDataCache
+    private currentAnalysisCache: MetricCache
     private preferenceData: ComparisonPreferenceModel
     private loader: DataLoader
     private lineChartContainer: HTMLDivElement
@@ -36,8 +36,6 @@ export class MetricCard extends Card {
         this.currentUUID = opt.uuid
         this.width = opt.width
         this.currentAnalysisCache = metricsCache.getAnalysis(this.currentUUID)
-        this.currentAnalysisCache.setMetricUUID(this.customMetricUUID)
-        this.currentAnalysisCache.setCurrentUUID(this.currentUUID)
 
         this.loader = new DataLoader(async (force: boolean) => {
             let customMetricList = await CACHE.getCustomMetrics(this.currentUUID).get(force)
@@ -49,18 +47,14 @@ export class MetricCard extends Card {
             this.preferenceData = customMetricList.getMetric(this.customMetricUUID).preferences
             this.baseUUID = this.preferenceData.base_experiment
 
-            let currentAnalysisData: AnalysisData = await this.currentAnalysisCache.get(force)
+            let currentAnalysisData = await this.currentAnalysisCache.get(force, this.preferenceData.series_preferences)
             this.currentSeries = currentAnalysisData.series
-            this.preferenceData.series_preferences = fillPlotPreferences(this.currentSeries, this.preferenceData.series_preferences)
 
             if (!!this.baseUUID) {
                 this.baseAnalysisCache = metricsCache.getAnalysis(this.baseUUID)
-                this.baseAnalysisCache.setMetricUUID(this.customMetricUUID)
-                this.baseAnalysisCache.setCurrentUUID(this.currentUUID)
                 try {
-                    let baseAnalysisData = await this.baseAnalysisCache.get(force)
+                    let baseAnalysisData = await this.baseAnalysisCache.get(force, this.preferenceData.base_series_preferences)
                     this.baseSeries = baseAnalysisData.series
-                    this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)
                 } catch (e) {
                     if (e instanceof NetworkError && e.statusCode === 404) {
                     } else {
