@@ -1,6 +1,6 @@
 import {Config, ConfigModel} from "./config"
 import {toPointValue} from "../components/charts/utils"
-import {AnalysisPreferenceModel} from "./preferences";
+import {ComparisonPreferenceModel} from "./preferences";
 
 export interface RunModel {
     run_uuid: string
@@ -187,7 +187,7 @@ export interface CustomMetricModel {
     name: string
     description: string
     created_time: number
-    preferences: AnalysisPreferenceModel
+    preferences: ComparisonPreferenceModel
 }
 
 export class CustomMetric {
@@ -195,7 +195,7 @@ export class CustomMetric {
     name: string
     description: string
     createdTime: number
-    preferences: AnalysisPreferenceModel
+    preferences: ComparisonPreferenceModel
 
     constructor(metric: CustomMetricModel) {
         this.id = metric.id

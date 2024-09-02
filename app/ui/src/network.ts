@@ -106,19 +106,14 @@ class Network {
         return this.sendHttpRequest('POST', `/user`, {'user': user})['promise']
     }
 
-    getAnalysis(url: string, runUUID: string, getAll: boolean = false, currentUUID: string = "",
-                      isExperiment: boolean): {promise: Promise<any>, xhr: XMLHttpRequest} {
+    getAnalysis(url: string, runUUID: string, data: object,): {promise: Promise<any>, xhr: XMLHttpRequest} {
         let method = 'GET'
-        if (isExperiment) {
+        if (data != null) {
             method = 'POST'
         }
 
-        let data = {
-            'get_all': getAll
-        }
-
         return this.sendHttpRequest(method,
-            `/${url}/${runUUID}?current=${currentUUID}`, data)
+            `/${url}/${runUUID}`, data)
     }
 
     async getCustomAnalysis(url: string): Promise<any> {

@@ -13,12 +13,10 @@ import networkAnalysis from './sessions/network'
 import processAnalysis from './sessions/process'
 import batteryAnalysis from './sessions/battery'
 import sessionConfigsAnalysis from "./sessions/configs"
-import metricsAnalysis from "./experiments/metrics";
-import comparisonAnalysis from "./experiments/comparison";
+import metricAnalysis from "./experiments/custom_metrics"
 
 let metricAnalyses: Analysis[] = [
-    metricsAnalysis,
-    comparisonAnalysis
+    metricAnalysis
 ]
 
 let experimentAnalyses: Analysis[] = [

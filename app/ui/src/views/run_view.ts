@@ -4,18 +4,17 @@ import {User} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import {AddButton, BackButton, CustomButton, ExpandButton, NavButton, ShareButton} from "../components/buttons"
+import {AddButton, BackButton, CustomButton, ExpandButton, ShareButton} from "../components/buttons"
 import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
-import CACHE, {RunCache, RunsListCache, RunStatusCache, UserCache} from "../cache/cache"
+import CACHE, {RunCache, RunStatusCache, UserCache} from "../cache/cache"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
-import metricsAnalysis from "../analyses/experiments/metrics"
-import comparisonAnalysis from "../analyses/experiments/comparison";
+import metricAnalysis from "../analyses/experiments/custom_metrics";
 
 class RunView extends ScreenView {
     uuid: string
@@ -274,16 +273,9 @@ class RunView extends ScreenView {
 
     private renderCards() {
         $(this.cardContainer, $ => {
-            let analyses = this.isRank ?
-                [metricsAnalysis] : [metricsAnalysis, comparisonAnalysis]
-            analyses.map((analysis, i) => {
-                let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
-                this.cards.push(card)
-                card.render($)
-            })
             if (this.customMetrics != null && this.run != null) {
                 this.customMetrics.getMetrics().map((metric, i) => {
-                    let card = new metricsAnalysis.card({uuid: this.uuid, width: this.actualWidth, params: {
+                    let card = new metricAnalysis.card({uuid: this.uuid, width: this.actualWidth, params: {
                             custom_metric: metric.id
                         }})
                     this.cards.push(card)
@@ -291,8 +283,7 @@ class RunView extends ScreenView {
                 })
             }
 
-            analyses = experimentAnalyses
-            analyses.map((analysis, i) => {
+            experimentAnalyses.map((analysis, i) => {
                 let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
                 this.cards.push(card)
                 card.render($)

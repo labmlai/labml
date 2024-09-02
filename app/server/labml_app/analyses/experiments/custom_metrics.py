@@ -9,7 +9,7 @@ from labml_db.serializer.yaml import YamlSerializer
 from fastapi import Request
 
 from labml_app.analyses.analysis import Analysis
-from labml_app.analyses.experiments.metrics import MetricsPreferencesModel
+from labml_app.analyses.preferences import MetricPreferenceModel
 
 
 @Analysis.db_model(PickleSerializer, 'custom_metrics')
@@ -42,7 +42,13 @@ class CustomMetricModel(Model['CustomMetricModel']):
         self.save()
 
     def get_data(self):
-        mp = self.preference_key.load()
+        try:
+            mp = self.preference_key.load()
+        except KeyError:  # backward compatibility
+            mp = MetricPreferenceModel()
+            mp.save()
+            self.preference_key = mp.key
+            self.save()
         return {
             'id': self.metric_id,
             'name': self.name,
@@ -73,7 +79,7 @@ class CustomMetricsListModel(Model['CustomMetricsListModel']):
         cm.metric_id = uuid.uuid4().hex
         cm.created_time = time.time()
 
-        mp = MetricsPreferencesModel()
+        mp = MetricPreferenceModel()
         mp.save()
         cm.preference_key = mp.key
 
