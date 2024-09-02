@@ -281,6 +281,19 @@ export class IconButton extends Button {
         this.icon = icon
     }
 
+    set loading(value: boolean) {
+        this.elem.innerHTML = ''
+        if (value) {
+            $(this.elem, $ => {
+                $('span', '.fa.fa-spinner.fa-spin', '')
+            })
+        } else {
+            $(this.elem, $ => {
+                $('span', this.icon, '')
+            })
+        }
+    }
+
     render($: WeyaElementFunction) {
         this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},

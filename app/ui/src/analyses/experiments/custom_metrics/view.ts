@@ -19,6 +19,8 @@ import {RunsPickerView} from "../../../views/run_picker_view"
 import {RunsListItemView} from "../../../components/runs_list_item"
 import metricsCache, {MetricCache} from "./cache"
 import {SmoothingType} from "../../../components/charts/smoothing/smoothing_base";
+import EditableField from "../../../components/input/editable_field";
+import {formatTime} from "../../../utils/time";
 
 class CustomMetricView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
@@ -68,6 +70,11 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
 
     private readonly customMetricUUID: string
     private customMetric: CustomMetric
+
+    private nameField: EditableField
+    private descriptionField: EditableField
+    private createdAtField: EditableField
+    private detailsContainer: WeyaElement
 
     constructor(uuid: string, customMetricUUID: string) {
         super()
@@ -126,7 +133,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             parent: this.constructor.name,
         }, '.fa.fa-balance-scale')
         this.removeComparisonButton = new IconButton({
-            onButtonClick: this.onDelete,
+            onButtonClick: this.onComparisonRemove,
             parent: this.constructor.name,
         }, '.fa.fa-times')
 
@@ -167,6 +174,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
                         this.loader.render($)
                         this.headerContainer = $('div', '.compare-header')
                         this.loaderContainer = $('div')
+                        this.detailsContainer = $('div')
                         this.optionRowContainer = $('div')
                         if (this.baseRun != null) {
                             $('h2', '.header.text-center', 'Comparison')
@@ -185,6 +193,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             setTitle({section: 'Comparison', item: this.run.name})
 
             this.renderContent()
+            this.renderDetails()
         } catch (e) {
             if (e.statusCode == 404) {
                 this.missingBaseExperiment = true
@@ -221,6 +230,44 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
         this.renderHeaders()
         this.content.render()
         this.renderButtons()
+    }
+
+    private renderDetails() {
+        if (this.customMetric == null) {
+            return
+        }
+
+        this.nameField = new EditableField({
+            name: 'Name',
+            value: this.customMetric.name,
+            isEditable: true,
+            onChange: this.onDetailChange
+        })
+        this.descriptionField = new EditableField({
+            name: 'Description',
+            value: this.customMetric.description,
+            isEditable: true,
+            numEditRows: 3,
+            onChange: this.onDetailChange
+        })
+        this.createdAtField = new EditableField({
+            name: 'Created at',
+            value: formatTime(this.customMetric.createdTime),
+            isEditable: false,
+        })
+
+        this.detailsContainer.innerHTML =  ''
+        $(this.detailsContainer, $ => {
+            $('ul', $ => {
+                this.nameField.render($)
+                this.descriptionField.render($)
+                this.createdAtField.render($)
+            })
+        })
+    }
+
+    private onDetailChange = () => {
+        this.content.onNonChartChange()
     }
 
     private setBaseLoading(value: boolean) {
@@ -289,8 +336,8 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             smooth_function: this.smoothFunction
         }
 
-        // this.customMetric.name = this.nameField.getInput() todo
-        // this.customMetric.description = this.descriptionField.getInput()
+        this.customMetric.name = this.nameField.getInput()
+        this.customMetric.description = this.descriptionField.getInput()
 
         await CACHE.getCustomMetrics(this.uuid).updateMetric(this.customMetric.toData())
 
@@ -333,6 +380,35 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
         })
     }
 
+    private onComparisonRemove = async () => {
+        this.removeComparisonButton.disabled = true
+        this.removeComparisonButton.loading = true
+
+        try {
+            this.preferenceData.base_experiment = ''
+            this.preferenceData.base_series_preferences = []
+            this.baseSeries = undefined
+            this.basePlotIdx = []
+            this.baseUuid = ''
+            this.baseRun = undefined
+
+            await this.savePreferences()
+        } catch (e) {
+            this.content.renderError(e, "Failed to delete comparison")
+            this.removeComparisonButton.disabled = false
+            return
+        } finally {
+            this.removeComparisonButton.loading = false
+        }
+
+        this.isUnsaved = false
+
+        this.refresh.resume()
+        this.renderHeaders()
+        this.content.render()
+        this.renderButtons()
+    }
+
     private onDelete = async () => {
         if (confirm('Are you sure you want to delete this chart?')) {
             try {
@@ -342,32 +418,6 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
                 this.content.renderError(e, "Failed to delete chart")
             }
         }
-        return
-        // todo
-        // this.deleteButton.disabled = true
-        // this.deleteButton.loading = true
-        //
-        // try {
-        //     this.preferenceData = await this.preferenceCache.deleteBaseExperiment()
-        // } catch (e) {
-        //     this.content.renderError(e, "Failed to delete comparison")
-        //     this.deleteButton.disabled = false
-        //     return
-        // } finally {
-        //     this.deleteButton.loading = false
-        // }
-        //
-        // this.baseSeries = undefined
-        //     this.basePlotIdx = []
-        //     this.baseUuid = ''
-        //     this.baseRun = undefined
-        //
-        //     this.missingBaseExperiment = true
-        //     this.isUnsaved = false
-        //     this.refresh.resume()
-        //     this.renderHeaders()
-        //     this.content.render(this.missingBaseExperiment)
-        //     this.renderButtons()
     }
 
     private onEditClick = () => {
@@ -485,7 +535,6 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
 
     private updateSeriesPreferencesFromPlotIdx() {
         this.plotIdx = fillPlotPreferences(this.series, this.plotIdx)
-        this.basePlotIdx = fillPlotPreferences(this.baseSeries, this.basePlotIdx)
 
         let series_preferences = []
         for (let i = 0; i < this.series.length; i++) {
@@ -496,6 +545,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
 
         let base_series_preferences = []
         if (this.baseSeries) {
+            this.basePlotIdx = fillPlotPreferences(this.baseSeries, this.basePlotIdx)
             for (let i = 0; i < this.baseSeries.length; i++) {
                 if (this.basePlotIdx[i] != -1) {
                     base_series_preferences.push(this.baseSeries[i].name)
