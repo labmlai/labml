@@ -23,10 +23,11 @@ export function runsFilter(run: RunListItemModel, searchText: string) {
     const tagRegex: RegExp[] = []
     let hasRunningTag = false
     for (let tag of tags) {
-        tagRegex.push(new RegExp(`(^|\\s)${tag.toLowerCase()}(?=\\s|$)`, 'g'))
         if (tag.toLowerCase() == 'running') {
             hasRunningTag = true
+            continue
         }
+        tagRegex.push(new RegExp(`(^|\\s)${tag.toLowerCase()}(?=\\s|$)`, 'g'))
     }
 
     let matchName = query == "" || run.name.toLowerCase().search(queryRegex) !== -1
@@ -35,7 +36,7 @@ export function runsFilter(run: RunListItemModel, searchText: string) {
 
     if (!matchTags)
         return false
-    console.log(run.run_status.status, hasRunningTag)
+
     if (hasRunningTag && run.run_status.status != 'in progress') {
         return false
     }
