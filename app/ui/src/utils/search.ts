@@ -35,6 +35,7 @@ export function runsFilter(run: RunListItemModel, searchText: string) {
 
     if (!matchTags)
         return false
+    console.log(run.run_status.status, hasRunningTag)
     if (hasRunningTag && run.run_status.status != 'in progress') {
         return false
     }
