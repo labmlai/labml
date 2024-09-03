@@ -37,7 +37,7 @@ export function runsFilter(run: RunListItemModel, searchText: string) {
     if (!matchTags)
         return false
 
-    if (hasRunningTag && run.run_status.status != 'in progress') {
+    if (hasRunningTag && run.run_status.status != RunStatuses.running) {
         return false
     }
 
