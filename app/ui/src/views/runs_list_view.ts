@@ -59,7 +59,6 @@ class RunsListView extends ScreenView {
             this.currentRunsList = this.runsList.slice()
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
-        this.searchView = new SearchView({onSearch: this.onSearch, initText: this.searchQuery})
 
         this.searchQuery = getQueryParameter('query', window.location.search)
         let tags = getQueryParameter('tags', window.location.search)
@@ -82,6 +81,8 @@ class RunsListView extends ScreenView {
         this.isEditMode = false
         this.selectedRunsSet = new Set<RunListItemModel>()
         this.isTBProcessing = false
+
+        this.searchView = new SearchView({onSearch: this.onSearch, initText: this.searchQuery})
     }
 
     onResize(width: number) {
