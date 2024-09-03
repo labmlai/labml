@@ -5,7 +5,7 @@ import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
-import {CancelButton, DeleteButton, EditButton, IconButton} from '../components/buttons'
+import {CancelButton, DeleteButton, EditButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import EmptyRunsList from './empty_runs_list'
 import {UserMessages} from '../components/user_messages'
@@ -23,6 +23,7 @@ class RunsListView extends ScreenView {
     elem: HTMLDivElement
     runsListContainer: HTMLDivElement
     searchQuery: string
+    searchStatus: string
     buttonContainer: HTMLDivElement
     deleteButton: DeleteButton
     editButton: EditButton
@@ -59,6 +60,8 @@ class RunsListView extends ScreenView {
 
         this.searchQuery = getQueryParameter('query', window.location.search)
         let tags = getQueryParameter('tags', window.location.search)
+        this.searchStatus = getQueryParameter('status', window.location.search)
+
 
         if (this.defaultTag) {
             this.searchQuery += ` $${this.defaultTag}`
@@ -253,7 +256,7 @@ class RunsListView extends ScreenView {
 
     private renderList() {
         if (this.runsList.length > 0) {
-            this.currentRunsList = this.runsList.filter(run => runsFilter(run, this.searchQuery))
+            this.currentRunsList = this.runsList.filter(run => runsFilter(run, this.searchQuery, this.searchStatus))
 
             this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {

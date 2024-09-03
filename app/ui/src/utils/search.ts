@@ -8,7 +8,7 @@ export function setSearchQuery(query: string) {
     localStorage.setItem('searchQuery', query)
 }
 
-export function runsFilter(run: RunListItemModel, searchText: string) {
+export function runsFilter(run: RunListItemModel, searchText: string, status: string = "") {
     setSearchQuery(searchText)
 
     let {tags, query, mainTags} = extractTags(searchText)
@@ -27,9 +27,14 @@ export function runsFilter(run: RunListItemModel, searchText: string) {
     let matchName = query == "" || run.name.toLowerCase().search(queryRegex) !== -1
     let matchComment = query == "" || run.comment.toLowerCase().search(queryRegex) !== -1
     let matchTags = tags.length == 0 || tagRegex.every(tag => run.tags.join(' ').toLowerCase().search(tag) !== -1)
+    let matchStatus = status == "" || run.run_status.status == status
 
     if (!matchTags)
         return false
+    if (!matchStatus) {
+        return false
+    }
+
     return matchName || matchComment
 }
 
@@ -52,5 +57,5 @@ export function extractTags(input: string): { tags: string[], query: string, mai
 
     const rest = input.replace(regex, '').replace(mainRegex, '').trim()
 
-    return { tags: tags, query: rest, mainTags: mainTags };
+    return {tags: tags, query: rest, mainTags: mainTags};
 }
