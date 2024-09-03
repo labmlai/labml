@@ -1,4 +1,5 @@
 import {RunListItemModel} from "../models/run_list"
+import {RunStatuses} from "../models/status"
 
 export function getSearchQuery() {
     return localStorage.getItem('searchQuery') || ''
@@ -8,7 +9,7 @@ export function setSearchQuery(query: string) {
     localStorage.setItem('searchQuery', query)
 }
 
-export function runsFilter(run: RunListItemModel, searchText: string, status: string = "") {
+export function runsFilter(run: RunListItemModel, searchText: string) {
     setSearchQuery(searchText)
 
     let {tags, query, mainTags} = extractTags(searchText)
@@ -20,18 +21,21 @@ export function runsFilter(run: RunListItemModel, searchText: string, status: st
 
     const queryRegex = new RegExp(query.toLowerCase(), 'g')
     const tagRegex: RegExp[] = []
+    let hasRunningTag = false
     for (let tag of tags) {
         tagRegex.push(new RegExp(`(^|\\s)${tag.toLowerCase()}(?=\\s|$)`, 'g'))
+        if (tag.toLowerCase() == RunStatuses.running) {
+            hasRunningTag = true
+        }
     }
 
     let matchName = query == "" || run.name.toLowerCase().search(queryRegex) !== -1
     let matchComment = query == "" || run.comment.toLowerCase().search(queryRegex) !== -1
     let matchTags = tags.length == 0 || tagRegex.every(tag => run.tags.join(' ').toLowerCase().search(tag) !== -1)
-    let matchStatus = status == "" || run.run_status.status == status
 
     if (!matchTags)
         return false
-    if (!matchStatus) {
+    if (hasRunningTag && run.run_status.status != RunStatuses.running) {
         return false
     }
 
