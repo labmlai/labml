@@ -50,6 +50,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
     private messageContainer: HTMLDivElement
     private runPickerElem: HTMLDivElement
     private headerContainer: HTMLDivElement
+    private compareHeader: HTMLDivElement
     private saveButtonContainer: HTMLDivElement
     private topButtonContainer: HTMLDivElement
     private loaderContainer: HTMLDivElement
@@ -73,7 +74,6 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
 
     private nameField: EditableField
     private descriptionField: EditableField
-    private createdAtField: EditableField
     private detailsContainer: WeyaElement
 
     constructor(uuid: string, customMetricUUID: string) {
@@ -175,6 +175,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
                         this.headerContainer = $('div', '.compare-header')
                         this.loaderContainer = $('div')
                         this.detailsContainer = $('div')
+                        this.compareHeader = $('div', '.compare-header')
                         this.optionRowContainer = $('div')
                         if (this.baseRun != null) {
                             $('h2', '.header.text-center', 'Comparison')
@@ -243,25 +244,13 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             isEditable: true,
             onChange: this.onDetailChange
         })
-        this.descriptionField = new EditableField({
-            name: 'Description',
-            value: this.customMetric.description,
-            isEditable: true,
-            numEditRows: 3,
-            onChange: this.onDetailChange
-        })
-        this.createdAtField = new EditableField({
-            name: 'Created at',
-            value: formatTime(this.customMetric.createdTime),
-            isEditable: false,
-        })
 
         this.detailsContainer.innerHTML =  ''
         $(this.detailsContainer, $ => {
-            $('ul', $ => {
-                this.nameField.render($)
-                this.descriptionField.render($)
-                this.createdAtField.render($)
+            $('div.input-list-container', $ => {
+                $('ul', $ => {
+                    this.nameField.render($)
+                })
             })
         })
     }
@@ -337,7 +326,6 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
         }
 
         this.customMetric.name = this.nameField.getInput()
-        this.customMetric.description = this.descriptionField.getInput()
 
         await CACHE.getCustomMetrics(this.uuid).updateMetric(this.customMetric.toData())
 
@@ -347,8 +335,12 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
 
     private renderHeaders() {
         clearChildElements(this.headerContainer)
+        clearChildElements(this.compareHeader)
         $(this.headerContainer, $ => {
             this.runHeaderCard.render($).then()
+        })
+
+        $(this.compareHeader, $ => {
             $('span', '.compared-with', $ => {
                 $('span', '.sub', 'Compared With ')
                 this.buttonContainer = $('div')
