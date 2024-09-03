@@ -4,7 +4,7 @@ import {User} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import {AddButton, BackButton, CustomButton, ExpandButton, ShareButton} from "../components/buttons"
+import {AddButton, BackButton, CustomButton, ExpandButton, IconButton, ShareButton} from "../components/buttons"
 import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
@@ -15,6 +15,7 @@ import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
 import metricAnalysis from "../analyses/experiments/custom_metrics";
+import NETWORK from "../network";
 
 class RunView extends ScreenView {
     uuid: string
@@ -37,6 +38,7 @@ class RunView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private share: ShareButton
     private addCustomMetricButton: AddButton
+    private magicMetricButton: IconButton
     private isRankExpanded: boolean
     private rankElems: WeyaElement
     private processContainer: WeyaElement
@@ -69,6 +71,16 @@ class RunView extends ScreenView {
             title: 'Add custom metric',
             parent: this.constructor.name
         })
+        this.magicMetricButton = new IconButton({
+            onButtonClick: () => {
+                this.magicMetricButton.loading = true
+                this.creatMagicMetric().then(() => {
+                    this.magicMetricButton.loading = false
+                })
+            },
+            title: 'Add magic metric',
+            parent: this.constructor.name,
+        }, '')
     }
 
     private get isRank(): boolean {
@@ -185,12 +197,23 @@ class RunView extends ScreenView {
                 }).render($)
             }
             this.addCustomMetricButton.render($)
+            this.magicMetricButton.render($)
         })
     }
 
     renderClaimMessage() {
         if (!this.run.is_claimed && !this.isRank) {
             UserMessages.shared.warning('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
+        }
+    }
+
+    async creatMagicMetric() {
+        let res = await NETWORK.createMagicMetric(this.uuid)
+
+        if (res['is_success']) {
+            UserMessages.shared.success('Chart created')
+        } else {
+            UserMessages.shared.error()
         }
     }
 

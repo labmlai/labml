@@ -3,12 +3,15 @@ import uuid
 from typing import List, Tuple, Any
 from uuid import UUID
 
+
+from labml_app.db import user
 from labml_db import Model, Key, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 from fastapi import Request
 
 from labml_app.analyses.analysis import Analysis
+from labml_app.analyses.experiments.metrics import MetricsAnalysis
 from labml_app.analyses.preferences import MetricPreferenceModel
 
 
@@ -83,6 +86,10 @@ class CustomMetricsListModel(Model['CustomMetricsListModel']):
         mp.save()
         cm.preference_key = mp.key
 
+        if 'preferences' in data:
+            mp.update_preferences(data['preferences'])
+            mp.save()
+
         cm.save()
         self.metrics.append((cm.metric_id, cm.key))
         self.save()
@@ -99,6 +106,9 @@ class CustomMetricsListModel(Model['CustomMetricsListModel']):
 
     def get_data(self):
         return [k[1].load().get_data() for k in self.metrics]
+
+    def get_metrics(self):
+        return [k[1].load() for k in self.metrics]
 
     def update(self, data: dict):
         for (metric_id, key) in self.metrics:
@@ -117,7 +127,7 @@ async def get_custom_metrics(request: Request, run_uuid: str) -> Any:
         CustomMetricsListIndex.set(run_uuid, r.key)
     else:
         r = list_key.load()
-
+    print(r.get_data())
     return {'metrics': r.get_data()}
 
 
@@ -167,3 +177,92 @@ async def delete_custom_metric(request: Request, run_uuid: str) -> Any:
     r.delete_custom_metric(data['id'])
 
     return {'status': 'success'}
+
+
+@Analysis.route('GET', 'custom_metrics/{run_uuid}/magic')
+async def get_magic_metric(request: Request, run_uuid: str) -> Any:
+    list_key = CustomMetricsListIndex.get(run_uuid)
+
+    if list_key is None:
+        run_cm = CustomMetricsListModel()
+        run_cm.save()
+        CustomMetricsListIndex.set(run_uuid, run_cm.key)
+    else:
+        run_cm = list_key.load()
+
+    analysis_data = MetricsAnalysis.get_or_create(run_uuid).get_tracking()
+    indicators = [track_item['name'] for track_item in analysis_data]
+    indicators = sorted(indicators)
+
+    u = user.get_by_session_token('local')  # todo
+
+    default_project = u.default_project
+    runs = [r.get_summary() for r in default_project.get_runs_by_tags("Predicta-2")]
+
+    # calc similarity # todo
+    runs = sorted(runs, key=lambda i: i['start_time'], reverse=True)
+    # runs = runs[:10]
+
+    current_metrics = run_cm.get_data()
+    current_indicators = []
+    for x in current_metrics:
+        current_indicators += x['preferences']['series_preferences']
+    current_indicators = set(current_indicators)
+
+    indicator_counts = {}
+    for r in runs:
+        list_key = CustomMetricsListIndex.get(r['run_uuid'])
+        if list_key is None:
+            continue
+        cm = list_key.load()
+        cm = cm.get_metrics()
+
+        for m in cm:
+            m_data = m.get_data()
+            preferences = m_data['preferences']
+            if len(preferences['series_preferences']) == 0:
+                continue
+            has_current_indicators = False
+            for indicator in current_indicators:
+                if indicator in preferences['series_preferences']:
+                    has_current_indicators = True
+                    break
+            if has_current_indicators:
+                continue
+
+            preference_map_key = '|'.join(sorted(preferences['series_preferences']))
+            if preference_map_key not in indicator_counts:
+                indicator_counts[preference_map_key] = []
+            indicator_counts[preference_map_key].append((m.key, m_data['created_time']))
+
+    if len(indicator_counts):
+        return {'is_success': False, 'message': "Couldn't find any related past run."}
+
+    sorted_keys = sorted(indicator_counts.keys(), key=lambda x: len(indicator_counts[x]), reverse=True)
+
+    # find the first indicator list with overlap
+    selected = None
+    for key in sorted_keys:
+        ind = key.split('|')
+        overlap = False
+        for i in indicators:
+            if i in ind:
+                overlap = True
+                break
+        if overlap:
+            selected = key
+            break
+
+    if selected is None:  # return smth
+        return {'status': 'error', 'message': 'No similar indicators found'}
+
+    selected_metric = sorted(indicator_counts[selected], key=lambda x: x[1], reverse=True)[0]
+    selected_metric = selected_metric[0].load()
+
+    new_metric_data = selected_metric.get_data()
+    new_metric_data['preferences']['series_preferences'] = \
+        [x for x in new_metric_data['preferences']['series_preferences'] if x in indicators]
+
+    run_cm.create_custom_metric(new_metric_data)
+
+    return {'is_success': True}
