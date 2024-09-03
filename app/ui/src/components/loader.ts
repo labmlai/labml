@@ -39,6 +39,14 @@ export class Loader {
         this.elem.remove()
         this.elem = null
     }
+
+    public hide(isHide: boolean) {
+        if (isHide) {
+            this.elem.style.display = 'none'
+        } else {
+            this.elem.style.display = 'block'
+        }
+    }
 }
 
 export class DataLoader {
@@ -62,7 +70,7 @@ export class DataLoader {
     async load(force: boolean = false) {
         this.errorMessage.remove()
         if (!this.loaded) {
-            if(this.elem == null) {
+            if (this.elem == null) {
                 throw new Error("Loader is not rendered")
             }
             this.elem.appendChild(this.loader.render(Weya))
