@@ -245,11 +245,19 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             onChange: this.onDetailChange
         })
 
+        let positionField = new EditableField({
+            name: 'Position',
+            value: '0',
+            isEditable: true,
+            onChange: this.onDetailChange
+        })
+
         this.detailsContainer.innerHTML =  ''
         $(this.detailsContainer, $ => {
             $('div.input-list-container', $ => {
                 $('ul', $ => {
                     this.nameField.render($)
+                    positionField.render($)
                 })
             })
         })
