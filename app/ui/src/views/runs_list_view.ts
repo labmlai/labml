@@ -262,6 +262,7 @@ class RunsListView extends ScreenView {
 
         this.loader.hide(true)
         this.searchView.disable(false)
+        this.searchView.focus()
     }
 
     private renderList() {

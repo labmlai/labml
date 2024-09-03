@@ -51,4 +51,8 @@ export class SearchView {
     public disable(disabled: boolean) {
         this.textbox.disabled = disabled
     }
+
+    public focus() {
+        this.textbox.focus()
+    }
 }
