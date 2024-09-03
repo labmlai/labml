@@ -47,4 +47,8 @@ export class SearchView {
     public hideLoader(isHide: boolean) {
         this.loader.hide(isHide)
     }
+
+    public disable(disabled: boolean) {
+        this.textbox.disabled = disabled
+    }
 }

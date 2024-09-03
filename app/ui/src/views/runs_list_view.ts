@@ -1,6 +1,6 @@
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
-import {DataLoader} from "../components/loader"
+import {DataLoader, Loader} from "../components/loader"
 import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
@@ -30,7 +30,8 @@ class RunsListView extends ScreenView {
     cancelButton: CancelButton
     isEditMode: boolean
     selectedRunsSet: Set<RunListItemModel>
-    private loader: DataLoader
+    private dataLoader: DataLoader
+    private loader: Loader
     private refresh: AwesomeRefreshButton
     private isTBProcessing: boolean
     private actualWidth: number
@@ -48,7 +49,8 @@ class RunsListView extends ScreenView {
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
 
 
-        this.loader = new DataLoader(async (force) => {
+        this.loader = new Loader()
+        this.dataLoader = new DataLoader(async (force) => {
             let runsList = (await this.runListCache.get(force, this.defaultTag)).runs
             this.runsList = []
             for (let run of runsList) {
@@ -105,6 +107,8 @@ class RunsListView extends ScreenView {
                 $('div', '.runs-list', $ => {
                     this.searchView.render($)
                     this.loader.render($)
+                    this.loader.hide(true)
+                    this.dataLoader.render($)
                     $('svg', {style: {height: `${1}px`}}, $ => {
                         new DefaultLineGradient().render($)
                     })
@@ -123,7 +127,7 @@ class RunsListView extends ScreenView {
         })
 
         try {
-            await this.loader.load()
+            await this.dataLoader.load()
 
             this.renderList()
         } catch (e) {
@@ -160,7 +164,7 @@ class RunsListView extends ScreenView {
     onRefresh = async () => {
         this.editButton.disabled = true
         try {
-            await this.loader.load(true)
+            await this.dataLoader.load(true)
 
             this.renderList()
         } catch (e) {
@@ -192,7 +196,7 @@ class RunsListView extends ScreenView {
             this.selectedRunsSet.clear()
             this.deleteButton.disabled = this.selectedRunsSet.size === 0
 
-            await this.loader.load()
+            await this.dataLoader.load()
 
 
         } catch (e) {
@@ -234,7 +238,10 @@ class RunsListView extends ScreenView {
     }
 
     onSearch = async (query: string) => {
-        this.searchView.hideLoader(false)
+        this.loader.hide(false)
+        this.searchView.disable(true)
+        this.runsListContainer.innerHTML = ''
+
         this.searchQuery = query
         let r = extractTags(query)
 
@@ -246,13 +253,15 @@ class RunsListView extends ScreenView {
         if (queryString && tagsString) {
             queryString += "&"
         }
-        window.history.replaceState({}, "", `/runs${mainTag ? "/"+mainTag : ""}${queryString || tagsString ? "?" : ""}${queryString}${tagsString}`)
+        window.history.replaceState({}, "", `/runs${mainTag ? "/" + mainTag : ""}${queryString || tagsString ? "?" : ""}${queryString}${tagsString}`)
 
         this.defaultTag = mainTag
-        await this.loader.load()
+        await this.dataLoader.load()
 
         this.renderList()
-        this.searchView.hideLoader(true)
+
+        this.loader.hide(true)
+        this.searchView.disable(false)
     }
 
     private renderList() {
@@ -265,7 +274,8 @@ class RunsListView extends ScreenView {
                     new RunsListItemView({
                         item: this.currentRunsList[i],
                         onClick: this.onItemClicked,
-                        width: this.actualWidth}).render($)
+                        width: this.actualWidth
+                    }).render($)
                 }
             })
         } else {
