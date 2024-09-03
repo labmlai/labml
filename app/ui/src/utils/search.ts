@@ -24,7 +24,7 @@ export function runsFilter(run: RunListItemModel, searchText: string) {
     let hasRunningTag = false
     for (let tag of tags) {
         tagRegex.push(new RegExp(`(^|\\s)${tag.toLowerCase()}(?=\\s|$)`, 'g'))
-        if (tag.toLowerCase() == RunStatuses.running) {
+        if (tag.toLowerCase() == 'running') {
             hasRunningTag = true
         }
     }

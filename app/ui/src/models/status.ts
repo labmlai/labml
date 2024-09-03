@@ -48,5 +48,5 @@ export class Status {
 }
 
 export enum RunStatuses {
-    running = 'running'
+    running = 'in progress'
 }
