@@ -39,11 +39,12 @@ export class SearchView {
 
         this.textbox.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                console.log('searching')
-                this.loader.hide(false)
                 this.onSearch()
-                // this.loader.hide(true)
             }
         })
+    }
+
+    public hideLoader(isHide: boolean) {
+        this.loader.hide(isHide)
     }
 }

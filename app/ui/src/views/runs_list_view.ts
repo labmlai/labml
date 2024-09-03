@@ -23,6 +23,7 @@ class RunsListView extends ScreenView {
     elem: HTMLDivElement
     runsListContainer: HTMLDivElement
     searchQuery: string
+    searchView: SearchView
     buttonContainer: HTMLDivElement
     deleteButton: DeleteButton
     editButton: EditButton
@@ -56,6 +57,7 @@ class RunsListView extends ScreenView {
             this.currentRunsList = this.runsList.slice()
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
+        this.searchView = new SearchView({onSearch: this.onSearch, initText: this.searchQuery})
 
         this.searchQuery = getQueryParameter('query', window.location.search)
         let tags = getQueryParameter('tags', window.location.search)
@@ -101,7 +103,7 @@ class RunsListView extends ScreenView {
                 }).render($)
 
                 $('div', '.runs-list', $ => {
-                    new SearchView({onSearch: this.onSearch, initText: this.searchQuery}).render($)
+                    this.searchView.render($)
                     this.loader.render($)
                     $('svg', {style: {height: `${1}px`}}, $ => {
                         new DefaultLineGradient().render($)
@@ -232,6 +234,7 @@ class RunsListView extends ScreenView {
     }
 
     onSearch = async (query: string) => {
+        this.searchView.hideLoader(false)
         this.searchQuery = query
         let r = extractTags(query)
 
@@ -249,6 +252,7 @@ class RunsListView extends ScreenView {
         await this.loader.load()
 
         this.renderList()
+        this.searchView.hideLoader(true)
     }
 
     private renderList() {
