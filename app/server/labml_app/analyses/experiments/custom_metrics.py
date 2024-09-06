@@ -205,9 +205,8 @@ async def get_magic_metric(request: Request, run_uuid: str) -> Any:
     runs = [r.get_summary() for r in default_project.get_runs()]
 
     runs = sorted(runs, key=lambda i: i['start_time'], reverse=True)
-    runs = runs[:200]
-    similarity = [get_similarity(current_run, x) for x in runs if x['run_uuid'] != run_uuid]
-    runs = [x for _, x in sorted(zip(similarity, runs), key=lambda pair: pair[0], reverse=True)]
+    similarity = [get_similarity(current_run, x) for x in runs]
+    runs = [x for s, x in sorted(zip(similarity, runs), key=lambda pair: pair[0], reverse=True)]
     runs = runs[:20]
 
     current_metrics = run_cm.get_data()
@@ -242,7 +241,7 @@ async def get_magic_metric(request: Request, run_uuid: str) -> Any:
                 indicator_counts[preference_map_key] = []
             indicator_counts[preference_map_key].append((m.key, m_data['created_time']))
 
-    if len(indicator_counts):
+    if len(indicator_counts) == 0:
         return {'is_success': False, 'message': "Couldn't find any related past run."}
 
     sorted_keys = sorted(indicator_counts.keys(), key=lambda x: len(indicator_counts[x]), reverse=True)

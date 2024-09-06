@@ -77,9 +77,8 @@ def edit_distance(str1, str2):
 
 def get_similarity(run_a, run_b):
     name_edit = edit_distance(run_a['name'], run_b['name']) / max(len(run_a['name']), len(run_b['name']))
-    comment_edit = edit_distance(run_a['comment'], run_b['comment']) / max(len(run_a['comment']), len(run_b['comment']))
 
-    return 1 - (name_edit + comment_edit) / 2
+    return 1 - name_edit
 
 
 
