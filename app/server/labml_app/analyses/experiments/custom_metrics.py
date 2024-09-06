@@ -125,9 +125,10 @@ async def get_custom_metrics(request: Request, run_uuid: str) -> Any:
         r = CustomMetricsListModel()
         r.save()
         CustomMetricsListIndex.set(run_uuid, r.key)
-    else:
-        r = list_key.load()
-    print(r.get_data())
+        await create_magic_metric(request, run_uuid)
+        list_key = r.key
+
+    r = list_key.load()
     return {'metrics': r.get_data()}
 
 
@@ -180,15 +181,10 @@ async def delete_custom_metric(request: Request, run_uuid: str) -> Any:
 
 
 @Analysis.route('GET', 'custom_metrics/{run_uuid}/magic')
-async def get_magic_metric(request: Request, run_uuid: str) -> Any:
+async def create_magic_metric(request: Request, run_uuid: str) -> Any:
     list_key = CustomMetricsListIndex.get(run_uuid)
 
-    if list_key is None:
-        run_cm = CustomMetricsListModel()
-        run_cm.save()
-        CustomMetricsListIndex.set(run_uuid, run_cm.key)
-    else:
-        run_cm = list_key.load()
+    run_cm = list_key.load()
 
     current_run = run.get(run_uuid)
     if current_run is None:
