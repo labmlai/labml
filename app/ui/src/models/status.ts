@@ -45,5 +45,8 @@ export class Status {
     get isStatusInProgress() {
         return this.run_status.status === 'in progress'
     }
+}
 
+export enum RunStatuses {
+    running = 'in progress'
 }

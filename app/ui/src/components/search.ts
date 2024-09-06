@@ -1,4 +1,5 @@
 import {WeyaElementFunction} from '../../../lib/weya/weya'
+import {Loader} from "./loader"
 
 export interface SearchOptions {
     onSearch: (query: string) => void
@@ -9,12 +10,14 @@ export class SearchView {
     onSearch: () => void
     textbox: HTMLInputElement
     initText: string
+    loader: Loader
 
     constructor(opt: SearchOptions) {
         this.onSearch = () => {
             opt.onSearch(this.textbox.value)
         }
         this.initText = opt.initText ?? ""
+        this.loader = new Loader()
     }
 
     render($: WeyaElementFunction) {
@@ -29,12 +32,16 @@ export class SearchView {
                     placeholder: 'Search',
                     'aria-label': 'Search',
                 })
+                this.loader.render($)
+                this.loader.hide(true)
             })
         })
 
         this.textbox.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
+                this.loader.hide(false)
                 this.onSearch()
+                this.loader.hide(true)
             }
         })
     }

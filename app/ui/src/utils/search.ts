@@ -1,4 +1,5 @@
 import {RunListItemModel} from "../models/run_list"
+import {RunStatuses} from "../models/status"
 
 export function getSearchQuery() {
     return localStorage.getItem('searchQuery') || ''
@@ -20,7 +21,12 @@ export function runsFilter(run: RunListItemModel, searchText: string) {
 
     const queryRegex = new RegExp(query.toLowerCase(), 'g')
     const tagRegex: RegExp[] = []
+    let hasRunningTag = false
     for (let tag of tags) {
+        if (tag.toLowerCase() == 'running') {
+            hasRunningTag = true
+            continue
+        }
         tagRegex.push(new RegExp(`(^|\\s)${tag.toLowerCase()}(?=\\s|$)`, 'g'))
     }
 
@@ -30,6 +36,11 @@ export function runsFilter(run: RunListItemModel, searchText: string) {
 
     if (!matchTags)
         return false
+
+    if (hasRunningTag && run.run_status.status != RunStatuses.running) {
+        return false
+    }
+
     return matchName || matchComment
 }
 
@@ -52,5 +63,5 @@ export function extractTags(input: string): { tags: string[], query: string, mai
 
     const rest = input.replace(regex, '').replace(mainRegex, '').trim()
 
-    return { tags: tags, query: rest, mainTags: mainTags };
+    return {tags: tags, query: rest, mainTags: mainTags};
 }

@@ -5,7 +5,7 @@ import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
-import {CancelButton, DeleteButton, EditButton, IconButton} from '../components/buttons'
+import {CancelButton, DeleteButton, EditButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import EmptyRunsList from './empty_runs_list'
 import {UserMessages} from '../components/user_messages'
@@ -14,7 +14,7 @@ import {handleNetworkErrorInplace} from '../utils/redirect'
 import {getQueryParameter, setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
 import {DefaultLineGradient} from "../components/charts/chart_gradients"
-import {extractTags, getSearchQuery, runsFilter} from "../utils/search";
+import {extractTags, getSearchQuery, runsFilter} from "../utils/search"
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
