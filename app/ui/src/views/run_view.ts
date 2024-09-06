@@ -80,7 +80,7 @@ class RunView extends ScreenView {
             },
             title: 'Add magic metric',
             parent: this.constructor.name,
-        }, '')
+        }, '.fas.fa-magic')
     }
 
     private get isRank(): boolean {
@@ -208,12 +208,27 @@ class RunView extends ScreenView {
     }
 
     async creatMagicMetric() {
-        let res = await NETWORK.createMagicMetric(this.uuid)
+        let res = null
+        try {
+            res = await NETWORK.createMagicMetric(this.uuid)
+        } catch (e) {
+            UserMessages.shared.networkError(e, 'Failed to create magic metric')
+            return
+        }
+
 
         if (res['is_success']) {
+            try {
+                this.customMetrics = await CACHE.getCustomMetrics(this.uuid).get(true)
+            } catch (e) {
+                UserMessages.shared.networkError(e, 'Failed to load custom metrics')
+                return
+            }
+
+            this.renderCards()
             UserMessages.shared.success('Chart created')
         } else {
-            UserMessages.shared.error()
+            UserMessages.shared.warning(res['message'])
         }
     }
 
