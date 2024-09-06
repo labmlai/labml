@@ -3,8 +3,8 @@ import uuid
 from typing import List, Tuple, Any
 from uuid import UUID
 
-
-from labml_app.db import user
+from labml_app.analyses.helper import get_similarity
+from labml_app.db import user, run
 from labml_db import Model, Key, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
@@ -190,6 +190,11 @@ async def get_magic_metric(request: Request, run_uuid: str) -> Any:
     else:
         run_cm = list_key.load()
 
+    current_run = run.get(run_uuid)
+    if current_run is None:
+        return {'is_success': False, 'message': 'Run not found'}
+    current_run = current_run.get_summary()
+
     analysis_data = MetricsAnalysis.get_or_create(run_uuid).get_tracking()
     indicators = [track_item['name'] for track_item in analysis_data]
     indicators = sorted(indicators)
@@ -197,11 +202,13 @@ async def get_magic_metric(request: Request, run_uuid: str) -> Any:
     u = user.get_by_session_token('local')  # todo
 
     default_project = u.default_project
-    runs = [r.get_summary() for r in default_project.get_runs_by_tags("Predicta-2")]
+    runs = [r.get_summary() for r in default_project.get_runs()]
 
-    # calc similarity # todo
     runs = sorted(runs, key=lambda i: i['start_time'], reverse=True)
-    # runs = runs[:10]
+    runs = runs[:200]
+    similarity = [get_similarity(current_run, x) for x in runs if x['run_uuid'] != run_uuid]
+    runs = [x for _, x in sorted(zip(similarity, runs), key=lambda pair: pair[0], reverse=True)]
+    runs = runs[:20]
 
     current_metrics = run_cm.get_data()
     current_indicators = []

@@ -51,3 +51,36 @@ def get_mean_series(res: List[Dict[str, Any]]) -> Dict[str, Any]:
     last_step = res[0]['last_step']
 
     return {'step': step, 'value': mean_value, 'name': 'mean', 'last_step': last_step}
+
+
+def edit_distance(str1, str2):
+    len1 = len(str1)
+    len2 = len(str2)
+
+    dp = [[0 for i in range(len1 + 1)] for j in range(2)]
+
+    for i in range(0, len1 + 1):
+        dp[0][i] = i
+
+    for i in range(1, len2 + 1):
+        for j in range(0, len1 + 1):
+            if j == 0:
+                dp[i % 2][j] = i
+            elif str1[j - 1] == str2[i - 1]:
+                dp[i % 2][j] = dp[(i - 1) % 2][j - 1]
+            else:
+                dp[i % 2][j] = (1 + min(dp[(i - 1) % 2][j],
+                                        min(dp[i % 2][j - 1],
+                                            dp[(i - 1) % 2][j - 1])))
+    return dp[len2 % 2][len1]
+
+
+def get_similarity(run_a, run_b):
+    name_edit = edit_distance(run_a['name'], run_b['name']) / max(len(run_a['name']), len(run_b['name']))
+    comment_edit = edit_distance(run_a['comment'], run_b['comment']) / max(len(run_a['comment']), len(run_b['comment']))
+
+    return 1 - (name_edit + comment_edit) / 2
+
+
+
+
