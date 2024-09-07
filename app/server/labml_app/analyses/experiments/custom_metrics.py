@@ -223,7 +223,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
                 continue
             has_current_indicators = False
             for indicator_list in current_selected_indicators:
-                if indicator_list == preferences['series_preferences']:
+                if sorted(indicator_list) == sorted([x for x in preferences['series_preferences'] if x in run_indicators]):
                     has_current_indicators = True
                     break
             if has_current_indicators:
