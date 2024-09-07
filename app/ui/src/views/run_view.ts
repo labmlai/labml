@@ -310,6 +310,8 @@ class RunView extends ScreenView {
     }
 
     private renderCards() {
+        this.cardContainer.innerHTML = ''
+        this.cards = []
         $(this.cardContainer, $ => {
             if (this.customMetrics != null && this.run != null) {
                 this.customMetrics.getMetrics().map((metric, i) => {

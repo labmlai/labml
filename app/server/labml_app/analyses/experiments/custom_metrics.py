@@ -182,18 +182,21 @@ async def delete_custom_metric(request: Request, run_uuid: str) -> Any:
 
 @Analysis.route('GET', 'custom_metrics/{run_uuid}/magic')
 async def create_magic_metric(request: Request, run_uuid: str) -> Any:
-    list_key = CustomMetricsListIndex.get(run_uuid)
-
-    run_cm = list_key.load()
-
     current_run = run.get(run_uuid)
     if current_run is None:
         return {'is_success': False, 'message': 'Run not found'}
+
+    run_cm = CustomMetricsListIndex.get(run_uuid).load()
+
     current_run = current_run.get_summary()
 
     analysis_data = MetricsAnalysis.get_or_create(run_uuid).get_tracking()
-    indicators = [track_item['name'] for track_item in analysis_data]
-    indicators = sorted(indicators)
+    run_indicators = sorted([track_item['name'] for track_item in analysis_data])
+
+    current_metrics = run_cm.get_data()
+    current_selected_indicators = []
+    for x in current_metrics:
+        current_selected_indicators.append(x['preferences']['series_preferences'])
 
     u = user.get_by_session_token('local')  # todo
 
@@ -204,12 +207,6 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
     similarity = [get_similarity(current_run, x) for x in runs]
     runs = [x for s, x in sorted(zip(similarity, runs), key=lambda pair: pair[0], reverse=True)]
     runs = runs[:20]
-
-    current_metrics = run_cm.get_data()
-    current_indicators = []
-    for x in current_metrics:
-        current_indicators += x['preferences']['series_preferences']
-    current_indicators = set(current_indicators)
 
     indicator_counts = {}
     for r in runs:
@@ -225,8 +222,8 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
             if len(preferences['series_preferences']) == 0:
                 continue
             has_current_indicators = False
-            for indicator in current_indicators:
-                if indicator in preferences['series_preferences']:
+            for indicator_list in current_selected_indicators:
+                if indicator_list == preferences['series_preferences']:
                     has_current_indicators = True
                     break
             if has_current_indicators:
@@ -238,7 +235,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
             indicator_counts[preference_map_key].append((m.key, m_data['created_time']))
 
     if len(indicator_counts) == 0:
-        return {'is_success': False, 'message': "Couldn't find any related past run."}
+        return {'is_success': False, 'message': "Couldn't find any new related chart."}
 
     sorted_keys = sorted(indicator_counts.keys(), key=lambda x: len(indicator_counts[x]), reverse=True)
 
@@ -247,7 +244,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
     for key in sorted_keys:
         ind = key.split('|')
         overlap = False
-        for i in indicators:
+        for i in run_indicators:
             if i in ind:
                 overlap = True
                 break
@@ -263,7 +260,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
 
     new_metric_data = selected_metric.get_data()
     new_metric_data['preferences']['series_preferences'] = \
-        [x for x in new_metric_data['preferences']['series_preferences'] if x in indicators]
+        [x for x in new_metric_data['preferences']['series_preferences'] if x in run_indicators]
 
     run_cm.create_custom_metric(new_metric_data)
 
