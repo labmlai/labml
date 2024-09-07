@@ -235,7 +235,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
             indicator_counts[preference_map_key].append((m.key, m_data['created_time']))
 
     if len(indicator_counts) == 0:
-        return {'is_success': False, 'message': "Couldn't find any related past run."}
+        return {'is_success': False, 'message': "Couldn't find any new related chart."}
 
     sorted_keys = sorted(indicator_counts.keys(), key=lambda x: len(indicator_counts[x]), reverse=True)
 
