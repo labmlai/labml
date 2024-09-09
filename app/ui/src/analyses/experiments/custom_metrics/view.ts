@@ -20,7 +20,6 @@ import {RunsListItemView} from "../../../components/runs_list_item"
 import metricsCache, {MetricCache} from "./cache"
 import {SmoothingType} from "../../../components/charts/smoothing/smoothing_base";
 import EditableField from "../../../components/input/editable_field";
-import {formatTime} from "../../../utils/time";
 
 class CustomMetricView extends ScreenView implements MetricDataStore {
     private readonly uuid: string
@@ -73,7 +72,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
     private customMetric: CustomMetric
 
     private nameField: EditableField
-    private descriptionField: EditableField
+    private positionField: EditableField
     private detailsContainer: WeyaElement
 
     constructor(uuid: string, customMetricUUID: string) {
@@ -245,11 +244,12 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             onChange: this.onDetailChange
         })
 
-        let positionField = new EditableField({
+        this.positionField = new EditableField({
             name: 'Position',
-            value: '0',
+            value: this.customMetric.position,
             isEditable: true,
-            onChange: this.onDetailChange
+            onChange: this.onDetailChange,
+            type: 'number'
         })
 
         this.detailsContainer.innerHTML =  ''
@@ -257,7 +257,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             $('div.input-list-container', $ => {
                 $('ul', $ => {
                     this.nameField.render($)
-                    positionField.render($)
+                    this.positionField.render($)
                 })
             })
         })
@@ -334,11 +334,29 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
         }
 
         this.customMetric.name = this.nameField.getInput()
+        let didPositionChange = false
 
-        await CACHE.getCustomMetrics(this.uuid).updateMetric(this.customMetric.toData())
+        try {
+            let currentPosition = this.customMetric.position
+            this.customMetric.position = Number(this.positionField.getInput())
+            if (currentPosition != this.customMetric.position)
+                didPositionChange = true
+        } catch {
+            this.positionField.updateInput(this.customMetric.position.toString())
+        }
 
-        this.isUnsaved = false
-        this.refresh.resume()
+        try {
+            await CACHE.getCustomMetrics(this.uuid).updateMetric(this.customMetric.toData())
+
+            if (didPositionChange) { // get updated positions
+                await CACHE.getCustomMetrics(this.uuid).get(true)
+            }
+        } catch (e) {
+            throw e
+        } finally {
+            this.isUnsaved = false
+            this.refresh.resume()
+        }
     }
 
     private renderHeaders() {

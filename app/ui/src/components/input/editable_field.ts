@@ -68,6 +68,7 @@ export default class EditableField {
                                     placeholder: this.placeholder,
                                     value: this.value,
                                     autocomplete: this.autocomplete,
+                                    type: this.type
                                 }
                             )
                             this.inputElem.innerText = this.value
