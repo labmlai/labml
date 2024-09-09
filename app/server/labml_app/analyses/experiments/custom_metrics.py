@@ -194,9 +194,11 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
     run_indicators = sorted([track_item['name'] for track_item in analysis_data])
 
     current_metrics = run_cm.get_data()
-    current_selected_indicators = []
+    current_created_charts = []
+    current_selected_metrics = set()
     for x in current_metrics:
-        current_selected_indicators.append(x['preferences']['series_preferences'])
+        current_created_charts.append(x['preferences']['series_preferences'])
+        current_selected_metrics = current_selected_metrics.union(set(x['preferences']['series_preferences']))
 
     u = user.get_by_session_token('local')  # todo
 
@@ -209,6 +211,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
     runs = runs[:20]
 
     indicator_counts = {}
+    reasons = ""  # possible reason to not have runs
     for r in runs:
         list_key = CustomMetricsListIndex.get(r['run_uuid'])
         if list_key is None:
@@ -221,12 +224,24 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
             preferences = m_data['preferences']
             if len(preferences['series_preferences']) == 0:
                 continue
-            has_current_indicators = False
-            for indicator_list in current_selected_indicators:
-                if sorted(indicator_list) == sorted([x for x in preferences['series_preferences'] if x in run_indicators]):
-                    has_current_indicators = True
+
+            # has_same_chart = False
+            # for indicator_list in current_created_charts:
+            #     if sorted(indicator_list) ==
+            #     sorted([x for x in preferences['series_preferences'] if x in run_indicators]):
+            #         has_same_chart = True
+            #         break
+            # if has_same_chart:
+            #     continue
+
+            has_indicators = False
+            for indicators in current_selected_metrics:
+                if indicators in preferences['series_preferences']:
+                    has_indicators = True
                     break
-            if has_current_indicators:
+
+            if has_indicators:
+                reasons = "Some charts ignored due to having overlapped indicators with current charts."
                 continue
 
             preference_map_key = '|'.join(sorted(preferences['series_preferences']))
@@ -235,7 +250,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
             indicator_counts[preference_map_key].append((m.key, m_data['created_time']))
 
     if len(indicator_counts) == 0:
-        return {'is_success': False, 'message': "Couldn't find any new related chart."}
+        return {'is_success': False, 'message': "Couldn't find any new related chart. " + reasons}
 
     sorted_keys = sorted(indicator_counts.keys(), key=lambda x: len(indicator_counts[x]), reverse=True)
 
@@ -253,7 +268,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
             break
 
     if selected is None:  # return smth
-        return {'status': 'error', 'message': 'No similar indicators found'}
+        return {'status': 'error', 'message': 'No similar indicators found from selected charts. ' + reasons}
 
     selected_metric = sorted(indicator_counts[selected], key=lambda x: x[1], reverse=True)[0]
     selected_metric = selected_metric[0].load()
