@@ -188,6 +188,7 @@ export interface CustomMetricModel {
     description: string
     created_time: number
     preferences: ComparisonPreferenceModel
+    position: number
 }
 
 export class CustomMetric {
@@ -196,6 +197,7 @@ export class CustomMetric {
     description: string
     createdTime: number
     preferences: ComparisonPreferenceModel
+    position: number
 
     constructor(metric: CustomMetricModel) {
         this.id = metric.id
@@ -203,6 +205,7 @@ export class CustomMetric {
         this.description = metric.description
         this.createdTime = metric.created_time
         this.preferences = metric.preferences
+        this.position = metric.position
     }
 
     public toData(): CustomMetricModel {
@@ -211,7 +214,8 @@ export class CustomMetric {
             name: this.name,
             description: this.description,
             created_time: this.createdTime,
-            preferences: this.preferences
+            preferences: this.preferences,
+            position: this.position
         }
     }
 }

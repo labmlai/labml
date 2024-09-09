@@ -314,7 +314,14 @@ class RunView extends ScreenView {
         this.cards = []
         $(this.cardContainer, $ => {
             if (this.customMetrics != null && this.run != null) {
-                this.customMetrics.getMetrics().map((metric, i) => {
+                let metricList = this.customMetrics.getMetrics()
+                metricList.sort((a, b) => {
+                    if (a.position == b.position) {
+                        return b.createdTime - a.createdTime
+                    }
+                    return a.position - b.position
+                })
+                metricList.map((metric, i) => {
                     let card = new metricAnalysis.card({uuid: this.uuid, width: this.actualWidth, params: {
                             custom_metric: metric.id
                         }})

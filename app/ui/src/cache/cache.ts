@@ -500,7 +500,6 @@ export class CustomMetricCache extends CacheObject<CustomMetricList> {
     
     async updateMetric(data: object): Promise<void> {
         await NETWORK.updateCustomMetric(this.uuid, data)
-        console.log(data)
         if (this.data != null) {
             this.data.updateMetric(new CustomMetric(<CustomMetricModel>data))
         }

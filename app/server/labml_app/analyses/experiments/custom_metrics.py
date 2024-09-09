@@ -22,6 +22,7 @@ class CustomMetricModel(Model['CustomMetricModel']):
     description: str
     created_time: float
     metric_id: str
+    position: int
 
     @classmethod
     def defaults(cls):
@@ -29,7 +30,8 @@ class CustomMetricModel(Model['CustomMetricModel']):
                     name='',
                     description='',
                     created_time=0,
-                    metric_id=''
+                    metric_id='',
+                    position=1
                     )
 
     def update(self, data: dict):
@@ -58,6 +60,7 @@ class CustomMetricModel(Model['CustomMetricModel']):
             'description': self.description,
             'preferences': mp.get_data(),
             'created_time': self.created_time,
+            'position': self.position
         }
 
 
@@ -81,6 +84,7 @@ class CustomMetricsListModel(Model['CustomMetricsListModel']):
         cm.description = data.get('description', '')
         cm.metric_id = uuid.uuid4().hex
         cm.created_time = time.time()
+        cm.position = len(self.metrics) + 1
 
         mp = MetricPreferenceModel()
         mp.save()
@@ -105,12 +109,31 @@ class CustomMetricsListModel(Model['CustomMetricsListModel']):
         self.save()
 
     def get_data(self):
-        return [k[1].load().get_data() for k in self.metrics]
+        metrics = [k[1].load() for k in self.metrics]
+        metrics = sorted(metrics, key=lambda x: (x.position, -1*x.created_time))
+        for i, metric in enumerate(metrics, start=1):
+            if metric.position != i:
+                metric.position = i
+                metric.save()
+        return [m.get_data() for m in metrics]
 
     def get_metrics(self):
         return [k[1].load() for k in self.metrics]
 
     def update(self, data: dict):
+        if 'position' in data:  # handle position separately
+            metrics = [k[1].load() for k in self.metrics]
+            metrics = sorted(metrics, key=lambda x: (x.position, -1*x.created_time))
+            current_metric = [m for m in metrics if m.metric_id == data['id']]
+            if len(current_metric) == 0:
+                raise KeyError('Metric not found')
+            current_metric = current_metric[0]
+            metrics = [m for m in metrics if m.metric_id != data['id']]
+            metrics.insert(data['position']-1, current_metric)
+            for i, m in enumerate(metrics, start=1):
+                m.position = i
+                m.save()
+
         for (metric_id, key) in self.metrics:
             if metric_id == data['id']:
                 key.load().update(data)
