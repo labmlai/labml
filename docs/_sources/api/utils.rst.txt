@@ -34,5 +34,4 @@ PyTorch
 
 .. autofunction:: labml.utils.pytorch.get_modules
 
-
 .. autofunction:: labml.utils.pytorch.get_device

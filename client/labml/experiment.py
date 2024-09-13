@@ -1,7 +1,5 @@
-from pathlib import Path
 from typing import Optional, Set, Dict, overload
 
-import numpy as np
 from labml.configs import BaseConfigs
 from labml.internal.experiment import \
     create_experiment as _create_experiment, \
@@ -234,21 +232,6 @@ def load_configs(run_uuid: str, *, is_only_hyperparam: bool = True):
             values[k] = c['value']
 
     return values
-
-
-# TODO get_path
-# TODO remove
-def save_numpy(name: str, array: np.ndarray):
-    r"""
-    Saves a single numpy array. This is used to save processed data.
-    """
-
-    numpy_path = Path(_experiment_singleton().run.numpy_path)
-
-    if not numpy_path.exists():
-        numpy_path.mkdir(parents=True)
-    file_name = name + ".npy"
-    np.save(str(numpy_path / file_name), array)
 
 
 def record(*,

@@ -1,50 +1,28 @@
 
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Experiment &mdash; labml library 0.4 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experiment &mdash; labml library 0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/katex-math.css?v=91adb8b6" />
+      <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" />
+
   
     <link rel="shortcut icon" href="../_static/lab_icon.png"/>
+    <link rel="canonical" href="https://docs.labml.ai/api/experiment.html" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-    <link rel="canonical" href="https://docs.labml.ai/api/experiment.html"/>
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/katex-math.css" type="text/css" />
+        <script src="../_static/documentation_options.js?v=db78e746"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Tracker" href="tracker.html" />
@@ -62,47 +40,25 @@
  
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> labml library
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            labml library
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Experiment</a><ul>
@@ -114,36 +70,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#labml.experiment.get_uuid"><code class="docutils literal notranslate"><span class="pre">get_uuid()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#checkpoints">Checkpoints</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#labml.experiment.load"><code class="docutils literal notranslate"><span class="pre">load()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#labml.experiment.load_models"><code class="docutils literal notranslate"><span class="pre">load_models()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#labml.experiment.save_checkpoint"><code class="docutils literal notranslate"><span class="pre">save_checkpoint()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#labml.experiment.add_pytorch_models"><code class="docutils literal notranslate"><span class="pre">add_pytorch_models()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#labml.experiment.add_sklearn_models"><code class="docutils literal notranslate"><span class="pre">add_sklearn_models()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#labml.experiment.add_model_savers"><code class="docutils literal notranslate"><span class="pre">add_model_savers()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#labml.experiment.ModelSaver"><code class="docutils literal notranslate"><span class="pre">ModelSaver</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#labml.experiment.ModelSaver.save"><code class="docutils literal notranslate"><span class="pre">ModelSaver.save()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#labml.experiment.ModelSaver.load"><code class="docutils literal notranslate"><span class="pre">ModelSaver.load()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="#configurations-hyper-parameters">Configurations &amp; Hyper-parameters</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#labml.experiment.configs"><code class="docutils literal notranslate"><span class="pre">configs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#labml.experiment.load_configs"><code class="docutils literal notranslate"><span class="pre">load_configs()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#bundle-checkpoints">Bundle checkpoints</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#labml.experiment.save_bundle"><code class="docutils literal notranslate"><span class="pre">save_bundle()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#labml.experiment.load_bundle"><code class="docutils literal notranslate"><span class="pre">load_bundle()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#distirbuted-training">Distirbuted training</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#labml.experiment.distributed"><code class="docutils literal notranslate"><span class="pre">distributed()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#utilities">Utilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#labml.experiment.save_numpy"><code class="docutils literal notranslate"><span class="pre">save_numpy()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -161,14 +90,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tracker.html#setup">Setup</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_queue"><code class="docutils literal notranslate"><span class="pre">set_queue()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_histogram"><code class="docutils literal notranslate"><span class="pre">set_histogram()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_scalar"><code class="docutils literal notranslate"><span class="pre">set_scalar()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_indexed_scalar"><code class="docutils literal notranslate"><span class="pre">set_indexed_scalar()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_image"><code class="docutils literal notranslate"><span class="pre">set_image()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_text"><code class="docutils literal notranslate"><span class="pre">set_text()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_tensor"><code class="docutils literal notranslate"><span class="pre">set_tensor()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_indexed_text"><code class="docutils literal notranslate"><span class="pre">set_indexed_text()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tracker.html#namespaces">Namespaces</a><ul>
@@ -183,18 +106,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="framework_integrations.html">Framework Integrations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#fastai">FastAI</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="framework_integrations.html#labml.utils.fastai.LabMLFastAICallback"><code class="docutils literal notranslate"><span class="pre">LabMLFastAICallback</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#keras">Keras</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="framework_integrations.html#labml.utils.keras.LabMLKerasCallback"><code class="docutils literal notranslate"><span class="pre">LabMLKerasCallback</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#pytorch-lightning">PyTorch Lightning</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="framework_integrations.html#labml.utils.lightning.LabMLLightningLogger"><code class="docutils literal notranslate"><span class="pre">LabMLLightningLogger</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#fastai">FastAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#keras">Keras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#pytorch-lightning">PyTorch Lightning</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="monit.html">Monitor</a><ul>
@@ -218,49 +132,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="analytics.html">Analytics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="analytics.html#probing">Probing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe"><code class="docutils literal notranslate"><span class="pre">ModelProbe</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe.parameters"><code class="docutils literal notranslate"><span class="pre">ModelProbe.parameters</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe.forward_input"><code class="docutils literal notranslate"><span class="pre">ModelProbe.forward_input</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe.forward_output"><code class="docutils literal notranslate"><span class="pre">ModelProbe.forward_output</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe.backward_input"><code class="docutils literal notranslate"><span class="pre">ModelProbe.backward_input</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe.backward_output"><code class="docutils literal notranslate"><span class="pre">ModelProbe.backward_output</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.ValueCollection"><code class="docutils literal notranslate"><span class="pre">ValueCollection</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ValueCollection.get_value"><code class="docutils literal notranslate"><span class="pre">ValueCollection.get_value()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ValueCollection.get_list"><code class="docutils literal notranslate"><span class="pre">ValueCollection.get_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ValueCollection.get_dict"><code class="docutils literal notranslate"><span class="pre">ValueCollection.get_dict()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ValueCollection.deep"><code class="docutils literal notranslate"><span class="pre">ValueCollection.deep()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.DeepValueCollection"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.DeepValueCollection.get_value"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection.get_value()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.DeepValueCollection.get_list"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection.get_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.DeepValueCollection.get_dict"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection.get_dict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="analytics.html#get-data">Get data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.runs"><code class="docutils literal notranslate"><span class="pre">runs()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.get_run"><code class="docutils literal notranslate"><span class="pre">get_run()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.set_preferred_db"><code class="docutils literal notranslate"><span class="pre">set_preferred_db()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.indicator_data"><code class="docutils literal notranslate"><span class="pre">indicator_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.artifact_data"><code class="docutils literal notranslate"><span class="pre">artifact_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.IndicatorCollection"><code class="docutils literal notranslate"><span class="pre">IndicatorCollection</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="analytics.html#plot">Plot</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.distribution"><code class="docutils literal notranslate"><span class="pre">distribution()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.scatter"><code class="docutils literal notranslate"><span class="pre">scatter()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.binned_heatmap"><code class="docutils literal notranslate"><span class="pre">binned_heatmap()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.histogram"><code class="docutils literal notranslate"><span class="pre">histogram()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="configs.html">Configs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="configs.html#labml.configs.BaseConfigs"><code class="docutils literal notranslate"><span class="pre">BaseConfigs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="configs.html#labml.configs.option"><code class="docutils literal notranslate"><span class="pre">option()</span></code></a></li>
@@ -268,12 +139,6 @@
 <li class="toctree-l2"><a class="reference internal" href="configs.html#labml.configs.hyperparams"><code class="docutils literal notranslate"><span class="pre">hyperparams()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="configs.html#labml.configs.meta_config"><code class="docutils literal notranslate"><span class="pre">meta_config()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="configs.html#labml.configs.aggregate"><code class="docutils literal notranslate"><span class="pre">aggregate()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="configs.html#id1">Dynamic Hyper-parameters</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="configs.html#labml.configs.DynamicHyperParam"><code class="docutils literal notranslate"><span class="pre">DynamicHyperParam</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="configs.html#labml.configs.FloatDynamicHyperParam"><code class="docutils literal notranslate"><span class="pre">FloatDynamicHyperParam</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="configs.html#labml.configs.IntDynamicHyperParam"><code class="docutils literal notranslate"><span class="pre">IntDynamicHyperParam</span></code></a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a><ul>
@@ -292,7 +157,6 @@
 <li class="toctree-l4"><a class="reference internal" href="logger.html#labml.logger.Text.subtle"><code class="docutils literal notranslate"><span class="pre">Text.subtle</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="logger.html#labml.logger.Text.success"><code class="docutils literal notranslate"><span class="pre">Text.success</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="logger.html#labml.logger.Text.title"><code class="docutils literal notranslate"><span class="pre">Text.title</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="logger.html#labml.logger.Text.value"><code class="docutils literal notranslate"><span class="pre">Text.value</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="logger.html#labml.logger.Text.warning"><code class="docutils literal notranslate"><span class="pre">Text.warning</span></code></a></li>
 </ul>
 </li>
@@ -359,60 +223,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="helpers.html#configurable-modules">Configurable Modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.device.DeviceConfigs"><code class="docutils literal notranslate"><span class="pre">DeviceConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.seed.SeedConfigs"><code class="docutils literal notranslate"><span class="pre">SeedConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.optimizer.OptimizerConfigs"><code class="docutils literal notranslate"><span class="pre">OptimizerConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.training_loop.TrainingLoopConfigs"><code class="docutils literal notranslate"><span class="pre">TrainingLoopConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.train_valid.TrainValidConfigs"><code class="docutils literal notranslate"><span class="pre">TrainValidConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.train_valid.SimpleTrainValidConfigs"><code class="docutils literal notranslate"><span class="pre">SimpleTrainValidConfigs</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="helpers.html#datasets">Datasets</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.datasets.mnist.MNISTConfigs"><code class="docutils literal notranslate"><span class="pre">MNISTConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.datasets.cifar10.CIFAR10Configs"><code class="docutils literal notranslate"><span class="pre">CIFAR10Configs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.datasets.csv.CsvDataset"><code class="docutils literal notranslate"><span class="pre">CsvDataset</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#remote">Remote</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.remote.DatasetServer"><code class="docutils literal notranslate"><span class="pre">DatasetServer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.remote.RemoteDataset"><code class="docutils literal notranslate"><span class="pre">RemoteDataset</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#text-datasets">Text Datasets</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.text.TextDataset"><code class="docutils literal notranslate"><span class="pre">TextDataset</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.text.TextFileDataset"><code class="docutils literal notranslate"><span class="pre">TextFileDataset</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.text.SequentialDataLoader"><code class="docutils literal notranslate"><span class="pre">SequentialDataLoader</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.text.SequentialUnBatchedDataset"><code class="docutils literal notranslate"><span class="pre">SequentialUnBatchedDataset</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="helpers.html#schedules">Schedules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.schedule.Schedule"><code class="docutils literal notranslate"><span class="pre">Schedule</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.schedule.Flat"><code class="docutils literal notranslate"><span class="pre">Flat</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.schedule.Dynamic"><code class="docutils literal notranslate"><span class="pre">Dynamic</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.schedule.Piecewise"><code class="docutils literal notranslate"><span class="pre">Piecewise</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.schedule.RelativePiecewise"><code class="docutils literal notranslate"><span class="pre">RelativePiecewise</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="helpers.html#metrics">Metrics</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.StateModule"><code class="docutils literal notranslate"><span class="pre">StateModule</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.Metric"><code class="docutils literal notranslate"><span class="pre">Metric</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.accuracy.Accuracy"><code class="docutils literal notranslate"><span class="pre">Accuracy</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.accuracy.BinaryAccuracy"><code class="docutils literal notranslate"><span class="pre">BinaryAccuracy</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.accuracy.AccuracyDirect"><code class="docutils literal notranslate"><span class="pre">AccuracyDirect</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.collector.Collector"><code class="docutils literal notranslate"><span class="pre">Collector</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.recall_precision.RecallPrecision"><code class="docutils literal notranslate"><span class="pre">RecallPrecision</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.simple_state.SimpleStateModule"><code class="docutils literal notranslate"><span class="pre">SimpleStateModule</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.simple_state.SimpleState"><code class="docutils literal notranslate"><span class="pre">SimpleState</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="helpers.html#utilies">Utilies</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.module.Module"><code class="docutils literal notranslate"><span class="pre">Module</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">CLI</span></p>
 <ul>
@@ -426,89 +236,53 @@
 </li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">labml library</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-      <li>Experiment</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Experiment</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/api/experiment.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="experiment">
-<h1>Experiment<a class="headerlink" href="#experiment" title="Permalink to this heading">¶</a></h1>
+             
+  <section id="experiment">
+<h1>Experiment<a class="headerlink" href="#experiment" title="Link to this heading">¶</a></h1>
 <p><a class="reference external" href="https://colab.research.google.com/github/labmlai/labml/blob/master/guides/experiment.ipynb">Here is a tutorial on Google Colab that shows how to use the experiment module</a></p>
-<span class="target" id="module-labml.experiment"></span><div class="section" id="create-experiment">
-<h2>Create Experiment<a class="headerlink" href="#create-experiment" title="Permalink to this heading">¶</a></h2>
+<section id="create-experiment">
+<span id="module-labml.experiment"></span><h2>Create Experiment<a class="headerlink" href="#create-experiment" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.experiment.create">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">python_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_callers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_screen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.create" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">python_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_callers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributed_rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributed_world_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributed_main_rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_screen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.create" title="Link to this definition">¶</a></dt>
 <dd><p>Create an experiment</p>
 <dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the experiment</p></li>
 <li><p><strong>python_file</strong> (<em>str</em><em>, </em><em>optional</em>) – path of the Python file that
 created the experiment</p></li>
 <li><p><strong>comment</strong> (<em>str</em><em>, </em><em>optional</em>) – a short description of the experiment</p></li>
 <li><p><strong>writers</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – list of writers to write stat to.
-Defaults to <code class="docutils literal notranslate"><span class="pre">{'tensorboard',</span> <span class="pre">'sqlite',</span> <span class="pre">'web_api'}</span></code>.</p></li>
+Defaults to <code class="docutils literal notranslate"><span class="pre">{'screen',</span> <span class="pre">'app'}</span></code>.</p></li>
 <li><p><strong>ignore_callers</strong> – (Set[str], optional): list of files to ignore when
 automatically determining <code class="docutils literal notranslate"><span class="pre">python_file</span></code></p></li>
-<li><p><strong>tags</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Set of tags for experiment</p></li>
+<li><p><strong>tags</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – set of tags for experiment</p></li>
+<li><p><strong>distributed_rank</strong> (<em>int</em><em>, </em><em>optional</em>) – rank if this is a distributed training session</p></li>
+<li><p><strong>distributed_world_size</strong> (<em>int</em><em>, </em><em>optional</em>) – world_size if this is a distributed training session</p></li>
 </ul>
 </dd>
 </dl>
@@ -516,23 +290,25 @@ automatically determining <code class="docutils literal notranslate"><span class
 
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.experiment.record">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_conf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_conf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_screen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.record" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_conf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lab_conf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributed_rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributed_world_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_screen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.record" title="Link to this definition">¶</a></dt>
 <dd><p>This combines <a class="reference internal" href="#labml.experiment.create" title="labml.experiment.create"><code class="xref py py-func docutils literal notranslate"><span class="pre">create()</span></code></a>, <a class="reference internal" href="#labml.experiment.configs" title="labml.experiment.configs"><code class="xref py py-func docutils literal notranslate"><span class="pre">configs()</span></code></a> and <a class="reference internal" href="#labml.experiment.start" title="labml.experiment.start"><code class="xref py py-func docutils literal notranslate"><span class="pre">start()</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the experiment</p></li>
 <li><p><strong>comment</strong> (<em>str</em><em>, </em><em>optional</em>) – a short description of the experiment</p></li>
 <li><p><strong>writers</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – list of writers to write stat to.
-Defaults to <code class="docutils literal notranslate"><span class="pre">{'tensorboard',</span> <span class="pre">'sqlite',</span> <span class="pre">'web_api'}</span></code>.</p></li>
+Defaults to <code class="docutils literal notranslate"><span class="pre">{'screen',</span> <span class="pre">'app'}</span></code>.</p></li>
 <li><p><strong>tags</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Set of tags for experiment</p></li>
 <li><p><strong>exp_conf</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – a dictionary of experiment configurations</p></li>
 <li><p><strong>lab_conf</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – a dictionary of configurations for LabML.
-Use this if you want to change default configurations such as <code class="docutils literal notranslate"><span class="pre">web_api</span></code>, and
+Use this if you want to change default configurations such as <code class="docutils literal notranslate"><span class="pre">app_track_url</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">data_path</span></code>.</p></li>
-<li><p><strong>token</strong> (<em>str</em><em>, </em><em>optional</em>) – a shortcut to provide LabML mobile app token (or url - <code class="docutils literal notranslate"><span class="pre">web_api</span></code>)
+<li><p><strong>app_url</strong> (<em>str</em><em>, </em><em>optional</em>) – a shortcut to provide LabML app url
 instead of including it in <code class="docutils literal notranslate"><span class="pre">lab_conf</span></code>. You can set this with <a class="reference internal" href="lab.html#labml.lab.configure" title="labml.lab.configure"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.lab.configure()</span></code></a>,
 <a class="reference external" href="../guide/installation_setup.html">or with a configuration file for the entire project</a>.</p></li>
+<li><p><strong>distributed_rank</strong> (<em>int</em><em>, </em><em>optional</em>) – rank if this is a distributed training session</p></li>
+<li><p><strong>distributed_world_size</strong> (<em>int</em><em>, </em><em>optional</em>) – world_size if this is a distributed training session</p></li>
 </ul>
 </dd>
 </dl>
@@ -540,14 +316,14 @@ instead of including it in <code class="docutils literal notranslate"><span clas
 
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.experiment.evaluate">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.evaluate" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.evaluate" title="Link to this definition">¶</a></dt>
 <dd><p>This should be used for evaluation of a saved experiment.
 This will not record anything.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.experiment.start">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.start" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">global_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.start" title="Link to this definition">¶</a></dt>
 <dd><p>Starts the experiment.
 Run it using <code class="docutils literal notranslate"><span class="pre">with</span></code> statement and it will monitor and report, experiment completion
 and exceptions.</p>
@@ -555,139 +331,16 @@ and exceptions.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.experiment.get_uuid">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">get_uuid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#get_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.get_uuid" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">get_uuid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#get_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.get_uuid" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the UUID of the current experiment run</p>
 </dd></dl>
 
-</div>
-<div class="section" id="checkpoints">
-<h2>Checkpoints<a class="headerlink" href="#checkpoints" title="Permalink to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="labml.experiment.load">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a the run from a previous checkpoint.
-You need to separately call <code class="docutils literal notranslate"><span class="pre">experiment.start</span></code> to start the experiment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>run_uuid</strong> (<em>str</em>) – experiment will start from
-a saved state in the run with UUID <code class="docutils literal notranslate"><span class="pre">run_uuid</span></code></p></li>
-<li><p><strong>checkpoint</strong> (<em>str</em><em>, </em><em>optional</em>) – if provided the experiment will start from
-given checkpoint. Otherwise it will start from the last checkpoint.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="labml.experiment.load_models">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">load_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">models</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#load_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.load_models" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads and starts the run from a previous checkpoint.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>models</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of names of models to be loaded</p></li>
-<li><p><strong>run_uuid</strong> (<em>str</em>) – experiment will start from
-a saved state in the run with UUID <code class="docutils literal notranslate"><span class="pre">run_uuid</span></code></p></li>
-<li><p><strong>checkpoint</strong> (<em>str</em><em>, </em><em>optional</em>) – if provided the experiment will start from
-given checkpoint. Otherwise it will start from the last checkpoint.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="labml.experiment.save_checkpoint">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">save_checkpoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#save_checkpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.save_checkpoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves model checkpoints</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="labml.experiment.add_pytorch_models">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">add_pytorch_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.nn.Module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#add_pytorch_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.add_pytorch_models" title="Permalink to this definition">¶</a></dt>
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">add_pytorch_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">models</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.nn.Module</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span></dt>
-<dd><p>Set variables for saving and loading</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>models</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>torch.nn.Module</em><em>]</em>) – a dictionary of torch modules
-used in the experiment.
-These will be saved with <a class="reference internal" href="#labml.experiment.save_checkpoint" title="labml.experiment.save_checkpoint"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.experiment.save_checkpoint()</span></code></a>
-and loaded with <a class="reference internal" href="#labml.experiment.load" title="labml.experiment.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.experiment.load()</span></code></a>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="labml.experiment.add_sklearn_models">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">add_sklearn_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">models</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#add_sklearn_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.add_sklearn_models" title="Permalink to this definition">¶</a></dt>
-<dd><div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This is still experimental.</p>
-</div>
-<p>Set variables for saving and loading</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>models</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em>) – a dictionary of SKLearn models
-These will be saved with <a class="reference internal" href="#labml.experiment.save_checkpoint" title="labml.experiment.save_checkpoint"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.experiment.save_checkpoint()</span></code></a>
-and loaded with <a class="reference internal" href="#labml.experiment.load" title="labml.experiment.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.experiment.load()</span></code></a>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="labml.experiment.add_model_savers">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">add_model_savers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#labml.experiment.ModelSaver" title="labml.internal.experiment.ModelSaver"><span class="pre">ModelSaver</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#add_model_savers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.add_model_savers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add custom model savers</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>savers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="#labml.experiment.ModelSaver" title="labml.experiment.ModelSaver"><em>ModelSaver</em></a><em>]</em>) – a dictionary of <a class="reference internal" href="#labml.experiment.ModelSaver" title="labml.experiment.ModelSaver"><code class="xref py py-class docutils literal notranslate"><span class="pre">labml.experiment.ModelSaver</span></code></a>.
-These will be saved with <a class="reference internal" href="#labml.experiment.save_checkpoint" title="labml.experiment.save_checkpoint"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.experiment.save_checkpoint()</span></code></a>
-and loaded with <a class="reference internal" href="#labml.experiment.load" title="labml.experiment.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.experiment.load()</span></code></a>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="labml.experiment.ModelSaver">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">ModelSaver</span></span><a class="reference internal" href="../_modules/labml/internal/experiment.html#ModelSaver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.ModelSaver" title="Permalink to this definition">¶</a></dt>
-<dd><p>An abstract class defining model saver/loader.</p>
-<p>The implementation should keep a reference to the model and load and save the model
-parameters.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="labml.experiment.ModelSaver.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checkpoint_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">any</span></span></span><a class="reference internal" href="../_modules/labml/internal/experiment.html#ModelSaver.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.ModelSaver.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves the model in the given checkpoint path</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>checkpoint_path</strong> (<em>pathlib.Path</em>) – The path to save the model at</p>
-</dd>
-</dl>
-<p>Returns any meta info, such as the individual filename(s)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="labml.experiment.ModelSaver.load">
-<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checkpoint_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/labml/internal/experiment.html#ModelSaver.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.ModelSaver.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the model from the given checkpoint path</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>checkpoint_path</strong> (<em>pathlib.Path</em>) – The path to load the model from</p></li>
-<li><p><strong>info</strong> (<em>any</em>) – The returned meta data when saving</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="configurations-hyper-parameters">
-<h2>Configurations &amp; Hyper-parameters<a class="headerlink" href="#configurations-hyper-parameters" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="configurations-hyper-parameters">
+<h2>Configurations &amp; Hyper-parameters<a class="headerlink" href="#configurations-hyper-parameters" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.experiment.configs">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.configs" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.configs" title="Link to this definition">¶</a></dt>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_override</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span></dt>
 <dt class="sig sig-object py">
@@ -713,7 +366,7 @@ parameters.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configs.html#labml.configs.BaseConfigs" title="labml.configs.BaseConfigs"><span class="pre">BaseConfigs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configs.html#labml.configs.BaseConfigs" title="labml.configs.BaseConfigs"><span class="pre">BaseConfigs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -728,7 +381,7 @@ parameters.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configs.html#labml.configs.BaseConfigs" title="labml.configs.BaseConfigs"><span class="pre">BaseConfigs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_override</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configs.html#labml.configs.BaseConfigs" title="labml.configs.BaseConfigs"><span class="pre">BaseConfigs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_override</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -737,7 +390,7 @@ parameters.</p>
 <dd></dd></dl>
 
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>conf</strong> (<a class="reference internal" href="configs.html#labml.configs.BaseConfigs" title="labml.configs.BaseConfigs"><em>BaseConfigs</em></a><em>, </em><em>optional</em>) – configurations object</p></li>
 <li><p><strong>conf_dict</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – a dictionary of configs</p></li>
@@ -750,132 +403,52 @@ configs to be overridden</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.experiment.load_configs">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">load_configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_only_hyperparam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#load_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.load_configs" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">load_configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_only_hyperparam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#load_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.load_configs" title="Link to this definition">¶</a></dt>
 <dd><p>Load configs of a previous run</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>run_uuid</strong> (<em>str</em>) – if provided the experiment will start from
 a saved state in the run with UUID <code class="docutils literal notranslate"><span class="pre">run_uuid</span></code></p>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>is_only_hyperparam</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True all only the hyper parameters
 are returned</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="bundle-checkpoints">
-<h2>Bundle checkpoints<a class="headerlink" href="#bundle-checkpoints" title="Permalink to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="labml.experiment.save_bundle">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">save_bundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#save_bundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.save_bundle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file with the configs and checkpoints that can be distributed and loaded
-easily.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>Path</em>) – <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file path</p></li>
-<li><p><strong>run_uuid</strong> (<em>str</em>) – experiment run to bundle</p></li>
-<li><p><strong>checkpoint</strong> (<em>str</em><em>, </em><em>optional</em>) – if provided the given checkpoint will be bundled.
-Otherwise it will bundle the last checkpoint.</p></li>
-<li><p><strong>data_files</strong> – List of data files (relative to <a class="reference internal" href="lab.html#labml.lab.get_data_path" title="labml.lab.get_data_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">labml.lab.get_data_path()</span></code></a>) to be bundled.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="labml.experiment.load_bundle">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">load_bundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/labml/experiment.html#load_bundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.load_bundle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract a bundle into experiments folder and returns the <code class="docutils literal notranslate"><span class="pre">run_uuid</span></code> and checkpoint.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>Path</em>) – <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file path</p></li>
-<li><p><strong>url</strong> (<em>str</em>) – url to download the <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file from</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="distirbuted-training">
-<h2>Distirbuted training<a class="headerlink" href="#distirbuted-training" title="Permalink to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="labml.experiment.distributed">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">distributed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">world_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#distributed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.distributed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the <code class="docutils literal notranslate"><span class="pre">rank</span></code> and <code class="docutils literal notranslate"><span class="pre">world_size</span></code> of the current process
-in an distributed training setup.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>rank</strong> (<em>int</em>) – rank of the current process</p></li>
-<li><p><strong>world_size</strong> (<em>int</em>) – number of training processes</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="utilities">
-<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="labml.experiment.save_numpy">
-<span class="sig-prename descclassname"><span class="pre">labml.experiment.</span></span><span class="sig-name descname"><span class="pre">save_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/experiment.html#save_numpy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.experiment.save_numpy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves a single numpy array. This is used to save processed data.</p>
-</dd></dl>
-
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="tracker.html" class="btn btn-neutral float-right" title="Tracker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../index.html" class="btn btn-neutral float-left" title="labml library reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="labml library reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tracker.html" class="btn btn-neutral float-right" title="Tracker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020-2022, labml.ai contributors
-
-    </p>
+    <p>&#169; Copyright 2020-2024, labml.ai contributors.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

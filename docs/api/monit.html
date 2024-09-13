@@ -1,53 +1,31 @@
 
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Monitor &mdash; labml library 0.4 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monitor &mdash; labml library 0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/katex-math.css?v=91adb8b6" />
+      <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" />
+
   
     <link rel="shortcut icon" href="../_static/lab_icon.png"/>
+    <link rel="canonical" href="https://docs.labml.ai/api/monit.html" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-    <link rel="canonical" href="https://docs.labml.ai/api/monit.html"/>
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/katex-math.css" type="text/css" />
+        <script src="../_static/documentation_options.js?v=db78e746"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Analytics" href="analytics.html" />
+    <link rel="next" title="Configs" href="configs.html" />
     <link rel="prev" title="Framework Integrations" href="framework_integrations.html" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
@@ -62,47 +40,25 @@
  
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> labml library
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            labml library
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="experiment.html">Experiment</a><ul>
@@ -114,36 +70,9 @@
 <li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.get_uuid"><code class="docutils literal notranslate"><span class="pre">get_uuid()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="experiment.html#checkpoints">Checkpoints</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.load"><code class="docutils literal notranslate"><span class="pre">load()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.load_models"><code class="docutils literal notranslate"><span class="pre">load_models()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.save_checkpoint"><code class="docutils literal notranslate"><span class="pre">save_checkpoint()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.add_pytorch_models"><code class="docutils literal notranslate"><span class="pre">add_pytorch_models()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.add_sklearn_models"><code class="docutils literal notranslate"><span class="pre">add_sklearn_models()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.add_model_savers"><code class="docutils literal notranslate"><span class="pre">add_model_savers()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.ModelSaver"><code class="docutils literal notranslate"><span class="pre">ModelSaver</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="experiment.html#labml.experiment.ModelSaver.save"><code class="docutils literal notranslate"><span class="pre">ModelSaver.save()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="experiment.html#labml.experiment.ModelSaver.load"><code class="docutils literal notranslate"><span class="pre">ModelSaver.load()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="experiment.html#configurations-hyper-parameters">Configurations &amp; Hyper-parameters</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.configs"><code class="docutils literal notranslate"><span class="pre">configs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.load_configs"><code class="docutils literal notranslate"><span class="pre">load_configs()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="experiment.html#bundle-checkpoints">Bundle checkpoints</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.save_bundle"><code class="docutils literal notranslate"><span class="pre">save_bundle()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.load_bundle"><code class="docutils literal notranslate"><span class="pre">load_bundle()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="experiment.html#distirbuted-training">Distirbuted training</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.distributed"><code class="docutils literal notranslate"><span class="pre">distributed()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="experiment.html#utilities">Utilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="experiment.html#labml.experiment.save_numpy"><code class="docutils literal notranslate"><span class="pre">save_numpy()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -161,14 +90,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tracker.html#setup">Setup</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_queue"><code class="docutils literal notranslate"><span class="pre">set_queue()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_histogram"><code class="docutils literal notranslate"><span class="pre">set_histogram()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_scalar"><code class="docutils literal notranslate"><span class="pre">set_scalar()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_indexed_scalar"><code class="docutils literal notranslate"><span class="pre">set_indexed_scalar()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_image"><code class="docutils literal notranslate"><span class="pre">set_image()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_text"><code class="docutils literal notranslate"><span class="pre">set_text()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_tensor"><code class="docutils literal notranslate"><span class="pre">set_tensor()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="tracker.html#labml.tracker.set_indexed_text"><code class="docutils literal notranslate"><span class="pre">set_indexed_text()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tracker.html#namespaces">Namespaces</a><ul>
@@ -183,18 +106,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="framework_integrations.html">Framework Integrations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#fastai">FastAI</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="framework_integrations.html#labml.utils.fastai.LabMLFastAICallback"><code class="docutils literal notranslate"><span class="pre">LabMLFastAICallback</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#keras">Keras</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="framework_integrations.html#labml.utils.keras.LabMLKerasCallback"><code class="docutils literal notranslate"><span class="pre">LabMLKerasCallback</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#pytorch-lightning">PyTorch Lightning</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="framework_integrations.html#labml.utils.lightning.LabMLLightningLogger"><code class="docutils literal notranslate"><span class="pre">LabMLLightningLogger</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#fastai">FastAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#keras">Keras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="framework_integrations.html#pytorch-lightning">PyTorch Lightning</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Monitor</a><ul>
@@ -218,49 +132,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="analytics.html">Analytics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="analytics.html#probing">Probing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe"><code class="docutils literal notranslate"><span class="pre">ModelProbe</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe.parameters"><code class="docutils literal notranslate"><span class="pre">ModelProbe.parameters</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe.forward_input"><code class="docutils literal notranslate"><span class="pre">ModelProbe.forward_input</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe.forward_output"><code class="docutils literal notranslate"><span class="pre">ModelProbe.forward_output</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe.backward_input"><code class="docutils literal notranslate"><span class="pre">ModelProbe.backward_input</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ModelProbe.backward_output"><code class="docutils literal notranslate"><span class="pre">ModelProbe.backward_output</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.ValueCollection"><code class="docutils literal notranslate"><span class="pre">ValueCollection</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ValueCollection.get_value"><code class="docutils literal notranslate"><span class="pre">ValueCollection.get_value()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ValueCollection.get_list"><code class="docutils literal notranslate"><span class="pre">ValueCollection.get_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ValueCollection.get_dict"><code class="docutils literal notranslate"><span class="pre">ValueCollection.get_dict()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.ValueCollection.deep"><code class="docutils literal notranslate"><span class="pre">ValueCollection.deep()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.DeepValueCollection"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.DeepValueCollection.get_value"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection.get_value()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.DeepValueCollection.get_list"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection.get_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="analytics.html#labml.analytics.DeepValueCollection.get_dict"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection.get_dict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="analytics.html#get-data">Get data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.runs"><code class="docutils literal notranslate"><span class="pre">runs()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.get_run"><code class="docutils literal notranslate"><span class="pre">get_run()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.set_preferred_db"><code class="docutils literal notranslate"><span class="pre">set_preferred_db()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.indicator_data"><code class="docutils literal notranslate"><span class="pre">indicator_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.artifact_data"><code class="docutils literal notranslate"><span class="pre">artifact_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.IndicatorCollection"><code class="docutils literal notranslate"><span class="pre">IndicatorCollection</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="analytics.html#plot">Plot</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.distribution"><code class="docutils literal notranslate"><span class="pre">distribution()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.scatter"><code class="docutils literal notranslate"><span class="pre">scatter()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.binned_heatmap"><code class="docutils literal notranslate"><span class="pre">binned_heatmap()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="analytics.html#labml.analytics.histogram"><code class="docutils literal notranslate"><span class="pre">histogram()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="configs.html">Configs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="configs.html#labml.configs.BaseConfigs"><code class="docutils literal notranslate"><span class="pre">BaseConfigs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="configs.html#labml.configs.option"><code class="docutils literal notranslate"><span class="pre">option()</span></code></a></li>
@@ -268,12 +139,6 @@
 <li class="toctree-l2"><a class="reference internal" href="configs.html#labml.configs.hyperparams"><code class="docutils literal notranslate"><span class="pre">hyperparams()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="configs.html#labml.configs.meta_config"><code class="docutils literal notranslate"><span class="pre">meta_config()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="configs.html#labml.configs.aggregate"><code class="docutils literal notranslate"><span class="pre">aggregate()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="configs.html#id1">Dynamic Hyper-parameters</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="configs.html#labml.configs.DynamicHyperParam"><code class="docutils literal notranslate"><span class="pre">DynamicHyperParam</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="configs.html#labml.configs.FloatDynamicHyperParam"><code class="docutils literal notranslate"><span class="pre">FloatDynamicHyperParam</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="configs.html#labml.configs.IntDynamicHyperParam"><code class="docutils literal notranslate"><span class="pre">IntDynamicHyperParam</span></code></a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a><ul>
@@ -292,7 +157,6 @@
 <li class="toctree-l4"><a class="reference internal" href="logger.html#labml.logger.Text.subtle"><code class="docutils literal notranslate"><span class="pre">Text.subtle</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="logger.html#labml.logger.Text.success"><code class="docutils literal notranslate"><span class="pre">Text.success</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="logger.html#labml.logger.Text.title"><code class="docutils literal notranslate"><span class="pre">Text.title</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="logger.html#labml.logger.Text.value"><code class="docutils literal notranslate"><span class="pre">Text.value</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="logger.html#labml.logger.Text.warning"><code class="docutils literal notranslate"><span class="pre">Text.warning</span></code></a></li>
 </ul>
 </li>
@@ -359,60 +223,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="helpers.html#configurable-modules">Configurable Modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.device.DeviceConfigs"><code class="docutils literal notranslate"><span class="pre">DeviceConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.seed.SeedConfigs"><code class="docutils literal notranslate"><span class="pre">SeedConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.optimizer.OptimizerConfigs"><code class="docutils literal notranslate"><span class="pre">OptimizerConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.training_loop.TrainingLoopConfigs"><code class="docutils literal notranslate"><span class="pre">TrainingLoopConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.train_valid.TrainValidConfigs"><code class="docutils literal notranslate"><span class="pre">TrainValidConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.train_valid.SimpleTrainValidConfigs"><code class="docutils literal notranslate"><span class="pre">SimpleTrainValidConfigs</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="helpers.html#datasets">Datasets</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.datasets.mnist.MNISTConfigs"><code class="docutils literal notranslate"><span class="pre">MNISTConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.datasets.cifar10.CIFAR10Configs"><code class="docutils literal notranslate"><span class="pre">CIFAR10Configs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.datasets.csv.CsvDataset"><code class="docutils literal notranslate"><span class="pre">CsvDataset</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#remote">Remote</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.remote.DatasetServer"><code class="docutils literal notranslate"><span class="pre">DatasetServer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.remote.RemoteDataset"><code class="docutils literal notranslate"><span class="pre">RemoteDataset</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#text-datasets">Text Datasets</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.text.TextDataset"><code class="docutils literal notranslate"><span class="pre">TextDataset</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.text.TextFileDataset"><code class="docutils literal notranslate"><span class="pre">TextFileDataset</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.text.SequentialDataLoader"><code class="docutils literal notranslate"><span class="pre">SequentialDataLoader</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="helpers.html#labml_helpers.datasets.text.SequentialUnBatchedDataset"><code class="docutils literal notranslate"><span class="pre">SequentialUnBatchedDataset</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="helpers.html#schedules">Schedules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.schedule.Schedule"><code class="docutils literal notranslate"><span class="pre">Schedule</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.schedule.Flat"><code class="docutils literal notranslate"><span class="pre">Flat</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.schedule.Dynamic"><code class="docutils literal notranslate"><span class="pre">Dynamic</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.schedule.Piecewise"><code class="docutils literal notranslate"><span class="pre">Piecewise</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.schedule.RelativePiecewise"><code class="docutils literal notranslate"><span class="pre">RelativePiecewise</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="helpers.html#metrics">Metrics</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.StateModule"><code class="docutils literal notranslate"><span class="pre">StateModule</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.Metric"><code class="docutils literal notranslate"><span class="pre">Metric</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.accuracy.Accuracy"><code class="docutils literal notranslate"><span class="pre">Accuracy</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.accuracy.BinaryAccuracy"><code class="docutils literal notranslate"><span class="pre">BinaryAccuracy</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.accuracy.AccuracyDirect"><code class="docutils literal notranslate"><span class="pre">AccuracyDirect</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.collector.Collector"><code class="docutils literal notranslate"><span class="pre">Collector</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.recall_precision.RecallPrecision"><code class="docutils literal notranslate"><span class="pre">RecallPrecision</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.simple_state.SimpleStateModule"><code class="docutils literal notranslate"><span class="pre">SimpleStateModule</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.metrics.simple_state.SimpleState"><code class="docutils literal notranslate"><span class="pre">SimpleState</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="helpers.html#utilies">Utilies</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helpers.html#labml_helpers.module.Module"><code class="docutils literal notranslate"><span class="pre">Module</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">CLI</span></p>
 <ul>
@@ -426,82 +236,44 @@
 </li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">labml library</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-      <li>Monitor</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Monitor</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/api/monit.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="monitor">
-<h1>Monitor<a class="headerlink" href="#monitor" title="Permalink to this heading">¶</a></h1>
+             
+  <section id="monitor">
+<h1>Monitor<a class="headerlink" href="#monitor" title="Link to this heading">¶</a></h1>
 <p><a class="reference external" href="https://colab.research.google.com/github/labmlai/labml/blob/master/guides/monitor.ipynb">Here is a tutorial on Google Colab that shows how to use the monitor module</a></p>
-<span class="target" id="module-labml.monit"></span><div class="section" id="basic">
-<h2>Basic<a class="headerlink" href="#basic" title="Permalink to this heading">¶</a></h2>
+<section id="basic">
+<span id="module-labml.monit"></span><h2>Basic<a class="headerlink" href="#basic" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.monit.section">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_timed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_partial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_new_line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_children_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_not_in_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.section" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_timed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_partial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_new_line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_children_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_not_in_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.section" title="Link to this definition">¶</a></dt>
 <dd><p>This creates a monitored <code class="docutils literal notranslate"><span class="pre">with</span></code> block.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the section</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em><em>, </em><em>Optional</em>) – Name of the section</p>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>is_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether not to print time taken. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 <li><p><strong>is_timed</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to measure time. Default to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
@@ -523,17 +295,17 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">False</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.monit.func">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_timed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_partial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_new_line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_children_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_not_in_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.func" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_timed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_partial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_new_line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_children_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_not_in_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.func" title="Link to this definition">¶</a></dt>
 <dd><p>This is similar to <a class="reference internal" href="#labml.monit.section" title="labml.monit.section"><code class="xref py py-func docutils literal notranslate"><span class="pre">section()</span></code></a> but can be used as a decorator.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the function</p>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>is_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether not to print time taken. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 <li><p><strong>is_timed</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to measure time. Default to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>is_partial</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether it’s a partial excution where it gets called
+<li><p><strong>is_partial</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether it’s a partial execution where it gets called
 repeatedly. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 <li><p><strong>is_new_line</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print a new line. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 <li><p><strong>is_children_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to make child sections silent.
@@ -551,10 +323,10 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">False</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.monit.progress">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.progress" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.progress" title="Link to this definition">¶</a></dt>
 <dd><p>Set the progress of the section.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>steps</strong> (<em>float</em>) – Current progress</p>
 </dd>
 </dl>
@@ -562,27 +334,27 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">False</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.monit.fail">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">fail</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#fail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.fail" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">fail</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#fail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.fail" title="Link to this definition">¶</a></dt>
 <dd><p>Mark the current section as failed.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="iterators">
-<h2>Iterators<a class="headerlink" href="#iterators" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="iterators">
+<h2>Iterators<a class="headerlink" href="#iterators" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.monit.iterate">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">iterate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sized</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_children_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_timed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_not_in_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#iterate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.iterate" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">iterate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sized</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_children_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_timed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_not_in_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#iterate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.iterate" title="Link to this definition">¶</a></dt>
 <dd><p>This creates a monitored iterator.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – Name of the iterator</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the iterator</p></li>
 <li><p><strong>iterable</strong> (<em>Union</em><em>[</em><em>Iterable</em><em>, </em><em>Sized</em><em>, </em><em>int</em><em>]</em>) – The iterable</p></li>
 <li><p><strong>total_steps</strong> (<em>int</em><em>, </em><em>optional</em>) – Total number of steps. If not provided this is
 calculated from <code class="docutils literal notranslate"><span class="pre">iterable</span></code>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>is_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether not to print time taken. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 <li><p><strong>is_timed</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to measure time. Default to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
@@ -600,16 +372,16 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">False</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.monit.enum">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sized</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_children_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_timed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_not_in_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.enum" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sized</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_children_silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_timed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_not_in_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.enum" title="Link to this definition">¶</a></dt>
 <dd><p>This creates a monitored enumerator.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – Name of the iterator</p></li>
-<li><p><strong>iterable</strong> (<em>Sized</em><em>]</em>) – The iterable</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the iterator</p></li>
+<li><p><strong>iterable</strong> (<em>Sized</em>) – The iterable</p></li>
 </ul>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>is_silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether not to print time taken. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 <li><p><strong>is_timed</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to measure time. Default to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
@@ -627,18 +399,18 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">False</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.monit.mix">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">mix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">iterators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sized</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_monit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#mix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.mix" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">mix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">iterators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sized</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_monit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#mix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.mix" title="Link to this definition">¶</a></dt>
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">mix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">iterators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sized</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_monit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">mix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">iterators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sized</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_monit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>This has two overloads</p>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">mix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">iterators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sized</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_monit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#mix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">mix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">iterators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sized</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_monit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#mix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">mix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">iterators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sized</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_monit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#mix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">mix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">iterators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sized</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_monit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#mix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
 
 <p>This will iterate through a list of iterators while mixing among them.
@@ -648,7 +420,7 @@ It will yield the names along with the iterator values.</p>
 <p>If you pass a function instead of a name it will call that function with the iterator value, instead of
 yielding it.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>total_iterations</strong> (<em>Union</em><em>[</em><em>Collection</em><em>, </em><em>range</em><em>, </em><em>int</em><em>]</em>) – The number of times to mix</p></li>
 <li><p><strong>iterators</strong> (<em>Tuple</em><em>[</em><em>Union</em><em>[</em><em>str</em><em>, </em><em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><em>None</em><em>]</em><em>]</em><em>, </em><em>Union</em><em>[</em><em>Sized</em><em>, </em><em>int</em><em>]</em><em>]</em>) – Are iterators and their names or callback function</p></li>
@@ -658,12 +430,12 @@ yielding it.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="loop">
-<h2>Loop<a class="headerlink" href="#loop" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="loop">
+<h2>Loop<a class="headerlink" href="#loop" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.monit.loop">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_print_iteration_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.loop" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_print_iteration_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/labml/monit.html#loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.loop" title="Link to this definition">¶</a></dt>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">range</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_track</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_print_iteration_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
 <dt class="sig sig-object py">
@@ -687,10 +459,10 @@ yielding it.</p>
 <p>This creates a monitored loop. This is designed for training loops.
 It has better monitoring than using <a class="reference internal" href="#labml.monit.iterate" title="labml.monit.iterate"><code class="xref py py-func docutils literal notranslate"><span class="pre">iterate()</span></code></a> or <a class="reference internal" href="#labml.monit.enum" title="labml.monit.enum"><code class="xref py py-func docutils literal notranslate"><span class="pre">enum()</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>iterator</strong> (<em>Union</em><em>[</em><em>Collection</em><em>, </em><em>range</em><em>, </em><em>int</em><em>]</em>) – The iterator</p>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>is_track</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether track the loop time using <a class="reference internal" href="tracker.html#module-labml.tracker" title="labml.tracker"><code class="xref py py-mod docutils literal notranslate"><span class="pre">labml.tracker</span></code></a>.
 Default to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
@@ -702,60 +474,42 @@ Default to <code class="docutils literal notranslate"><span class="pre">True</sp
 
 <dl class="py function">
 <dt class="sig sig-object py" id="labml.monit.finish_loop">
-<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">finish_loop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/labml/monit.html#finish_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.finish_loop" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">labml.monit.</span></span><span class="sig-name descname"><span class="pre">finish_loop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/labml/monit.html#finish_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#labml.monit.finish_loop" title="Link to this definition">¶</a></dt>
 <dd><p>Finish the loop and flush all the loop related monitoring stats.</p>
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="analytics.html" class="btn btn-neutral float-right" title="Analytics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="framework_integrations.html" class="btn btn-neutral float-left" title="Framework Integrations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="framework_integrations.html" class="btn btn-neutral float-left" title="Framework Integrations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="configs.html" class="btn btn-neutral float-right" title="Configs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020-2022, labml.ai contributors
-
-    </p>
+    <p>&#169; Copyright 2020-2024, labml.ai contributors.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
