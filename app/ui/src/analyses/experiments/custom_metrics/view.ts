@@ -4,7 +4,7 @@ import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader, Loader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
-import {BackButton, DeleteButton, IconButton} from "../../../components/buttons"
+import {BackButton, CustomButton, DeleteButton, IconButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {fillPlotPreferences} from "../../../components/charts/utils"
@@ -156,7 +156,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
         clearChildElements(this.elem)
         $(this.elem, $ => {
             this.runPickerElem = $('div')
-            $('div', '.page',
+            $('div', '.page.chart-view',
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
                     $('div', $ => {
@@ -370,10 +370,35 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             $('span', '.compared-with', $ => {
                 $('span', '.sub', 'Compared With ')
                 this.buttonContainer = $('div')
+
+                let isDisabled = true
+                let commit1 = this.run?.commit ?? ""
+                let commit2 = this.baseRun?.commit ?? ""
+
+                let commit1ID = commit1.split('/').pop()
+                let commit2ID = commit2.split('/').pop()
+
+                let commit1Repo = commit1.split('/').slice(0, -2).join('/')
+                let commit2Repo = commit2.split('/').slice(0, -2).join('/')
+
+                if (commit1Repo != "" && commit1Repo === commit2Repo) {
+                    isDisabled = false
+                }
+
+                let compareURL = commit1Repo + "/compare/" + commit1ID
+                    + ".." + commit2ID
+
+                new IconButton({
+                    isDisabled: isDisabled,
+                    parent: "",
+                    onButtonClick: () => {
+                        window.open(compareURL, '_blank')
+                    }
+                }, '.fas.fa-code', 'Compare').render($)
             })
 
             if (this.baseRun == null) {
-                $('span', '.title', 'No run selected')
+                // $('span', '.title', 'No run selected')
             } else {
                 $('div.list.runs-list.list-group', $ => {
                     new RunsListItemView({

@@ -109,12 +109,12 @@ export class HamburgerMenuView {
                 parent: this.constructor.name
             }).render($)
             $('span', '.mt-5', '')
-            new NavButton({
-                icon: '.fas.fa-power-off',
-                text: 'Sign out',
-                onButtonClick: this.onLogOut,
-                parent: this.constructor.name
-            }).render($)
+            // new NavButton({
+            //     icon: '.fas.fa-power-off',
+            //     text: 'Sign out',
+            //     onButtonClick: this.onLogOut,
+            //     parent: this.constructor.name
+            // }).render($)
         })
     }
 }

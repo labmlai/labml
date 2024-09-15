@@ -521,6 +521,8 @@ span.fas {
   padding-right: 5px;
   min-height: 200px;
   display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .no-scroll {
@@ -741,7 +743,6 @@ button.sparkline-list-item {
   cursor: pointer;
   padding: .25rem 5px;
   text-align: center;
-  margin-left: 25px;
 
   .sparkline-content {
     display: inline-block;
@@ -791,7 +792,6 @@ button.sparkline-list-item {
       font-size: 1em;
 
       &.chart {
-        left: -3.3rem;
         font-size: 0.8em;
         transform: translateY(-22%);
       }
@@ -937,7 +937,6 @@ $keyFontSize: 0.8rem;
     font-size: 0.9rem;
 
     @media (max-width: $mobile) {
-      width: calc(100% - 100px);
       vertical-align: middle;
     }
 
@@ -1020,16 +1019,16 @@ $keyFontSize: 0.8rem;
     margin-bottom: 5px;
 
     .combined {
-      width: calc(100% - 300px);
       white-space: wrap;
       text-wrap: wrap;
       vertical-align: top;
       word-wrap: break-word;
       display: inline-block;
+      max-width: calc(100% - 300px);
 
       @media (max-width: $mobile) {
-          width: 100%;
           vertical-align: middle;
+          max-width: 100%;
       }
     }
 
@@ -1327,7 +1326,6 @@ a.generic-link {
 .compare-header {
   display: flex;
   flex-direction: column;
-  margin: 30px 5px;
 
   .compared-with {
     display: flex;
@@ -1335,6 +1333,7 @@ a.generic-link {
     gap: 10px;
     margin-left: 10px;
     margin-bottom: 10px;
+    flex-wrap: wrap;
 
     .title {
       font-size: 1rem;
@@ -1353,6 +1352,13 @@ a.generic-link {
       margin-bottom: auto;
       margin-top: auto;
       text-transform: uppercase;
+      width: 150px;
+    }
+
+    @media screen and (max-width: 480px) {
+      .sub {
+        width: 120px;
+      }
     }
   }
 
@@ -1462,7 +1468,6 @@ a.generic-link {
 
   .input-container {
     flex: unset;
-    margin: 4px;
 
     input {
       width: 4rem;
@@ -1622,6 +1627,9 @@ input[type=number] {
 
 
 .std {
+  width: 100%;
+  padding: 5px;
+
   .nav-link {
     width: fit-content;
   }
@@ -1671,7 +1679,7 @@ pre {
 .config {
   .toggle-button {
     .nav-link {
-      padding: 0px 5px;
+      padding: 0px;
     }
   }
 }
@@ -1680,4 +1688,35 @@ pre {
   .configs {
     width: 100%;
   }
+}
+
+.chart-view {
+  .input-list-container {
+    ul {
+      margin: unset;
+      li {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: unset;
+        padding: unset;
+        align-items: center;
+        gap: 10px;
+
+        .input-container {
+          flex: 1 0 auto;
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .input-list-container .item-key {
+      width: 120px;
+      flex: unset;
+    }
+  }
+}
+
+.icon-text {
+  margin-left: 10px;
 }

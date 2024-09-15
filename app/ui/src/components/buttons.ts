@@ -276,9 +276,11 @@ export class DeleteButton extends Button {
 
 export class IconButton extends Button {
     private readonly icon: string
-    constructor(opt: ButtonOptions, icon: string) {
+    private readonly text: string
+    constructor(opt: ButtonOptions, icon: string, text?: string) {
         super(opt)
         this.icon = icon
+        this.text = text
     }
 
     set loading(value: boolean) {
@@ -286,10 +288,16 @@ export class IconButton extends Button {
         if (value) {
             $(this.elem, $ => {
                 $('span', '.fa.fa-spinner.fa-spin', '')
+                if (this.text) {
+                    $('span', '.icon-text', this.text)
+                }
             })
         } else {
             $(this.elem, $ => {
                 $('span', this.icon, '')
+                if (this.text) {
+                    $('span', '.icon-text', this.text)
+                }
             })
         }
     }
@@ -299,6 +307,9 @@ export class IconButton extends Button {
             {on: {click: this.onClick}},
             $ => {
                 $('span', this.icon, '')
+                if (this.text) {
+                    $('span', '.icon-text', this.text)
+                }
             })
     }
 }

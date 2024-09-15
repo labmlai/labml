@@ -40,7 +40,7 @@
   --btn: #34495e;
   --header: #34495e;
   --header-line: #ddd;
-  --terminal-bg: none;
+  --terminal-bg: white;
   --terminal-text: black;
   --input-icon: #555;
   --input-pointer: #353B42;
@@ -63,7 +63,7 @@
   --btn: #ccc;
   --header: #ccc;
   --header-line: #353B42;
-  --terminal-bg: none;
+  --terminal-bg: black;
   --terminal-text: #ccc;
   --input-icon: #ccc;
   --input-pointer: #ddd;
@@ -153,6 +153,23 @@ option {
   }
 }
 
+.config {
+  .toggle-button {
+    box-shadow: unset;
+    font-size: 0.7rem;
+
+    nav {
+      opacity: 0.3;
+
+      &.selected {
+        box-shadow: unset;
+        opacity: 1;
+      }
+    }
+
+  }
+}
+
 .toggle-button {
   &.selected {
     box-shadow: inset 2px 2px 5px var(--shadow1), inset -3px -3px 7px var(--shadow2);
@@ -208,7 +225,7 @@ option {
 }
 
 .terminal-card {
-  background-color: var(--terminal-bg);
+  //background-color: var(--terminal-bg);
 
   pre {
     color: var(--terminal-text);
@@ -400,6 +417,9 @@ option {
   }
 }
 
+.std {
+    background-color: var(--terminal-bg);
+}
 
 /*
 todo dark

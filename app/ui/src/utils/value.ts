@@ -3,6 +3,11 @@ import {WeyaElementFunction} from "../../../lib/weya/weya"
 
 const FORMAT = d3.format(".3s")
 
+const countDecimals = function (num: number) {
+    if(Math.floor(num) === num) return 0;
+    return num.toString().split(".")[1].length || 0;
+}
+
 export function numberWithCommas(x: string) {
     const parts = x.split('.')
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -39,6 +44,10 @@ export function formatFixed(value: number, decimals: number) {
 
     if (Number.isInteger(value)) {
         decimals = 0
+    }
+
+    if (countDecimals(value) > decimals) {
+        return scientificFormat(value)
     }
 
     let str = value.toFixed(decimals)

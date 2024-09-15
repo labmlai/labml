@@ -175,6 +175,16 @@ class RunView extends ScreenView {
                 parent: this.constructor.name,
                 isDisabled: this.run.session_id == ''
             }).render($)
+
+            new CustomButton({
+                onButtonClick: () => {
+                    window.open(this.run.commit, "_blank")
+                },
+                text: 'Source',
+                title: 'Source repository for the experiment',
+                parent: this.constructor.name,
+                isDisabled: this.run.repo_remotes == ''
+            }).render($)
         })
     }
 

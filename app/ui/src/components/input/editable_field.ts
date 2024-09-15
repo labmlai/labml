@@ -66,12 +66,11 @@ export default class EditableField {
                             this.inputElem = <HTMLTextAreaElement>$('textarea', {
                                     rows: this.numEditRows,
                                     placeholder: this.placeholder,
-                                    value: this.value,
                                     autocomplete: this.autocomplete,
                                     type: this.type
                                 }
                             )
-                            this.inputElem.innerText = this.value
+                            this.inputElem.innerHTML = this.value.split('\n').join('&#013;')
                             this.inputElem.addEventListener('input', (event: KeyboardEvent) => {
                                 if (this.onChange) {
                                     this.onChange(this.inputElem.value)
