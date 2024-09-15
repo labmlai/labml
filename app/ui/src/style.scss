@@ -937,7 +937,6 @@ $keyFontSize: 0.8rem;
     font-size: 0.9rem;
 
     @media (max-width: $mobile) {
-      width: calc(100% - 100px);
       vertical-align: middle;
     }
 
@@ -1020,16 +1019,16 @@ $keyFontSize: 0.8rem;
     margin-bottom: 5px;
 
     .combined {
-      width: calc(100% - 300px);
       white-space: wrap;
       text-wrap: wrap;
       vertical-align: top;
       word-wrap: break-word;
       display: inline-block;
+      max-width: calc(100% - 300px);
 
       @media (max-width: $mobile) {
-          width: 100%;
           vertical-align: middle;
+          max-width: 100%;
       }
     }
 
@@ -1677,7 +1676,7 @@ pre {
 .config {
   .toggle-button {
     .nav-link {
-      padding: 0px 5px;
+      padding: 0px;
     }
   }
 }

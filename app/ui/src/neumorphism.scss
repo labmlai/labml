@@ -153,6 +153,23 @@ option {
   }
 }
 
+.config {
+  .toggle-button {
+    box-shadow: unset;
+    font-size: 0.7rem;
+
+    nav {
+      opacity: 0.3;
+
+      &.selected {
+        box-shadow: unset;
+        opacity: 1;
+      }
+    }
+
+  }
+}
+
 .toggle-button {
   &.selected {
     box-shadow: inset 2px 2px 5px var(--shadow1), inset -3px -3px 7px var(--shadow2);
