@@ -49,13 +49,17 @@ export class LogView {
 
     render($: WeyaElementFunction) {
         this.logElemLength = 0
-        this.elem = $('div', '.std', $ => {
+        $('div', '.button-row', $ => {
             this.wrapButton
                 .render($)
             this.loadAllButton
                 .render($)
             this.loadMoreButton
                 .render($)
+        })
+
+        this.elem = $('div', '.std', $ => {
+
         })
         this.renderLogs()
     }

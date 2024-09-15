@@ -521,6 +521,8 @@ span.fas {
   padding-right: 5px;
   min-height: 200px;
   display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .no-scroll {
@@ -1627,6 +1629,9 @@ input[type=number] {
 
 
 .std {
+  width: 100%;
+  padding: 5px;
+
   .nav-link {
     width: fit-content;
   }

@@ -40,7 +40,7 @@
   --btn: #34495e;
   --header: #34495e;
   --header-line: #ddd;
-  --terminal-bg: none;
+  --terminal-bg: white;
   --terminal-text: black;
   --input-icon: #555;
   --input-pointer: #353B42;
@@ -63,7 +63,7 @@
   --btn: #ccc;
   --header: #ccc;
   --header-line: #353B42;
-  --terminal-bg: none;
+  --terminal-bg: black;
   --terminal-text: #ccc;
   --input-icon: #ccc;
   --input-pointer: #ddd;
@@ -225,7 +225,7 @@ option {
 }
 
 .terminal-card {
-  background-color: var(--terminal-bg);
+  //background-color: var(--terminal-bg);
 
   pre {
     color: var(--terminal-text);
@@ -417,6 +417,9 @@ option {
   }
 }
 
+.std {
+    background-color: var(--terminal-bg);
+}
 
 /*
 todo dark
