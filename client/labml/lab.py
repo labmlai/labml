@@ -4,6 +4,24 @@ from typing import Dict, Any
 from labml.internal.lab import lab_singleton as _internal
 
 
+def get_computer_name():
+    r"""
+    Returns computer name
+    """
+    from labml.internal.computer.configs import computer_singleton
+
+    return computer_singleton().name
+
+
+def get_computer_uuid():
+    r"""
+    Returns computer name
+    """
+    from labml.internal.computer.configs import computer_singleton
+
+    return computer_singleton().uuid
+
+
 def get_info() -> Dict[str, Any]:
     r"""
     Returns information about lab

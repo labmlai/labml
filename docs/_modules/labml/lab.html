@@ -183,6 +183,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/lab.html">Lab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/lab.html#labml.lab.get_computer_name"><code class="docutils literal notranslate"><span class="pre">get_computer_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/lab.html#labml.lab.get_computer_uuid"><code class="docutils literal notranslate"><span class="pre">get_computer_uuid()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/lab.html#labml.lab.get_info"><code class="docutils literal notranslate"><span class="pre">get_info()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/lab.html#labml.lab.get_path"><code class="docutils literal notranslate"><span class="pre">get_path()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/lab.html#labml.lab.get_data_path"><code class="docutils literal notranslate"><span class="pre">get_data_path()</span></code></a></li>
@@ -262,6 +264,30 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">from</span> <span class="nn">labml.internal.lab</span> <span class="kn">import</span> <span class="n">lab_singleton</span> <span class="k">as</span> <span class="n">_internal</span>
+
+
+<div class="viewcode-block" id="get_computer_name">
+<a class="viewcode-back" href="../../api/lab.html#labml.lab.get_computer_name">[docs]</a>
+<span class="k">def</span> <span class="nf">get_computer_name</span><span class="p">():</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns computer name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.computer.configs</span> <span class="kn">import</span> <span class="n">computer_singleton</span>
+
+    <span class="k">return</span> <span class="n">computer_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">name</span></div>
+
+
+
+<div class="viewcode-block" id="get_computer_uuid">
+<a class="viewcode-back" href="../../api/lab.html#labml.lab.get_computer_uuid">[docs]</a>
+<span class="k">def</span> <span class="nf">get_computer_uuid</span><span class="p">():</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns computer name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">labml.internal.computer.configs</span> <span class="kn">import</span> <span class="n">computer_singleton</span>
+
+    <span class="k">return</span> <span class="n">computer_singleton</span><span class="p">()</span><span class="o">.</span><span class="n">uuid</span></div>
+
 
 
 <div class="viewcode-block" id="get_info">
