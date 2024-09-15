@@ -41,6 +41,10 @@ export class RunsListItemView {
 
         if (startDate[0] == endDate[0] && startDate[1] == endDate[1] && startDate[2] == endDate[2]) {
             timeString += ` - ${endDate[3]}:${endDate[4]}`
+        } else if (startDate[0] == endDate[0] && startDate[1] == endDate[1]) {
+            timeString += ` - ${endDate[2]}, ${endDate[3]}:${endDate[4]}`
+        } else if (startDate[0] == endDate[0]) {
+            timeString += ` - ${endDate[1]} ${endDate[2]}, ${endDate[3]}:${endDate[4]}`
         } else {
             timeString += ` - ${endDate[0]} ${endDate[1]} ${endDate[2]}, ${endDate[3]}:${endDate[4]}`
         }
