@@ -743,7 +743,6 @@ button.sparkline-list-item {
   cursor: pointer;
   padding: .25rem 5px;
   text-align: center;
-  margin-left: 25px;
 
   .sparkline-content {
     display: inline-block;
@@ -793,7 +792,6 @@ button.sparkline-list-item {
       font-size: 1em;
 
       &.chart {
-        left: -3.3rem;
         font-size: 0.8em;
         transform: translateY(-22%);
       }
