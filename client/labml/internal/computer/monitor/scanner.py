@@ -4,6 +4,7 @@ from pathlib import Path
 import psutil
 
 from labml import logger
+from labml.internal.computer.configs import computer_singleton
 from labml.internal.computer.monitor.process import ProcessMonitor
 from labml.logger import Text
 from labml.utils.notice import labml_notice
@@ -35,6 +36,7 @@ class Scanner:
 
     def configs(self):
         configs = {
+            'name': computer_singleton().name,
             'os': self.get_os(),
             'cpu.logical': psutil.cpu_count(),
             'cpu.physical': psutil.cpu_count(logical=False),

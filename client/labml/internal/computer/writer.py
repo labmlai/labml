@@ -34,8 +34,8 @@ class Header(AppTrackDataSource):
     def start(self, configs: Dict[str, any]):
         self.app_tracker.add_handler(AppUrlResponseHandler(self.open_browser, 'Monitor computer at '))
         with self.lock:
+            self.data['name'] = configs.pop('name', 'My Computer')
             self.data['configs'] = configs
-            self.data['name'] = 'My computer'
 
         self.app_tracker.has_data(self)
 
