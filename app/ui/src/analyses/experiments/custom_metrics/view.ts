@@ -156,7 +156,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
         clearChildElements(this.elem)
         $(this.elem, $ => {
             this.runPickerElem = $('div')
-            $('div', '.page',
+            $('div', '.page.chart-view',
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
                     $('div', $ => {

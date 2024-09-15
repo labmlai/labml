@@ -219,7 +219,7 @@ export class ViewWrapper {
                 let changeHandler = new ChangeHandlers.SmoothFocusChangeHandler(this)
                 changeHandler.change()
             },
-            text: 'Focus Smoothed',
+            text: 'Smoothed',
             isToggled: this.dataStore.focusSmoothed,
             parent: this.constructor.name
         })
@@ -374,21 +374,27 @@ export class ViewWrapper {
         this.leftSmoothButton.isToggled = this.dataStore.smoothFunction === SmoothingType.LEFT_EXPONENTIAL
 
         this.optionRowContainer.innerHTML = ''
-        this.optionRowContainer.classList.add('chart-options')
+        this.optionRowContainer.classList.add('input-list-container')
         $(this.optionRowContainer, $ => {
-            $('div', '.button-row', $ => {
-                this.scaleButton.render($)
-                this.focusButton.render($)
-            })
-            $('div', '.button-row', $ => {
-                $('span.key', 'Step Filter:')
-                this.stepRangeField.render($)
-                this.stepRangeField.setRange(this.dataStore.stepRange[0], this.dataStore.stepRange[1])
-            })
-            $('div', '.button-row', $ => {
-                $('span.key', 'Smoothing:')
-                this.smoothSlider.render($)
-                this.leftSmoothButton.render($)
+            $('ul', $ => {
+                $('li', '', $ => {
+                    $('span.item-key', 'Y Scale')
+                    this.scaleButton.render($)
+                })
+                $('li', '.button-row', $ => {
+                    $('span.item-key', 'Focus on')
+                    this.focusButton.render($)
+                })
+                $('li', '', $ => {
+                    $('span.item-key', 'Step Filter')
+                    this.stepRangeField.render($)
+                    this.stepRangeField.setRange(this.dataStore.stepRange[0], this.dataStore.stepRange[1])
+                })
+                $('li', '', $ => {
+                    $('span.item-key', 'Smoothing')
+                    this.smoothSlider.render($)
+                    this.leftSmoothButton.render($)
+                })
             })
         })
     }

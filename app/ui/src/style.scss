@@ -1327,7 +1327,6 @@ a.generic-link {
 .compare-header {
   display: flex;
   flex-direction: column;
-  margin: 30px 5px;
 
   .compared-with {
     display: flex;
@@ -1353,6 +1352,13 @@ a.generic-link {
       margin-bottom: auto;
       margin-top: auto;
       text-transform: uppercase;
+      width: 150px;
+    }
+
+    @media screen and (max-width: 480px) {
+      .sub {
+        width: 120px;
+      }
     }
   }
 
@@ -1462,7 +1468,6 @@ a.generic-link {
 
   .input-container {
     flex: unset;
-    margin: 4px;
 
     input {
       width: 4rem;
@@ -1679,5 +1684,32 @@ pre {
 .list-item {
   .configs {
     width: 100%;
+  }
+}
+
+.chart-view {
+  .input-list-container {
+    ul {
+      margin: unset;
+      li {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: unset;
+        padding: unset;
+        align-items: center;
+        gap: 10px;
+
+        .input-container {
+          flex: 1 0 auto;
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .input-list-container .item-key {
+      width: 120px;
+      flex: unset;
+    }
   }
 }
