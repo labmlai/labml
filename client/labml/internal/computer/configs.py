@@ -68,6 +68,7 @@ class Computer:
                 config[k] = v
 
         self.uuid = config['uuid']
+        self.name = config['name']
 
         app_url = get_app_url_for_handle('', base_url=config['app_url'])
 
