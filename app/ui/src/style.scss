@@ -1334,6 +1334,7 @@ a.generic-link {
     gap: 10px;
     margin-left: 10px;
     margin-bottom: 10px;
+    flex-wrap: wrap;
 
     .title {
       font-size: 1rem;
@@ -1712,4 +1713,8 @@ pre {
       flex: unset;
     }
   }
+}
+
+.icon-text {
+  margin-left: 10px;
 }
