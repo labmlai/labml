@@ -228,9 +228,8 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
     default_project = u.default_project
     runs = [r.get_summary() for r in default_project.get_runs()]
 
-    runs = sorted(runs, key=lambda i: i['start_time'], reverse=True)
     similarity = [get_similarity(current_run, x) for x in runs]
-    runs = [x for s, x in sorted(zip(similarity, runs), key=lambda pair: pair[0], reverse=True)]
+    runs = [x for s, x in sorted(zip(similarity, runs), key=lambda pair: (pair[0], pair[1]['start_time']), reverse=True)]
     runs = runs[:20]
 
     indicator_counts = {}
@@ -275,7 +274,8 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
     if len(indicator_counts) == 0:
         return {'is_success': False, 'message': "Couldn't find any new related chart. " + reasons}
 
-    sorted_keys = sorted(indicator_counts.keys(), key=lambda x: len(indicator_counts[x]), reverse=True)
+    sorted_keys = sorted(indicator_counts.keys(),
+                         key=lambda x: (len(indicator_counts[x]), max(t[1] for t in indicator_counts[x])), reverse=True)
 
     # find the first indicator list with overlap
     selected = None
