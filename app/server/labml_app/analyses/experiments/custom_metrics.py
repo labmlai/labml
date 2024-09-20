@@ -232,7 +232,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
     runs = [x for s, x in sorted(zip(similarity, runs), key=lambda pair: (pair[0], pair[1]['start_time']), reverse=True)]
     runs = runs[:20]
 
-    indicator_counts = {}
+    potential_charts = []
     reasons = ""  # possible reason to not have runs
     for r in runs:
         list_key = CustomMetricsListIndex.get(r['run_uuid'])
@@ -266,40 +266,32 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
                 reasons = "Some charts ignored due to having overlapped indicators with current charts."
                 continue
 
-            preference_map_key = '|'.join(sorted(preferences['series_preferences']))
-            if preference_map_key not in indicator_counts:
-                indicator_counts[preference_map_key] = []
-            indicator_counts[preference_map_key].append((m.key, m_data['created_time']))
+            potential_charts.append(m_data)
 
-    if len(indicator_counts) == 0:
+    if len(potential_charts) == 0:
         return {'is_success': False, 'message': "Couldn't find any new related chart. " + reasons}
 
-    sorted_keys = sorted(indicator_counts.keys(),
-                         key=lambda x: (len(indicator_counts[x]), max(t[1] for t in indicator_counts[x])), reverse=True)
+    potential_charts = sorted(potential_charts, key=lambda x: x['created_time'], reverse=True)
 
     # find the first indicator list with overlap
     selected = None
-    for key in sorted_keys:
-        ind = key.split('|')
+    for chart in potential_charts:
+        ind = chart['preferences']['series_preferences']
         overlap = False
         for i in run_indicators:
             if i in ind:
                 overlap = True
                 break
         if overlap:
-            selected = key
+            selected = chart
             break
 
     if selected is None:  # return smth
         return {'status': 'error', 'message': 'No similar indicators found from selected charts. ' + reasons}
 
-    selected_metric = sorted(indicator_counts[selected], key=lambda x: x[1], reverse=True)[0]
-    selected_metric = selected_metric[0].load()
+    selected['preferences']['series_preferences'] = \
+        [x for x in selected['preferences']['series_preferences'] if x in run_indicators]
 
-    new_metric_data = selected_metric.get_data()
-    new_metric_data['preferences']['series_preferences'] = \
-        [x for x in new_metric_data['preferences']['series_preferences'] if x in run_indicators]
-
-    run_cm.create_custom_metric(new_metric_data)
+    run_cm.create_custom_metric(selected)
 
     return {'is_success': True}
