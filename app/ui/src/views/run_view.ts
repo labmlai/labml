@@ -154,6 +154,7 @@ class RunView extends ScreenView {
         if (this.run == null) {
             return
         }
+        this.processContainer.innerHTML = ''
 
         $(this.processContainer, $ => {
             new CustomButton({
