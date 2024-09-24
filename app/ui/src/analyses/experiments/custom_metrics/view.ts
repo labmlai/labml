@@ -184,8 +184,9 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
                                 this.topButtonContainer = $('div')
                             })
 
-                            this.progressText = $('span', '.progress-text.float-right')
+
                             this.refresh.render($)
+                            this.progressText = $('span', '.progress-text.float-right')
                         })
                         this.loader.render($)
                         this.headerContainer = $('div', '.compare-header')
