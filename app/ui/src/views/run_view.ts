@@ -44,6 +44,8 @@ class RunView extends ScreenView {
     private processContainer: WeyaElement
     private customMetrics: CustomMetricList
 
+    private progressText: HTMLElement
+
     constructor(uuid: string) {
         super()
         this.uuid = uuid
@@ -54,10 +56,19 @@ class RunView extends ScreenView {
         this.isRankExpanded = false
 
         this.loader = new DataLoader(async (force) => {
+            this.reloadStatus = "Loading status"
             this.status = await this.statusCache.get(force)
+
+            this.reloadStatus = "Loading status"
             this.run = await this.runCache.get(force)
+
+            this.reloadStatus = "Loading user"
             this.user = await this.userCache.get(force)
+
+            this.reloadStatus = "Loading charts"
             this.customMetrics = await CACHE.getCustomMetrics(this.uuid).get(force)
+
+            this.reloadStatus = ""
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.share = new ShareButton({
@@ -110,9 +121,13 @@ class RunView extends ScreenView {
                     $('div', $ => {
                         $('div.nav-container', $ => {
                             new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
+
+
                             this.refresh.render($)
                             this.buttonsContainer = $('span', '.float-right')
                             this.share.render($)
+
+                            this.progressText = $('span', '.progress-text.float-right')
                         })
                         this.runHeaderCard = new RunHeaderCard({
                             uuid: this.uuid,
@@ -147,6 +162,12 @@ class RunView extends ScreenView {
                 this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
                 this.refresh.start()
             }
+        }
+    }
+
+    set reloadStatus(text: string) {
+        if (this.progressText) {
+            this.progressText.innerText = text
         }
     }
 

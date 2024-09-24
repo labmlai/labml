@@ -75,6 +75,8 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
     private positionField: EditableField
     private detailsContainer: WeyaElement
 
+    private progressText: HTMLSpanElement
+
     constructor(uuid: string, customMetricUUID: string) {
         super()
 
@@ -88,9 +90,13 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
                 return
             }
 
+            this.reloadStatus = "Loading run status"
             this.status = await CACHE.getRunStatus(this.uuid).get(force)
+
+            this.reloadStatus = "Loading run"
             this.run = await CACHE.getRun(this.uuid).get(force)
 
+            this.reloadStatus = "Loading charts"
             let customMetricList = await CACHE.getCustomMetrics(this.uuid).get(force)
             if (customMetricList == null || customMetricList.getMetric(this.customMetricUUID) == null) {
                 throw new NetworkError(404, "", "Custom metric list is null")
@@ -99,6 +105,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             this.preferenceData = customMetricList.getMetric(this.customMetricUUID).preferences
             this.customMetric = customMetricList.getMetric(this.customMetricUUID)
 
+            this.reloadStatus = "Loading series"
             this.series = (await metricsCache.getAnalysis(this.uuid).get(force, this.preferenceData.series_preferences)).series
 
             this.baseUuid = this.preferenceData.base_experiment
@@ -110,12 +117,14 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             this.smoothValue = this.preferenceData.smooth_value
             this.smoothFunction = this.preferenceData.smooth_function
 
+            this.reloadStatus = "Loading base run"
             if (!!this.baseUuid) {
                 await this.updateBaseRun(force)
             } else {
                 this.missingBaseExperiment = true
             }
 
+            this.reloadStatus = ""
             this.updatePlotIdxFromSeries()
         })
 
@@ -139,6 +148,12 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
     }
     get requiresAuth(): boolean {
         return false
+    }
+
+    set reloadStatus(text: string) {
+        if (this.progressText) {
+            this.progressText.innerText = text
+        }
     }
 
     onResize(width: number) {
@@ -168,7 +183,10 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
                                 this.saveButtonContainer = $('div')
                                 this.topButtonContainer = $('div')
                             })
+
+
                             this.refresh.render($)
+                            this.progressText = $('span', '.progress-text.float-right')
                         })
                         this.loader.render($)
                         this.headerContainer = $('div', '.compare-header')
