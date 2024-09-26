@@ -354,12 +354,12 @@ class _InspectLogger:
 
                 return
 
-            from labml.internal.analytics.models import ValueCollection
-            if isinstance(arg, ValueCollection):
-                self._log_key_value([(i, v) for i, v in enumerate(arg.keys())],
-                                    n_key_values=n_key_values,
-                                    is_expand=is_expand)
-                return
+            # from labml.internal.analytics.models import ValueCollection
+            # if isinstance(arg, ValueCollection):
+            #     self._log_key_value([(i, v) for i, v in enumerate(arg.keys())],
+            #                         n_key_values=n_key_values,
+            #                         is_expand=is_expand)
+            #     return
 
             self.parts.append(_get_value_full(arg))
         else:

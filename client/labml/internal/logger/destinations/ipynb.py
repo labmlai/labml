@@ -72,7 +72,7 @@ class IpynbDestination(Destination):
                 style = None
             else:
                 text, style = p
-            lines = text.split('\n')
+            lines = str(text).split('\n')
             for line in lines[:-1]:
                 tuple_parts.append((line, style))
                 tuple_parts.append(('\n', None))
