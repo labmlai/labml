@@ -1,5 +1,6 @@
 import {API_BASE_URL} from './env'
 import {User} from './models/user'
+import {UserMessages} from "./components/user_messages";
 
 export function getAppToken() {
     return localStorage.getItem('app_token')
@@ -15,6 +16,15 @@ class Network {
 
     constructor(baseURL: string) {
         this.baseURL = baseURL
+
+        window.addEventListener('online', () => {
+            console.log('Became online')
+            UserMessages.shared.success("Back online.")
+        });
+        window.addEventListener('offline', () => {
+            console.log('Became offline')
+            UserMessages.shared.warning("No internet connection.", false)
+        });
     }
 
     async getRun(runUUID: string): Promise<any> {
