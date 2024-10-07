@@ -28,6 +28,10 @@ export class ProcessCard extends Card {
         })
     }
 
+    cardName(): string {
+        return 'Process'
+    }
+
     getLastUpdated(): number {
         return this.analysisCache.lastUpdated
     }

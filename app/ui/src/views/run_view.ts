@@ -324,6 +324,7 @@ class RunView extends ScreenView {
                 this.refresh.stop()
             }
             for (let card of this.cards) {
+                this.reloadStatus = `Refreshing ${card.cardName()}`
                 await card.refresh()
 
                 let lastUpdated = card.getLastUpdated()
@@ -333,7 +334,9 @@ class RunView extends ScreenView {
             }
 
             this.lastUpdated = oldest
-            await this.runHeaderCard.refresh(this.lastUpdated).then()
+            this.reloadStatus = 'Updating Run header'
+            await this.runHeaderCard.refresh(this.lastUpdated)
+            this.reloadStatus = ''
         }
     }
 

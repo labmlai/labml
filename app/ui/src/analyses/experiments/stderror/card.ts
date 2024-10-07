@@ -27,6 +27,10 @@ export class StdErrorCard extends Card {
         })
     }
 
+    cardName(): string {
+        return 'Std Error'
+    }
+
     getLastTenLines(inputStr: string) {
         let split = inputStr.split("\n")
 

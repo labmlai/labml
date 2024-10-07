@@ -324,7 +324,9 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
             if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
-            await this.runHeaderCard.refresh().then()
+            this.reloadStatus = "Refreshing run header"
+            await this.runHeaderCard.refresh()
+            this.reloadStatus = ""
         }
     }
 

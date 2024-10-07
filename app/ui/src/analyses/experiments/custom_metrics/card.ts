@@ -66,6 +66,10 @@ export class MetricCard extends Card {
 
     }
 
+    cardName(): string {
+        return 'Metrics'
+    }
+
     getLastUpdated(): number {
         return this.currentAnalysisCache.lastUpdated
     }
