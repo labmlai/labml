@@ -14,12 +14,14 @@ import processAnalysis from './sessions/process'
 import batteryAnalysis from './sessions/battery'
 import sessionConfigsAnalysis from "./sessions/configs"
 import metricAnalysis from "./experiments/custom_metrics"
+import notedAnalysis from "./experiments/notes"
 
 let metricAnalyses: Analysis[] = [
     metricAnalysis
 ]
 
 let experimentAnalyses: Analysis[] = [
+    notedAnalysis,
     stdOutAnalysis,
     stderrAnalysis,
     runConfigsAnalysis,
