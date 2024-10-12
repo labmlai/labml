@@ -73,6 +73,32 @@ class AppAPI:
     def update_run_data(self, run_uuid, data):
         return self.network.send_http_request('POST', f'/run/{run_uuid}', data)
 
+    def update_config(self, run_uuid, config):
+        """
+           Update the configuration for a specific run.
+
+           Args:
+               run_uuid (str): The unique identifier of the run.
+               config (Config): The configuration data to update.
+
+           Returns:
+               dict: The response from the server after updating the configuration.
+
+            Example:
+                  >>> from labml.configs import BaseConfigs
+                  >>> class Configs(BaseConfigs):
+                  >>>   pass
+                  >>> config = Configs()
+                  >>> AppAPI().update_config(run_uuid, config)
+        """
+        from labml.internal.configs.processor import ConfigProcessor
+        proc = ConfigProcessor(config)
+        config_data = proc.to_json()
+
+        return self.network.send_http_request('POST', f'/run/{run_uuid}', {
+            'configs': config_data
+        })
+
     def get_run_status(self, run_uuid):
         return self.network.send_http_request('GET', f'/run/status/{run_uuid}')
 
