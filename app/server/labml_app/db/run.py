@@ -146,6 +146,21 @@ class Run(Model['Run']):
 
         self.save()
 
+    def _update_configs(self, configs):
+        self.configs.update(configs)
+
+        defaults = {}
+        for k, v in configs.items():
+            computed = v['computed']
+            name = v['name']
+            if computed and type(computed) == dict and computed.get('type', '') == 'DynamicSchedule':
+                defaults[name] = computed
+
+        if defaults:
+            hp_analysis = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', self.run_uuid)
+            if hp_analysis is not None:
+                hp_analysis.set_default_values(defaults)
+
     def update_run(self, data: Dict[str, any]) -> None:
         if not self.name:
             self.name = data.get('name', '')
@@ -174,19 +189,7 @@ class Run(Model['Run']):
 
         if 'configs' in data:
             configs = data.get('configs', {})
-            self.configs.update(configs)
-
-            defaults = {}
-            for k, v in configs.items():
-                computed = v['computed']
-                name = v['name']
-                if computed and type(computed) == dict and computed.get('type', '') == 'DynamicSchedule':
-                    defaults[name] = computed
-
-            if defaults:
-                hp_analysis = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', self.run_uuid)
-                if hp_analysis is not None:
-                    hp_analysis.set_default_values(defaults)
+            self._update_configs(configs)
 
         if 'favorite_configs' in data:
             self.favourite_configs = data.get('favorite_configs', [])
@@ -329,6 +332,10 @@ class Run(Model['Run']):
             self.comment = data.get('comment', self.comment)
         if 'note' in data:
             self.note = data.get('note', self.note)
+
+        if 'configs' in data:
+            configs = data.get('configs', self.configs)
+            self._update_configs(configs)
 
         if 'favourite_configs' in data:
             self.favourite_configs = data.get('favourite_configs', self.favourite_configs)
