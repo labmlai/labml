@@ -1727,3 +1727,11 @@ pre {
     font-size: 0.8rem;
   opacity: 0.7;
 }
+
+.md-notes {
+  padding: 10px;
+  font-size: 0.9rem;
+  opacity: 0.7;
+  max-height: 400px;
+  overflow: auto;
+}
