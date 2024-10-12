@@ -24,6 +24,10 @@ export class StdOutCard extends Card {
         })
     }
 
+    cardName(): string {
+        return 'Std Out'
+    }
+
     getLastTenLines(inputStr: string) {
         let split = inputStr.split("\n")
 

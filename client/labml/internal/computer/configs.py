@@ -16,6 +16,7 @@ class Computer:
     app_configs: AppTrackConfigs
     uuid: str
     config_folder: Path
+    name: str
 
     def __init__(self):
         self.home = Path.home()
@@ -67,6 +68,7 @@ class Computer:
                 config[k] = v
 
         self.uuid = config['uuid']
+        self.name = config['name']
 
         app_url = get_app_url_for_handle('', base_url=config['app_url'])
 
@@ -93,6 +95,7 @@ class Computer:
             app_url=None,
             app_track_frequency=0,
             app_open_browser=True,
+            name='computer_name'
         )
 
     def get_projects(self) -> Set[str]:

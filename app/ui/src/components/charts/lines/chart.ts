@@ -71,15 +71,15 @@ export class LineChart {
         this.chartWidth = windowWidth - 2 * this.margin - this.axisSize
         this.chartHeight = Math.round(Math.min(this.chartWidth, windowHeight) / 2)
 
+        this.baseSeries = this.baseSeries.filter((_, i) => this.basePlotIndex[i] == 1)
+        this.currentSeries = this.currentSeries.filter((_, i) => this.currentPlotIndex[i] == 1)
+
         let idx: number = 0
         for (let s of this.currentSeries.concat(this.baseSeries)) {
             if (!this.uniqueItems.has(s.name)) {
                 this.uniqueItems.set(s.name, idx++)
             }
         }
-
-        this.baseSeries = this.baseSeries.filter((_, i) => this.basePlotIndex[i] == 1)
-        this.currentSeries = this.currentSeries.filter((_, i) => this.currentPlotIndex[i] == 1)
 
         // get steps from series with at least one value
         const series_concat = this.baseSeries.concat(this.currentSeries).filter(s => s.trimmedSeries.length > 0)

@@ -4,18 +4,18 @@ import {User} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {DataLoader} from "../components/loader"
-import {AddButton, BackButton, CustomButton, ExpandButton, NavButton, ShareButton} from "../components/buttons"
+import {AddButton, BackButton, CustomButton, ExpandButton, IconButton, ShareButton} from "../components/buttons"
 import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
-import CACHE, {RunCache, RunsListCache, RunStatusCache, UserCache} from "../cache/cache"
+import CACHE, {RunCache, RunStatusCache, UserCache} from "../cache/cache"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
-import metricsAnalysis from "../analyses/experiments/metrics"
-import comparisonAnalysis from "../analyses/experiments/comparison";
+import metricAnalysis from "../analyses/experiments/custom_metrics";
+import NETWORK from "../network";
 
 class RunView extends ScreenView {
     uuid: string
@@ -38,10 +38,13 @@ class RunView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private share: ShareButton
     private addCustomMetricButton: AddButton
+    private magicMetricButton: IconButton
     private isRankExpanded: boolean
     private rankElems: WeyaElement
     private processContainer: WeyaElement
     private customMetrics: CustomMetricList
+
+    private progressText: HTMLElement
 
     constructor(uuid: string) {
         super()
@@ -53,10 +56,19 @@ class RunView extends ScreenView {
         this.isRankExpanded = false
 
         this.loader = new DataLoader(async (force) => {
+            this.reloadStatus = "Loading status"
             this.status = await this.statusCache.get(force)
+
+            this.reloadStatus = "Loading status"
             this.run = await this.runCache.get(force)
+
+            this.reloadStatus = "Loading user"
             this.user = await this.userCache.get(force)
+
+            this.reloadStatus = "Loading charts"
             this.customMetrics = await CACHE.getCustomMetrics(this.uuid).get(force)
+
+            this.reloadStatus = ""
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.share = new ShareButton({
@@ -70,6 +82,16 @@ class RunView extends ScreenView {
             title: 'Add custom metric',
             parent: this.constructor.name
         })
+        this.magicMetricButton = new IconButton({
+            onButtonClick: () => {
+                this.magicMetricButton.loading = true
+                this.creatMagicMetric().then(() => {
+                    this.magicMetricButton.loading = false
+                })
+            },
+            title: 'Add magic metric',
+            parent: this.constructor.name,
+        }, '.fas.fa-magic')
     }
 
     private get isRank(): boolean {
@@ -99,9 +121,13 @@ class RunView extends ScreenView {
                     $('div', $ => {
                         $('div.nav-container', $ => {
                             new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
+
+
                             this.refresh.render($)
                             this.buttonsContainer = $('span', '.float-right')
                             this.share.render($)
+
+                            this.progressText = $('span', '.progress-text.float-right')
                         })
                         this.runHeaderCard = new RunHeaderCard({
                             uuid: this.uuid,
@@ -139,10 +165,17 @@ class RunView extends ScreenView {
         }
     }
 
+    set reloadStatus(text: string) {
+        if (this.progressText) {
+            this.progressText.innerText = text
+        }
+    }
+
     renderProcess() {
         if (this.run == null) {
             return
         }
+        this.processContainer.innerHTML = ''
 
         $(this.processContainer, $ => {
             new CustomButton({
@@ -163,6 +196,16 @@ class RunView extends ScreenView {
                 title: 'Running computer for the experiment',
                 parent: this.constructor.name,
                 isDisabled: this.run.session_id == ''
+            }).render($)
+
+            new CustomButton({
+                onButtonClick: () => {
+                    window.open(this.run.commit, "_blank")
+                },
+                text: 'Source',
+                title: 'Source repository for the experiment',
+                parent: this.constructor.name,
+                isDisabled: this.run.repo_remotes == ''
             }).render($)
         })
     }
@@ -186,12 +229,38 @@ class RunView extends ScreenView {
                 }).render($)
             }
             this.addCustomMetricButton.render($)
+            this.magicMetricButton.render($)
         })
     }
 
     renderClaimMessage() {
         if (!this.run.is_claimed && !this.isRank) {
             UserMessages.shared.warning('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
+        }
+    }
+
+    async creatMagicMetric() {
+        let res = null
+        try {
+            res = await NETWORK.createMagicMetric(this.uuid)
+        } catch (e) {
+            UserMessages.shared.networkError(e, 'Failed to create magic metric')
+            return
+        }
+
+
+        if (res['is_success']) {
+            try {
+                this.customMetrics = await CACHE.getCustomMetrics(this.uuid).get(true)
+            } catch (e) {
+                UserMessages.shared.networkError(e, 'Failed to load custom metrics')
+                return
+            }
+
+            this.renderCards()
+            UserMessages.shared.success('Chart created')
+        } else {
+            UserMessages.shared.warning(res['message'])
         }
     }
 
@@ -216,11 +285,11 @@ class RunView extends ScreenView {
         } else {
             try {
                 if (isRunClaim) {
-                    await CACHE.getRunsList(this.run.folder).claimRun(this.run)
+                    await CACHE.getRunsList().claimRun(this.run)
                     UserMessages.shared.success('Successfully claimed and added to your runs list')
                     this.run.is_claimed = true
                 } else {
-                    await CACHE.getRunsList(this.run.folder).addRun(this.run)
+                    await CACHE.getRunsList().addRun(this.run)
                     UserMessages.shared.success('Successfully added to your runs list')
                 }
                 this.run.is_project_run = true
@@ -255,6 +324,7 @@ class RunView extends ScreenView {
                 this.refresh.stop()
             }
             for (let card of this.cards) {
+                this.reloadStatus = `Refreshing ${card.cardName()}`
                 await card.refresh()
 
                 let lastUpdated = card.getLastUpdated()
@@ -264,7 +334,9 @@ class RunView extends ScreenView {
             }
 
             this.lastUpdated = oldest
-            await this.runHeaderCard.refresh(this.lastUpdated).then()
+            this.reloadStatus = 'Updating Run header'
+            await this.runHeaderCard.refresh(this.lastUpdated)
+            this.reloadStatus = ''
         }
     }
 
@@ -273,17 +345,19 @@ class RunView extends ScreenView {
     }
 
     private renderCards() {
+        this.cardContainer.innerHTML = ''
+        this.cards = []
         $(this.cardContainer, $ => {
-            let analyses = this.isRank ?
-                [metricsAnalysis] : [metricsAnalysis, comparisonAnalysis]
-            analyses.map((analysis, i) => {
-                let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
-                this.cards.push(card)
-                card.render($)
-            })
             if (this.customMetrics != null && this.run != null) {
-                this.customMetrics.getMetrics().map((metric, i) => {
-                    let card = new metricsAnalysis.card({uuid: this.uuid, width: this.actualWidth, params: {
+                let metricList = this.customMetrics.getMetrics()
+                metricList.sort((a, b) => {
+                    if (a.position == b.position) {
+                        return b.createdTime - a.createdTime
+                    }
+                    return a.position - b.position
+                })
+                metricList.map((metric, i) => {
+                    let card = new metricAnalysis.card({uuid: this.uuid, width: this.actualWidth, params: {
                             custom_metric: metric.id
                         }})
                     this.cards.push(card)
@@ -291,8 +365,7 @@ class RunView extends ScreenView {
                 })
             }
 
-            analyses = experimentAnalyses
-            analyses.map((analysis, i) => {
+            experimentAnalyses.map((analysis, i) => {
                 let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
                 this.cards.push(card)
                 card.render($)

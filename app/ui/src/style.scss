@@ -159,14 +159,18 @@ body {
 }
 
 .tags {
-  .label {
-    font-weight: bold;
-    font-size: 0.6rem;
-    margin-bottom: 5px;
-  }
-
-  .label-info {
-    background-color: rgba(33, 150, 243, 0.4);
+  margin-top: 5px;
+  margin-bottom: 10px;
+  margin-left: -6px;
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: .4rem;
+    margin-right: 6px;
+    margin-top: 6px;
+    background-color: var(--tag-bg);
+    font-size: 0.8rem;
+    color: var(--text);
   }
 }
 
@@ -517,6 +521,8 @@ span.fas {
   padding-right: 5px;
   min-height: 200px;
   display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .no-scroll {
@@ -569,29 +575,34 @@ span.fas {
   }
 }
 
-.runs-list {
-  .search-container {
-    .search-content {
-      display: flex;
-      border-radius: 10px;
+.search-container {
+  .search-content {
+    display: flex;
+    border-radius: 10px;
 
-      span.icon {
-        align-items: center;
-        padding: .375rem .75rem;
-      }
+    span.icon {
+      align-items: center;
+      padding: .375rem .75rem;
+    }
 
-      input {
-        flex: 1 1 auto;
-        padding: .375rem .75rem;
-        border: none;
-        outline: none;
-        background: none;
+    input {
+      flex: 1 1 auto;
+      padding: .375rem .75rem;
+      border: none;
+      outline: none;
+      background: none;
 
-        &:focus {
-          box-shadow: none;
-        }
+      &:focus {
+        box-shadow: none;
       }
     }
+  }
+
+  .loader{
+    margin-top: 5px;
+    margin-right: 5px;
+    width: 20px !important;
+    height: 20px !important;
   }
 }
 
@@ -640,9 +651,10 @@ svg#chart {
     stroke-width: 3;
 
     &.current {
-        stroke-width: 3;
-        //opacity: 1;
+      stroke-width: 3;
+      //opacity: 1;
     }
+
     &.base {
       stroke-width: 2;
       opacity: 0.8;
@@ -655,6 +667,7 @@ svg#chart {
 
   path.unsmoothed-line {
     stroke-width: 0.5;
+
     &.smooth-focused {
       stroke-width: 0.2;
       opacity: 0.5;
@@ -730,7 +743,6 @@ button.sparkline-list-item {
   cursor: pointer;
   padding: .25rem 5px;
   text-align: center;
-  margin-left: 25px;
 
   .sparkline-content {
     display: inline-block;
@@ -773,14 +785,13 @@ button.sparkline-list-item {
       }
     }
 
-    .icon{
+    .icon {
       top: 50%;
       transform: translateY(-15%);
       left: -2em;
       font-size: 1em;
 
       &.chart {
-        left: -3.3rem;
         font-size: 0.8em;
         transform: translateY(-22%);
       }
@@ -899,10 +910,14 @@ $keyFontSize: 0.8rem;
 }
 
 .info_list {
-  vertical-align: middle;
+  vertical-align: top;
 
   * {
-    vertical-align: middle;
+    vertical-align: top;
+  }
+
+  .fas {
+    vertical-align: unset;
   }
 
   > span {
@@ -912,14 +927,17 @@ $keyFontSize: 0.8rem;
 
   > span.key {
     margin-right: 5px;
-    width: 120px;
+    width: 200px;
     opacity: 0.7;
-    white-space: nowrap;
-    overflow: auto;
-    vertical-align: middle;
+    white-space: wrap;
+    text-wrap: wrap;
+    vertical-align: top;
+    word-wrap: break-word;
+    display: inline-block;
+    font-size: 0.9rem;
 
     @media (max-width: $mobile) {
-      width: 200px;
+      vertical-align: middle;
     }
 
 
@@ -997,10 +1015,20 @@ $keyFontSize: 0.8rem;
   }
 
   .config {
+    margin-top: 5px;
+    margin-bottom: 5px;
+
     .combined {
-      width: 330px;
-      > span {
-        display: inline-block
+      white-space: wrap;
+      text-wrap: wrap;
+      vertical-align: top;
+      word-wrap: break-word;
+      display: inline-block;
+      max-width: calc(100% - 300px);
+
+      @media (max-width: $mobile) {
+          vertical-align: middle;
+          max-width: 100%;
       }
     }
 
@@ -1298,13 +1326,14 @@ a.generic-link {
 .compare-header {
   display: flex;
   flex-direction: column;
-  margin: 30px 5px;
 
   .compared-with {
     display: flex;
     justify-content: flex-start;
     gap: 10px;
     margin-left: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
 
     .title {
       font-size: 1rem;
@@ -1323,10 +1352,17 @@ a.generic-link {
       margin-bottom: auto;
       margin-top: auto;
       text-transform: uppercase;
+      width: 150px;
+    }
+
+    @media screen and (max-width: 480px) {
+      .sub {
+        width: 120px;
+      }
     }
   }
 
-  .error{
+  .error {
     margin-top: 20px;
     padding-left: 10px;
     text-align: center;
@@ -1374,8 +1410,8 @@ a.generic-link {
     }
 
     .selected-name {
-        margin-left: 5px;
-        font-weight: bold;
+      margin-left: 5px;
+      font-weight: bold;
     }
   }
 
@@ -1432,7 +1468,6 @@ a.generic-link {
 
   .input-container {
     flex: unset;
-    margin: 4px;
 
     input {
       width: 4rem;
@@ -1502,40 +1537,34 @@ a.generic-link {
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
+
   .data {
     line-height: normal;
+
     span {
       font-size: 0.6rem;
     }
   }
 }
 
-.config {
-  .combined {
-    width: 330px;
-    display: inline-block;
-    overflow: auto;
-  }
-}
-
 .chart-overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(3.5px);
-    -webkit-backdrop-filter: blur(3.5px);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3.5px);
+  -webkit-backdrop-filter: blur(3.5px);
 
-    .loading {
-      padding: 20px;
-      background: white;
-      border-radius: 5px;
-      font-size: 20px;
-      color: black;
+  .loading {
+    padding: 20px;
+    background: white;
+    border-radius: 5px;
+    font-size: 20px;
+    color: black;
   }
 
   .text {
@@ -1585,6 +1614,7 @@ input[type=number] {
     .fa {
       opacity: 1;
     }
+
     span {
       margin-left: 5px;
     }
@@ -1597,12 +1627,16 @@ input[type=number] {
 
 
 .std {
+  width: 100%;
+  padding: 5px;
+
   .nav-link {
     width: fit-content;
   }
 
   &.wrap {
     max-width: 100%;
+
     pre {
       text-wrap: wrap;
       max-width: 100%;
@@ -1640,4 +1674,56 @@ pre {
     margin-top: auto;
     margin-bottom: auto;
   }
+}
+
+.config {
+  .toggle-button {
+    .nav-link {
+      padding: 0px;
+    }
+  }
+}
+
+.list-item {
+  .configs {
+    width: 100%;
+  }
+}
+
+.chart-view {
+  .input-list-container {
+    ul {
+      margin: unset;
+      li {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: unset;
+        padding: unset;
+        align-items: center;
+        gap: 10px;
+
+        .input-container {
+          flex: 1 0 auto;
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .input-list-container .item-key {
+      width: 120px;
+      flex: unset;
+    }
+  }
+}
+
+.icon-text {
+  margin-left: 10px;
+}
+
+.progress-text {
+  display: block;
+  margin: 10px;
+    font-size: 0.8rem;
+  opacity: 0.7;
 }

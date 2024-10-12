@@ -1,71 +1,73 @@
 import {Card, CardOptions} from "../../types"
 import {Weya as $, WeyaElementFunction} from "../../../../../lib/weya/weya"
-import {AnalysisDataCache, ComparisonAnalysisPreferenceCache} from "../../../cache/cache"
-import comparisonCache from "./cache"
+import CACHE, {AnalysisDataCache} from "../../../cache/cache"
+import metricsCache, {MetricCache} from "./cache"
 import {DataLoader} from "../../../components/loader"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {DEBUG} from "../../../env"
-import {clearChildElements} from "../../../utils/document"
 import {fillPlotPreferences} from "../../../components/charts/utils"
-import {AnalysisData, Indicator} from "../../../models/run"
+import {AnalysisData, CustomMetric, Indicator} from "../../../models/run"
 import {ROUTER} from "../../../app"
 import {NetworkError} from "../../../network"
 import {CardWrapper} from "../chart_wrapper/card"
 
-export class ComparisonCard extends Card {
+export class MetricCard extends Card {
     private readonly  currentUUID: string
     private baseUUID: string
     private readonly width: number
-    private baseAnalysisCache: AnalysisDataCache
+    private baseAnalysisCache: MetricCache
     private baseSeries: Indicator[]
     private currentSeries: Indicator[]
-    private currentAnalysisCache: AnalysisDataCache
-    private preferenceCache: ComparisonAnalysisPreferenceCache
+    private currentAnalysisCache: MetricCache
     private preferenceData: ComparisonPreferenceModel
     private loader: DataLoader
-    private missingBaseExperiment: boolean
     private lineChartContainer: HTMLDivElement
     private sparkLineContainer: HTMLDivElement
     private elem: HTMLDivElement
     private chartWrapper: CardWrapper
+    private customMetricUUID: string
+    private titleContainer: HTMLElement
+    private customMetric: CustomMetric
 
     constructor(opt: CardOptions) {
         super(opt)
 
+        this.customMetricUUID = opt.params != null ? opt.params['custom_metric'] : null
         this.currentUUID = opt.uuid
         this.width = opt.width
-        this.currentAnalysisCache = comparisonCache.getAnalysis(this.currentUUID)
-        this.preferenceCache = <ComparisonAnalysisPreferenceCache>comparisonCache.getPreferences(this.currentUUID)
-        this.currentAnalysisCache.setCurrentUUID(this.currentUUID)
+        this.currentAnalysisCache = metricsCache.getAnalysis(this.currentUUID)
 
         this.loader = new DataLoader(async (force: boolean) => {
-            this.preferenceData = <ComparisonPreferenceModel> await this.preferenceCache.get(force)
+            let customMetricList = await CACHE.getCustomMetrics(this.currentUUID).get(force)
+            if (customMetricList == null || customMetricList.getMetric(this.customMetricUUID) == null) {
+                throw new NetworkError(404, "", "Custom metric list is null")
+            }
+
+            this.customMetric = customMetricList.getMetric(this.customMetricUUID)
+            this.preferenceData = customMetricList.getMetric(this.customMetricUUID).preferences
             this.baseUUID = this.preferenceData.base_experiment
 
-            let currentAnalysisData: AnalysisData = await this.currentAnalysisCache.get(force)
+            let currentAnalysisData = await this.currentAnalysisCache.get(force, this.preferenceData.series_preferences)
             this.currentSeries = currentAnalysisData.series
-            this.preferenceData.series_preferences = fillPlotPreferences(this.currentSeries, this.preferenceData.series_preferences)
 
             if (!!this.baseUUID) {
-                this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUUID)
-                this.baseAnalysisCache.setCurrentUUID(this.currentUUID)
+                this.baseAnalysisCache = metricsCache.getAnalysis(this.baseUUID)
                 try {
-                    let baseAnalysisData = await this.baseAnalysisCache.get(force)
+                    let baseAnalysisData = await this.baseAnalysisCache.get(force, this.preferenceData.base_series_preferences)
                     this.baseSeries = baseAnalysisData.series
-                    this.preferenceData.base_series_preferences = fillPlotPreferences(this.baseSeries, this.preferenceData.base_series_preferences)
-                    this.missingBaseExperiment = false
                 } catch (e) {
                     if (e instanceof NetworkError && e.statusCode === 404) {
-                        this.missingBaseExperiment = true
                     } else {
                         throw e
                     }
                 }
-            } else {
-                this.missingBaseExperiment = true
             }
         })
 
+    }
+
+    cardName(): string {
+        return 'Metrics'
     }
 
     getLastUpdated(): number {
@@ -77,11 +79,7 @@ export class ComparisonCard extends Card {
              await this.loader.load(true)
              if (this.currentSeries.concat(this.baseSeries).length > 0) {
                 this.chartWrapper?.updateData(this.currentSeries, this.baseSeries, this.preferenceData)
-                if (!this.missingBaseExperiment) {
-                    this.chartWrapper?.render()
-                } else {
-                    this.renderEmptyChart()
-                }
+                this.chartWrapper?.render()
              }
          } catch (e) {
          }
@@ -89,7 +87,7 @@ export class ComparisonCard extends Card {
 
     async render($: WeyaElementFunction) {
         this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3', '.header', 'Comparison')
+            this.titleContainer = $('h3', '.header', 'Metrics')
             this.loader.render($)
 
             this.lineChartContainer = $('div', '')
@@ -109,11 +107,8 @@ export class ComparisonCard extends Card {
                 width: this.width
             })
 
-            if (!this.missingBaseExperiment) {
-                this.chartWrapper.render()
-            } else {
-                this.renderEmptyChart()
-            }
+            this.chartWrapper.render()
+            this.renderDetails()
         } catch (e) {
             if (DEBUG) {
                 console.error(e)
@@ -121,14 +116,16 @@ export class ComparisonCard extends Card {
         }
     }
 
-    private renderEmptyChart() {
-        clearChildElements(this.lineChartContainer)
-        $(this.lineChartContainer, $ => {
-            $('div', '.empty-chart-message', `${screen.width < 500 ? "Tap" : "Click"} here to compare with another experiment`)
-        })
+    private renderDetails() {
+        this.titleContainer.innerHTML = ''
+        if (this.customMetric != null) {
+            this.titleContainer.textContent = this.customMetric.name
+        } else {
+            this.titleContainer.textContent = 'Metrics'
+        }
     }
 
     onClick = () => {
-       ROUTER.navigate(`/run/${this.currentUUID}/compare`)
+       ROUTER.navigate(`/run/${this.currentUUID}/metrics/${this.customMetricUUID}`)
     }
 }

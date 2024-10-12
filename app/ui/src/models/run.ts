@@ -1,6 +1,6 @@
 import {Config, ConfigModel} from "./config"
 import {toPointValue} from "../components/charts/utils"
-import {AnalysisPreferenceModel} from "./preferences";
+import {ComparisonPreferenceModel} from "./preferences";
 
 export interface RunModel {
     run_uuid: string
@@ -130,7 +130,6 @@ export class Run {
     favourite_configs: string[]
     session_id: string
     process_id: string
-    folder: string
 
     constructor(run: RunModel) {
         this.run_uuid = run.run_uuid
@@ -140,7 +139,7 @@ export class Run {
         this.name = run.name
         this.comment = run.comment
         this.note = run.note
-        this.tags = run.tags
+        this.tags = run.tags.sort()
         this.start_time = run.start_time
         this.python_file = run.python_file
         this.repo_remotes = run.repo_remotes
@@ -161,7 +160,6 @@ export class Run {
         }
         this.session_id = run.session_id
         this.process_id = run.process_id
-        this.folder = run.folder
     }
 
     public updateConfigs() {
@@ -189,7 +187,8 @@ export interface CustomMetricModel {
     name: string
     description: string
     created_time: number
-    preferences: AnalysisPreferenceModel
+    preferences: ComparisonPreferenceModel
+    position: number
 }
 
 export class CustomMetric {
@@ -197,7 +196,8 @@ export class CustomMetric {
     name: string
     description: string
     createdTime: number
-    preferences: AnalysisPreferenceModel
+    preferences: ComparisonPreferenceModel
+    position: number
 
     constructor(metric: CustomMetricModel) {
         this.id = metric.id
@@ -205,6 +205,7 @@ export class CustomMetric {
         this.description = metric.description
         this.createdTime = metric.created_time
         this.preferences = metric.preferences
+        this.position = metric.position
     }
 
     public toData(): CustomMetricModel {
@@ -213,7 +214,8 @@ export class CustomMetric {
             name: this.name,
             description: this.description,
             created_time: this.createdTime,
-            preferences: this.preferences
+            preferences: this.preferences,
+            position: this.position
         }
     }
 }

@@ -27,6 +27,10 @@ export class LoggerCard extends Card {
         })
     }
 
+    cardName(): string {
+        return 'Logger'
+    }
+
     getLastTenLines(inputStr: string) {
         let split = inputStr.split("\n")
 

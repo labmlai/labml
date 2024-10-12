@@ -26,6 +26,10 @@ export class RunConfigsCard extends Card {
         })
     }
 
+    cardName(): string {
+        return 'Run Configs'
+    }
+
     getLastUpdated(): number {
         return this.runCache.lastUpdated
     }

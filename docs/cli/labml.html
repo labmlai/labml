@@ -1,53 +1,31 @@
 
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>labml &mdash; labml library 0.4 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>labml &mdash; labml library 0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/katex-math.css?v=91adb8b6" />
+      <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" />
+
   
     <link rel="shortcut icon" href="../_static/lab_icon.png"/>
+    <link rel="canonical" href="https://docs.labml.ai/cli/labml.html" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-    <link rel="canonical" href="https://docs.labml.ai/cli/labml.html"/>
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" type="text/css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/katex-math.css" type="text/css" />
+        <script src="../_static/documentation_options.js?v=db78e746"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Helpers" href="../api/helpers.html" />
+    <link rel="prev" title="Utils" href="../api/utils.html" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDCL9PHMHT"></script>
     <script>
@@ -61,47 +39,25 @@
  
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> labml library
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            labml library
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../api/experiment.html">Experiment</a><ul>
@@ -113,36 +69,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.get_uuid"><code class="docutils literal notranslate"><span class="pre">get_uuid()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../api/experiment.html#checkpoints">Checkpoints</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.load"><code class="docutils literal notranslate"><span class="pre">load()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.load_models"><code class="docutils literal notranslate"><span class="pre">load_models()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.save_checkpoint"><code class="docutils literal notranslate"><span class="pre">save_checkpoint()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.add_pytorch_models"><code class="docutils literal notranslate"><span class="pre">add_pytorch_models()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.add_sklearn_models"><code class="docutils literal notranslate"><span class="pre">add_sklearn_models()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.add_model_savers"><code class="docutils literal notranslate"><span class="pre">add_model_savers()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.ModelSaver"><code class="docutils literal notranslate"><span class="pre">ModelSaver</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api/experiment.html#labml.experiment.ModelSaver.save"><code class="docutils literal notranslate"><span class="pre">ModelSaver.save()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/experiment.html#labml.experiment.ModelSaver.load"><code class="docutils literal notranslate"><span class="pre">ModelSaver.load()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../api/experiment.html#configurations-hyper-parameters">Configurations &amp; Hyper-parameters</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.configs"><code class="docutils literal notranslate"><span class="pre">configs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.load_configs"><code class="docutils literal notranslate"><span class="pre">load_configs()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../api/experiment.html#bundle-checkpoints">Bundle checkpoints</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.save_bundle"><code class="docutils literal notranslate"><span class="pre">save_bundle()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.load_bundle"><code class="docutils literal notranslate"><span class="pre">load_bundle()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../api/experiment.html#distirbuted-training">Distirbuted training</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.distributed"><code class="docutils literal notranslate"><span class="pre">distributed()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../api/experiment.html#utilities">Utilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/experiment.html#labml.experiment.save_numpy"><code class="docutils literal notranslate"><span class="pre">save_numpy()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -160,14 +89,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api/tracker.html#setup">Setup</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/tracker.html#labml.tracker.set_queue"><code class="docutils literal notranslate"><span class="pre">set_queue()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/tracker.html#labml.tracker.set_histogram"><code class="docutils literal notranslate"><span class="pre">set_histogram()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/tracker.html#labml.tracker.set_scalar"><code class="docutils literal notranslate"><span class="pre">set_scalar()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/tracker.html#labml.tracker.set_indexed_scalar"><code class="docutils literal notranslate"><span class="pre">set_indexed_scalar()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/tracker.html#labml.tracker.set_image"><code class="docutils literal notranslate"><span class="pre">set_image()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/tracker.html#labml.tracker.set_text"><code class="docutils literal notranslate"><span class="pre">set_text()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/tracker.html#labml.tracker.set_tensor"><code class="docutils literal notranslate"><span class="pre">set_tensor()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/tracker.html#labml.tracker.set_indexed_text"><code class="docutils literal notranslate"><span class="pre">set_indexed_text()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api/tracker.html#namespaces">Namespaces</a><ul>
@@ -182,18 +105,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api/framework_integrations.html">Framework Integrations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../api/framework_integrations.html#fastai">FastAI</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/framework_integrations.html#labml.utils.fastai.LabMLFastAICallback"><code class="docutils literal notranslate"><span class="pre">LabMLFastAICallback</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../api/framework_integrations.html#keras">Keras</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/framework_integrations.html#labml.utils.keras.LabMLKerasCallback"><code class="docutils literal notranslate"><span class="pre">LabMLKerasCallback</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../api/framework_integrations.html#pytorch-lightning">PyTorch Lightning</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/framework_integrations.html#labml.utils.lightning.LabMLLightningLogger"><code class="docutils literal notranslate"><span class="pre">LabMLLightningLogger</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/framework_integrations.html#fastai">FastAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/framework_integrations.html#keras">Keras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/framework_integrations.html#pytorch-lightning">PyTorch Lightning</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api/monit.html">Monitor</a><ul>
@@ -217,49 +131,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../api/analytics.html">Analytics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../api/analytics.html#probing">Probing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.ModelProbe"><code class="docutils literal notranslate"><span class="pre">ModelProbe</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.ModelProbe.parameters"><code class="docutils literal notranslate"><span class="pre">ModelProbe.parameters</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.ModelProbe.forward_input"><code class="docutils literal notranslate"><span class="pre">ModelProbe.forward_input</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.ModelProbe.forward_output"><code class="docutils literal notranslate"><span class="pre">ModelProbe.forward_output</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.ModelProbe.backward_input"><code class="docutils literal notranslate"><span class="pre">ModelProbe.backward_input</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.ModelProbe.backward_output"><code class="docutils literal notranslate"><span class="pre">ModelProbe.backward_output</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.ValueCollection"><code class="docutils literal notranslate"><span class="pre">ValueCollection</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.ValueCollection.get_value"><code class="docutils literal notranslate"><span class="pre">ValueCollection.get_value()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.ValueCollection.get_list"><code class="docutils literal notranslate"><span class="pre">ValueCollection.get_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.ValueCollection.get_dict"><code class="docutils literal notranslate"><span class="pre">ValueCollection.get_dict()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.ValueCollection.deep"><code class="docutils literal notranslate"><span class="pre">ValueCollection.deep()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.DeepValueCollection"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.DeepValueCollection.get_value"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection.get_value()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.DeepValueCollection.get_list"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection.get_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/analytics.html#labml.analytics.DeepValueCollection.get_dict"><code class="docutils literal notranslate"><span class="pre">DeepValueCollection.get_dict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../api/analytics.html#get-data">Get data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.runs"><code class="docutils literal notranslate"><span class="pre">runs()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.get_run"><code class="docutils literal notranslate"><span class="pre">get_run()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.set_preferred_db"><code class="docutils literal notranslate"><span class="pre">set_preferred_db()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.indicator_data"><code class="docutils literal notranslate"><span class="pre">indicator_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.artifact_data"><code class="docutils literal notranslate"><span class="pre">artifact_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.IndicatorCollection"><code class="docutils literal notranslate"><span class="pre">IndicatorCollection</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../api/analytics.html#plot">Plot</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.distribution"><code class="docutils literal notranslate"><span class="pre">distribution()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.scatter"><code class="docutils literal notranslate"><span class="pre">scatter()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.binned_heatmap"><code class="docutils literal notranslate"><span class="pre">binned_heatmap()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/analytics.html#labml.analytics.histogram"><code class="docutils literal notranslate"><span class="pre">histogram()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="../api/configs.html">Configs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/configs.html#labml.configs.BaseConfigs"><code class="docutils literal notranslate"><span class="pre">BaseConfigs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/configs.html#labml.configs.option"><code class="docutils literal notranslate"><span class="pre">option()</span></code></a></li>
@@ -267,12 +138,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/configs.html#labml.configs.hyperparams"><code class="docutils literal notranslate"><span class="pre">hyperparams()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/configs.html#labml.configs.meta_config"><code class="docutils literal notranslate"><span class="pre">meta_config()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/configs.html#labml.configs.aggregate"><code class="docutils literal notranslate"><span class="pre">aggregate()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/configs.html#id1">Dynamic Hyper-parameters</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/configs.html#labml.configs.DynamicHyperParam"><code class="docutils literal notranslate"><span class="pre">DynamicHyperParam</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/configs.html#labml.configs.FloatDynamicHyperParam"><code class="docutils literal notranslate"><span class="pre">FloatDynamicHyperParam</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/configs.html#labml.configs.IntDynamicHyperParam"><code class="docutils literal notranslate"><span class="pre">IntDynamicHyperParam</span></code></a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api/logger.html">Logger</a><ul>
@@ -291,7 +156,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/logger.html#labml.logger.Text.subtle"><code class="docutils literal notranslate"><span class="pre">Text.subtle</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/logger.html#labml.logger.Text.success"><code class="docutils literal notranslate"><span class="pre">Text.success</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/logger.html#labml.logger.Text.title"><code class="docutils literal notranslate"><span class="pre">Text.title</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/logger.html#labml.logger.Text.value"><code class="docutils literal notranslate"><span class="pre">Text.value</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/logger.html#labml.logger.Text.warning"><code class="docutils literal notranslate"><span class="pre">Text.warning</span></code></a></li>
 </ul>
 </li>
@@ -321,6 +185,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api/lab.html">Lab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/lab.html#labml.lab.get_computer_name"><code class="docutils literal notranslate"><span class="pre">get_computer_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/lab.html#labml.lab.get_computer_uuid"><code class="docutils literal notranslate"><span class="pre">get_computer_uuid()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/lab.html#labml.lab.get_info"><code class="docutils literal notranslate"><span class="pre">get_info()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/lab.html#labml.lab.get_path"><code class="docutils literal notranslate"><span class="pre">get_path()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/lab.html#labml.lab.get_data_path"><code class="docutils literal notranslate"><span class="pre">get_data_path()</span></code></a></li>
@@ -358,60 +224,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../api/helpers.html">Helpers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../api/helpers.html#configurable-modules">Configurable Modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.device.DeviceConfigs"><code class="docutils literal notranslate"><span class="pre">DeviceConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.seed.SeedConfigs"><code class="docutils literal notranslate"><span class="pre">SeedConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.optimizer.OptimizerConfigs"><code class="docutils literal notranslate"><span class="pre">OptimizerConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.training_loop.TrainingLoopConfigs"><code class="docutils literal notranslate"><span class="pre">TrainingLoopConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.train_valid.TrainValidConfigs"><code class="docutils literal notranslate"><span class="pre">TrainValidConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.train_valid.SimpleTrainValidConfigs"><code class="docutils literal notranslate"><span class="pre">SimpleTrainValidConfigs</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../api/helpers.html#datasets">Datasets</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.datasets.mnist.MNISTConfigs"><code class="docutils literal notranslate"><span class="pre">MNISTConfigs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.datasets.cifar10.CIFAR10Configs"><code class="docutils literal notranslate"><span class="pre">CIFAR10Configs</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.datasets.csv.CsvDataset"><code class="docutils literal notranslate"><span class="pre">CsvDataset</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#remote">Remote</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api/helpers.html#labml_helpers.datasets.remote.DatasetServer"><code class="docutils literal notranslate"><span class="pre">DatasetServer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/helpers.html#labml_helpers.datasets.remote.RemoteDataset"><code class="docutils literal notranslate"><span class="pre">RemoteDataset</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#text-datasets">Text Datasets</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api/helpers.html#labml_helpers.datasets.text.TextDataset"><code class="docutils literal notranslate"><span class="pre">TextDataset</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/helpers.html#labml_helpers.datasets.text.TextFileDataset"><code class="docutils literal notranslate"><span class="pre">TextFileDataset</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/helpers.html#labml_helpers.datasets.text.SequentialDataLoader"><code class="docutils literal notranslate"><span class="pre">SequentialDataLoader</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/helpers.html#labml_helpers.datasets.text.SequentialUnBatchedDataset"><code class="docutils literal notranslate"><span class="pre">SequentialUnBatchedDataset</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../api/helpers.html#schedules">Schedules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.schedule.Schedule"><code class="docutils literal notranslate"><span class="pre">Schedule</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.schedule.Flat"><code class="docutils literal notranslate"><span class="pre">Flat</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.schedule.Dynamic"><code class="docutils literal notranslate"><span class="pre">Dynamic</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.schedule.Piecewise"><code class="docutils literal notranslate"><span class="pre">Piecewise</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.schedule.RelativePiecewise"><code class="docutils literal notranslate"><span class="pre">RelativePiecewise</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../api/helpers.html#metrics">Metrics</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.metrics.StateModule"><code class="docutils literal notranslate"><span class="pre">StateModule</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.metrics.Metric"><code class="docutils literal notranslate"><span class="pre">Metric</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.metrics.accuracy.Accuracy"><code class="docutils literal notranslate"><span class="pre">Accuracy</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.metrics.accuracy.BinaryAccuracy"><code class="docutils literal notranslate"><span class="pre">BinaryAccuracy</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.metrics.accuracy.AccuracyDirect"><code class="docutils literal notranslate"><span class="pre">AccuracyDirect</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.metrics.collector.Collector"><code class="docutils literal notranslate"><span class="pre">Collector</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.metrics.recall_precision.RecallPrecision"><code class="docutils literal notranslate"><span class="pre">RecallPrecision</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.metrics.simple_state.SimpleStateModule"><code class="docutils literal notranslate"><span class="pre">SimpleStateModule</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.metrics.simple_state.SimpleState"><code class="docutils literal notranslate"><span class="pre">SimpleState</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../api/helpers.html#utilies">Utilies</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/helpers.html#labml_helpers.module.Module"><code class="docutils literal notranslate"><span class="pre">Module</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">CLI</span></p>
 <ul class="current">
@@ -425,87 +237,49 @@
 </li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">labml library</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-      <li>labml</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">labml</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/cli/labml.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="labml">
-<h1>labml<a class="headerlink" href="#labml" title="Permalink to this heading">¶</a></h1>
-<div class="section" id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+             
+  <section id="labml">
+<h1>labml<a class="headerlink" href="#labml" title="Link to this heading">¶</a></h1>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading">¶</a></h2>
 <p><strong>labml</strong> [<em>options</em>] &lt;<em>command</em>&gt; [<em>command_specific_args</em>]</p>
-</div>
-<div class="section" id="options">
-<h2>Options<a class="headerlink" href="#options" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="options">
+<h2>Options<a class="headerlink" href="#options" title="Link to this heading">¶</a></h2>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-labml-h">
-<span id="cmdoption-labml-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-h" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-labml-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-h" title="Link to this definition">¶</a></dt>
 <dd><p>Display usage summary.</p>
 </dd></dl>
 
-<div class="section" id="commands">
-<h3>Commands<a class="headerlink" href="#commands" title="Permalink to this heading">¶</a></h3>
+<section id="commands">
+<h3>Commands<a class="headerlink" href="#commands" title="Link to this heading">¶</a></h3>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-labml-arg-app-server">
-<span class="sig-name descname"><span class="pre">app-server</span></span><span class="sig-prename descclassname"> <span class="pre">[*args*]</span></span><a class="headerlink" href="#cmdoption-labml-arg-app-server" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">app-server</span></span><span class="sig-prename descclassname"> <span class="pre">[*args*]</span></span><a class="headerlink" href="#cmdoption-labml-arg-app-server" title="Link to this definition">¶</a></dt>
 <dd><p>Start <a class="reference external" href="https://github.com/labmlai/labml/tree/master/app">labml server</a>.</p>
 <a class="reference internal image-reference" href="https://github.com/labmlai/labml/raw/master/images/cover-dark.png"><img alt="labml mobile UI" src="https://github.com/labmlai/labml/raw/master/images/cover-dark.png" style="width: 400px;" /></a>
 <div class="admonition important">
@@ -516,7 +290,7 @@ You can install it with <code class="code docutils literal notranslate"><span cl
 <p><strong>args</strong>:</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-labml-ip">
-<span class="sig-name descname"><span class="pre">--ip</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ip_address&gt;</span></span><a class="headerlink" href="#cmdoption-labml-ip" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--ip</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ip_address&gt;</span></span><a class="headerlink" href="#cmdoption-labml-ip" title="Link to this definition">¶</a></dt>
 <dd><p>IP address to bind the local server instance.
 If unspecified, it will bind to 0.0.0.0,
 which makes the server accessible through all the assigned IPs of the computer.</p>
@@ -525,14 +299,14 @@ which makes the server accessible through all the assigned IPs of the computer.<
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-labml-port">
-<span class="sig-name descname"><span class="pre">--port</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;port&gt;</span></span><a class="headerlink" href="#cmdoption-labml-port" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">--port</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;port&gt;</span></span><a class="headerlink" href="#cmdoption-labml-port" title="Link to this definition">¶</a></dt>
 <dd><p>Port to use for the local server instance.</p>
 <p>Default: 5005</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-labml-0">
-<span id="cmdoption-labml-1"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-0" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-labml-1"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-0" title="Link to this definition">¶</a></dt>
 <dd><p>Display usage summary.</p>
 </dd></dl>
 
@@ -540,7 +314,7 @@ which makes the server accessible through all the assigned IPs of the computer.<
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-labml-arg-capture">
-<span class="sig-name descname"><span class="pre">capture</span></span><span class="sig-prename descclassname"> <span class="pre">[*args*]</span></span><a class="headerlink" href="#cmdoption-labml-arg-capture" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">capture</span></span><span class="sig-prename descclassname"> <span class="pre">[*args*]</span></span><a class="headerlink" href="#cmdoption-labml-arg-capture" title="Link to this definition">¶</a></dt>
 <dd><p>Capture the output of any command or program as an experiment.</p>
 <p><strong>args</strong>: command to run. If no command is specified, data from the STDIN will be used; so you can pipe an output of a program to <code class="code docutils literal notranslate"><span class="pre">labml</span> <span class="pre">capture</span></code>.</p>
 <div class="admonition note">
@@ -551,14 +325,14 @@ which makes the server accessible through all the assigned IPs of the computer.<
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-labml-arg-launch">
-<span class="sig-name descname"><span class="pre">launch</span></span><span class="sig-prename descclassname"> <span class="pre">[*args*]</span></span><a class="headerlink" href="#cmdoption-labml-arg-launch" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">launch</span></span><span class="sig-prename descclassname"> <span class="pre">[*args*]</span></span><a class="headerlink" href="#cmdoption-labml-arg-launch" title="Link to this definition">¶</a></dt>
 <dd><p>Run a distributed training session with <strong class="program">torch.distributed.launch</strong>.</p>
 <p><strong>args</strong>: command to run the distributed training session with <strong class="program">torch.distributed.launch</strong>.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-labml-arg-monitor">
-<span class="sig-name descname"><span class="pre">monitor</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-arg-monitor" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">monitor</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-arg-monitor" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://github.com/labmlai/labml/blob/master/guides/hardware_monitoring.md">Monitor the hardware of the computer</a>.</p>
 <a class="reference internal image-reference" href="https://github.com/labmlai/labml/raw/master/guides/hardware.png"><img alt="labml mobile UI" src="https://github.com/labmlai/labml/raw/master/guides/hardware.png" style="width: 150px;" /></a>
 <div class="admonition important">
@@ -572,7 +346,7 @@ which makes the server accessible through all the assigned IPs of the computer.<
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-labml-arg-service">
-<span class="sig-name descname"><span class="pre">service</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-arg-service" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">service</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-arg-service" title="Link to this definition">¶</a></dt>
 <dd><p>Setup the hardware monitoring as a service and start monitoring.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -582,7 +356,7 @@ which makes the server accessible through all the assigned IPs of the computer.<
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-labml-arg-service-run">
-<span class="sig-name descname"><span class="pre">service-run</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-arg-service-run" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">service-run</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-arg-service-run" title="Link to this definition">¶</a></dt>
 <dd><p>This is what gets called by the service installed usign <code class="code docutils literal notranslate"><span class="pre">labml</span> <span class="pre">service</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -592,62 +366,45 @@ which makes the server accessible through all the assigned IPs of the computer.<
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-labml-arg-dashboard">
-<span class="sig-name descname"><span class="pre">dashboard</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-arg-dashboard" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">dashboard</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-labml-arg-dashboard" title="Link to this definition">¶</a></dt>
 <dd><p>Open the dashboard to view experiments.</p>
 <div class="deprecated">
 <p><span class="versionmodified deprecated">Deprecated since version 0.4.118: </span>Use <code class="code docutils literal notranslate"><span class="pre">labml</span> <span class="pre">server</span></code> instead.</p>
 </div>
 </dd></dl>
 
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="../api/helpers.html" class="btn btn-neutral float-left" title="Helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../api/utils.html" class="btn btn-neutral float-left" title="Utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020-2022, labml.ai contributors
-
-    </p>
+    <p>&#169; Copyright 2020-2024, labml.ai contributors.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

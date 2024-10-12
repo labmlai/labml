@@ -25,13 +25,11 @@ and tutorials.
    api/tracker
    api/framework_integrations
    api/monit
-   api/analytics
    api/configs
    api/logger
    api/lab
    api/manage
    api/utils
-   api/helpers
 
 .. toctree::
    :maxdepth: 1

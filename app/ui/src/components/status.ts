@@ -30,13 +30,13 @@ export class StatusView {
                 this.statusText = 'experiment is running'
             }
         } else if (this.status.status === 'no response') {
-            this.statusClass = 'text-warning'
+            this.statusClass = 'text-secondary'
             this.statusText = 'no response'
         } else if (this.status.status === 'completed') {
-            this.statusClass = 'text-success'
+            this.statusClass = 'text-secondary'
             this.statusText = 'completed'
         } else if (this.status.status === 'crashed') {
-            this.statusClass = 'text-danger'
+            this.statusClass = 'text-secondary'
             this.statusText = 'crashed'
         } else if (this.status.status === 'unknown') {
             this.statusClass = 'text-secondary'
@@ -54,7 +54,7 @@ export class StatusView {
         $('div.status', $=> {
             $(`div.text-uppercase.${this.statusClass}`, this.statusText)
             if (this.isDistributed) {
-                $(`div.text-uppercase.label-info.label.text-light`, "distributed")
+                $(`div.text-uppercase.text-secondary`, "distributed")
             }
         })
     }

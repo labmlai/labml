@@ -83,30 +83,10 @@ export class HamburgerMenuView {
         this.loader.remove()
 
         $(this.navLinksContainer, $ => {
-            $('div', '.text-center', $ => {
-                $('img', '.mt-2.image-style.rounded-circle', {
-                    src: this.user?.picture || DEFAULT_IMAGE,
-                })
-                $('div', '.mb-5.mt-3.mt-2', $ => {
-                    $('h5', this.user?.name || '')
-                })
-            })
             new NavButton({
                 icon: '.fas.fa-running',
                 text: 'Runs',
                 link: '/runs',
-                parent: this.constructor.name
-            }).render($)
-            new NavButton({
-                icon: '.fas.fa-archive',
-                text: 'Archived Runs',
-                link: '/runs/archive',
-                parent: this.constructor.name
-            }).render($)
-            new NavButton({
-                icon: '.fas.fa-running',
-                text: 'All Runs',
-                link: '/runs/all',
                 parent: this.constructor.name
             }).render($)
             new NavButton({
@@ -129,12 +109,12 @@ export class HamburgerMenuView {
                 parent: this.constructor.name
             }).render($)
             $('span', '.mt-5', '')
-            new NavButton({
-                icon: '.fas.fa-power-off',
-                text: 'Sign out',
-                onButtonClick: this.onLogOut,
-                parent: this.constructor.name
-            }).render($)
+            // new NavButton({
+            //     icon: '.fas.fa-power-off',
+            //     text: 'Sign out',
+            //     onButtonClick: this.onLogOut,
+            //     parent: this.constructor.name
+            // }).render($)
         })
     }
 }

@@ -10,11 +10,12 @@ from .analyses.experiments import stdout, stderr, stdlogger
 from .logger import logger
 from . import settings
 from . import auth
-from .db import run, folder
+from .db import run
 from .db import computer
 from .db import session
 from .db import user
 from .db import project
+from .db import status
 from . import utils
 from . import analyses
 
@@ -87,9 +88,9 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
 
     for d in data:
         r.update_run(d)
-        s.update_time_status(d)
         if 'track' in d:
-            analyses.AnalysisManager.track(run_uuid, d['track'])
+            last_step = analyses.AnalysisManager.track(run_uuid, d['track'])
+            s.update_time_status(d, last_step)
 
         if 'stdout' in d and d['stdout']:
             stdout.update_stdout(run_uuid, d['stdout'])
@@ -182,7 +183,7 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
 
     for d in data:
         c.update_session(d)
-        s.update_time_status(d)
+        s.update_time_status(d, None)
         if 'track' in d:
             analyses.AnalysisManager.track_computer(session_uuid, d['track'])
 
@@ -283,16 +284,12 @@ async def get_session(request: Request, session_uuid: str) -> JSONResponse:
 
 @auth.login_required
 async def edit_run(request: Request, run_uuid: str, token: Optional[str] = None) -> EndPointRes:
-    r = run.get(run_uuid)
-    errors = []
+    json = await request.json()
 
-    if r:
-        data = await request.json()
-        r.edit_run(data)
-    else:
-        raise Exception("Invalid Run UUID")
+    u = user.get_by_session_token(token)
+    u.default_project.edit_run(run_uuid, json)
 
-    return {'errors': errors}
+    return {'is_successful': True}
 
 
 async def edit_session(request: Request, session_uuid: str) -> EndPointRes:
@@ -362,77 +359,22 @@ async def get_session_status(request: Request, session_uuid: str) -> JSONRespons
 @auth.login_required
 @auth.check_labml_token_permission
 async def get_runs(request: Request, labml_token: str, token: Optional[str] = None,
-                   folder_name: str = folder.DefaultFolders.DEFAULT.value) -> EndPointRes:
+                   tag: Optional[str] = None) -> EndPointRes:
     u = user.get_by_session_token(token)
 
-    if labml_token:
-        runs_list = run.get_runs(labml_token, folder_name)
+    default_project = u.default_project
+    labml_token = default_project.labml_token
+
+    if tag is None:
+        runs_list = default_project.get_runs()
     else:
-        default_project = u.default_project
-        labml_token = default_project.labml_token
-        runs_list = default_project.get_runs(folder_name)
+        runs_list = default_project.get_runs_by_tags(tag)
 
-    # run_uuids = [r.run_uuid for r in runs_list if r.world_size == 0]
-    #
-    # track_data_list = [MetricsAnalysis(m).get_tracking() for m in metrics.mget(run_uuids)]
-    # metric_preferences_data = metrics.mget_preferences(run_uuids)
-    #
-    # dist_metric_data = []
-    # dist_metric_preferences_data = distributed_metrics.mget_preferences(
-    #     [r.run_uuid for r in runs_list if r.world_size != 0])
-    #
-    # # get all rank run_uuids
-    # dist_rank_uuids = [r.get_rank_uuids() for r in runs_list if r.world_size != 0]
-    # # flatten it
-    # dist_rank_uuid_list = [run_uuid for rank_uuids in dist_rank_uuids for run_uuid in rank_uuids.values()]
-    # dist_metrics = metrics.mget(dist_rank_uuid_list)
-    #
-    # dist_metric_list = [metrics.MetricsAnalysis(m) if m else None for m in dist_metrics]
-    # # get metrics per each run as a 2d list
-    # dist_metrics = []
-    # lengths = [len(r.get_rank_uuids()) for r in runs_list if r.world_size != 0]
-    # start = 0
-    # for length in lengths:
-    #     dist_metrics.append(dist_metric_list[start:start + length])
-    #     start += length
-    # # get merged metrics
-    # for dist_metric in dist_metrics:
-    #     metric_list = [m for m in dist_metric if m is not None]
-    #     dist_track_data_list = [m.get_tracking() for m in metric_list]
-    #     merged_tracking = distributed_metrics.get_merged_metric_tracking_util(dist_track_data_list,
-    #                                                                           [-1] * len(dist_track_data_list), {})
-    #     dist_metric_data.append(merged_tracking)
-    #
-    # track_data_list.extend(dist_metric_data)
-    # metric_preferences_data.extend(dist_metric_preferences_data)
-    #
-    # # change runs list order (normal runs first, then distributed runs)
-    # runs_list = [r for r in runs_list if r.world_size == 0] + [r for r in runs_list if r.world_size != 0]
-
+    statuses = status.mget([r.status for r in runs_list])
+    statuses = {s.key: s for s in statuses}
     res = []
-    # for r, track_data, mp in zip(runs_list, track_data_list, metric_preferences_data):
     for r in runs_list:
-        s = run.get_status(r.run_uuid)
-        # if r.run_uuid and r.rank == 0 and track_data is not None and mp is not None:
-        #     summary = r.get_summary()
-        #     preferences = mp.series_preferences
-        #     metric_values = []
-        #
-        #     summary['step'] = 0
-        #
-        #     for (idx, series) in enumerate(track_data):
-        #         if len(series['step']) != 0:
-        #             summary['step'] = max(summary['step'], series['step'][-1])
-        #         if len(preferences) <= idx or preferences[idx] == -1:
-        #             continue
-        #         metric_values.append({
-        #             'name': series['name'],
-        #             'value': series['value'][-1]
-        #         })
-        #
-        #     summary['metric_values'] = metric_values
-        #
-        #     res.append({**summary, **s.get_data()})
+        s = statuses[r.status]
         res.append({**r.get_summary(), **s.get_data()})
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
@@ -490,39 +432,6 @@ async def add_run(request: Request, run_uuid: str, token: Optional[str] = None) 
     u = user.get_by_session_token(token)
 
     u.default_project.add_run(run_uuid)
-
-    return {'is_successful': True}
-
-
-@auth.login_required
-async def archive_runs(request: Request, token: Optional[str] = None) -> EndPointRes:
-    json = await request.json()
-    run_uuids = json['run_uuids']
-
-    u = user.get_by_session_token(token)
-
-    try:
-        u.default_project.archive_runs(run_uuids)
-    except KeyError:
-        return {'is_successful': False, 'error': "Failed to archive. Probably due to inconsistencies with the server."
-                                                 "Please refresh the page and try again."}
-
-    return {'is_successful': True}
-
-
-@auth.login_required
-async def un_archive_runs(request: Request, token: Optional[str] = None) -> EndPointRes:
-    json = await request.json()
-    run_uuids = json['run_uuids']
-
-    u = user.get_by_session_token(token)
-
-    try:
-        u.default_project.un_archive_runs(run_uuids)
-    except KeyError:
-        return {'is_successful': False, 'error': "Failed to un-archive. Probably due to inconsistencies with the "
-                                                 "server."
-                                                 "Please refresh the page and try again."}
 
     return {'is_successful': True}
 
@@ -586,9 +495,7 @@ def add_handlers(app: FastAPI):
     _add_server(app, 'POST', update_run, '{labml_token}/track')
     _add_server(app, 'POST', update_session, '{labml_token}/computer')
 
-    _add_ui(app, 'POST', archive_runs, 'runs/archive')
-    _add_ui(app, 'POST', un_archive_runs, 'runs/unarchive')
-
+    _add_ui(app, 'GET', get_runs, 'runs/{labml_token}/{tag}')
     _add_ui(app, 'GET', get_runs, 'runs/{labml_token}')
     _add_ui(app, 'PUT', delete_runs, 'runs')
     _add_ui(app, 'GET', get_sessions, 'sessions/{labml_token}')

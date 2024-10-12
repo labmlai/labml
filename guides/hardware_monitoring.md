@@ -26,6 +26,15 @@ If you have problems with your Python environment you can use
 [our guide to setting up Python with conda locally](https://github.com/labmlai/labml/blob/master/guides/local-ubuntu.md),
 or [on a remote computer](https://github.com/labmlai/labml/blob/master/guides/remote-python.md).
 
+### Configs
+
+You can set the url of the server in  `~/.labml/configs.yaml`.
+
+```yaml
+app_url: https://hosted-labml-app.com/api/v1/computer
+```
+
+*Note that the `&` at the end is important.*
 ### Start monitoring
 
 Once it's installed you can just run the following command to start monitoring.
@@ -51,31 +60,3 @@ labml service
 ```
 
 Above command will setup the service and show you how to start/stop the service.
-
-### Obtaining a token
-
-This step is not necessary but useful if you are monitoring from time to time.
-By default when you run `labml monitor` it will give a URL to view the hardware usage.
-It can be annoying to get this url from the logs especially if you are running `labml monitor` on a remote computer.
-
-In such cases you can obtain a token from
-[app.labml.ai](https://app.labml.ai) (Hamburger menu -> [Settings](https://app.labml.ai/settings)).
-You can then add this to `~/.labml/configs.yaml` in your home directory.
-
-```yaml
-web_api: TOKEN_STRING
-```
-
-### Hosting your own server
-
-`labml monitor` will start a process that monitors the hardware usage every few seconds
-and send the usage information to [app.labml.ai](https://app.labml.ai) by default.
-You can also host an instance of our app, by cloning the [Github repository](https://github.com/labmlai/labml/tree/master/app).
-
-You can set the url of the server in  `~/.labml/configs.yaml`.
-
-```yaml
-web_api: https://hosted-labml-app.com/api/v1/computer?labml_token=[TOKEN_STRING]&
-```
-
-*Note that the `&` at the end is important.*

@@ -7,7 +7,7 @@ import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
-import {BadgeView} from "../../../components/badge"
+import {TagView} from "../../../components/tag"
 
 interface RunHeaderOptions extends CardOptions {
     lastUpdated?: number
@@ -62,19 +62,16 @@ export class RunHeaderCard {
                 $('div', $ => {
                     $('div.status', $ => {
                         this.lastRecordedContainer = $('div', '.last-updated.mb-2')
-                        if (this.run.world_size != 0) {
-                            $(`div.text-uppercase.label-info.label.text-light.run-info`, "distributed")
-                        }
                     })
                     $('div', '.run-info', $ => {
                         this.statusViewContainer = $('div')
-                        $('h3', `${this.run.name}`)
-                        $('h5', `${this.run.comment}`)
-                        $('span.tags', $ => {
+                        $('div.tags', $ => {
                             this.run.tags.map((tag: any, _: any) => (
-                                new BadgeView({text: tag}).render($)
+                                new TagView({text: tag}).render($)
                             ))
                         })
+                        $('h3', `${this.run.name}`)
+                        $('h5', `${this.run.comment}`)
                     })
 
                     if (this.showRank && this.run.world_size > 0) {

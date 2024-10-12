@@ -262,7 +262,7 @@ class RunHeaderView extends ScreenView {
     onDelete = async () => {
         if (confirm("Are you sure?")) {
             try {
-                await CACHE.getRunsList(this.run.folder).deleteRuns([this.uuid])
+                await CACHE.getRunsList().deleteRuns([this.uuid])
                 ROUTER.navigate('/runs')
             } catch (e) {
                 UserMessages.shared.networkError(e, "Failed to delete run")
@@ -297,7 +297,7 @@ class RunHeaderView extends ScreenView {
 
         try {
             await this.runCache.updateRunData(data)
-            await CACHE.getRunsList(this.run.folder).localUpdateRun(this.run)
+            await CACHE.getRunsList().localUpdateRun(this.run)
         } catch (e) {
             this.editStatus = EditStatus.CHANGE
             UserMessages.shared.networkError(e, "Failed to save run")

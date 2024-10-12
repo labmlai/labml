@@ -1,7 +1,7 @@
 import {Weya as $, WeyaElement} from '../../../../../lib/weya/weya'
 import {Indicator} from "../../../models/run"
 import {
-    AnalysisPreferenceModel, ComparisonPreferenceModel,
+    ComparisonPreferenceModel,
 } from "../../../models/preferences"
 import {getChartType, getSmoother} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
@@ -16,7 +16,7 @@ interface CardWrapperOptions {
     sparkLinesContainer?: WeyaElement
     elem: WeyaElement
 
-    preferenceData: AnalysisPreferenceModel | ComparisonPreferenceModel
+    preferenceData: ComparisonPreferenceModel
 
     title?: string
 }
@@ -50,25 +50,11 @@ export class CardWrapper {
         this.updateData(opt.series, opt.baseSeries,  opt.preferenceData)
     }
 
-    public updateData(series: Indicator[], baseSeries: Indicator[], preferenceData: AnalysisPreferenceModel | ComparisonPreferenceModel) {
+    public updateData(series: Indicator[], baseSeries: Indicator[], preferenceData: ComparisonPreferenceModel) {
         this.series = series
         this.baseSeries = baseSeries ?? []
 
-        let analysisPreferences = preferenceData.series_preferences
-        if (analysisPreferences.length > 0) {
-            this.plotIdx = [].concat(...analysisPreferences)
-        } else {
-            this.plotIdx = []
-        }
-
-        if ((<ComparisonPreferenceModel>preferenceData)?.base_series_preferences != null) {
-            let baseAnalysisPreferences = (<ComparisonPreferenceModel>preferenceData).base_series_preferences
-            if (baseAnalysisPreferences.length > 0) {
-                this.basePlotIdx = [].concat(...baseAnalysisPreferences)
-            } else {
-                this.basePlotIdx = []
-            }
-        }
+        this.updatePlotIdxFromSeries(preferenceData)
 
         this.chartType = preferenceData.chart_type
         this.stepRange = preferenceData.step_range
@@ -140,5 +126,19 @@ export class CardWrapper {
                 isMouseMoveOpt: false
             }).render($)
         })
+    }
+
+    private updatePlotIdxFromSeries(preferenceData: ComparisonPreferenceModel) {
+        this.plotIdx = []
+        for (let i = 0; i < this.series.length; i++) {
+            this.plotIdx.push(preferenceData.series_preferences.includes(this.series[i].name) ? 1 : -1)
+        }
+
+        if (this.baseSeries) {
+            this.basePlotIdx = []
+            for (let i = 0; i < this.baseSeries.length; i++) {
+                this.basePlotIdx.push(preferenceData.base_series_preferences.includes(this.baseSeries[i].name) ? 1 : -1)
+            }
+        }
     }
 }

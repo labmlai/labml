@@ -108,34 +108,36 @@ export abstract class CacheObject<T> {
     }
 }
 
-export enum RunsFolder {
-    DEFAULT = 'default',
-    ARCHIVE = 'archive',
-}
-
 export class RunsListCache extends CacheObject<RunsList> {
-    private readonly folderName: string
+    private loadedTags: Set<string>
 
-    constructor(folderName: string) {
+    constructor() {
         super()
-        this.folderName = folderName
+
+        this.loadedTags = new Set<string>()
     }
 
 
     async load(...args: any[]): Promise<RunsList> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.getRuns(args[0], args[1])
-            return new RunsList(res)
+            let res = await NETWORK.getRuns(args[0])
+            let runsList = new RunsList(res)
+
+            this.loadedTags.add(args[0])
+            return runsList
         })
     }
 
     async get(isRefresh = false, ...args: any[]): Promise<RunsList> {
-        if (args && args[0] && args[1]) {
-            return await this.load(args[0], args[1])
+        let tag = ""
+        if (args) {
+            tag = args[0] ?? ""
         }
 
-        if (this.data == null || (isRefresh && isForceReloadTimeout(this.lastUpdated)) || isReloadTimeout(this.lastUpdated)) {
-            this.data = await this.load(null, this.folderName)
+        if (this.data == null || !(this.loadedTags.has("") || this.loadedTags.has(tag)) ||
+            (isRefresh && isForceReloadTimeout(this.lastUpdated)) ||
+            isReloadTimeout(this.lastUpdated)) {
+            this.data = await this.load(tag)
             this.lastUpdated = (new Date()).getTime()
         }
 
@@ -185,39 +187,6 @@ export class RunsListCache extends CacheObject<RunsList> {
                     }
                 }
             }
-        }
-    }
-
-    getRuns(runUUIDS: Array<string>): Array<RunListItemModel> {
-        let runs = []
-        if (this.data) {
-            for (let run of this.data.runs) {
-                if (runUUIDS.includes(run.run_uuid)) {
-                    runs.push(run)
-                }
-            }
-        }
-        return runs
-    }
-
-    removeRuns(runUUIDS: Array<string>): void {
-        if (this.data) {
-            let runs = []
-            for (let run of this.data.runs) {
-                if (!runUUIDS.includes(run.run_uuid)) {
-                    runs.push(run)
-                }
-            }
-            this.data.runs = runs
-        }
-    }
-
-    insertRuns(runs: Array<RunListItemModel>): void {
-        if (this.data) {
-            this.data.runs = this.data.runs.concat(runs)
-            this.data.runs.sort((a, b) => {
-                return b.start_time - a.start_time
-            })
         }
     }
 }
@@ -291,12 +260,6 @@ export class RunCache extends CacheObject<Run> {
 
     async updateRunData(data: Record<string, any>): Promise<void> {
         await NETWORK.updateRunData(this.uuid, data)
-    }
-
-    localUpdateFolder(folder: string) {
-        if (this.data != null) {
-            this.data.folder = folder
-        }
     }
 }
 
@@ -372,7 +335,6 @@ export abstract class BaseDataCache<T> extends CacheObject<T> {
     protected readonly uuid: string
     protected readonly url: string
     protected statusCache: StatusCache
-    protected currentUUID: string
     protected readonly isExperiment: boolean
     protected currentXHR: XMLHttpRequest | null
 
@@ -385,30 +347,15 @@ export abstract class BaseDataCache<T> extends CacheObject<T> {
         this.currentXHR = null
     }
 
-    public setCurrentUUID(currentUUID: string) {
-        this.currentUUID = currentUUID
-    }
-
     async load(): Promise<T> {
         return this.broadcastPromise.create(async () => {
-            let response = NETWORK.getAnalysis(this.url, this.uuid, false, this.currentUUID, this.isExperiment)
+            let response =
+                NETWORK.getAnalysis(this.url, this.uuid, null)
             this.currentXHR = response.xhr
             let data = await response.promise
             this.currentXHR = null
             return this.createInstance(data)
         })
-    }
-
-    async getAllMetrics(): Promise<T> | null {
-        if (this.currentXHR != null) {
-            return null // Already loading
-        }
-        this.data = await this.broadcastPromise.create(async () => {
-            this.lastUpdated = (new Date()).getTime()
-            let response = NETWORK.getAnalysis(this.url, this.uuid, true, this.currentUUID, this.isExperiment)
-            return this.createInstance(await response.promise)
-        })
-        return this.data
     }
 
     async get(isRefresh = false): Promise<T> {
@@ -551,9 +498,8 @@ export class CustomMetricCache extends CacheObject<CustomMetricList> {
         }
     }
     
-    async updateMetric(metricUUID: string, data: object): Promise<void> {
+    async updateMetric(data: object): Promise<void> {
         await NETWORK.updateCustomMetric(this.uuid, data)
-
         if (this.data != null) {
             this.data.updateMetric(new CustomMetric(<CustomMetricModel>data))
         }
@@ -647,7 +593,7 @@ class Cache {
     private sessionStatuses: { [uuid: string]: SessionStatusCache }
 
     private user: UserCache | null
-    private runsList: { [folderName: string]: RunsListCache }
+    private runsList: RunsListCache | null
     private sessionsList: SessionsListCache | null
 
     constructor() {
@@ -656,7 +602,7 @@ class Cache {
         this.runStatuses = {}
         this.sessionStatuses = {}
         this.customMetrics = {}
-        this.runsList = {}
+        this.runsList = null
         this.user = null
         this.sessionsList = null
     }
@@ -685,12 +631,12 @@ class Cache {
         return this.sessions[uuid]
     }
 
-    getRunsList(folderName: string) {
-        if (this.runsList[folderName] == null) {
-            this.runsList[folderName] = new RunsListCache(folderName)
+    getRunsList() {
+        if (this.runsList == null) {
+            this.runsList = new RunsListCache()
         }
 
-        return this.runsList[folderName]
+        return this.runsList
     }
 
     getSessionsList() {
@@ -723,46 +669,6 @@ class Cache {
         }
 
         return this.user
-    }
-
-    async archiveRuns(runUUIDS: Array<string>): Promise<ErrorResponse> {
-        let response: ErrorResponse = await NETWORK.archiveRuns(runUUIDS)
-        if (response.is_successful == false) {
-            return response
-        }
-
-        let defaultFolder = this.getRunsList(RunsFolder.DEFAULT)
-        let archiveFolder = this.getRunsList(RunsFolder.ARCHIVE)
-        let runs = defaultFolder.getRuns(runUUIDS)
-        archiveFolder.insertRuns(runs)
-        defaultFolder.removeRuns(runUUIDS)
-
-        for (let uuid of runUUIDS) {
-            let run = this.getRun(uuid)
-            run.localUpdateFolder(RunsFolder.ARCHIVE)
-        }
-
-        return response
-    }
-
-    async unarchiveRuns(runUUIDS: Array<string>): Promise<ErrorResponse> {
-        let response: ErrorResponse = await NETWORK.unarchiveRuns(runUUIDS)
-        if (response.is_successful == false) {
-            return response
-        }
-
-        let defaultFolder = this.getRunsList(RunsFolder.DEFAULT)
-        let archiveFolder = this.getRunsList(RunsFolder.ARCHIVE)
-        let runs = archiveFolder.getRuns(runUUIDS)
-        defaultFolder.insertRuns(runs)
-        archiveFolder.removeRuns(runUUIDS)
-
-        for (let uuid of runUUIDS) {
-            let run = this.getRun(uuid)
-            run.localUpdateFolder(RunsFolder.DEFAULT)
-        }
-
-        return response
     }
 
     invalidateCache() {

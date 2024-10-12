@@ -66,6 +66,10 @@ export class SessionCard extends Card {
         })
     }
 
+    cardName(): string {
+        return 'Session'
+    }
+
     getLastUpdated(): number {
         return this.analysisCache.lastUpdated
     }

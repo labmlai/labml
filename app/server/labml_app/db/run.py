@@ -6,8 +6,7 @@ from fastapi import Request
 from labml_db import Model, Key, Index, load_keys
 
 from .. import auth
-from . import user, folder
-from .. import utils
+from . import user
 from . import project
 from . import computer
 from . import status
@@ -64,7 +63,7 @@ class Run(Model['Run']):
     selected_configs: List['str']
     favourite_configs: List['str']
     main_rank: int
-    parent_folder: str
+    parent_folder: str  # delete from saved db and then remove
 
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -111,7 +110,7 @@ class Run(Model['Run']):
                     process_key=None,
                     session_id='',
                     main_rank=0,
-                    parent_folder='',
+                    parent_folder=""
                     )
 
     @property
@@ -306,7 +305,6 @@ class Run(Model['Run']):
             'selected_configs': self.selected_configs,
             'process_id': self.process_id,
             'session_id': self.session_id,
-            'folder': self.parent_folder
         }
 
     def get_summary(self) -> Dict[str, str]:
@@ -343,13 +341,15 @@ class Run(Model['Run']):
         if self.world_size > 0:
             run_uuids = [f'{self.run_uuid}_{rank}' for rank in range(1, self.world_size)]
             runs = mget(run_uuids)
+            runs = [r for r in runs if r]  # todo check why there are empty ranks
             for r in runs:
                 r.name = self.name
                 r.note = self.note
                 r.comment = self.comment
                 r.favourite_configs = self.favourite_configs
                 r.selected_configs = self.selected_configs
-            Run.msave(runs)
+            if len(runs) != 0:
+                Run.msave(runs)
 
         self.save()
 
@@ -420,9 +420,9 @@ def delete(run_uuid: str) -> None:
         analyses.AnalysisManager.delete_run(run_uuid)
 
 
-def get_runs(labml_token: str, folder_name: str) -> List['Run']:
+def get_runs(labml_token: str) -> List['Run']:
     p = project.get_project(labml_token)
-    res = p.get_runs(folder_name)
+    res = p.get_runs()
 
     return res
 

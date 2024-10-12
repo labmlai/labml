@@ -33,635 +33,397 @@
   border: none;
 }
 
-$dark-background: #292d32;
-$light-background: #ecf0f3; // #eee;
-$dark-shadow1: #222; // rgba(0, 0, 0, 0.10)
-$dark-shadow2: #353B42;
-$light-shadow1: #d1d9e6; // #b8b9be; // rgba(0, 0, 0, 0.10)
-$light-shadow2: #fff;
-$dark-btn: #ccc;
-$light-btn: #34495e;
-$light-header: #34495e;
-$dark-header: #ccc;
-$light-header-line: #ddd;
-$dark-header-line: #353B42;
-$dark-terminal-bg: none; // #292b2c;
-$light-terminal-bg: none; // #292b2c;
-$light-terminal-text: black;
-$dark-terminal-text: #ccc;
+.light {
+  --background: #ecf0f3;
+  --shadow1: #d1d9e6;
+  --shadow2: #fff;
+  --btn: #34495e;
+  --header: #34495e;
+  --header-line: #ddd;
+  --terminal-bg: white;
+  --terminal-text: black;
+  --input-icon: #555;
+  --input-pointer: #353B42;
+  --overlay: rgba(0, 0, 0, 0.5);
+  --text-secondary: #7f8c8d;
+  --shadow3: rgba(0, 0, 0, 0.15);
+  --text: black;
+  --list-item-bg: rgba(174, 178, 174, .1);
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --success: #28a745;
+  --tag-bg: rgb(0 0 0 / 10%);
+  --time-color: rgb(0 0 0 / 90%)
+}
 
-$light-input-icon: #555;
-$dark-input-icon: #ccc;
-$light-input-pointer: #353B42;
-$dark-input-pointer: #ddd;
-$light-overlay: rgba(0, 0, 0, 0.5);
-$dark-overlay: rgba(0, 0, 0, 0.5);
-$light-text-secondary: #7f8c8d;
-$dark-text-secondary: #ccc;
-$light-shadow3: rgba(0, 0, 0, 0.15);
-$dark-text: white;
-$light-text: black;
-$light-list-item-bg: rgba(174, 178, 174, .1);
-$dark-list-item-bg: rgba(174, 178, 174, .1); //TODO change this
+.dark {
+  --background: #292d32;
+  --shadow1: #222;
+  --shadow2: #353B42;
+  --btn: #ccc;
+  --header: #ccc;
+  --header-line: #353B42;
+  --terminal-bg: black;
+  --terminal-text: #ccc;
+  --input-icon: #ccc;
+  --input-pointer: #ddd;
+  --overlay: rgba(0, 0, 0, 0.5);
+  --text-secondary: #ccc;
+  --shadow3: rgba(0, 0, 0, 0.15);
+  --text: white;
+  --list-item-bg: rgba(174, 178, 174, .1);
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --success: #28a745;
+  --tag-bg: rgb(255 255 255 / 10%);
+  --time-color: rgb(255 255 255 / 90%)
+}
 
-$light-danger: #dc3545;
-$dark-danger: #dc3545;
-$light-warning: #ffc107;
-$dark-warning: #ffc107;
-$light-success: #28a745;
-$dark-success: #28a745;
+body {
+  background-color: var(--background);
+}
 
-body.light {
-  background-color: $light-background;
+.toggle-list-title {
+  color: var(--header);
+}
 
-  .toggle-list-title {
-    color: $light-header;
-  }
-
-  .compare-header {
-    .compared-with {
-      .title {
-        &.clickable {
-          color: $light-text;
-        }
-      }
-
-      .sub {
-        color: $light-header;
+.compare-header {
+  .compared-with {
+    .title {
+      &.clickable {
+        color: var(--text);
       }
     }
 
-    .error{
-      color: $light-danger;
+    .sub {
+      color: var(--header);
     }
   }
 
-  .fullscreen-cover {
-    background-color: $light-background;
+  .error {
+    color: var(--danger);
+  }
+}
+
+.fullscreen-cover {
+  background-color: var(--background);
+}
+
+.detail-card, .loader-container, .toast {
+  background-color: var(--background);
+}
+
+option {
+  background-color: var(--background);
+}
+
+.labml-card {
+  background-color: var(--background);
+
+  h3 {
+    color: #7f8c8d;
   }
 
-  .detail-card, .loader-container, .toast {
-    background-color: $light-background;
-  }
+  &:not(disabled):not(.disabled) {
+    box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
 
-  option {
-    background-color: $light-background;
-  }
-
-  .labml-card {
-    background-color: $light-background;
-
-    h3 {
-      color: #7f8c8d;
+    &.labml-card-action {
+      box-shadow: 3px 3px 6px var(--shadow1), -3px -3px 6px var(--shadow2);
     }
 
-    &:not(disabled):not(.disabled) {
-      box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
+    &.selected, &:active {
+      box-shadow: inset 2px 2px 5px var(--shadow1), inset -3px -3px 7px var(--shadow2);
+    }
+  }
 
-      &.labml-card-action {
-        box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
+}
+
+.nav-link {
+  box-shadow: 3px 3px 6px var(--shadow1), -3px -3px 6px var(--shadow2);
+  color: var(--btn);
+
+  &.disabled {
+    box-shadow: inset 0 0 0 var(--shadow1), inset 0 0 0 2px var(--shadow2);
+
+    & > * {
+      filter: opacity(70%); // todo brightness(70%) in dark
+    }
+
+    //color: var(--list-item-bg);
+  }
+}
+
+.config {
+  .toggle-button {
+    box-shadow: unset;
+    font-size: 0.7rem;
+
+    nav {
+      opacity: 0.3;
+
+      &.selected {
+        box-shadow: unset;
+        opacity: 1;
       }
+    }
+
+  }
+}
+
+.toggle-button {
+  &.selected {
+    box-shadow: inset 2px 2px 5px var(--shadow1), inset -3px -3px 7px var(--shadow2);
+  }
+}
+
+.v-line {
+  border-left: 2px solid var(--btn);
+}
+
+.btn.btn-primary {
+  box-shadow: 3px 3px 6px var(--shadow1), -3px -3px 6px var(--shadow2);
+  background: var(--background);
+  color: var(--btn);
+
+  &:hover {
+    color: var(--btn);
+  }
+
+  &:not(disabled):not(.disabled):active {
+    box-shadow: inset 2px 2px 5px var(--shadow1), inset -3px -3px 7px var(--shadow2);
+    background: var(--background);
+    color: var(--btn);
+
+  }
+}
+
+.list-group {
+  .list-group-item {
+    &.list-group-item-action {
+      box-shadow: 3px 3px 6px var(--shadow1), -3px -3px 6px var(--shadow2);
 
       &.selected, &:active {
-        box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
-      }
-    }
-
-  }
-
-  .nav-link {
-    box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
-    color: $light-btn;
-
-    &.disabled {
-      box-shadow: inset 0 0 0 $light-shadow1, inset 0 0 0 2px $light-shadow2;
-
-      & > * {
-        filter: opacity(70%);
-      }
-
-      //color: $light-list-item-bg;
-    }
-  }
-
-  .toggle-button {
-    &.selected {
-      box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
-    }
-  }
-
-  .v-line {
-    border-left: 2px solid $light-btn;
-  }
-
-  .btn.btn-primary {
-    box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
-    background: $light-background;
-    color: $light-btn;
-
-    &:hover {
-      color: $light-btn;
-    }
-
-    &:not(disabled):not(.disabled):active {
-      box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
-      background: $light-background;
-      color: $light-btn;
-
-    }
-  }
-
-  .list-group {
-    .list-group-item {
-      &.list-group-item-action {
-        box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
-
-        &.selected, &:active {
-          box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
-        }
-      }
-    }
-  }
-
-  .page {
-    h3.header {
-      color: $light-header;
-      border-bottom: 1px solid $light-header-line;
-    }
-
-    h2.header {
-      color: $light-header;
-    }
-  }
-
-  .selected-step {
-    fill: $light-header;
-  }
-
-  .terminal-card {
-    background-color: $light-terminal-bg;
-
-    pre {
-      color: $light-terminal-text;
-    }
-  }
-
-  .runs-list {
-    .search-container {
-      .search-content {
-        box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
-
-        span.icon {
-          color: $light-input-icon;
-        }
-
-        input {
-          color: $light-input-pointer;
-        }
-      }
-    }
-  }
-
-  .alert-message {
-    box-shadow: 2px 2px 4px $light-shadow1;
-  }
-
-  .tab:active {
-    box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
-  }
-
-  .overlay {
-    background-color: $light-overlay;
-
-    &.transparent {
-        background-color: transparent;
-    }
-  }
-
-  .nav-container {
-    .title {
-      color: $light-header
-    }
-  }
-
-  .nav-links {
-    background-color: $light-background;
-
-    h6 {
-      color: $light-text-secondary;
-    }
-
-    h5 {
-      color: $light-header;
-    }
-  }
-
-  .list {
-    .list-item {
-      box-shadow: 0px 4px 5px 0px $light-shadow3, 0px 1px 20px 0px $light-shadow3;
-
-      &:focus {
-        background-color: transparent;
-      }
-
-      h5 {
-        color: $light-header;
-      }
-
-      h6 {
-        color: $light-text-secondary;
-      }
-
-      p {
-        color: $light-text-secondary;
-      }
-
-      .status {
-        color: $light-text-secondary;
-      }
-    }
-  }
-
-  .run-info {
-    .run-uuid {
-      color: $light-text-secondary;
-    }
-
-    .status {
-      color: $light-text-secondary;
-    }
-
-    h3 {
-      color: $light-header
-    }
-
-    h4, h5 {
-      color: $light-text-secondary;
-    }
-  }
-
-  .input-list-container {
-    ul li {
-      background: $light-list-item-bg;
-      color: $light-text
-    }
-
-    .item-key {
-      color: $light-text-secondary
-    }
-
-    .item-value {
-      color: $light-text
-    }
-  }
-
-  .input-container {
-    .input-content {
-      box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
-
-      input, textarea, select {
-        color: $light-input-pointer;
-      }
-    }
-  }
-
-  .configs {
-    .info_list {
-      border-bottom: 1px solid $light-header-line;
-    }
-  }
-
-  .line-text {
-    fill: $light-btn;
-  }
-
-  .danger {
-    color: $light-danger;
-  }
-
-  .warning {
-    color: $light-warning;
-  }
-
-  .success {
-    color: $light-success;
-  }
-
-  .error-container {
-    background-image: linear-gradient(125deg, $light-shadow2, $light-shadow1);
-  }
-
-  .message {
-    color: white;
-  }
-
-  .close-btn {
-    color: white;
-  }
-
-  .slider {
-    &::-webkit-slider-thumb {
-      background: $light-text;
-    }
-
-    &::-moz-range-thumb {
-      background: $light-text;
-    }
-  }
-
-  .dropdown-button {
-    .dropdown-items {
-      background: $light-background;
-
-      .dropdown-item {
-        color: $light-text;
-
-        &:hover {
-          background: $light-shadow1;
-        }
-
-        &:active {
-          background: $light-shadow2;
-        }
+        box-shadow: inset 2px 2px 5px var(--shadow1), inset -3px -3px 7px var(--shadow2);
       }
     }
   }
 }
 
-body.dark {
-  background-color: $dark-background;
+.page {
+  h3.header {
+    color: var(--header);
+    border-bottom: 1px solid var(--header-line);
+  }
 
-  .dropdown-button {
-    .dropdown-items {
-      background: $dark-background;
+  h2.header {
+    color: var(--header);
+  }
+}
 
-      .dropdown-item {
-        color: $dark-text;
+.selected-step {
+  fill: var(--header);
+}
 
-        &:hover {
-          background: $dark-shadow1;
-        }
+.terminal-card {
+  //background-color: var(--terminal-bg);
 
-        &:active {
-          background: $dark-shadow2;
-        }
+  pre {
+    color: var(--terminal-text);
+  }
+}
+
+.search-container {
+  .search-content {
+    box-shadow: inset 2px 2px 5px var(--shadow1), inset -3px -3px 7px var(--shadow2);
+
+    span.icon {
+      color: var(--input-icon);
+    }
+
+    input {
+      color: var(--input-pointer);
+    }
+  }
+}
+
+
+.alert-message {
+  box-shadow: 2px 2px 4px var(--shadow1);
+}
+
+.tab:active {
+  box-shadow: inset 2px 2px 5px var(--shadow1), inset -3px -3px 7px var(--shadow2);
+}
+
+.overlay {
+  background-color: var(--overlay);
+
+  &.transparent {
+    background-color: transparent;
+  }
+
+  /*
+  dark .overlay-content { todo
+      background-color: var(--background);
       }
-    }
+  */
+}
+
+.nav-container {
+  .title {
+    color: var(--header)
   }
-  .compare-header {
-    .compared-with {
-      .title {
-        &.clickable {
-          color: $dark-text;
-        }
-      }
+}
 
-      .sub {
-        color: $dark-header;
-      }
-    }
+.nav-links {
+  background-color: var(--background);
 
-     .error{
-      color: $dark-danger;
-    }
+  h6 {
+    color: var(--text-secondary);
   }
 
-  .fullscreen-cover {
-    background-color: $dark-background;
+  h5 {
+    color: var(--header);
   }
+}
 
-  .detail-card, .loader-container, .toast {
-    background-color: $dark-background;
-  }
+.list {
+  .list-item {
+    box-shadow: 0px 4px 5px 0px var(--shadow3), 0px 1px 20px 0px var(--shadow3); // todo shadow1
 
-  option {
-    background-color: $dark-background;
-  }
-
-  .labml-card {
-    background-color: $dark-background;
-
-    h3 {
-      color: #7f8c8d;
-    }
-
-    &:not(disabled):not(.disabled) {
-      box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
-
-      &.labml-card-action {
-        box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
-      }
-
-      &.selected, &:active {
-        box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
-      }
-    }
-
-  }
-
-  .nav-link {
-    box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
-    color: $dark-btn;
-
-    &.disabled {
-      box-shadow: inset 0 0 0 $dark-shadow1, inset 0 0 0 2px $dark-shadow2;
-
-      & > * {
-        filter: brightness(70%);
-      }
-
-      //color: $dark-list-item-bg;
-    }
-  }
-
-  .toggle-button {
-    &.selected {
-      box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
-    }
-  }
-
-  .v-line {
-    border-left: 2px solid $dark-btn;
-  }
-
-  .btn.btn-primary {
-    box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
-    background: $dark-background;
-    color: $dark-btn;
-
-    &:hover {
-      color: $dark-btn;
-    }
-
-    &:not(disabled):not(.disabled):active {
-      box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
-      background: $dark-background;
-      color: $dark-btn;
-
-    }
-  }
-
-  .list-group {
-    .list-group-item {
-      &.list-group-item-action {
-        box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
-
-        &.selected, &:active {
-          box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
-        }
-      }
-    }
-  }
-
-  .page {
-    h3.header {
-      color: $dark-header;
-      border-bottom: 1px solid $dark-header-line;
-    }
-
-    h2.header {
-      color: $dark-header;
-    }
-  }
-
-  .selected-step {
-    fill: $dark-header;
-  }
-
-  .terminal-card {
-    background-color: $dark-terminal-bg;
-
-    pre {
-      color: $dark-terminal-text;
-    }
-  }
-
-  .runs-list {
-    .search-container {
-      .search-content {
-        box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
-
-        span.icon {
-          color: $dark-input-icon;
-        }
-
-        input {
-          color: $dark-input-pointer;
-        }
-      }
-    }
-  }
-
-  .alert-message {
-    box-shadow: 2px 2px 4px $dark-shadow1;
-  }
-
-  .tab:active {
-    box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
-  }
-
-  .overlay {
-    background-color: $dark-overlay;
-
-    .overlay-content {
-      background-color: $dark-background;
-    }
-  }
-
-  .nav-container {
-    .title {
-      color: $dark-header
-    }
-  }
-
-  .nav-links {
-    background-color: $dark-background;
-
-    h6 {
-      color: $dark-text-secondary;
+    &:focus {
+      background-color: transparent;
     }
 
     h5 {
-      color: $dark-header;
+      color: var(--header);
     }
-  }
 
-  .list {
-    .list-item {
-      box-shadow: 0px 4px 5px 0px $dark-shadow1, 0px 1px 20px 0px $dark-shadow1;
-
-      &:focus {
-        background-color: transparent;
-      }
-
-      h5 {
-        color: $dark-header;
-      }
-
-      h6 {
-        color: $dark-text-secondary;
-      }
-
-      p {
-        color: $dark-text-secondary;
-      }
-
-      .status {
-        color: $dark-text-secondary;
-      }
+    h6 {
+      color: var(--text-secondary);
     }
-  }
 
-  .run-info {
-    .run-uuid {
-      color: $dark-text-secondary;
+    .time {
+      color: var(--time-color);
     }
 
     .status {
-      color: $dark-text-secondary;
-    }
-
-    h3 {
-      color: $dark-header
-    }
-
-    h4, h5 {
-      color: $dark-text-secondary;
+      color: var(--text-secondary);
     }
   }
+}
 
-  .input-list-container {
-    ul li {
-      background: $dark-list-item-bg;
-      color: $dark-text
-    }
-
-    .item-key {
-      color: $dark-text-secondary
-    }
-
-    .item-value {
-      color: $dark-text
-    }
+.run-info {
+  .run-uuid {
+    color: var(--text-secondary);
   }
 
-  .input-container {
-    .input-content {
-      box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
+  .status {
+    color: var(--text-secondary);
+  }
 
-      input, textarea, select {
-        color: $dark-input-pointer;
+  h3 {
+    color: var(--header)
+  }
+
+  h4, h5 {
+    color: var(--text-secondary);
+  }
+}
+
+.input-list-container {
+  ul li {
+    color: var(--text)
+  }
+
+  .item-key {
+    color: var(--text-secondary)
+  }
+
+  .item-value {
+    color: var(--text)
+  }
+}
+
+.input-container {
+  .input-content {
+    box-shadow: inset 2px 2px 5px var(--shadow1), inset -3px -3px 7px var(--shadow2);
+
+    input, textarea, select {
+      color: var(--input-pointer);
+    }
+  }
+}
+
+.configs {
+  .info_list {
+    border-bottom: 1px solid var(--header-line);
+  }
+}
+
+.line-text {
+  fill: var(--btn);
+}
+
+.danger {
+  color: var(--danger);
+}
+
+.warning {
+  color: var(--warning);
+}
+
+.success {
+  color: var(--success);
+}
+
+.error-container {
+  background-image: linear-gradient(125deg, var(--shadow2), var(--shadow1));
+}
+
+.message {
+  color: white; // todo create variable
+}
+
+.close-btn {
+  color: white;
+}
+
+.slider {
+  &::-webkit-slider-thumb {
+    background: var(--text);
+  }
+
+  &::-moz-range-thumb {
+    background: var(--text);
+  }
+}
+
+.dropdown-button {
+  .dropdown-items {
+    background: var(--background);
+
+    .dropdown-item {
+      color: var(--text);
+
+      &:hover {
+        background: var(--shadow1);
+      }
+
+      &:active {
+        background: var(--shadow2);
       }
     }
   }
+}
 
-  .configs {
-    .info_list {
-      border-bottom: 1px solid $dark-header-line;
-    }
-  }
+.std {
+    background-color: var(--terminal-bg);
+}
 
-  // TODO discuss to change this, applies in titles in empty runs list
+/*
+todo dark
+// TODO discuss to change this, applies in titles in empty runs list
   h5 {
     color: $dark-header;
   }
@@ -674,46 +436,4 @@ body.dark {
   div {
     color: $dark-btn;
   }
-
-  .line-text {
-    fill: $dark-btn;
-  }
-
-  .danger {
-    color: $dark-danger;
-  }
-
-  .warning {
-    color: $dark-warning;
-  }
-
-  .success {
-    color: $dark-success;
-  }
-
-  .error-container {
-    background-image: linear-gradient(125deg, $dark-shadow2, $dark-shadow1);
-  }
-
-  .message {
-    color: black;
-  }
-
-  .close-btn {
-    color: black;
-  }
-
-  .slider {
-    &::-webkit-slider-thumb {
-      background: $dark-text;
-    }
-
-    &::-moz-range-thumb {
-      background: $dark-text;
-    }
-  }
-
-  .toggle-list-title {
-    color: $dark-header;
-  }
-}
+*/

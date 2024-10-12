@@ -15,6 +15,8 @@ export abstract class Card {
     abstract refresh()
 
     abstract getLastUpdated(): number
+
+    abstract cardName(): string
 }
 
 export abstract class ViewHandler {

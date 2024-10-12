@@ -1,69 +1,88 @@
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
-import {DataLoader} from "../components/loader"
-import CACHE, {RunsFolder, RunsListCache} from "../cache/cache"
+import {DataLoader, Loader} from "../components/loader"
+import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItem, RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
-import {CancelButton, DeleteButton, EditButton, IconButton} from '../components/buttons'
+import {CancelButton, DeleteButton, EditButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import EmptyRunsList from './empty_runs_list'
 import {UserMessages} from '../components/user_messages'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
-import {setTitle} from '../utils/document'
+import {getQueryParameter, setTitle} from '../utils/document'
 import {ScreenView} from '../screen_view'
-import {DefaultLineGradient} from "../components/charts/chart_gradients";
-import {ErrorResponse} from "../network";
+import {DefaultLineGradient} from "../components/charts/chart_gradients"
+import {extractTags, getSearchQuery, runsFilter} from "../utils/search"
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
+    runsList: RunListItem[]
     currentRunsList: RunListItem[]
     elem: HTMLDivElement
     runsListContainer: HTMLDivElement
     searchQuery: string
+    searchView: SearchView
     buttonContainer: HTMLDivElement
     deleteButton: DeleteButton
-    archiveButton: IconButton
     editButton: EditButton
     cancelButton: CancelButton
     isEditMode: boolean
     selectedRunsSet: Set<RunListItemModel>
-    private loader: DataLoader
+    private dataLoader: DataLoader
+    private loader: Loader
     private refresh: AwesomeRefreshButton
     private isTBProcessing: boolean
     private actualWidth: number
-    private readonly folder: string
+    private defaultTag: string // permanent tag in the url
 
-    constructor(folder: string) {
+    constructor(tag: string) {
         super()
 
-        this.folder = folder
+        this.defaultTag = tag
 
-        this.runListCache = CACHE.getRunsList(this.folder)
+        this.runListCache = CACHE.getRunsList()
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
         this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
-        this.archiveButton = new IconButton({
-            onButtonClick: this.onArchiveClick,
-            parent: this.constructor.name
-        }, folder == RunsFolder.DEFAULT ? '.fas.fa-archive' : '.fas.fa-upload')
 
-        this.loader = new DataLoader(async (force) => {
-            let runsList = (await this.runListCache.get(force)).runs
-            this.currentRunsList = []
+
+        this.loader = new Loader()
+        this.dataLoader = new DataLoader(async (force) => {
+            let runsList = (await this.runListCache.get(force, this.defaultTag)).runs
+            this.runsList = []
             for (let run of runsList) {
-                this.currentRunsList.push(new RunListItem(run))
+                this.runsList.push(new RunListItem(run))
             }
+            this.currentRunsList = this.runsList.slice()
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
-        this.searchQuery = ''
+        this.searchQuery = getQueryParameter('query', window.location.search)
+        let tags = getQueryParameter('tags', window.location.search)
+
+        if (this.defaultTag) {
+            this.searchQuery += ` $${this.defaultTag}`
+        }
+        if (tags) {
+            for (let tag of tags.split(',')) {
+                this.searchQuery += ` :${tag}`
+            }
+        }
+
+        if (this.searchQuery === "") {
+            this.searchQuery = getSearchQuery()
+            let r = extractTags(this.searchQuery)
+            this.defaultTag = r.mainTags.length > 0 ? r.mainTags[0] : ""
+        }
+
         this.isEditMode = false
         this.selectedRunsSet = new Set<RunListItemModel>()
         this.isTBProcessing = false
 
+        this.searchView = new SearchView({onSearch: this.onSearch, initText: this.searchQuery})
     }
 
     onResize(width: number) {
@@ -82,13 +101,15 @@ class RunsListView extends ScreenView {
         $(this.elem, $ => {
             $('div', $ => {
                 new HamburgerMenuView({
-                    title: (this.folder == RunsFolder.ARCHIVE ? 'Archived ' : '') + 'Runs',
+                    title: 'Runs',
                     setButtonContainer: container => this.buttonContainer = container
                 }).render($)
 
                 $('div', '.runs-list', $ => {
-                    new SearchView({onSearch: this.onSearch}).render($)
+                    this.searchView.render($)
                     this.loader.render($)
+                    this.loader.hide(true)
+                    this.dataLoader.render($)
                     $('svg', {style: {height: `${1}px`}}, $ => {
                         new DefaultLineGradient().render($)
                     })
@@ -98,18 +119,16 @@ class RunsListView extends ScreenView {
         })
         $(this.buttonContainer, $ => {
             this.deleteButton.render($)
-            this.archiveButton.render($)
             this.cancelButton.render($)
             this.editButton.render($)
             this.refresh.render($)
             this.deleteButton.hide(true)
-            this.archiveButton.hide(true)
             this.cancelButton.hide(true)
             this.editButton.hide(true)
         })
 
         try {
-            await this.loader.load()
+            await this.dataLoader.load()
 
             this.renderList()
         } catch (e) {
@@ -132,12 +151,9 @@ class RunsListView extends ScreenView {
     updateButtons() {
         let noRuns = this.currentRunsList.length == 0
 
-        this.deleteButton.hide((noRuns || !this.isEditMode) ||
-            (this.folder != RunsFolder.DEFAULT && this.folder != RunsFolder.ARCHIVE))
+        this.deleteButton.hide((noRuns || !this.isEditMode))
         this.cancelButton.hide(noRuns || !this.isEditMode)
         this.editButton.hide(noRuns || this.isEditMode)
-        this.archiveButton.hide((noRuns || !this.isEditMode) ||
-            (this.folder != RunsFolder.DEFAULT && this.folder != RunsFolder.ARCHIVE))
 
         if (!noRuns && !this.isEditMode) {
             this.refresh.start()
@@ -146,20 +162,12 @@ class RunsListView extends ScreenView {
         }
     }
 
-    runsFilter = (run: RunListItemModel, query: RegExp) => {
-        let name = run.name.toLowerCase()
-        let comment = run.comment.toLowerCase()
-        let tags = run.tags.join(' ').toLowerCase()
-
-        return (name.search(query) !== -1 || comment.search(query) !== -1 || tags.search(query) !== -1)
-    }
-
     onRefresh = async () => {
         this.editButton.disabled = true
         try {
-            await this.loader.load(true)
+            await this.dataLoader.load(true)
 
-            await this.renderList()
+            this.renderList()
         } catch (e) {
 
         } finally {
@@ -173,46 +181,7 @@ class RunsListView extends ScreenView {
         this.isEditMode = true
         this.refresh.disabled = true
         this.deleteButton.disabled = isRunsSelected
-        this.archiveButton.disabled = isRunsSelected
         this.updateButtons()
-    }
-
-    onArchiveClick = async () => {
-        try {
-            let runUUIDs: Array<string> = []
-            for (let runListItem of this.selectedRunsSet) {
-                runUUIDs.push(runListItem.run_uuid)
-            }
-
-            let response: ErrorResponse
-            if (this.folder == RunsFolder.DEFAULT) {
-                response = await CACHE.archiveRuns(runUUIDs)
-            } else if (this.folder == RunsFolder.ARCHIVE) {
-                response = await CACHE.unarchiveRuns(runUUIDs)
-            }
-
-            if (response.is_successful == false) {
-                UserMessages.shared.error(response.error ?? `Failed to ${
-                    this.folder == RunsFolder.DEFAULT ? '': 'Un'}archive runs. is_successful=false from server`)
-                return
-            }
-
-            this.isEditMode = false
-            this.selectedRunsSet.clear()
-            this.archiveButton.disabled = this.selectedRunsSet.size === 0
-
-            await this.loader.load()
-
-            this.refresh.disabled = false
-        } catch (e) {
-            if (this.folder == RunsFolder.DEFAULT)
-                UserMessages.shared.networkError(e, 'Failed to archive runs')
-            else
-                UserMessages.shared.networkError(e, 'Failed to unarchive runs')
-            return
-        }
-
-        this.renderList()
     }
 
     onDelete = async () => {
@@ -228,7 +197,7 @@ class RunsListView extends ScreenView {
             this.selectedRunsSet.clear()
             this.deleteButton.disabled = this.selectedRunsSet.size === 0
 
-            await this.loader.load()
+            await this.dataLoader.load()
 
 
         } catch (e) {
@@ -267,19 +236,39 @@ class RunsListView extends ScreenView {
         let isRunsSelected = this.selectedRunsSet.size === 0
 
         this.deleteButton.disabled = isRunsSelected || this.isTBProcessing
-        this.archiveButton.disabled = isRunsSelected
     }
 
     onSearch = async (query: string) => {
+        this.loader.hide(false)
+        this.searchView.disable(true)
+        this.runsListContainer.innerHTML = ''
+
         this.searchQuery = query
-        await this.loader.load()
+        let r = extractTags(query)
+
+        let mainTag = r.mainTags.length > 0 ? r.mainTags[0] : ""
+        let tags = r.tags.concat(r.mainTags).filter(tag => tag !== mainTag)
+
+        let queryString = (r.query == "" ? "" : `query=${encodeURIComponent(r.query)}`)
+        let tagsString = (tags.length == 0 ? "" : `tags=${encodeURIComponent(tags.join(','))}`)
+        if (queryString && tagsString) {
+            queryString += "&"
+        }
+        window.history.replaceState({}, "", `/runs${mainTag ? "/" + mainTag : ""}${queryString || tagsString ? "?" : ""}${queryString}${tagsString}`)
+
+        this.defaultTag = mainTag
+        await this.dataLoader.load()
+
         this.renderList()
+
+        this.loader.hide(true)
+        this.searchView.disable(false)
+        this.searchView.focus()
     }
 
     private renderList() {
-        if (this.currentRunsList.length > 0) {
-            let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
-            this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
+        if (this.runsList.length > 0) {
+            this.currentRunsList = this.runsList.filter(run => runsFilter(run, this.searchQuery))
 
             this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {
@@ -287,7 +276,8 @@ class RunsListView extends ScreenView {
                     new RunsListItemView({
                         item: this.currentRunsList[i],
                         onClick: this.onItemClicked,
-                        width: this.actualWidth}).render($)
+                        width: this.actualWidth
+                    }).render($)
                 }
             })
         } else {
@@ -303,14 +293,14 @@ class RunsListView extends ScreenView {
 export class RunsListHandler {
     constructor() {
         ROUTER.route('runs', [this.handleRunsList])
-        ROUTER.route('runs/:folder', [this.handleFolder])
+        ROUTER.route('runs/:tag', [this.handleTag])
     }
 
-    handleFolder = (folder: string) => {
-        SCREEN.setView(new RunsListView(folder))
+    handleTag = (tag: string) => {
+        SCREEN.setView(new RunsListView(tag))
     }
 
     handleRunsList = () => {
-        SCREEN.setView(new RunsListView(RunsFolder.DEFAULT))
+        SCREEN.setView(new RunsListView(""))
     }
 }

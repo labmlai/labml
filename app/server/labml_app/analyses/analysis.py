@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from .series import SeriesModel
 
@@ -8,7 +8,7 @@ DB_INDEXES = []
 
 
 class Analysis:
-    def track(self, data: Dict[str, SeriesModel], run_uuid: str = None) -> None:
+    def track(self, data: Dict[str, SeriesModel], run_uuid: str = None) -> Optional[int]:
         raise NotImplementedError
 
     @staticmethod

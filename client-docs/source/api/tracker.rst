@@ -25,29 +25,10 @@ Tracker
     Setup
     -----
 
-    .. autofunction:: set_queue
-
     .. autofunction:: set_histogram
 
     .. autofunction:: set_scalar
 
-    .. autofunction:: set_indexed_scalar
-
-    .. warning::
-
-        Artificact setup functions
-        :func:`labml.tracker.set_image`,
-        :func:`labml.tracker.set_text`,
-        :func:`labml.tracker.set_tensor`, and
-        :func:`labml.tracker.set_indexed_text` are still experimental.
-
-    .. autofunction:: set_image
-
-    .. autofunction:: set_text
-
-    .. autofunction:: set_tensor
-
-    .. autofunction:: set_indexed_text
 
     Namespaces
     ----------

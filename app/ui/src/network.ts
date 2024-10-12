@@ -1,5 +1,6 @@
 import {API_BASE_URL} from './env'
 import {User} from './models/user'
+import {UserMessages} from "./components/user_messages";
 
 export function getAppToken() {
     return localStorage.getItem('app_token')
@@ -15,6 +16,15 @@ class Network {
 
     constructor(baseURL: string) {
         this.baseURL = baseURL
+
+        window.addEventListener('online', () => {
+            console.log('Became online')
+            UserMessages.shared.success("Back online.")
+        });
+        window.addEventListener('offline', () => {
+            console.log('Became offline')
+            UserMessages.shared.warning("No internet connection.", false)
+        });
     }
 
     async getRun(runUUID: string): Promise<any> {
@@ -57,8 +67,8 @@ class Network {
         return this.sendHttpRequest('GET', `/session/status/${sessionUUId}`)['promise']
     }
 
-    async getRuns(labml_token: string | null, folder: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/runs/${labml_token}?folder_name=${folder}`)['promise']
+    async getRuns(tag: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/runs/${null}${tag ? `/${tag}` : ""}`)['promise']
     }
 
     async getSessions(): Promise<any> {
@@ -106,19 +116,14 @@ class Network {
         return this.sendHttpRequest('POST', `/user`, {'user': user})['promise']
     }
 
-    getAnalysis(url: string, runUUID: string, getAll: boolean = false, currentUUID: string = "",
-                      isExperiment: boolean): {promise: Promise<any>, xhr: XMLHttpRequest} {
+    getAnalysis(url: string, runUUID: string, data: object,): {promise: Promise<any>, xhr: XMLHttpRequest} {
         let method = 'GET'
-        if (isExperiment) {
+        if (data != null) {
             method = 'POST'
         }
 
-        let data = {
-            'get_all': getAll
-        }
-
         return this.sendHttpRequest(method,
-            `/${url}/${runUUID}?current=${currentUUID}`, data)
+            `/${url}/${runUUID}`, data)
     }
 
     async getCustomAnalysis(url: string): Promise<any> {
@@ -135,6 +140,10 @@ class Network {
 
     async updatePreferences(url: string, runUUID: string, data: object): Promise<any> {
         return this.sendHttpRequest('POST', `/${url}/preferences/${runUUID}`, data)['promise']
+    }
+
+    async createMagicMetric(runUUID: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/custom_metrics/${runUUID}/magic`, {})['promise']
     }
 
     async createCustomMetric(runUUID: string, data: object): Promise<any> {

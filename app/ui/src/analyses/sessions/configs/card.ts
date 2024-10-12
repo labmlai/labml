@@ -27,6 +27,10 @@ export class SessionConfigsCard extends Card {
         })
     }
 
+    cardName(): string {
+        return 'Session Configs'
+    }
+
     getLastUpdated(): number {
         return this.sessionCache.lastUpdated
     }

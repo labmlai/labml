@@ -1,21 +1,23 @@
 import {WeyaElementFunction} from '../../../lib/weya/weya'
+import {Loader} from "./loader"
 
 export interface SearchOptions {
     onSearch: (query: string) => void
+    initText?: string
 }
 
 export class SearchView {
     onSearch: () => void
     textbox: HTMLInputElement
-    inputTimeout: number // NodeJS.Timeout
+    initText: string
+    loader: Loader
 
     constructor(opt: SearchOptions) {
         this.onSearch = () => {
-            clearTimeout(this.inputTimeout)
-            this.inputTimeout = setTimeout(() => {
-                opt.onSearch(this.textbox.value)
-            }, 250)
+            opt.onSearch(this.textbox.value)
         }
+        this.initText = opt.initText ?? ""
+        this.loader = new Loader()
     }
 
     render($: WeyaElementFunction) {
@@ -25,14 +27,32 @@ export class SearchView {
                     $('span', '.fas.fa-search', '')
                 })
                 this.textbox = $('input', '.search-input', {
+                    value: this.initText,
                     type: 'search',
                     placeholder: 'Search',
                     'aria-label': 'Search',
-                    on: {
-                        input: this.onSearch
-                    }
                 })
+                this.loader.render($)
+                this.loader.hide(true)
             })
         })
+
+        this.textbox.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                this.onSearch()
+            }
+        })
+    }
+
+    public hideLoader(isHide: boolean) {
+        this.loader.hide(isHide)
+    }
+
+    public disable(disabled: boolean) {
+        this.textbox.disabled = disabled
+    }
+
+    public focus() {
+        this.textbox.focus()
     }
 }
