@@ -1,7 +1,6 @@
-import json
-
+import platform
 import requests
-
+import json
 
 class NetworkError(Exception):
     def __init__(self, status_code, url, message=None, description=None):
@@ -45,6 +44,7 @@ class Network:
                     error_message = response.json()['data']['error']
             raise NetworkError(response.status_code, url, response.text, error_message)
 
+
         # return response
         try:
             return response.json()
@@ -70,7 +70,6 @@ class AppAPI:
         'tags': List[str],
     }
     """
-
     def update_run_data(self, run_uuid, data):
         return self.network.send_http_request('POST', f'/run/{run_uuid}', data)
 
