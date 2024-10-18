@@ -18,4 +18,4 @@ for i in range(1, 7):
     print(datetime_object)
     rs = s.run_status.load()
     datetime_object = datetime.fromtimestamp(rs.time)
-    print(s.status, datetime_object)
+    print(rs.status, datetime_object)
