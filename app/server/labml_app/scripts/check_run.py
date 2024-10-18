@@ -13,6 +13,9 @@ uuid = 'c48ac8bc8ccb11efb77ba088c26a9b7a_1'
 for i in range(1, 7):
     print(f'c48ac8bc8ccb11efb77ba088c26a9b7a_{i}')
     r = run.get(f'c48ac8bc8ccb11efb77ba088c26a9b7a_{i}')
-    s = r.status.load().run_status.load()
+    s = r.status.load()
     datetime_object = datetime.fromtimestamp(s.time)
+    print(s.status, datetime_object)
+    rs = s.run_status.load()
+    datetime_object = datetime.fromtimestamp(rs.time)
     print(s.status, datetime_object)
