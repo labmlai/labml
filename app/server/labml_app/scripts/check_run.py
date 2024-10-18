@@ -15,7 +15,7 @@ for i in range(1, 7):
     r = run.get(f'c48ac8bc8ccb11efb77ba088c26a9b7a_{i}')
     s = r.status.load()
     datetime_object = datetime.fromtimestamp(s.last_updated_time)
-    print(s.status, datetime_object)
+    print(datetime_object)
     rs = s.run_status.load()
     datetime_object = datetime.fromtimestamp(rs.time)
     print(s.status, datetime_object)
