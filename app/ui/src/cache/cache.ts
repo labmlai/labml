@@ -10,7 +10,7 @@ import {ProcessData} from "../analyses/sessions/process/types"
 import {Config} from "../models/config"
 
 const RELOAD_TIMEOUT = 60 * 1000
-const FORCE_RELOAD_TIMEOUT = 5 * 1000
+const FORCE_RELOAD_TIMEOUT = -1
 
 export function isReloadTimeout(lastUpdated: number): boolean {
     return (new Date()).getTime() - lastUpdated > RELOAD_TIMEOUT
@@ -471,10 +471,8 @@ export class CustomMetricCache extends CacheObject<CustomMetricList> {
     }
 
     async load(): Promise<CustomMetricList> {
-        return this.broadcastPromise.create(async () => {
-            let data = await NETWORK.getCustomMetrics(this.uuid)
-            return new CustomMetricList(data)
-        })
+        let data = await NETWORK.getCustomMetrics(this.uuid)
+        return new CustomMetricList(data)
     }
 
     async createMetric(data: object): Promise<CustomMetric> {
