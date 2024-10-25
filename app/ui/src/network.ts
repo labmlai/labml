@@ -27,6 +27,14 @@ class Network {
         });
     }
 
+    async getDataStore(runUUID: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/datastore/${runUUID}`)['promise']
+    }
+
+    async setDataStore(runUUID: string, data: object): Promise<any> {
+        return this.sendHttpRequest('POST', `/datastore/${runUUID}`, data)['promise']
+    }
+
     async getRun(runUUID: string): Promise<any> {
         return this.sendHttpRequest('GET', `/run/${runUUID}`)['promise']
     }
