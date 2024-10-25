@@ -8,9 +8,11 @@ import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
 import {ProcessData} from "../analyses/sessions/process/types"
 import {Config} from "../models/config"
+import {DataStore} from "../models/data_store";
 
 const RELOAD_TIMEOUT = 60 * 1000
-const FORCE_RELOAD_TIMEOUT = -1
+const FORCE_RELOAD_TIMEOUT = -1 // Added to stop misuse from free users.
+// Ignored because there's no free version at the moment
 
 export function isReloadTimeout(lastUpdated: number): boolean {
     return (new Date()).getTime() - lastUpdated > RELOAD_TIMEOUT
@@ -105,6 +107,34 @@ export abstract class CacheObject<T> {
 
     invalidate_cache(): void {
         delete this.data
+    }
+}
+
+export class DataStoreCache extends CacheObject<DataStore> {
+    private readonly runUUID: string
+
+    constructor(runUUID: string) {
+        super();
+        this.runUUID = runUUID
+    }
+    load(args: any): Promise<any> {
+        return NETWORK.getDataStore(args)
+    }
+
+    async get(isRefresh: boolean = false): Promise<DataStore> {
+        if (this.data == null || isRefresh) {
+            let res = await this.load(this.runUUID)
+            this.data = new DataStore(res)
+        }
+
+        return this.data
+    }
+
+    async update(data: any): Promise<DataStore> {
+        let res = await NETWORK.setDataStore(this.runUUID, data)
+        this.data = new DataStore(res)
+
+        return this.data
     }
 }
 
@@ -589,6 +619,7 @@ class Cache {
     private sessions: { [uuid: string]: SessionCache }
     private runStatuses: { [uuid: string]: RunStatusCache }
     private sessionStatuses: { [uuid: string]: SessionStatusCache }
+    private dataStores: { [uuid: string]: DataStoreCache }
 
     private user: UserCache | null
     private runsList: RunsListCache | null
@@ -600,9 +631,18 @@ class Cache {
         this.runStatuses = {}
         this.sessionStatuses = {}
         this.customMetrics = {}
+        this.dataStores = {}
         this.runsList = null
         this.user = null
         this.sessionsList = null
+    }
+
+    getDataStore(uuid: string) {
+        if (this.dataStores[uuid] == null) {
+            this.dataStores[uuid] = new DataStoreCache(uuid)
+        }
+
+        return this.dataStores[uuid]
     }
 
     getCustomMetrics(uuid: string) {
