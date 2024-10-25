@@ -40,7 +40,7 @@ class Preferences:
                     errors=[],
                     step_range=[-1, -1],
                     focus_smoothed=True,
-                    smooth_value=0.5,  # 50% smooth
+                    smooth_value=0.99,
                     smooth_function=SmoothFunction.LeftExponential.value,
                     is_base_distributed=False,
                     base_series_preferences=[],
