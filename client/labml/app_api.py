@@ -211,3 +211,9 @@ class AppAPI:
 
     def get_logs(self, run_uuid: str, url: str, page_no: int):
         return self.network.send_http_request('POST', f'/logs/{url}/{run_uuid}', {'page': page_no})
+
+    def get_data_store(self, run_uuid):
+        return self.network.send_http_request('GET', f'/datastore/{run_uuid}')
+
+    def update_data_store(self, run_uuid, data):
+        return self.network.send_http_request('POST', f'/datastore/{run_uuid}', data)

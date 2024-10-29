@@ -1,26 +1,20 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
-import CACHE, {RunCache, RunsListCache, RunStatusCache, UserCache} from "../../../cache/cache"
+import CACHE, {DataStoreCache, RunCache, RunStatusCache, UserCache} from "../../../cache/cache"
 import {Status} from "../../../models/status"
-import {
-    BackButton,
-    CancelButton,
-    DeleteButton,
-    EditButton,
-    SaveButton,
-} from "../../../components/buttons"
+import {BackButton, DeleteButton, SaveButton,} from "../../../components/buttons"
 import EditableField from "../../../components/input/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
-import {BadgeView} from "../../../components/badge"
 import {StatusView} from "../../../components/status"
-import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
+import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {formatFixed} from "../../../utils/value"
 import {ScreenView} from '../../../screen_view'
 import {User} from '../../../models/user'
 import {UserMessages} from "../../../components/user_messages"
+import {DataStore} from "../../../models/data_store";
 
 enum EditStatus {
     NOCHANGE,
@@ -36,6 +30,8 @@ class RunHeaderView extends ScreenView {
     statusCache: RunStatusCache
     user: User
     userCache: UserCache
+    dataStoreCache: DataStoreCache
+    dataStore: DataStore
     uuid: string
     actualWidth: number
     isProjectRun: boolean = false
@@ -46,6 +42,7 @@ class RunHeaderView extends ScreenView {
     noteField: EditableField
     sizeField: EditableField
     tagField: EditableField
+    dataStoreField: EditableField
     sizeCheckPoints: EditableField
     sizeTensorBoard: EditableField
     private deleteButton: DeleteButton
@@ -58,12 +55,14 @@ class RunHeaderView extends ScreenView {
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.userCache = CACHE.getUser()
+        this.dataStoreCache = CACHE.getDataStore(this.uuid)
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
             this.user = await this.userCache.get(force)
+            this.dataStore = await this.dataStoreCache.get(force)
         })
 
         this.editStatus = EditStatus.NOCHANGE
@@ -250,6 +249,15 @@ class RunHeaderView extends ScreenView {
                     name: 'Commit Message',
                     value: this.run.commit_message
                 }).render($)
+
+                this.dataStoreField = new EditableField({
+                    name: 'Data Store',
+                    value: JSON.stringify(this.dataStore.data),
+                    isEditable: true,
+                    onChange: this.onInputChange.bind(this),
+                    numEditRows: 10
+                })
+                this.dataStoreField.render($)
             })
         })
         this.deleteButton.hide(!(this.user.is_complete && this.run.is_claimed))
@@ -301,6 +309,23 @@ class RunHeaderView extends ScreenView {
         } catch (e) {
             this.editStatus = EditStatus.CHANGE
             UserMessages.shared.networkError(e, "Failed to save run")
+            return
+        }
+
+        let dataStore: any
+        try {
+            dataStore = JSON.parse(this.dataStoreField.getInput())
+        } catch (e) {
+            this.editStatus = EditStatus.CHANGE
+            UserMessages.shared.error("Data Store is not a valid JSON")
+            return
+        }
+
+        try {
+            this.dataStore = await this.dataStoreCache.update(dataStore)
+        } catch (e) {
+            this.editStatus = EditStatus.CHANGE
+            UserMessages.shared.networkError(e, "Failed to save data store")
             return
         }
 

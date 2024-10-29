@@ -14,6 +14,8 @@ from .analyses.experiments.stdout import StdOutModel
 from .analyses.experiments.stderr import StdErrModel
 from .analyses.experiments.stdlogger import StdLoggerModel
 
+from .analyses.experiments.data_store import DataStoreModel
+
 experiment_analyses = [MetricsAnalysis]
 
 computer_analyses = [CPUAnalysis,
