@@ -497,7 +497,7 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
                         this.basePlotIdx = []
                         this.stepRange = [-1, -1]
                         this.focusSmoothed = true
-                        this.smoothValue = 0.5
+                        this.smoothValue = 0
                         this.chartType = 0
                         this.smoothFunction = SmoothingType.LEFT_EXPONENTIAL
 
