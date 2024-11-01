@@ -15,6 +15,7 @@ import batteryAnalysis from './sessions/battery'
 import sessionConfigsAnalysis from "./sessions/configs"
 import metricAnalysis from "./experiments/custom_metrics"
 import notedAnalysis from "./experiments/notes"
+import dataStoreAnalysis from "./experiments/data_store";
 
 let metricAnalyses: Analysis[] = [
     metricAnalysis
@@ -25,7 +26,8 @@ let experimentAnalyses: Analysis[] = [
     stdOutAnalysis,
     stderrAnalysis,
     runConfigsAnalysis,
-    loggerAnalysis
+    loggerAnalysis,
+    dataStoreAnalysis
 ]
 
 let sessionAnalyses: Analysis[] = [
