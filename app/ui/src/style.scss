@@ -1735,3 +1735,53 @@ pre {
   max-height: 400px;
   overflow: auto;
 }
+
+.data-store {
+  li {
+    list-style-type: none;
+  }
+
+  textarea {
+    white-space: pre;
+  }
+
+  .data-container {
+    padding: 0 10px;
+
+    .key {
+      font-weight: bold;
+      position: relative;
+
+      &.sub {
+
+        &::before {
+          content: "";
+          position: absolute;
+          left: -0.6rem;
+          bottom: 0.5rem;
+          width: 0.5rem;
+          height: 1rem;
+          border-left: 2px solid black;
+          border-bottom: 2px solid black;
+          opacity: 0.2;
+        }
+
+      }
+    }
+
+    .data-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      min-width: 100%;
+
+      hr {
+        flex-grow: 1;
+        border: none;
+        border-top: 1px solid black;
+        margin: 0 10px; /* Adjust the margin as needed */
+      }
+    }
+  }
+}

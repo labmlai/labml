@@ -213,7 +213,41 @@ class AppAPI:
         return self.network.send_http_request('POST', f'/logs/{url}/{run_uuid}', {'page': page_no})
 
     def get_data_store(self, run_uuid):
-        return self.network.send_http_request('GET', f'/datastore/{run_uuid}')
+        return self.network.send_http_request('GET', f'/datastore/{run_uuid}')['dictionary']
 
+    """
+    Set the data store for a specific run. This will overwrite the existing data store.
+    
+    Args:
+        run_uuid (str): The unique identifier of the run.
+        data (dict): The data store dictionary to set.
+    
+    Returns:
+        dict: The data store dictionary for the specified run.
+    """
+    def set_data_store(self, run_uuid, data):
+        import yaml
+        try:
+            yaml_string = yaml.dump(data)
+            data = {'yaml_string': yaml_string}
+        except yaml.YAMLError as e:
+            print('Error converting data to yaml', str(e))
+            return
+
+        return self.network.send_http_request('POST', f'/datastore/{run_uuid}', data)['dictionary']
+
+    """
+    Update the data store for a specific run. This will only change given keys.
+
+    Args:
+        run_uuid (str): The unique identifier of the run.
+        data (dict): The data store dictionary to update with.
+
+    Returns:
+        dict: The data store dictionary for the specified run.
+    """
     def update_data_store(self, run_uuid, data):
-        return self.network.send_http_request('POST', f'/datastore/{run_uuid}', data)
+        cur = self.get_data_store(run_uuid)
+        cur.update(data)
+
+        return self.set_data_store(run_uuid, cur)

@@ -1,9 +1,10 @@
-import {WeyaElementFunction} from '../../../lib/weya/weya'
+import {WeyaElement, WeyaElementFunction} from '../../../lib/weya/weya'
 import {Loader} from "./loader"
 
 export interface SearchOptions {
     onSearch: (query: string) => void
     initText?: string
+    searchOnChange?: boolean
 }
 
 export class SearchView {
@@ -11,6 +12,8 @@ export class SearchView {
     textbox: HTMLInputElement
     initText: string
     loader: Loader
+    elem: WeyaElement
+    searchOnChange: boolean
 
     constructor(opt: SearchOptions) {
         this.onSearch = () => {
@@ -18,10 +21,11 @@ export class SearchView {
         }
         this.initText = opt.initText ?? ""
         this.loader = new Loader()
+        this.searchOnChange = opt.searchOnChange ?? false
     }
 
     render($: WeyaElementFunction) {
-        $('div', '.search-container.mt-3.mb-3.px-2', $ => {
+        this.elem = $('div', '.search-container.mt-3.mb-3.px-2', $ => {
             $('div', '.search-content', $ => {
                 $('span', '.icon', $ => {
                     $('span', '.fas.fa-search', '')
@@ -42,6 +46,12 @@ export class SearchView {
                 this.onSearch()
             }
         })
+
+        if (this.searchOnChange) {
+            this.textbox.addEventListener('input', () => {
+                this.onSearch()
+            })
+        }
     }
 
     public hideLoader(isHide: boolean) {
@@ -50,6 +60,11 @@ export class SearchView {
 
     public disable(disabled: boolean) {
         this.textbox.disabled = disabled
+        if (disabled) {
+            this.elem.style.opacity = '0.3'
+        } else {
+            this.elem.style.opacity = '1'
+        }
     }
 
     public focus() {

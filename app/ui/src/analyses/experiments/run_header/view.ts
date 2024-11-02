@@ -252,7 +252,7 @@ class RunHeaderView extends ScreenView {
 
                 this.dataStoreField = new EditableField({
                     name: 'Data Store',
-                    value: JSON.stringify(this.dataStore.data),
+                    value: JSON.stringify(this.dataStore.yamlString),
                     isEditable: true,
                     onChange: this.onInputChange.bind(this),
                     numEditRows: 10

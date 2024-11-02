@@ -130,8 +130,10 @@ export class DataStoreCache extends CacheObject<DataStore> {
         return this.data
     }
 
-    async update(data: any): Promise<DataStore> {
-        let res = await NETWORK.setDataStore(this.runUUID, data)
+    async update(data: any): Promise<any> {
+        let res = await NETWORK.setDataStore(this.runUUID, {
+            'yaml_string': data
+        })
         this.data = new DataStore(res)
 
         return this.data
