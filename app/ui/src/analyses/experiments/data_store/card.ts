@@ -1,9 +1,10 @@
-import {WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElementFunction, Weya as $} from '../../../../../lib/weya/weya'
 import CACHE, {DataStoreCache} from "../../../cache/cache"
 import {Card, CardOptions} from "../../types"
 import {DataLoader} from "../../../components/loader"
 import {ROUTER} from '../../../app'
 import {DataStore} from "../../../models/data_store"
+import {DataStoreComponent} from "../../../components/data_store";
 
 export class DataStoreCard extends Card {
     dataStore: DataStore
@@ -34,7 +35,7 @@ export class DataStoreCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div','.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+        this.elem = $('div','.labml-card.labml-card-action.data-store', {on: {click: this.onClick}}, $ => {
             $('h3','.header', 'Data Store')
             this.loader.render($)
             this.dataStoreContainer = $('div')
@@ -50,7 +51,9 @@ export class DataStoreCard extends Card {
     }
 
     private renderDataStore() {
-        this.dataStoreContainer.innerHTML = JSON.stringify(this.dataStore.data, null, 4)
+        $(this.dataStoreContainer, $ => {
+          new DataStoreComponent(this.dataStore).render($)
+        })
     }
 
     async refresh() {

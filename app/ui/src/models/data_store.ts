@@ -1,7 +1,9 @@
 export class DataStore {
-    data: Record<string, any>
+    dictionary: Record<string, any>
+    yamlString: string
 
     constructor(data: Record<string, any>) {
-        this.data = data
+        this.dictionary = data['dictionary']
+        this.yamlString = data['yaml_string']
     }
 }
