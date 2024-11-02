@@ -4,6 +4,7 @@ import {Loader} from "./loader"
 export interface SearchOptions {
     onSearch: (query: string) => void
     initText?: string
+    searchOnChange?: boolean
 }
 
 export class SearchView {
@@ -12,6 +13,7 @@ export class SearchView {
     initText: string
     loader: Loader
     elem: WeyaElement
+    searchOnChange: boolean
 
     constructor(opt: SearchOptions) {
         this.onSearch = () => {
@@ -19,6 +21,7 @@ export class SearchView {
         }
         this.initText = opt.initText ?? ""
         this.loader = new Loader()
+        this.searchOnChange = opt.searchOnChange ?? false
     }
 
     render($: WeyaElementFunction) {
@@ -43,6 +46,12 @@ export class SearchView {
                 this.onSearch()
             }
         })
+
+        if (this.searchOnChange) {
+            this.textbox.addEventListener('input', () => {
+                this.onSearch()
+            })
+        }
     }
 
     public hideLoader(isHide: boolean) {

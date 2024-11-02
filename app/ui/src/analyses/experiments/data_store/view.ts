@@ -59,7 +59,8 @@ class DataStoreView extends ScreenView {
         this.searchQuery = ''
         this.searchView = new SearchView({
             onSearch: this.renderDataStore.bind(this),
-            initText: this.searchQuery
+            initText: this.searchQuery,
+            searchOnChange: true
         })
         this.isEditing = false
         this.edit = new EditButton({
@@ -171,7 +172,7 @@ class DataStoreView extends ScreenView {
                 })
                 this.dataStoreField.render($)
             } else {
-                new DataStoreComponent(this.dataStore).render($)
+                new DataStoreComponent(this.dataStore.filter(this.searchQuery)).render($)
             }
         })
     }
@@ -194,6 +195,7 @@ class DataStoreView extends ScreenView {
 
     async onSave() {
         this.isEditing = !this.isEditing
+        this.searchView.disable(false)
 
         try {
             this.dataStore = await this.dataStoreCache.update(this.dataStoreField.getInput())

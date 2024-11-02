@@ -2,9 +2,9 @@ import {DataStore} from "../models/data_store"
 import {Weya as $, WeyaElement, WeyaElementFunction} from "../../../lib/weya/weya"
 
 export class DataStoreComponent {
-    private data: DataStore
+    private readonly data: Record<any, any>
 
-    constructor(data: DataStore) {
+    constructor(data: Record<any, any>) {
         this.data = data
     }
 
@@ -41,6 +41,6 @@ export class DataStoreComponent {
 
         })
 
-        this.renderData(elem, this.data.dictionary, 0)
+        this.renderData(elem, this.data, 0)
     }
 }
