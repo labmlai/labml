@@ -477,6 +477,16 @@ async def get_user(request: Request):
                         headers={'Authorization': session_token})
 
 
+async def init_app_api(request: Request):
+    client_version = request.query_params.get('version', '')
+    api_version = settings.APP_API_VERSION
+
+    if utils.check_version(client_version, api_version):
+        return JSONResponse({'is_successful': False, 'error': 'API client is outdated, please upgrade'})
+    else:
+        return JSONResponse({'is_successful': True, 'version': api_version})
+
+
 def _add_server(app: FastAPI, method: str, func: Callable, url: str):
     if not inspect.iscoroutinefunction(func):
         raise ValueError(f'{func.__name__} is not a async function')
@@ -494,6 +504,8 @@ def _add_ui(app: FastAPI, method: str, func: Callable, url: str):
 def add_handlers(app: FastAPI):
     _add_server(app, 'POST', update_run, '{labml_token}/track')
     _add_server(app, 'POST', update_session, '{labml_token}/computer')
+
+    _add_ui(app, 'GET', init_app_api, 'init')
 
     _add_ui(app, 'GET', get_runs, 'runs/{labml_token}/{tag}')
     _add_ui(app, 'GET', get_runs, 'runs/{labml_token}')
