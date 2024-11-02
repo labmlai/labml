@@ -181,8 +181,10 @@ class DataStoreView extends ScreenView {
 
         if (this.isEditing) {
             this.refresh.pause()
+            this.searchView.disable(true)
         } else {
             this.refresh.resume()
+            this.searchView.disable(false)
         }
 
 

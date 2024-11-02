@@ -1,4 +1,4 @@
-import {WeyaElementFunction} from '../../../lib/weya/weya'
+import {WeyaElement, WeyaElementFunction} from '../../../lib/weya/weya'
 import {Loader} from "./loader"
 
 export interface SearchOptions {
@@ -11,6 +11,7 @@ export class SearchView {
     textbox: HTMLInputElement
     initText: string
     loader: Loader
+    elem: WeyaElement
 
     constructor(opt: SearchOptions) {
         this.onSearch = () => {
@@ -21,7 +22,7 @@ export class SearchView {
     }
 
     render($: WeyaElementFunction) {
-        $('div', '.search-container.mt-3.mb-3.px-2', $ => {
+        this.elem = $('div', '.search-container.mt-3.mb-3.px-2', $ => {
             $('div', '.search-content', $ => {
                 $('span', '.icon', $ => {
                     $('span', '.fas.fa-search', '')
@@ -50,6 +51,11 @@ export class SearchView {
 
     public disable(disabled: boolean) {
         this.textbox.disabled = disabled
+        if (disabled) {
+            this.elem.style.opacity = '0.3'
+        } else {
+            this.elem.style.opacity = '1'
+        }
     }
 
     public focus() {
