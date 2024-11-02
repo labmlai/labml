@@ -1,4 +1,4 @@
-import platform
+import labml
 import requests
 import json
 
@@ -26,6 +26,14 @@ class Network:
     def __init__(self, base_url):
         self.base_url = base_url
 
+        self._check_version()
+
+    def _check_version(self):
+        res = self.send_http_request('GET', f'/init?version={labml.__app_api_version__}')
+
+        if not res.get('is_successful', False):
+            raise NetworkError(500, '/init', res.get('error'))
+
     def send_http_request(self, method, url, data=None):
         headers = {}
 
@@ -44,8 +52,6 @@ class Network:
                     error_message = response.json()['data']['error']
             raise NetworkError(response.status_code, url, response.text, error_message)
 
-
-        # return response
         try:
             return response.json()
         except json.JSONDecodeError:
