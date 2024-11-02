@@ -25,9 +25,8 @@ class DataStoreModel(Model['data_store']):
             'dictionary': self.data
         }
 
-    def update_data(self, data: Dict[str, Any]):
-        for key, value in data.items():
-            self.data[key] = value
+    def set_data(self, data: Dict[str, Any]):
+        self.data = data
 
 
 @Analysis.db_index(YamlSerializer, 'datastore_index.yaml')
@@ -63,7 +62,7 @@ async def update_data_store(run_uuid: str, data: Dict[str, Any]) -> Any:
     except Exception as e:
         return JSONResponse({'error': str(e)}, status_code=400)
 
-    data_store.update_data(data_dict)
+    data_store.set_data(data_dict)
     data_store.save()
 
     return JSONResponse(data_store.get_data(), status_code=200)

@@ -52,7 +52,7 @@ export class DataStoreCard extends Card {
 
     private renderDataStore() {
         $(this.dataStoreContainer, $ => {
-          new DataStoreComponent(this.dataStore).render($)
+          new DataStoreComponent(this.dataStore.filter("")).render($)
         })
     }
 
