@@ -2,7 +2,7 @@ import {ROUTER, SCREEN} from "../../../app"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import CACHE, {DataStoreCache, RunStatusCache} from "../../../cache/cache"
 import {DataLoader} from "../../../components/loader"
-import {BackButton, EditButton, SaveButton} from "../../../components/buttons"
+import {BackButton, CancelButton, EditButton, SaveButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
@@ -35,6 +35,7 @@ class DataStoreView extends ScreenView {
     private statusCache: RunStatusCache
     private buttonContainer: HTMLElement
     private dataStoreField: EditableField
+    private cancelButton: CancelButton
 
     constructor(uuid: string) {
         super()
@@ -66,6 +67,10 @@ class DataStoreView extends ScreenView {
             isDisabled: false,
             parent:
             this.constructor.name
+        })
+        this.cancelButton = new CancelButton({
+            onButtonClick: this.onEdit,
+            parent: this.constructor.name
         })
     }
 
@@ -144,6 +149,7 @@ class DataStoreView extends ScreenView {
         if (this.isEditing) {
             $(this.buttonContainer, $ => {
                 this.save.render($)
+                this.cancelButton.render($)
             })
         } else {
             $(this.buttonContainer, $ => {
@@ -173,7 +179,12 @@ class DataStoreView extends ScreenView {
     private onEdit = () => {
         this.isEditing = !this.isEditing
 
-        this.refresh.pause()
+        if (this.isEditing) {
+            this.refresh.pause()
+        } else {
+            this.refresh.resume()
+        }
+
 
         this.renderButtons()
         this.renderDataStore(this.searchQuery)
