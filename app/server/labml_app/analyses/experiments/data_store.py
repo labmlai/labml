@@ -62,6 +62,9 @@ async def update_data_store(run_uuid: str, data: Dict[str, Any]) -> Any:
     except Exception as e:
         return JSONResponse({'error': str(e)}, status_code=400)
 
+    if data_dict is None:
+        data_dict = {}
+
     data_store.set_data(data_dict)
     data_store.save()
 
