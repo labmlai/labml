@@ -27,7 +27,7 @@ export class DataStoreComponent {
                 $(element, $ => {
                     $('div.data-row', $ => {
                         $('span.key' +  (level != 0 ? '.sub' : ''), key + ": ")
-                        $('span.value', value)
+                        $('span.value', `${value}`)
                         let hr = $('hr')
                         hr.style.opacity = `${0.5 - level * 0.1}`
                     })
