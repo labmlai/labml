@@ -51,6 +51,7 @@ export class DataStoreCard extends Card {
     }
 
     private renderDataStore() {
+        this.dataStoreContainer.innerHTML = ''
         $(this.dataStoreContainer, $ => {
           new DataStoreComponent(this.dataStore.filter("")).render($)
         })
