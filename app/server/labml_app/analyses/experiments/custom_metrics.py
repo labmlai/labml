@@ -3,6 +3,8 @@ import uuid
 from typing import List, Tuple, Any
 from uuid import UUID
 
+from labml_app import utils
+
 from labml_app.analyses.helper import get_similarity
 from labml_app.db import user, run
 from labml_db import Model, Key, Index
@@ -205,7 +207,7 @@ async def delete_custom_metric(request: Request, run_uuid: str) -> Any:
 
 @Analysis.route('GET', 'custom_metrics/{run_uuid}/magic')
 async def create_magic_metric(request: Request, run_uuid: str) -> Any:
-    current_run = run.get(run_uuid)
+    current_run = run.get(utils.get_true_run_uuid(run_uuid))
     if current_run is None:
         return {'is_success': False, 'message': 'Run not found'}
 
@@ -213,7 +215,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
 
     current_run = current_run.get_summary()
 
-    analysis_data = MetricsAnalysis.get_or_create(run_uuid).get_tracking()
+    analysis_data = MetricsAnalysis.get_or_create(utils.get_true_run_uuid(run_uuid)).get_tracking()
     run_indicators = sorted([track_item['name'] for track_item in analysis_data])
 
     current_metrics = run_cm.get_data()

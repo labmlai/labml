@@ -262,11 +262,11 @@ class Run(Model['Run']):
         return url + f'/commit/{commit}'
 
     def get_rank_uuids(self) -> Dict[int, str]:
-        if self.rank == 0 and self.world_size > 1:
+        if self.world_size >= 1:
             other_rank_run_uuids = \
-                {rank: f'{self.run_uuid}_{rank}' if rank != 0 else self.run_uuid for rank in range(self.world_size)}
+                {rank: f'{self.run_uuid.split("_")[0]}_{rank}' for rank in range(self.world_size)}
         else:
-            other_rank_run_uuids = {}
+            other_rank_run_uuids = {0: self.run_uuid.split("_")[0] + "_0"}
 
         return other_rank_run_uuids
 
@@ -489,18 +489,13 @@ def get_merged_status_data(run_uuids: List[str]) -> Union[None, 'status.Status']
 
 
 def get_main_rank(run_uuid: str) -> Optional[str]:
-    is_rank = len(run_uuid.split("_")) == 2
-
-    if is_rank:
-        if run_uuid.split('_')[-1] == 0:  # first rank is the main uuid
-            return run_uuid.split('_')[0]
-        else:
-            return run_uuid
+    if len(run_uuid.split("_")) == 2:
+        return run_uuid
     else:
-        r = get(run_uuid)
+        r = get(run_uuid + "_0")
         if r is None:
             return None
+        if r.world_size == 0:
+            return r.run_uuid
         other_rank_run_uuids = r.get_rank_uuids()
-        if r.world_size != 0 and other_rank_run_uuids:
-            return other_rank_run_uuids[r.main_rank]
-        return run_uuid
+        return other_rank_run_uuids[r.main_rank]

@@ -221,7 +221,7 @@ class RunsListView extends ScreenView {
         let runListItem = elem.item
 
         if (!this.isEditMode) {
-            ROUTER.navigate(`/run/${runListItem.run_uuid}`)
+            ROUTER.navigate(`/run/${runListItem.mainUUID}`)
             return
         }
 

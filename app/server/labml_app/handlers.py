@@ -74,8 +74,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
                                       'Click on the experiment link to monitor the experiment and '
                                       'add it to your experiments list.'})
 
-    if world_size > 1 and rank > 0:
-        run_uuid = f'{run_uuid}_{rank}'
+    run_uuid = f'{run_uuid}_{rank}'
 
     r = run.get_or_create(request, run_uuid, rank, world_size, main_rank, token)
     s = r.status.load()
@@ -310,10 +309,9 @@ async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_code = 404
 
     if len(run_uuid.split('_')) == 1:  # distributed
-        r = run.get(run_uuid)
+        r = run.get(utils.get_true_run_uuid(run_uuid))
         if r is not None:
-            uuids = [f'{run_uuid}_{i}' for i in range(1, r.world_size)]
-            uuids.append(run_uuid)
+            uuids = list(r.get_rank_uuids().values())
             status_data = run.get_merged_status_data(uuids)
 
         if status_data is None or len(status_data.keys()) == 0:

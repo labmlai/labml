@@ -54,7 +54,7 @@ export class RunsListItemView {
 
     render($: WeyaElementFunction) {
         this.elem = $('a', '.list-item.list-group-item.list-group-item-action',
-            {href: `/run/${this.item.run_uuid}`, on: {click: this.onClick}, target: '_blank'},
+            {href: `/run/${this.item.mainUUID}`, on: {click: this.onClick}, target: '_blank'},
             $ => {
                 if (this.item.run_status) {
                     new StatusView({status: this.item.run_status, isDistributed: this.item.world_size>0}).render($)

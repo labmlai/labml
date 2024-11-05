@@ -10,8 +10,8 @@ print(UUID)
 def worker(rank: int):
     experiment.create(uuid=UUID,
                       name='Distributed Training Simulator',
-                      distributed_rank=rank,
-                      distributed_world_size=WORLD_SIZE,
+                      # distributed_rank=rank,
+                      # distributed_world_size=WORLD_SIZE,
                       )
     print(f'created experiment for rank:{rank}')
     with experiment.start():
@@ -40,7 +40,7 @@ def worker(rank: int):
 
 
 def main():
-    for i in range(WORLD_SIZE):
+    for i in range(1):
         worker(i)
 
 

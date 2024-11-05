@@ -433,7 +433,10 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
                             world_size: this.baseRun.world_size,
                             metric_values: [],
                             step: null,
-                            tags: this.baseRun.tags
+                            tags: this.baseRun.tags,
+                            get mainUUID() {
+                                return this.run_uuid.split('_')[0]
+                            }
                         },
                         width: this.actualWidth
                     })

@@ -59,6 +59,10 @@ export class RunListItem {
             }
         }
     }
+
+    get mainUUID() {
+        return this.run_uuid.split('_')[0]
+    }
 }
 
 export class RunsList {
