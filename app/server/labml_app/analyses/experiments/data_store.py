@@ -49,6 +49,14 @@ async def get_data_store(run_uuid: str) -> Any:
 
 @Analysis.route('POST', 'datastore/{run_uuid}')
 async def update_data_store(run_uuid: str, data: Dict[str, Any]) -> Any:
+    try:
+        data_dict = yaml.safe_load(data.get('yaml_string', ""))
+    except Exception as e:
+        return JSONResponse({'error': str(e)}, status_code=400)
+
+    if data_dict is None:
+        return JSONResponse({'error': 'Attempting to set empty dictionary'}, status_code=400)
+
     key = DataStoreIndex.get(run_uuid)
     if key is None:
         data_store = DataStoreModel()
@@ -56,14 +64,6 @@ async def update_data_store(run_uuid: str, data: Dict[str, Any]) -> Any:
         DataStoreIndex.set(run_uuid, data_store.key)
     else:
         data_store = key.load()
-
-    try:
-        data_dict = yaml.safe_load(data.get('yaml_string', ""))
-    except Exception as e:
-        return JSONResponse({'error': str(e)}, status_code=400)
-
-    if data_dict is None:
-        data_dict = {}
 
     data_store.set_data(data_dict)
     data_store.save()
