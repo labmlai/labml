@@ -481,7 +481,7 @@ async def init_app_api(request: Request):
     client_version = request.query_params.get('version', '')
     api_version = settings.APP_API_VERSION
 
-    if utils.check_version(client_version, api_version):
+    if utils.check_version(str(client_version), str(api_version)):
         return JSONResponse({'is_successful': False, 'error': 'API client is outdated, please upgrade'})
     else:
         return JSONResponse({'is_successful': True, 'version': api_version})
