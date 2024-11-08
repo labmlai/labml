@@ -495,11 +495,6 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
                     if (this.preferenceData.base_experiment !== run.run_uuid) {
                         this.baseUuid = run.run_uuid
                         this.basePlotIdx = []
-                        this.stepRange = [-1, -1]
-                        this.focusSmoothed = true
-                        this.smoothValue = 0
-                        this.chartType = 0
-                        this.smoothFunction = SmoothingType.LEFT_EXPONENTIAL
 
                         this.setBaseLoading(true)
 
