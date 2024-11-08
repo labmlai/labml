@@ -229,12 +229,12 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
     runs = [r.get_summary() for r in default_project.get_runs()]
 
     similarity = [get_similarity(current_run, x) for x in runs]
-    runs = [x for s, x in sorted(zip(similarity, runs), key=lambda pair: (pair[0], pair[1]['start_time']), reverse=True)]
+    runs = sorted(zip(similarity, runs), key=lambda pair: (pair[0], pair[1]['start_time']), reverse=True)
     runs = runs[:20]
 
     potential_charts = []
     reasons = ""  # possible reason to not have runs
-    for r in runs:
+    for s, r in runs:
         list_key = CustomMetricsListIndex.get(r['run_uuid'])
         if list_key is None:
             continue
@@ -266,12 +266,14 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
                 reasons = "Some charts ignored due to having overlapped indicators with current charts."
                 continue
 
-            potential_charts.append(m_data)
+            potential_charts.append((m_data, (-s, -r['start_time'])))
 
     if len(potential_charts) == 0:
         return {'is_success': False, 'message': "Couldn't find any new related chart. " + reasons}
 
-    potential_charts = sorted(potential_charts, key=lambda x: x['created_time'], reverse=True)
+    # sort by similarity, run time and then position
+    potential_charts = sorted(potential_charts, key=lambda x: (x[1], x[0]['position']))
+    potential_charts = [y[0] for y in potential_charts]
 
     # find the first indicator list with overlap
     selected = None
