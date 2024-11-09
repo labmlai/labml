@@ -20,7 +20,8 @@ class DistRun(Model['DistRun']):
                     main_rank=-1,
                     world_size=-1)
 
-    def get_or_create_run(self, rank: int, request: Optional['Request'] = None, token: Optional['str'] = None):
+    def get_or_create_run(self, rank: int, request: Optional['Request'] = None, token: Optional['str'] = None)\
+            -> Optional['run.Run']:
         if rank in self.ranks:
             return run.get(self.ranks[rank])
 
@@ -38,6 +39,22 @@ class DistRun(Model['DistRun']):
 
         self.save()
         return r
+
+    def get_run(self, rank) -> Optional['run.Run']:
+        if rank in self.ranks:
+            return run.get(self.ranks[rank])
+        return None
+
+    def get_main_run(self) -> Optional['run.Run']:
+        return self.get_run(self.ranks[self.main_rank])
+
+    def get_main_uuid(self) -> str:
+        return self.ranks[self.main_rank]
+
+    def delete(self):
+        for r_uuid in self.ranks.values():
+            run.delete(r_uuid)
+        super().delete()
 
 
 class DistRunIndex(Index['DistRun']):
@@ -65,3 +82,22 @@ def get(run_uuid: str) -> Optional['DistRun']:
     if key:
         return key.load()
     return None
+
+
+def mget(run_uuids: list) -> list:
+    keys = DistRunIndex.mget(run_uuids)
+    return [key.load() for key in keys]
+
+
+def get_main_run(run_uuid: str) -> Optional['run.Run']:
+    dr = get(run_uuid)
+    if dr:
+        return dr.get_main_run()
+    return None
+
+
+def delete(run_uuid: str):
+    dr = get(run_uuid)
+    if dr:
+        dr.delete()
+        DistRunIndex.delete(run_uuid)

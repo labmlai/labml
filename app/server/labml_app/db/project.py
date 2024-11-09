@@ -11,7 +11,6 @@ class Project(Model['Project']):
     labml_token: str
     is_sharable: float
     name: str
-    runs: Dict[str, Key['run.Run']]
     dist_runs: Dict[str, Key['dist_run.DistRun']]
     sessions: Dict[str, Key['session.Session']]
     is_run_added: bool
@@ -30,29 +29,28 @@ class Project(Model['Project']):
                     tag_index={},
                     )
 
-    def is_project_run(self, run_uuid: str) -> bool:
-        return run_uuid in self.runs
-
     def is_project_dist_run(self, uuid: str) -> bool:
         return uuid in self.dist_runs
 
     def is_project_session(self, session_uuid: str) -> bool:
         return session_uuid in self.sessions
 
-    def _get_runs_util(self, run_uuids: List[str]) -> List['run.Run']:
-        res = []
-
+    def _get_dist_run_util(self, uuids: List[str]) -> List['run.Run']:
+        d_runs = dist_run.mget(uuids)
+        run_uuids = [dr.get_main_uuid for dr in d_runs]
         runs = run.mget(run_uuids)
+
+        res = []
         run_uuids_from_db = []
-        for r in runs:
+        for r, r_uuid in zip(runs, run_uuids):
             if r:
                 res.append(r)
-                run_uuids_from_db.append(r.run_uuid)
+                run_uuids_from_db.append(r_uuid)
 
         likely_deleted = set(run_uuids) - set(run_uuids_from_db)
         for run_uuid in likely_deleted:
-            if run_uuid in self.runs:
-                self.runs.pop(run_uuid)
+            if run_uuid in self.dist_runs:
+                self.dist_runs.pop(run_uuid)
             for tag, runs in self.tag_index.items():
                 if run_uuid in runs:
                     self.tag_index[tag].remove(run_uuid)
@@ -65,16 +63,15 @@ class Project(Model['Project']):
 
         return res
 
-    def get_runs(self) -> List['run.Run']:
-        run_uuids = list(self.runs.keys())
-        return self._get_runs_util(run_uuids)
+    def get_dist_runs(self) -> List['run.Run']:
+        dist_run_uuids = list(self.dist_runs.keys())
+        return self._get_dist_run_util(dist_run_uuids)
 
-    def get_runs_by_tags(self, tag: str) -> List['run.Run']:
+    def get_dist_run_by_tags(self, tag: str) -> List['run.Run']:
         if tag in self.tag_index:
             run_uuids = [r for r in self.tag_index[tag]]
-            return self._get_runs_util(run_uuids)
-        else:
-            return []
+            return self._get_dist_run_util(run_uuids)
+        return []
 
     def get_sessions(self) -> List['session.Session']:
         res = []
@@ -87,14 +84,14 @@ class Project(Model['Project']):
 
     def delete_runs(self, run_uuids: List[str], project_owner: str) -> None:
         for run_uuid in run_uuids:
-            if run_uuid in self.runs:
-                r = run.get(run_uuid)
+            if run_uuid in self.dist_runs:
+                r = dist_run.get_main_run(run_uuid)
                 if r and r.owner == project_owner:
                     try:
                         for tag in r.tags:
                             if tag in self.tag_index:
                                 self.tag_index[tag].remove(run_uuid)
-                        run.delete(run_uuid)
+                        dist_run.delete(run_uuid)
                     except TypeError:
                         logger.error(f'error while deleting the run {run_uuid}')
 
@@ -113,30 +110,24 @@ class Project(Model['Project']):
 
         self.save()
 
-    def add_run(self, run_uuid: str) -> None:
-        r = run.get(run_uuid)
-
-        if r:
-            self.runs[run_uuid] = r.key
-
-            for tag in r.tags:
-                if tag not in self.tag_index:
-                    self.tag_index[tag] = set()
-                self.tag_index[tag].add(run_uuid)
-
-        self.save()
-
     def add_dist_run(self, uuid: str) -> None:
         dr = dist_run.get(uuid)
 
         if dr:
             self.dist_runs[uuid] = dr.key
+
+            r = dist_run.get_main_run(uuid)
+            for tag in r.tags:
+                if tag not in self.tag_index:
+                    self.tag_index[tag] = set()
+                self.tag_index[tag].add(uuid)
             self.save()
 
-    def add_run_with_model(self, r: run.Run) -> None:
-        self.runs[r.run_uuid] = r.key
+    def add_dist_run_with_model(self, dr: dist_run.DistRun):
+        self.dist_runs[dr.uuid] = dr.key
         self.is_run_added = True
 
+        r = dr.get_main_run()
         for tag in r.tags:
             if tag not in self.tag_index:
                 self.tag_index[tag] = set()
@@ -144,10 +135,10 @@ class Project(Model['Project']):
 
         self.save()
 
-    def edit_run(self, run_uuid: str, data: any):
-        r = run.get(run_uuid)
+    def edit_run(self, dist_run_uuid: str, data: any):
+        r = dist_run.get_main_run(dist_run_uuid)
         if r is None:
-            raise ValueError(f'Run {run_uuid} not found')
+            raise ValueError(f'Main rank under {dist_run_uuid} not found')
 
         current_tags = r.tags
         new_tags = data.get('tags', r.tags)
@@ -155,13 +146,13 @@ class Project(Model['Project']):
         for tag in current_tags:
             if (tag not in new_tags  # removed tag
                     and tag in self.tag_index
-                    and run_uuid in self.tag_index[tag]):
-                self.tag_index[tag].remove(run_uuid)
+                    and dist_run_uuid in self.tag_index[tag]):
+                self.tag_index[tag].remove(dist_run_uuid)
 
         for tag in new_tags:
             if tag not in self.tag_index:
                 self.tag_index[tag] = set()
-            self.tag_index[tag].add(run_uuid)  # set will handle duplicates
+            self.tag_index[tag].add(dist_run_uuid)  # set will handle duplicates
 
         r.edit_run(data)
         self.save()
@@ -169,12 +160,6 @@ class Project(Model['Project']):
     def get_dist_run(self, uuid: str) -> Optional['dist_run.DistRun']:
         if uuid in self.dist_runs:
             return self.dist_runs[uuid].load()
-        else:
-            return None
-
-    def get_run(self, run_uuid: str) -> Optional['run.Run']:
-        if run_uuid in self.runs:
-            return self.runs[run_uuid].load()
         else:
             return None
 
@@ -205,15 +190,6 @@ def get_dist_run(run_uuid: str, labml_token: str = '') -> Optional['dist_run.Dis
 
     if p.is_project_dist_run(run_uuid):
         return p.get_dist_run(run_uuid)
-    else:
-        return None
-
-
-def get_run(run_uuid: str, labml_token: str = '') -> Optional['run.Run']:
-    p = get_project(labml_token)
-
-    if p.is_project_run(run_uuid):
-        return p.get_run(run_uuid)
     else:
         return None
 
