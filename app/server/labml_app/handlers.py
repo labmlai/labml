@@ -10,7 +10,7 @@ from .analyses.experiments import stdout, stderr, stdlogger
 from .logger import logger
 from . import settings
 from . import auth
-from .db import run
+from .db import run, dist_run
 from .db import computer
 from .db import session
 from .db import user
@@ -61,8 +61,8 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     if not p:
         token = settings.FLOAT_PROJECT_TOKEN
 
-    r = project.get_run(run_uuid, token)
-    if not r and not p:
+    dr = project.get_dist_run(run_uuid)
+    if not dr and not p:
         if labml_token:
             errors.append({'error': 'invalid_token',
                            'message': 'Please create a valid token at https://app.labml.ai.\n'
@@ -74,10 +74,12 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
                                       'Click on the experiment link to monitor the experiment and '
                                       'add it to your experiments list.'})
 
-    if world_size > 1 and rank > 0:
-        run_uuid = f'{run_uuid}_{rank}'
+    dr = dist_run.get_or_create(run_uuid, token)
+    dr.world_size = world_size
+    dr.main_rank = main_rank
+    dr.save()
 
-    r = run.get_or_create(request, run_uuid, rank, world_size, main_rank, token)
+    r = dr.get_or_create_run(rank, Request, token)
     s = r.status.load()
 
     json = await request.json()
@@ -105,9 +107,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     else:
         hp_values = {}
 
-    run_uuid = r.url
-    if len(run_uuid.split("_")) == 2:
-        run_uuid = run_uuid.split("_")[0]
+    run_uuid = dr.uuid
 
     app_url = str(request.url).split('api')[0]
 

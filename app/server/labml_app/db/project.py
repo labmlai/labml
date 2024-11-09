@@ -2,7 +2,7 @@ from typing import List, Dict, Union, Optional, Set
 
 from labml_db import Model, Key, Index
 
-from . import run
+from . import run, dist_run
 from . import session
 from ..logger import logger
 
@@ -12,6 +12,7 @@ class Project(Model['Project']):
     is_sharable: float
     name: str
     runs: Dict[str, Key['run.Run']]
+    dist_runs: Dict[str, Key['dist_run.DistRun']]
     sessions: Dict[str, Key['session.Session']]
     is_run_added: bool
     folders: any  # delete from db and then remove
@@ -23,6 +24,7 @@ class Project(Model['Project']):
                     is_sharable=False,
                     labml_token='',
                     runs={},
+                    dist_runs={},
                     sessions={},
                     is_run_added=False,
                     tag_index={},
@@ -30,6 +32,9 @@ class Project(Model['Project']):
 
     def is_project_run(self, run_uuid: str) -> bool:
         return run_uuid in self.runs
+
+    def is_project_dist_run(self, uuid: str) -> bool:
+        return uuid in self.dist_runs
 
     def is_project_session(self, session_uuid: str) -> bool:
         return session_uuid in self.sessions
@@ -121,6 +126,13 @@ class Project(Model['Project']):
 
         self.save()
 
+    def add_dist_run(self, uuid: str) -> None:
+        dr = dist_run.get(uuid)
+
+        if dr:
+            self.dist_runs[uuid] = dr.key
+            self.save()
+
     def add_run_with_model(self, r: run.Run) -> None:
         self.runs[r.run_uuid] = r.key
         self.is_run_added = True
@@ -154,6 +166,12 @@ class Project(Model['Project']):
         r.edit_run(data)
         self.save()
 
+    def get_dist_run(self, uuid: str) -> Optional['dist_run.DistRun']:
+        if uuid in self.dist_runs:
+            return self.dist_runs[uuid].load()
+        else:
+            return None
+
     def get_run(self, run_uuid: str) -> Optional['run.Run']:
         if run_uuid in self.runs:
             return self.runs[run_uuid].load()
@@ -180,6 +198,15 @@ def get_project(labml_token: str) -> Union[None, Project]:
         return project_key.load()
 
     return None
+
+
+def get_dist_run(run_uuid: str, labml_token: str = '') -> Optional['dist_run.DistRun']:
+    p = get_project(labml_token)
+
+    if p.is_project_dist_run(run_uuid):
+        return p.get_dist_run(run_uuid)
+    else:
+        return None
 
 
 def get_run(run_uuid: str, labml_token: str = '') -> Optional['run.Run']:
