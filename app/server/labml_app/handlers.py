@@ -210,20 +210,23 @@ async def update_session(request: Request) -> EndPointRes:
 
 @auth.login_required
 async def claim_run(request: Request, run_uuid: str, token: Optional[str] = None) -> EndPointRes:
-    r = run.get(run_uuid)
+    r = dist_run.get(run_uuid)
     u = user.get_by_session_token(token)
 
     default_project = u.default_project
 
-    if not default_project.is_project_run(run_uuid):
+    if not default_project.is_project_dist_run(run_uuid):
         # float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
 
         # if r.run_uuid in float_project.runs:
-        default_project.add_run_with_model(r)
+        default_project.add_dist_run_with_model(r)
         default_project.save()
-        r.is_claimed = True
-        r.owner = u.email
-        r.save()
+
+        r = r.get_main_run()
+        if r:
+            r.is_claimed = True
+            r.owner = u.email
+            r.save()
 
     return {'is_successful': True}
 
