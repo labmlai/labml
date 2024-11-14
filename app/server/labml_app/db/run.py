@@ -366,11 +366,6 @@ class RunIndex(Index['Run']):
 
 
 def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, main_rank: int, labml_token: str = '') -> 'Run':
-    p = project.get_project(labml_token)
-
-    if p.is_project_run(run_uuid):
-        return p.get_run(run_uuid)
-
     run = get(run_uuid)
     if run is not None:
         return run
@@ -396,11 +391,7 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, m
               main_rank=main_rank,
               )
 
-    if run.rank == 0:  # TODO
-        p.add_run_with_model(run)
-
     run.save()
-    p.save()
 
     RunIndex.set(run.run_uuid, run.key)
 

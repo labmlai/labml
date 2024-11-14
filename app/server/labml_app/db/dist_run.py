@@ -9,7 +9,7 @@ from labml_db import Model, Index
 
 class DistRun(Model['DistRun']):
     uuid: str
-    ranks: Dict[int: str]
+    ranks: Dict[int, str]
     main_rank: int
     world_size: int
 
@@ -35,7 +35,7 @@ class DistRun(Model['DistRun']):
             raise RuntimeError('Labml token is required to create a new run')
 
         r = run.get_or_create(request, str(uuid.uuid4()), rank, self.world_size, self.main_rank, token)
-        self.ranks[rank] = r.uuid
+        self.ranks[rank] = r.run_uuid
 
         self.save()
         return r
@@ -46,6 +46,8 @@ class DistRun(Model['DistRun']):
         return None
 
     def get_main_run(self) -> Optional['run.Run']:
+        if self.main_rank == -1:
+            return None
         return self.get_run(self.ranks[self.main_rank])
 
     def get_main_uuid(self) -> str:
@@ -66,7 +68,7 @@ def get_or_create(run_uuid: str, labml_token: str):
 
     if p.is_project_dist_run(run_uuid):
         return p.get_dist_run(run_uuid)
-
+    print(DistRunIndex.get(run_uuid))
     if DistRunIndex.get(run_uuid) is not None:
         raise RuntimeError(f'Dist run {run_uuid} already exists on a different project')
 
@@ -74,7 +76,8 @@ def get_or_create(run_uuid: str, labml_token: str):
     dr.uuid = run_uuid
     DistRunIndex.set(run_uuid, dr.key)
 
-    p.add_dist_run(run_uuid)
+    p.add_dist_run_with_model(dr)
+    return dr
 
 
 def get(run_uuid: str) -> Optional['DistRun']:

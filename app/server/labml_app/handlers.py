@@ -61,7 +61,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     if not p:
         token = settings.FLOAT_PROJECT_TOKEN
 
-    dr = project.get_dist_run(run_uuid)
+    dr = project.get_dist_run(run_uuid, labml_token=token)
     if not dr and not p:
         if labml_token:
             errors.append({'error': 'invalid_token',
@@ -79,7 +79,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     dr.main_rank = main_rank
     dr.save()
 
-    r = dr.get_or_create_run(rank, Request, token)
+    r = dr.get_or_create_run(rank, request, token)
     s = r.status.load()
 
     json = await request.json()

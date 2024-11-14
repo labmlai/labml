@@ -11,7 +11,7 @@ from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 
 from .. import settings
-from . import project
+from . import project, dist_run
 from . import user
 from . import status
 from . import app_token
@@ -63,6 +63,7 @@ models = [user.User,
           app_token.AppToken,
           run.Run,
           session.Session,
+          dist_run.DistRun,
           computer.Computer] + [m for s, m, p in analyses.AnalysisManager.get_db_models()]
 
 indexes = [project.ProjectIndex,
@@ -74,6 +75,7 @@ indexes = [project.ProjectIndex,
            app_token.AppTokenIndex,
            run.RunIndex,
            session.SessionIndex,
+           dist_run.DistRunIndex,
            computer.ComputerIndex] + [m for s, m, p in analyses.AnalysisManager.get_db_indexes()]
 
 

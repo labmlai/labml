@@ -16,13 +16,13 @@ class Project(Model['Project']):
     is_run_added: bool
     folders: any  # delete from db and then remove
     tag_index: Dict[str, Set[str]]
+    runs: Dict  # delete from db and then remove
 
     @classmethod
     def defaults(cls):
         return dict(name='',
                     is_sharable=False,
                     labml_token='',
-                    runs={},
                     dist_runs={},
                     sessions={},
                     is_run_added=False,
@@ -110,28 +110,16 @@ class Project(Model['Project']):
 
         self.save()
 
-    def add_dist_run(self, uuid: str) -> None:
-        dr = dist_run.get(uuid)
-
-        if dr:
-            self.dist_runs[uuid] = dr.key
-
-            r = dist_run.get_main_run(uuid)
-            for tag in r.tags:
-                if tag not in self.tag_index:
-                    self.tag_index[tag] = set()
-                self.tag_index[tag].add(uuid)
-            self.save()
-
     def add_dist_run_with_model(self, dr: dist_run.DistRun):
         self.dist_runs[dr.uuid] = dr.key
         self.is_run_added = True
 
         r = dr.get_main_run()
-        for tag in r.tags:
-            if tag not in self.tag_index:
-                self.tag_index[tag] = set()
-            self.tag_index[tag].add(r.run_uuid)
+        if r is not None:
+            for tag in r.tags:
+                if tag not in self.tag_index:
+                    self.tag_index[tag] = set()
+                self.tag_index[tag].add(r.run_uuid)
 
         self.save()
 
