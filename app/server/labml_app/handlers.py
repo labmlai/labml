@@ -111,7 +111,7 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
 
     app_url = str(request.url).split('api')[0]
 
-    return {'errors': errors, 'url': f'{app_url}{run_uuid}', 'dynamic': hp_values}
+    return {'errors': errors, 'url': f'{app_url}run/{run_uuid}', 'dynamic': hp_values}
 
 
 async def update_run(request: Request) -> EndPointRes:
@@ -222,11 +222,9 @@ async def claim_run(request: Request, run_uuid: str, token: Optional[str] = None
         default_project.add_dist_run_with_model(r)
         default_project.save()
 
-        r = r.get_main_run()
-        if r:
-            r.is_claimed = True
-            r.owner = u.email
-            r.save()
+        r.is_claimed = True
+        r.owner = u.email
+        r.save()
 
     return {'is_successful': True}
 
@@ -255,13 +253,21 @@ async def get_run(request: Request, run_uuid: str) -> JSONResponse:
     run_data = {}
     status_code = 404
 
-    # TODO temporary change to used run_uuid as rank 0
-    is_dist_run = len(run_uuid.split("_")) == 1
-    run_uuid = utils.get_true_run_uuid(run_uuid)
+    dr = dist_run.get(run_uuid)
+    if dr is None:
+        response = JSONResponse(run_data)
+        response.status_code = status_code
 
-    r = run.get(run_uuid)
+        return response
+
+    main_run_uuid = dr.get_main_uuid()
+
+    r = run.get(main_run_uuid)
     if r:
-        run_data = r.get_data(request, is_dist_run)
+        run_data = r.get_data(request, parent_uuid=run_uuid)
+        run_data['run_uuid'] = run_uuid
+        run_data['is_claimed'] = dr.is_claimed
+        run_data['owner'] = dr.owner
         status_code = 200
 
     response = JSONResponse(run_data)
@@ -312,36 +318,19 @@ async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_data = {}
     status_code = 404
 
-    if len(run_uuid.split('_')) == 1:  # distributed
-        r = run.get(run_uuid)
-        if r is not None:
-            uuids = [f'{run_uuid}_{i}' for i in range(1, r.world_size)]
-            uuids.append(run_uuid)
-            status_data = run.get_merged_status_data(uuids)
+    dr = dist_run.get(run_uuid)
+    status_data = run.get_merged_status_data(list(dr.ranks.values()))
 
-        if status_data is None or len(status_data.keys()) == 0:
-            status_data = {}
-            status_code = 404
-        else:
-            status_code = 200
-
-        response = JSONResponse(status_data)
-        response.status_code = status_code
-
-        return response
+    if status_data is None or len(status_data.keys()) == 0:
+        status_data = {}
+        status_code = 404
     else:
-        # TODO temporary change to used run_uuid as rank 0
-        run_uuid = utils.get_true_run_uuid(run_uuid)
+        status_code = 200
 
-        s = run.get_status(run_uuid)
-        if s:
-            status_data = s.get_data()
-            status_code = 200
+    response = JSONResponse(status_data)
+    response.status_code = status_code
 
-        response = JSONResponse(status_data)
-        response.status_code = status_code
-
-        return response
+    return response
 
 
 async def get_session_status(request: Request, session_uuid: str) -> JSONResponse:

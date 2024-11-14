@@ -12,13 +12,17 @@ class DistRun(Model['DistRun']):
     ranks: Dict[int, str]
     main_rank: int
     world_size: int
+    is_claimed: bool
+    owner: str
 
     @classmethod
     def defaults(cls):
         return dict(uuid='',
                     ranks={},
                     main_rank=-1,
-                    world_size=-1)
+                    world_size=-1,
+                    is_claimed=False,
+                    owner="")
 
     def get_or_create_run(self, rank: int, request: Optional['Request'] = None, token: Optional['str'] = None)\
             -> Optional['run.Run']:

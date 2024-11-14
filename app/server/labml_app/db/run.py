@@ -270,10 +270,10 @@ class Run(Model['Run']):
 
         return other_rank_run_uuids
 
-    def get_data(self, request: Request, is_dist_run: bool = False) -> Dict[str, Union[str, any]]:
+    def get_data(self, request: Request, parent_uuid: str) -> Dict[str, Union[str, any]]:
         u = auth.get_auth_user(request)
         if u:
-            is_project_run = u.default_project.is_project_run(self.run_uuid)
+            is_project_run = u.default_project.is_project_dist_run(parent_uuid)
         else:
             is_project_run = False
 
