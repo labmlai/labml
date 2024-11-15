@@ -10,6 +10,7 @@ from fastapi import Request
 
 from labml_app.analyses.analysis import Analysis
 from labml_app.analyses.logs import Logs, LogPageType
+from labml_app.db import dist_run
 
 
 class StdErr(Logs):
@@ -37,7 +38,7 @@ async def get_std_err(request: Request, run_uuid: str) -> Any:
             page = -1 means get last page.
             page = n means get nth page.
         """
-    run_uuid = labml_app.db.run.get_main_rank(run_uuid)
+    run_uuid = dist_run.get_analysis_uuid(run_uuid)
     if run_uuid is None:
         return JSONResponse(status_code=404, content={'message': 'Run not found'})
 
@@ -59,7 +60,7 @@ async def get_std_err(request: Request, run_uuid: str) -> Any:
 
 @Analysis.route('POST', 'logs/stderr/{run_uuid}/opt')
 async def update_stderr_opt(request: Request, run_uuid: str) -> Any:
-    run_uuid = labml_app.db.run.get_main_rank(run_uuid)
+    run_uuid = dist_run.get_analysis_uuid(run_uuid)
     if run_uuid is None:
         return JSONResponse(status_code=404, content={'message': 'Run not found'})
 
@@ -78,6 +79,7 @@ async def update_stderr_opt(request: Request, run_uuid: str) -> Any:
 
 
 def update_stderr(run_uuid: str, content: str):
+    run_uuid = dist_run.get_analysis_uuid(run_uuid)
     key = StdErrIndex.get(run_uuid)
     std_err: StdErrModel
 

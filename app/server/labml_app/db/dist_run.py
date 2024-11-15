@@ -106,3 +106,10 @@ def delete(run_uuid: str):
     if dr:
         dr.delete()
         DistRunIndex.delete(run_uuid)
+
+
+def get_analysis_uuid(run_uuid: str) -> str:
+    if DistRunIndex.get(run_uuid) is not None:
+        return get(run_uuid).get_main_uuid()
+    else:
+        return run_uuid
