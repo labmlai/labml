@@ -267,6 +267,8 @@ async def get_run(request: Request, run_uuid: str) -> JSONResponse:
             run_data['is_claimed'] = dr.is_claimed
             run_data['owner'] = dr.owner
             run_data['other_rank_run_uuids'] = dr.ranks
+        else:
+            run_data['is_rank'] = True
         status_code = 200
 
     response = JSONResponse(run_data)

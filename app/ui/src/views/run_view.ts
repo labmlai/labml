@@ -95,7 +95,7 @@ class RunView extends ScreenView {
     }
 
     private get isRank(): boolean {
-        return !!this.rank
+        return this.run?.isRank || false
     }
 
     get requiresAuth(): boolean {
