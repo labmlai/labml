@@ -4,6 +4,7 @@ from labml_db import Model, Key, Index
 
 from . import run, dist_run
 from . import session
+from .dist_run import DistRunIndex
 from ..logger import logger
 
 
@@ -90,9 +91,11 @@ class Project(Model['Project']):
                 if r and r.owner == project_owner:
                     try:
                         for tag in r.tags:
-                            if tag in self.tag_index:
+                            if tag in self.tag_index and run_uuid in self.tag_index[tag]:
                                 self.tag_index[tag].remove(run_uuid)
                         dist_run.delete(run_uuid)
+                        self.dist_runs.pop(run_uuid)
+                        DistRunIndex.delete(run_uuid)
                     except TypeError:
                         logger.error(f'error while deleting the run {run_uuid}')
 

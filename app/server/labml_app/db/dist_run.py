@@ -50,9 +50,7 @@ class DistRun(Model['DistRun']):
         return None
 
     def get_main_run(self) -> Optional['run.Run']:
-        if self.main_rank == -1:
-            return None
-        return self.get_run(self.ranks[self.main_rank])
+        return self.get_run(self.main_rank)
 
     def get_main_uuid(self) -> str:
         return self.ranks[self.main_rank]
@@ -93,7 +91,7 @@ def get(run_uuid: str) -> Optional['DistRun']:
 
 def mget(run_uuids: list) -> list:
     keys = DistRunIndex.mget(run_uuids)
-    return [key.load() for key in keys]
+    return [key.load() for key in keys if key is not None]
 
 
 def get_main_run(run_uuid: str) -> Optional['run.Run']:
