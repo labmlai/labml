@@ -280,12 +280,9 @@ class Run(Model['Run']):
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         formatted_repo = self.format_remote_repo(self.repo_remotes)
 
-        other_rank_run_uuids = self.get_rank_uuids()
-
         return {
             'run_uuid': self.run_uuid,
             'rank': self.rank,
-            'other_rank_run_uuids': other_rank_run_uuids,
             'world_size': self.world_size,
             'is_project_run': is_project_run,
             'name': self.name,

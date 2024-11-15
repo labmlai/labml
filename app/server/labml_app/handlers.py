@@ -254,20 +254,19 @@ async def get_run(request: Request, run_uuid: str) -> JSONResponse:
     status_code = 404
 
     dr = dist_run.get(run_uuid)
-    if dr is None:
-        response = JSONResponse(run_data)
-        response.status_code = status_code
+    if dr is not None:
+        main_run_uuid = dr.get_main_uuid()
+        r = run.get(main_run_uuid)
+    else:
+        r = run.get(run_uuid)
 
-        return response
-
-    main_run_uuid = dr.get_main_uuid()
-
-    r = run.get(main_run_uuid)
     if r:
         run_data = r.get_data(request, parent_uuid=run_uuid)
         run_data['run_uuid'] = run_uuid
-        run_data['is_claimed'] = dr.is_claimed
-        run_data['owner'] = dr.owner
+        if dr:
+            run_data['is_claimed'] = dr.is_claimed
+            run_data['owner'] = dr.owner
+            run_data['other_rank_run_uuids'] = dr.ranks
         status_code = 200
 
     response = JSONResponse(run_data)
@@ -319,7 +318,10 @@ async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_code = 404
 
     dr = dist_run.get(run_uuid)
-    status_data = run.get_merged_status_data(list(dr.ranks.values()))
+    if dr is not None:
+        status_data = run.get_merged_status_data(list(dr.ranks.values()))
+    else:
+        status_data = run.get_status(run_uuid).get_data()
 
     if status_data is None or len(status_data.keys()) == 0:
         status_data = {}
