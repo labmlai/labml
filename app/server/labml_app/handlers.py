@@ -358,9 +358,9 @@ async def get_runs(request: Request, labml_token: str, token: Optional[str] = No
     labml_token = default_project.labml_token
 
     if tag is None:
-        runs_list = default_project.get_runs()
+        runs_list = default_project.get_dist_runs()
     else:
-        runs_list = default_project.get_runs_by_tags(tag)
+        runs_list = default_project.get_dist_run_by_tags(tag)
 
     statuses = status.mget([r.status for r in runs_list])
     statuses = {s.key: s for s in statuses}

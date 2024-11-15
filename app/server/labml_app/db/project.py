@@ -37,13 +37,14 @@ class Project(Model['Project']):
 
     def _get_dist_run_util(self, uuids: List[str]) -> List['run.Run']:
         d_runs = dist_run.mget(uuids)
-        run_uuids = [dr.get_main_uuid for dr in d_runs]
+        run_uuids = [dr.get_main_uuid() for dr in d_runs]
         runs = run.mget(run_uuids)
 
         res = []
         run_uuids_from_db = []
-        for r, r_uuid in zip(runs, run_uuids):
+        for r, r_uuid, dist_uuid in zip(runs, run_uuids, uuids):
             if r:
+                r.run_uuid = dist_uuid
                 res.append(r)
                 run_uuids_from_db.append(r_uuid)
 
