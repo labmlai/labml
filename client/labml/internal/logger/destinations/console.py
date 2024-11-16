@@ -48,6 +48,7 @@ class ConsoleDestination(Destination):
             self.print(text, end_char)
 
     def print(self, text: str, end_char: str):
+        text = text.encode('utf-8', 'xmlcharrefreplace').decode('utf-8')
         if self.is_screen:
             print(text, end=end_char, flush=True)
         else:
