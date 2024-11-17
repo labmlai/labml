@@ -82,6 +82,8 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     r = dr.get_or_create_run(rank, request, token)
     s = r.status.load()
 
+    run_uuid = r.run_uuid
+
     json = await request.json()
     if isinstance(json, list):
         data = json
@@ -107,11 +109,9 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     else:
         hp_values = {}
 
-    run_uuid = dr.uuid
-
     app_url = str(request.url).split('api')[0]
 
-    return {'errors': errors, 'url': f'{app_url}run/{run_uuid}', 'dynamic': hp_values}
+    return {'errors': errors, 'url': f'{app_url}run/{dr.uuid}', 'dynamic': hp_values}
 
 
 async def update_run(request: Request) -> EndPointRes:
@@ -323,7 +323,9 @@ async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     if dr is not None:
         status_data = run.get_merged_status_data(list(dr.ranks.values()))
     else:
-        status_data = run.get_status(run_uuid).get_data()
+        r = run.get_status(run_uuid)
+        if r:
+            status_data = r.get_data()
 
     if status_data is None or len(status_data.keys()) == 0:
         status_data = {}

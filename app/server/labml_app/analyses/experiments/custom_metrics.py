@@ -4,7 +4,7 @@ from typing import List, Tuple, Any
 from uuid import UUID
 
 from labml_app.analyses.helper import get_similarity
-from labml_app.db import user, run
+from labml_app.db import user, run, dist_run
 from labml_db import Model, Key, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
@@ -205,7 +205,8 @@ async def delete_custom_metric(request: Request, run_uuid: str) -> Any:
 
 @Analysis.route('GET', 'custom_metrics/{run_uuid}/magic')
 async def create_magic_metric(request: Request, run_uuid: str) -> Any:
-    current_run = run.get(run_uuid)
+    analysis_uuid = dist_run.get_analysis_uuid(run_uuid)
+    current_run = run.get(analysis_uuid)
     if current_run is None:
         return {'is_success': False, 'message': 'Run not found'}
 
@@ -213,7 +214,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
 
     current_run = current_run.get_summary()
 
-    analysis_data = MetricsAnalysis.get_or_create(run_uuid).get_tracking()
+    analysis_data = MetricsAnalysis.get_or_create(analysis_uuid).get_tracking()
     run_indicators = sorted([track_item['name'] for track_item in analysis_data])
 
     current_metrics = run_cm.get_data()
@@ -226,7 +227,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
     u = user.get_by_session_token('local')  # todo
 
     default_project = u.default_project
-    runs = [r.get_summary() for r in default_project.get_runs()]
+    runs = [r.get_summary() for r in default_project.get_dist_runs()]
 
     similarity = [get_similarity(current_run, x) for x in runs]
     runs = sorted(zip(similarity, runs), key=lambda pair: (pair[0], pair[1]['start_time']), reverse=True)
