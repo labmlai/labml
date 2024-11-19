@@ -38,7 +38,7 @@ class DistRun(Model['DistRun']):
         if token is None:
             raise RuntimeError('Labml token is required to create a new run')
 
-        r = run.get_or_create(request, str(uuid.uuid4()), rank, self.world_size, self.main_rank, token)
+        r = run.get_or_create(request, uuid.uuid4().hex, rank, self.world_size, self.main_rank, token)
         self.ranks[rank] = r.run_uuid
 
         self.save()

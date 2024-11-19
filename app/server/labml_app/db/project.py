@@ -17,6 +17,7 @@ class Project(Model['Project']):
     is_run_added: bool
     folders: any  # delete from db and then remove
     tag_index: Dict[str, Set[str]]
+    dist_tag_index: Dict[str, Set[str]]
     runs: Dict  # delete from db and then remove
 
     @classmethod
@@ -28,6 +29,7 @@ class Project(Model['Project']):
                     sessions={},
                     is_run_added=False,
                     tag_index={},
+                    dist_tag_index={},
                     )
 
     def is_project_dist_run(self, uuid: str) -> bool:
@@ -38,7 +40,8 @@ class Project(Model['Project']):
 
     def _get_dist_run_util(self, uuids: List[str]) -> List['run.Run']:
         d_runs = dist_run.mget(uuids)
-        run_uuids = [dr.get_main_uuid() for dr in d_runs]
+
+        run_uuids = [dr.get_main_uuid() for dr in d_runs if dr is not None]
         runs = run.mget(run_uuids)
 
         res = []
@@ -53,9 +56,9 @@ class Project(Model['Project']):
         for run_uuid in likely_deleted:
             if run_uuid in self.dist_runs:
                 self.dist_runs.pop(run_uuid)
-            for tag, runs in self.tag_index.items():
+            for tag, runs in self.dist_tag_index.items():
                 if run_uuid in runs:
-                    self.tag_index[tag].remove(run_uuid)
+                    self.dist_tag_index[tag].remove(run_uuid)
 
         if self.is_run_added:
             self.is_run_added = False
@@ -70,8 +73,8 @@ class Project(Model['Project']):
         return self._get_dist_run_util(dist_run_uuids)
 
     def get_dist_run_by_tags(self, tag: str) -> List['run.Run']:
-        if tag in self.tag_index:
-            run_uuids = [r for r in self.tag_index[tag]]
+        if tag in self.dist_tag_index:
+            run_uuids = [r for r in self.dist_tag_index[tag]]
             return self._get_dist_run_util(run_uuids)
         return []
 
@@ -91,8 +94,8 @@ class Project(Model['Project']):
                 if r and r.owner == project_owner:
                     try:
                         for tag in r.tags:
-                            if tag in self.tag_index and run_uuid in self.tag_index[tag]:
-                                self.tag_index[tag].remove(run_uuid)
+                            if tag in self.dist_tag_index and run_uuid in self.dist_tag_index[tag]:
+                                self.dist_tag_index[tag].remove(run_uuid)
                         dist_run.delete(run_uuid)
                         self.dist_runs.pop(run_uuid)
                         DistRunIndex.delete(run_uuid)
@@ -121,9 +124,9 @@ class Project(Model['Project']):
         r = dr.get_main_run()
         if r is not None:
             for tag in r.tags:
-                if tag not in self.tag_index:
-                    self.tag_index[tag] = set()
-                self.tag_index[tag].add(r.run_uuid)
+                if tag not in self.dist_tag_index:
+                    self.dist_tag_index[tag] = set()
+                self.dist_tag_index[tag].add(r.run_uuid)
 
         self.save()
 
@@ -137,14 +140,14 @@ class Project(Model['Project']):
 
         for tag in current_tags:
             if (tag not in new_tags  # removed tag
-                    and tag in self.tag_index
-                    and dist_run_uuid in self.tag_index[tag]):
-                self.tag_index[tag].remove(dist_run_uuid)
+                    and tag in self.dist_tag_index
+                    and dist_run_uuid in self.dist_tag_index[tag]):
+                self.dist_tag_index[tag].remove(dist_run_uuid)
 
         for tag in new_tags:
-            if tag not in self.tag_index:
-                self.tag_index[tag] = set()
-            self.tag_index[tag].add(dist_run_uuid)  # set will handle duplicates
+            if tag not in self.dist_tag_index:
+                self.dist_tag_index[tag] = set()
+            self.dist_tag_index[tag].add(dist_run_uuid)  # set will handle duplicates
 
         r.edit_run(data)
         self.save()
