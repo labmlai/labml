@@ -126,7 +126,7 @@ class Project(Model['Project']):
             for tag in r.tags:
                 if tag not in self.dist_tag_index:
                     self.dist_tag_index[tag] = set()
-                self.dist_tag_index[tag].add(r.run_uuid)
+                self.dist_tag_index[tag].add(dr.uuid)
 
         self.save()
 

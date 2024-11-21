@@ -14,9 +14,10 @@ u = user.get_by_session_token('local')
 default_project = u.default_project
 
 default_project.dist_runs = {}
-default_project.dist_tag_index.clear()
-print(default_project.dist_runs)
+default_project.dist_tag_index = {}
 default_project.save()
+
+print(default_project.dist_tag_index)
 
 print(default_project.labml_token)
 
@@ -33,6 +34,9 @@ for run_uuid, run_key in zip(default_project.runs.keys(), default_project.runs.v
     print(index/len(default_project.runs))
 
     r = run_key.load()
+    if r is None:
+        failed_count += 1
+        continue
     if r.rank != 0:
         continue
 
@@ -56,21 +60,21 @@ for run_uuid, run_key in zip(default_project.runs.keys(), default_project.runs.v
 
     from labml_app.analyses.experiments import custom_metrics, data_store
 
-    # copy custom metrics
-    cur_key = custom_metrics.CustomMetricsListIndex.get(r.run_uuid)
-    custom_metrics.CustomMetricsListIndex.set(dr.uuid, cur_key)
-    custom_metrics.CustomMetricsListIndex.set(r.run_uuid, None)
-
-    # copy data_store
-    cur_d_key = data_store.DataStoreIndex.get(r.run_uuid)
-    data_store.DataStoreIndex.set(dr.uuid, cur_d_key)
-    data_store.DataStoreIndex.set(r.run_uuid, None)
+    # # copy custom metrics
+    # cur_key = custom_metrics.CustomMetricsListIndex.get(r.run_uuid)
+    # custom_metrics.CustomMetricsListIndex.set(dr.uuid, cur_key)
+    # custom_metrics.CustomMetricsListIndex.set(r.run_uuid, None)
+    #
+    # # copy data_store
+    # cur_d_key = data_store.DataStoreIndex.get(r.run_uuid)
+    # data_store.DataStoreIndex.set(dr.uuid, cur_d_key)
+    # data_store.DataStoreIndex.set(r.run_uuid, None)
 
     # tags
-    for tag in r.tags:
-        if tag not in default_project.dist_tag_index:
-            default_project.dist_tag_index[tag] = set()
-        default_project.dist_tag_index[tag].add(dr.uuid)
+    # for tag in r.tags:
+    #     if tag not in default_project.dist_tag_index:
+    #         default_project.dist_tag_index[tag] = set()
+    #     default_project.dist_tag_index[tag].add(dr.uuid)
 
 
 default_project.save()
