@@ -237,7 +237,7 @@ async def create_magic_metric(request: Request, run_uuid: str) -> Any:
     reasons = ""  # possible reason to not have runs
     for s, r in runs:
         list_key = CustomMetricsListIndex.get(r['run_uuid'])
-        if list_key is None:
+        if list_key == None:  # is None does not work
             continue
         cm = list_key.load()
         cm = cm.get_metrics()

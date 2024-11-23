@@ -61,14 +61,14 @@ for run_uuid, run_key in zip(default_project.runs.keys(), default_project.runs.v
     from labml_app.analyses.experiments import custom_metrics, data_store
 
     # # copy custom metrics
-    # cur_key = custom_metrics.CustomMetricsListIndex.get(r.run_uuid)
-    # custom_metrics.CustomMetricsListIndex.set(dr.uuid, cur_key)
-    # custom_metrics.CustomMetricsListIndex.set(r.run_uuid, None)
+    cur_key = custom_metrics.CustomMetricsListIndex.get(r.run_uuid)
+    custom_metrics.CustomMetricsListIndex.set(dr.uuid, cur_key)
+    custom_metrics.CustomMetricsListIndex.delete(r.run_uuid)
     #
     # # copy data_store
-    # cur_d_key = data_store.DataStoreIndex.get(r.run_uuid)
-    # data_store.DataStoreIndex.set(dr.uuid, cur_d_key)
-    # data_store.DataStoreIndex.set(r.run_uuid, None)
+    cur_d_key = data_store.DataStoreIndex.get(r.run_uuid)
+    data_store.DataStoreIndex.set(dr.uuid, cur_d_key)
+    data_store.DataStoreIndex.delete(r.run_uuid)
 
     # tags
     # for tag in r.tags:
