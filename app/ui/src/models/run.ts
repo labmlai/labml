@@ -29,6 +29,7 @@ export interface RunModel {
     session_id: string
     process_id: string
     folder: string
+    is_rank: boolean
 }
 
 export interface PointValue {
@@ -130,6 +131,7 @@ export class Run {
     favourite_configs: string[]
     session_id: string
     process_id: string
+    isRank: boolean
 
     constructor(run: RunModel) {
         this.run_uuid = run.run_uuid
@@ -160,6 +162,7 @@ export class Run {
         }
         this.session_id = run.session_id
         this.process_id = run.process_id
+        this.isRank = run.is_rank
     }
 
     public updateConfigs() {

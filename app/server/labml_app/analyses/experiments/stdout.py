@@ -6,9 +6,9 @@ from labml_db.serializer.yaml import YamlSerializer
 from fastapi import Request
 from starlette.responses import JSONResponse
 
-import labml_app.db.run
 from labml_app.analyses.analysis import Analysis
 from labml_app.analyses.logs import Logs, LogPageType
+from labml_app.db import dist_run
 
 
 class StdOut(Logs):
@@ -38,7 +38,7 @@ async def get_stdout(request: Request, run_uuid: str) -> Any:
     """
     # get the run
 
-    run_uuid = labml_app.db.run.get_main_rank(run_uuid)
+    run_uuid = dist_run.get_analysis_uuid(run_uuid)
     if run_uuid is None:
         return JSONResponse(status_code=404, content={'message': 'Run not found'})
 
@@ -60,7 +60,7 @@ async def get_stdout(request: Request, run_uuid: str) -> Any:
 
 @Analysis.route('POST', 'logs/stdout/{run_uuid}/opt')
 async def update_stdout_opt(request: Request, run_uuid: str) -> Any:
-    run_uuid = labml_app.db.run.get_main_rank(run_uuid)
+    run_uuid = dist_run.get_analysis_uuid(run_uuid)
     if run_uuid is None:
         return JSONResponse(status_code=404, content={'message': 'Run not found'})
 
@@ -79,6 +79,7 @@ async def update_stdout_opt(request: Request, run_uuid: str) -> Any:
 
 
 def update_stdout(run_uuid: str, content: str):
+    run_uuid = dist_run.get_analysis_uuid(run_uuid)
     key = StdOutIndex.get(run_uuid)
     std_out: StdOutModel
 

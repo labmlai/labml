@@ -270,22 +270,19 @@ class Run(Model['Run']):
 
         return other_rank_run_uuids
 
-    def get_data(self, request: Request, is_dist_run: bool = False) -> Dict[str, Union[str, any]]:
+    def get_data(self, request: Request, parent_uuid: str) -> Dict[str, Union[str, any]]:
         u = auth.get_auth_user(request)
         if u:
-            is_project_run = u.default_project.is_project_run(self.run_uuid)
+            is_project_run = u.default_project.is_project_dist_run(parent_uuid)
         else:
             is_project_run = False
 
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         formatted_repo = self.format_remote_repo(self.repo_remotes)
 
-        other_rank_run_uuids = self.get_rank_uuids()
-
         return {
             'run_uuid': self.run_uuid,
             'rank': self.rank,
-            'other_rank_run_uuids': other_rank_run_uuids,
             'world_size': self.world_size,
             'is_project_run': is_project_run,
             'name': self.name,
@@ -366,11 +363,6 @@ class RunIndex(Index['Run']):
 
 
 def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, main_rank: int, labml_token: str = '') -> 'Run':
-    p = project.get_project(labml_token)
-
-    if p.is_project_run(run_uuid):
-        return p.get_run(run_uuid)
-
     run = get(run_uuid)
     if run is not None:
         return run
@@ -396,11 +388,7 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, m
               main_rank=main_rank,
               )
 
-    if run.rank == 0:  # TODO
-        p.add_run_with_model(run)
-
     run.save()
-    p.save()
 
     RunIndex.set(run.run_uuid, run.key)
 

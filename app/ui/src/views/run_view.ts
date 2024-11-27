@@ -95,7 +95,7 @@ class RunView extends ScreenView {
     }
 
     private get isRank(): boolean {
-        return !!this.rank
+        return this.run?.isRank || false
     }
 
     get requiresAuth(): boolean {
@@ -393,7 +393,7 @@ class RunView extends ScreenView {
             this.rankElems = $('div', '.hidden.list.runs-list.list-group', $ => {
                 for (const [rank, run_uuid] of Object.entries(this.run.other_rank_run_uuids)) {
                     $('a', '.list-item.list-group-item.list-group-item-action',
-                        {href: `/run/${this.uuid}_${rank}`, target: "_blank"},
+                        {href: `/run/${run_uuid}`, target: "_blank"},
                         $ => {
                             $('div', $ => {
                                 $('h6', `Rank ${+rank + 1}`)

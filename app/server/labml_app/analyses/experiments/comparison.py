@@ -6,20 +6,15 @@ from starlette.responses import JSONResponse
 from .distributed_metrics import get_merged_metric_tracking_util
 from .metrics import MetricsAnalysis, get_metrics_tracking_util, mget
 from ..analysis import Analysis
-from ...db import run
+from ...db import run, dist_run
 
 
 @Analysis.route('POST', 'compare/metrics/{run_uuid}')
 async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
     indicators = (await request.json())['indicators']
+    analysis_uuid = dist_run.get_analysis_uuid(run_uuid)
 
-    r = run.get(run_uuid)
-    if r is None:
-        response = JSONResponse({'error': 'run not found'})
-        response.status_code = 404
-        return response
-
-    if r.world_size == 0:
+    if analysis_uuid == run_uuid:  # single run
         ans = MetricsAnalysis.get_or_create(run_uuid)
         track_data = ans.get_tracking()
         status_code = 200
@@ -30,9 +25,9 @@ async def get_comparison_metrics(request: Request, run_uuid: str) -> Any:
 
         return response
     else:  # distributed run
-        rank_uuids = r.get_rank_uuids()
+        r = dist_run.get(run_uuid)
 
-        metric_list = [MetricsAnalysis(m) if m else None for m in mget(list(rank_uuids.values()))]
+        metric_list = [MetricsAnalysis(m) if m else None for m in mget(list(r.ranks.values()))]
         metric_list = [m for m in metric_list if m is not None]
         track_data_list = [m.get_tracking() for m in metric_list]
 
