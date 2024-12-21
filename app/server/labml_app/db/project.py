@@ -30,6 +30,8 @@ class Project(Model['Project']):
                     is_run_added=False,
                     tag_index={},
                     dist_tag_index={},
+                    runs={},
+                    folders={},
                     )
 
     def is_project_dist_run(self, uuid: str) -> bool:
