@@ -272,3 +272,9 @@ class AppAPI:
         cur.update(data)
 
         return self.set_data_store(run_uuid, cur)
+
+    def get_all_tags(self):
+        res = self.network.send_http_request('GET', '/tags')
+        if 'tags' in res:
+            return res['tags']
+        return None

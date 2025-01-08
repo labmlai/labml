@@ -26,6 +26,7 @@ class Project(Model['Project']):
                     sessions={},
                     is_run_added=False,
                     tag_index={},
+                    folders={},
                     )
 
     def is_project_run(self, run_uuid: str) -> bool:
@@ -60,6 +61,17 @@ class Project(Model['Project']):
 
         return res
 
+    def get_all_tags(self) -> List[str]:
+        tags_to_pop = []
+        for tag, runs in self.tag_index.items():
+            if not runs:
+                tags_to_pop.append(tag)
+
+        for tag in tags_to_pop:
+            self.tag_index.pop(tag)
+
+        return list(self.tag_index.keys())
+
     def get_runs(self) -> List['run.Run']:
         run_uuids = list(self.runs.keys())
         return self._get_runs_util(run_uuids)
@@ -89,6 +101,8 @@ class Project(Model['Project']):
                         for tag in r.tags:
                             if tag in self.tag_index:
                                 self.tag_index[tag].remove(run_uuid)
+                                if len(self.tag_index[tag]) == 0:
+                                    self.tag_index.pop(tag)
                         run.delete(run_uuid)
                     except TypeError:
                         logger.error(f'error while deleting the run {run_uuid}')

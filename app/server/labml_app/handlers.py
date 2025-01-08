@@ -487,6 +487,13 @@ async def init_app_api(request: Request):
         return JSONResponse({'is_successful': True, 'version': api_version})
 
 
+@auth.login_required
+async def get_tags(request: Request, token: Optional[str] = None):
+    u = user.get_by_session_token(token)
+    tags = u.default_project.get_all_tags()
+    return {'tags': tags}
+
+
 def _add_server(app: FastAPI, method: str, func: Callable, url: str):
     if not inspect.iscoroutinefunction(func):
         raise ValueError(f'{func.__name__} is not a async function')
@@ -520,6 +527,8 @@ def add_handlers(app: FastAPI):
     _add_ui(app, 'PUT', add_run, 'run/{run_uuid}/add')
     _add_ui(app, 'PUT', claim_run, 'run/{run_uuid}/claim')
     _add_ui(app, 'GET', get_run_status, 'run/status/{run_uuid}')
+
+    _add_ui(app, 'GET', get_tags, 'tags')
 
     _add_ui(app, 'GET', get_session, 'session/{session_uuid}')
     _add_ui(app, 'POST', edit_session, 'session/{session_uuid}')
