@@ -70,7 +70,7 @@ def get_or_create(run_uuid: str, labml_token: str):
 
     if p.is_project_dist_run(run_uuid):
         return p.get_dist_run(run_uuid)
-    print(DistRunIndex.get(run_uuid))
+
     if DistRunIndex.get(run_uuid) is not None:
         raise RuntimeError(f'Dist run {run_uuid} already exists on a different project')
 

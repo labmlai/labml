@@ -44,7 +44,7 @@ class Preferences:
                     smooth_function=SmoothFunction.LeftExponential.value,
                     is_base_distributed=False,
                     base_series_preferences=[],
-                    base_experiment = "",
+                    base_experiment="",
                     )
 
     def update_preferences(self, data: PreferencesData) -> None:

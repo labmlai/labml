@@ -261,7 +261,7 @@ async def get_run(request: Request, run_uuid: str) -> JSONResponse:
         r = run.get(run_uuid)
 
     if r:
-        run_data = r.get_data(request, parent_uuid=run_uuid)
+        run_data = r.get_data(request)
         run_data['run_uuid'] = run_uuid
         if dr:
             run_data['is_claimed'] = dr.is_claimed
