@@ -546,9 +546,9 @@ class CustomMetricView extends ScreenView implements MetricDataStore {
     }
 
     private async updateBaseRun(force: boolean) {
-        this.baseAnalysisCache = metricsCache.getAnalysis(this.baseUuid)
-        this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
         try {
+            this.baseAnalysisCache = metricsCache.getAnalysis(this.baseUuid)
+            this.baseRun = await CACHE.getRun(this.baseUuid).get(force)
             this.baseSeries = (await this.baseAnalysisCache.get(force, this.preferenceData.base_series_preferences)).series
             this.missingBaseExperiment = false
         } catch (e) {
