@@ -95,7 +95,7 @@ def init_mongo_db(mongo_address: str = '', port: int = 27017):
             'https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/.'
         )
 
-    db = mongo_client['labml']
+    db = mongo_client[settings.DB_NAME]
 
     Model.set_db_drivers([MongoPickleDbDriver(m, db) for m in models])
     Index.set_db_drivers([MongoIndexDbDriver(m, db) for m in indexes])
