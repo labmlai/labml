@@ -43,7 +43,7 @@ class Network:
             headers['Content-Type'] = 'application/json'
 
         full_url = self.base_url + url
-        req = urllib.request.Request(full_url, json=data, headers=headers, method=method)
+        req = urllib.request.Request(full_url, data=json.dumps(data).encode('utf-8'), headers=headers, method=method)
 
         try:
             with urllib.request.urlopen(req) as response:
