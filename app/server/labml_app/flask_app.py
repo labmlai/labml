@@ -15,7 +15,7 @@ from starlette.responses import JSONResponse
 from labml_app import db
 from labml_app import handlers
 from labml_app.logger import logger
-from labml_app.settings import WEB_URL, IS_LOCAL_SETUP, IS_DEBUG
+from labml_app.settings import WEB_URL, IS_LOCAL_SETUP, IS_DEBUG, PORT
 
 import traceback
 
@@ -131,4 +131,4 @@ async def error_handling_middleware(request: Request, call_next):
 
 
 if __name__ == '__main__':
-    uvicorn.run("labml_app.flask_app:app", host='0.0.0.0', port=5005, workers=1)
+    uvicorn.run("labml_app.flask_app:app", host='0.0.0.0', port=PORT, workers=1)
