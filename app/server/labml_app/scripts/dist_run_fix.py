@@ -91,7 +91,7 @@ def update_preferences():
             pref.save()
 
 
-# update_runs()
+update_runs()
 update_preferences()
 
 
