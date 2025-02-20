@@ -64,6 +64,7 @@ class Run(Model['Run']):
     favourite_configs: List['str']
     main_rank: int
     parent_folder: str  # delete from saved db and then remove
+    parent_run_uuid: str
 
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -110,7 +111,8 @@ class Run(Model['Run']):
                     process_key=None,
                     session_id='',
                     main_rank=0,
-                    parent_folder=""
+                    parent_folder="",
+                    parent_run_uuid="",
                     )
 
     @property
@@ -270,22 +272,19 @@ class Run(Model['Run']):
 
         return other_rank_run_uuids
 
-    def get_data(self, request: Request, is_dist_run: bool = False) -> Dict[str, Union[str, any]]:
+    def get_data(self, request: Request) -> Dict[str, Union[str, any]]:
         u = auth.get_auth_user(request)
         if u:
-            is_project_run = u.default_project.is_project_run(self.run_uuid)
+            is_project_run = u.default_project.is_project_dist_run(self.parent_run_uuid)
         else:
             is_project_run = False
 
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         formatted_repo = self.format_remote_repo(self.repo_remotes)
 
-        other_rank_run_uuids = self.get_rank_uuids()
-
         return {
             'run_uuid': self.run_uuid,
             'rank': self.rank,
-            'other_rank_run_uuids': other_rank_run_uuids,
             'world_size': self.world_size,
             'is_project_run': is_project_run,
             'name': self.name,
@@ -308,6 +307,7 @@ class Run(Model['Run']):
             'selected_configs': self.selected_configs,
             'process_id': self.process_id,
             'session_id': self.session_id,
+            'parent_run_uuid': self.parent_run_uuid,
         }
 
     def get_summary(self) -> Dict[str, str]:
@@ -366,11 +366,6 @@ class RunIndex(Index['Run']):
 
 
 def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, main_rank: int, labml_token: str = '') -> 'Run':
-    p = project.get_project(labml_token)
-
-    if p.is_project_run(run_uuid):
-        return p.get_run(run_uuid)
-
     run = get(run_uuid)
     if run is not None:
         return run
@@ -396,11 +391,7 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, m
               main_rank=main_rank,
               )
 
-    if run.rank == 0:  # TODO
-        p.add_run_with_model(run)
-
     run.save()
-    p.save()
 
     RunIndex.set(run.run_uuid, run.key)
 
@@ -487,20 +478,3 @@ def get_merged_status_data(run_uuids: List[str]) -> Union[None, 'status.Status']
 
     return status_data
 
-
-def get_main_rank(run_uuid: str) -> Optional[str]:
-    is_rank = len(run_uuid.split("_")) == 2
-
-    if is_rank:
-        if run_uuid.split('_')[-1] == 0:  # first rank is the main uuid
-            return run_uuid.split('_')[0]
-        else:
-            return run_uuid
-    else:
-        r = get(run_uuid)
-        if r is None:
-            return None
-        other_rank_run_uuids = r.get_rank_uuids()
-        if r.world_size != 0 and other_rank_run_uuids:
-            return other_rank_run_uuids[r.main_rank]
-        return run_uuid

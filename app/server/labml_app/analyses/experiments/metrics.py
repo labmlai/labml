@@ -36,15 +36,12 @@ class MetricsAnalysis(Analysis):
         res = {}
         new_indicators = set()
         for ind, s in data.items():
-            ind_split = ind.split('.')
-            ind_type = ind_split[0]
-            if ind_type not in INDICATORS:
-                if ind not in self.metrics.indicators:
-                    if len(self.metrics.indicators) >= INDICATOR_LIMIT:
-                        continue
-                    self.metrics.indicators.add(ind)
-                    new_indicators.add(ind)
-                res[ind] = s
+            if ind not in self.metrics.indicators:
+                if len(self.metrics.indicators) >= INDICATOR_LIMIT:
+                    continue
+                self.metrics.indicators.add(ind)
+                new_indicators.add(ind)
+            res[ind] = s
 
         return self.metrics.track(res)
 

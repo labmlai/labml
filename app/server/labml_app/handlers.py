@@ -10,7 +10,7 @@ from .analyses.experiments import stdout, stderr, stdlogger
 from .logger import logger
 from . import settings
 from . import auth
-from .db import run
+from .db import run, dist_run
 from .db import computer
 from .db import session
 from .db import user
@@ -61,8 +61,8 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     if not p:
         token = settings.FLOAT_PROJECT_TOKEN
 
-    r = project.get_run(run_uuid, token)
-    if not r and not p:
+    dr = project.get_dist_run(run_uuid, labml_token=token)
+    if not dr and not p:
         if labml_token:
             errors.append({'error': 'invalid_token',
                            'message': 'Please create a valid token at https://app.labml.ai.\n'
@@ -74,11 +74,15 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
                                       'Click on the experiment link to monitor the experiment and '
                                       'add it to your experiments list.'})
 
-    if world_size > 1 and rank > 0:
-        run_uuid = f'{run_uuid}_{rank}'
+    dr = dist_run.get_or_create(run_uuid, token)
+    dr.world_size = world_size
+    dr.main_rank = main_rank
+    dr.save()
 
-    r = run.get_or_create(request, run_uuid, rank, world_size, main_rank, token)
+    r = dr.get_or_create_run(rank, request, token)
     s = r.status.load()
+
+    run_uuid = r.run_uuid
 
     json = await request.json()
     if isinstance(json, list):
@@ -105,13 +109,9 @@ async def _update_run(request: Request, labml_token: str, labml_version: str, ru
     else:
         hp_values = {}
 
-    run_uuid = r.url
-    if len(run_uuid.split("_")) == 2:
-        run_uuid = run_uuid.split("_")[0]
-
     app_url = str(request.url).split('api')[0]
 
-    return {'errors': errors, 'url': f'{app_url}{run_uuid}', 'dynamic': hp_values}
+    return {'errors': errors, 'url': f'{app_url}run/{dr.uuid}', 'dynamic': hp_values}
 
 
 async def update_run(request: Request) -> EndPointRes:
@@ -210,17 +210,18 @@ async def update_session(request: Request) -> EndPointRes:
 
 @auth.login_required
 async def claim_run(request: Request, run_uuid: str, token: Optional[str] = None) -> EndPointRes:
-    r = run.get(run_uuid)
+    r = dist_run.get(run_uuid)
     u = user.get_by_session_token(token)
 
     default_project = u.default_project
 
-    if not default_project.is_project_run(run_uuid):
+    if not default_project.is_project_dist_run(run_uuid):
         # float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
 
         # if r.run_uuid in float_project.runs:
-        default_project.add_run_with_model(r)
+        default_project.add_dist_run_with_model(r)
         default_project.save()
+
         r.is_claimed = True
         r.owner = u.email
         r.save()
@@ -252,13 +253,22 @@ async def get_run(request: Request, run_uuid: str) -> JSONResponse:
     run_data = {}
     status_code = 404
 
-    # TODO temporary change to used run_uuid as rank 0
-    is_dist_run = len(run_uuid.split("_")) == 1
-    run_uuid = utils.get_true_run_uuid(run_uuid)
+    dr = dist_run.get(run_uuid)
+    if dr is not None:
+        main_run_uuid = dr.get_main_uuid()
+        r = run.get(main_run_uuid)
+    else:
+        r = run.get(run_uuid)
 
-    r = run.get(run_uuid)
     if r:
-        run_data = r.get_data(request, is_dist_run)
+        run_data = r.get_data(request)
+        run_data['run_uuid'] = run_uuid
+        if dr:
+            run_data['is_claimed'] = dr.is_claimed
+            run_data['owner'] = dr.owner
+            run_data['other_rank_run_uuids'] = dr.ranks
+        else:
+            run_data['is_rank'] = True
         status_code = 200
 
     response = JSONResponse(run_data)
@@ -309,36 +319,24 @@ async def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_data = {}
     status_code = 404
 
-    if len(run_uuid.split('_')) == 1:  # distributed
-        r = run.get(run_uuid)
-        if r is not None:
-            uuids = [f'{run_uuid}_{i}' for i in range(1, r.world_size)]
-            uuids.append(run_uuid)
-            status_data = run.get_merged_status_data(uuids)
-
-        if status_data is None or len(status_data.keys()) == 0:
-            status_data = {}
-            status_code = 404
-        else:
-            status_code = 200
-
-        response = JSONResponse(status_data)
-        response.status_code = status_code
-
-        return response
+    dr = dist_run.get(run_uuid)
+    if dr is not None:
+        status_data = run.get_merged_status_data(list(dr.ranks.values()))
     else:
-        # TODO temporary change to used run_uuid as rank 0
-        run_uuid = utils.get_true_run_uuid(run_uuid)
+        r = run.get_status(run_uuid)
+        if r:
+            status_data = r.get_data()
 
-        s = run.get_status(run_uuid)
-        if s:
-            status_data = s.get_data()
-            status_code = 200
+    if status_data is None or len(status_data.keys()) == 0:
+        status_data = {}
+        status_code = 404
+    else:
+        status_code = 200
 
-        response = JSONResponse(status_data)
-        response.status_code = status_code
+    response = JSONResponse(status_data)
+    response.status_code = status_code
 
-        return response
+    return response
 
 
 async def get_session_status(request: Request, session_uuid: str) -> JSONResponse:
@@ -366,9 +364,9 @@ async def get_runs(request: Request, labml_token: str, token: Optional[str] = No
     labml_token = default_project.labml_token
 
     if tag is None:
-        runs_list = default_project.get_runs()
+        runs_list = default_project.get_dist_runs()
     else:
-        runs_list = default_project.get_runs_by_tags(tag)
+        runs_list = default_project.get_dist_run_by_tags(tag)
 
     statuses = status.mget([r.status for r in runs_list])
     statuses = {s.key: s for s in statuses}
