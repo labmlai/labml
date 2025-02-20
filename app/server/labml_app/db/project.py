@@ -74,6 +74,17 @@ class Project(Model['Project']):
         dist_run_uuids = list(self.dist_runs.keys())
         return self._get_dist_run_util(dist_run_uuids)
 
+    def get_all_tags(self) -> List[str]:
+        tags_to_pop = []
+        for tag, runs in self.dist_tag_index.items():
+            if not runs:
+                tags_to_pop.append(tag)
+
+        for tag in tags_to_pop:
+            self.dist_tag_index.pop(tag)
+
+        return list(self.dist_tag_index.keys())
+
     def get_dist_run_by_tags(self, tag: str) -> List['run.Run']:
         if tag in self.dist_tag_index:
             run_uuids = [r for r in self.dist_tag_index[tag]]
@@ -98,6 +109,8 @@ class Project(Model['Project']):
                         for tag in r.tags:
                             if tag in self.dist_tag_index and run_uuid in self.dist_tag_index[tag]:
                                 self.dist_tag_index[tag].remove(run_uuid)
+                                if len(self.dist_tag_index[tag]) == 0:
+                                    self.dist_tag_index.pop(tag)
                         dist_run.delete(run_uuid)
                         self.dist_runs.pop(run_uuid)
                         DistRunIndex.delete(run_uuid)

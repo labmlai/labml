@@ -1,6 +1,8 @@
-import labml
-import requests
 import json
+import urllib.request
+
+import labml
+
 
 class NetworkError(Exception):
     def __init__(self, status_code, url, message=None, description=None):
@@ -41,21 +43,31 @@ class Network:
             headers['Content-Type'] = 'application/json'
 
         full_url = self.base_url + url
-        response = requests.request(method, full_url, json=data, headers=headers)
-
-        if response.status_code >= 400:
-            error_message = None
-            if response.json():
-                if 'error' in response.json():
-                    error_message = response.json()['error']
-                elif 'data' in response.json() and 'error' in response.json()['data']:
-                    error_message = response.json()['data']['error']
-            raise NetworkError(response.status_code, url, response.text, error_message)
+        req = urllib.request.Request(full_url, data=json.dumps(data).encode('utf-8'), headers=headers, method=method)
 
         try:
-            return response.json()
-        except json.JSONDecodeError:
-            raise NetworkError(response.status_code, url, 'JSON decode error', response.text)
+            with urllib.request.urlopen(req) as response:
+                resp_data_raw = response.read()
+                if response.status >= 400:
+                    error_message = None
+                    try:
+                        response_data = json.loads(resp_data_raw.decode('utf-8'))
+                        if 'error' in response_data:
+                            error_message = response_data['error']
+                        elif 'data' in response_data and 'error' in response_data['data']:
+                            error_message = response_data['data']['error']
+                    except json.JSONDecodeError:
+                        raise NetworkError(response.status, url, 'JSON decode error', resp_data_raw.decode('utf-8'))
+                    raise NetworkError(response.status, url, resp_data_raw.decode('utf-8'), error_message)
+
+                try:
+                    return json.loads(resp_data_raw.decode('utf-8'))
+                except json.JSONDecodeError:
+                    raise NetworkError(response.status, url, 'JSON decode error', resp_data_raw.decode('utf-8'))
+        except urllib.error.HTTPError as e:
+            raise NetworkError(e.code, url, e.reason, e.read().decode('utf-8'))
+        except urllib.error.URLError as e:
+            raise NetworkError(None, url, str(e.reason))
 
 
 class AppAPI:
@@ -76,6 +88,7 @@ class AppAPI:
         'tags': List[str],
     }
     """
+
     def update_run_data(self, run_uuid, data):
         return self.network.send_http_request('POST', f'/run/{run_uuid}', data)
 
@@ -125,9 +138,9 @@ class AppAPI:
 
     """
     Get analysis data
-    
+
     url: str [compare/metrics, std_logger, stderr, metrics, stdout, battery, cpu, memory, disk, gpu, process]
-    
+
     'get_all': bool, Either get all indicators or only the selected indicators
     'current_uuid': str, Current run uuid for comparisons (only required for comparison metrics)
     """
@@ -169,7 +182,7 @@ class AppAPI:
             'base_series_preferences': List[int],  # Preferences for base series data
             'base_series_names': List[str],  # Names of the base series indicators
         }
-        
+
         - series_preferences content:
         -1 -> not selected
         1 -> selected
@@ -209,7 +222,7 @@ class AppAPI:
 
     """
     url: str [stderr, std_logger, stdout]
-    page_no: int 
+    page_no: int
     -1 -> get all pages
     -2 -> get last page
     i -> get ith page
@@ -223,14 +236,15 @@ class AppAPI:
 
     """
     Set the data store for a specific run. This will overwrite the existing data store.
-    
+
     Args:
         run_uuid (str): The unique identifier of the run.
         data (dict): The data store dictionary to set.
-    
+
     Returns:
         dict: The data store dictionary for the specified run.
     """
+
     def set_data_store(self, run_uuid, data):
         import yaml
         try:
@@ -252,8 +266,15 @@ class AppAPI:
     Returns:
         dict: The data store dictionary for the specified run.
     """
+
     def update_data_store(self, run_uuid, data):
         cur = self.get_data_store(run_uuid)
         cur.update(data)
 
         return self.set_data_store(run_uuid, cur)
+
+    def get_all_tags(self):
+        res = self.network.send_http_request('GET', '/tags')
+        if 'tags' in res:
+            return res['tags']
+        return None
