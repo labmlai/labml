@@ -105,7 +105,8 @@ class DataStoreView extends ScreenView {
                         })
                         this.runHeaderCard = new RunHeaderCard({
                             uuid: this.uuid,
-                            width: this.actualWidth
+                            width: this.actualWidth,
+                            showRank: false
                         })
                         this.runHeaderCard.render($).then()
                         $('h2', '.header.text-center', 'Data Store')

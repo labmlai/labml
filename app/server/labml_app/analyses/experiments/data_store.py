@@ -6,6 +6,8 @@ from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 from starlette.responses import JSONResponse
 
+import labml_app.db.run as run
+import labml_app.db.dist_run as dist_run
 from labml_app.analyses.analysis import Analysis
 
 
@@ -36,6 +38,14 @@ class DataStoreIndex(Index['data_store']):
 
 @Analysis.route('GET', 'datastore/{run_uuid}')
 async def get_data_store(run_uuid: str) -> Any:
+    dr = dist_run.get(run_uuid)
+    if dr is None:
+        r = run.get(run_uuid)
+        if r is None:
+            return JSONResponse({'error': 'Run not found'}, status_code=404)
+        if r.parent_run_uuid != "":
+            run_uuid = r.parent_run_uuid
+
     key = DataStoreIndex.get(run_uuid)
     if key is None:
         data_store = DataStoreModel()
@@ -56,6 +66,14 @@ async def update_data_store(run_uuid: str, data: Dict[str, Any]) -> Any:
 
     if data_dict is None:
         return JSONResponse({'error': 'Attempting to set empty dictionary'}, status_code=400)
+
+    dr = dist_run.get(run_uuid)
+    if dr is None:
+        r = run.get(run_uuid)
+        if r is None:
+            return JSONResponse({'error': 'Run not found'}, status_code=404)
+        if r.parent_run_uuid != "":
+            run_uuid = r.parent_run_uuid
 
     key = DataStoreIndex.get(run_uuid)
     if key is None:

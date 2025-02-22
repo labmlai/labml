@@ -365,7 +365,8 @@ class RunIndex(Index['Run']):
     pass
 
 
-def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, main_rank: int, labml_token: str = '') -> 'Run':
+def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, main_rank: int, parent_uuid: str,
+                  labml_token: str = '') -> 'Run':
     run = get(run_uuid)
     if run is not None:
         return run
@@ -389,6 +390,7 @@ def get_or_create(request: Request, run_uuid: str, rank: int, world_size: int, m
               is_claimed=is_claimed,
               status=s.key,
               main_rank=main_rank,
+              parent_run_uuid=parent_uuid
               )
 
     run.save()
