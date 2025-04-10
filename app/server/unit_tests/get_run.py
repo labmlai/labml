@@ -6,4 +6,4 @@ init_mongo_db()
 run_uuid = 'a9fff63415e711f094de00001047fe80'
 
 r = dist_run.get_main_run(run_uuid)
-print(r)
+print(r.comment)
