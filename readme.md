@@ -191,3 +191,7 @@ If you use LabML for academic research, please cite the library using the follow
  url = {https://labml.ai/},
 }
 ```
+
+---
+
+*[Mukller](https://github.com/Mukller)*
